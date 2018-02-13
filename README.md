@@ -238,7 +238,7 @@ contract Ok{
 * 例如：在以上工作都以完成,在/dist/bin文件夹下输入命令
     sh compile.sh com ,在/dist/output目录下回生成abi、bin文件，在/dist/output/com目录下生成java Wrap代码。
 
-## （六）FQA
+## （六）FAQ
 ### 6.1、使用工具包生成合约Java Wrap代码时会报错。
     从 https://github.com/FISCO-BCOS/web3sdk 下载代码（Download ZIP），解压之后，目录名称将为：web3sdk-master，运行gradle命令后生成的工具包中，/dist/apps目录下生成的jar包名称为web3sdk-master.jar，导致和/dist/bin/web3sdk中配置的CLASSPATH中的配置项$APP_HOME/apps/web3sdk.jar名称不一致，从而导致使用工具包生成合约Java Wrap代码时会报错。
 ### 6.2、工具目录下，dist/bin/web3sdk运行会出错。
