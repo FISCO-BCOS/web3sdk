@@ -3,8 +3,9 @@ package org.bcos.web3j.tx;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.concurrent.ExecutionException;
-
+import org.bcos.channel.client.TransactionSucCallback;
 import org.bcos.web3j.protocol.Web3j;
+import org.bcos.web3j.protocol.core.Request;
 import org.bcos.web3j.protocol.core.methods.request.Transaction;
 import org.bcos.web3j.protocol.core.methods.response.EthSendTransaction;
 import org.bcos.web3j.protocol.exceptions.TransactionTimeoutException;
@@ -44,6 +45,17 @@ public class ClientTransactionManager extends TransactionManager {
 
         return web3j.ethSendTransaction(transaction)
                 .send();
+    }
+
+    @Override
+    public EthSendTransaction sendTransaction(BigInteger gasPrice, BigInteger gasLimit, String to, String data, BigInteger value, TransactionSucCallback callback) throws IOException {
+        Transaction transaction = new Transaction(
+                fromAddress, null, gasPrice, gasLimit, to, value, data);
+
+        Request<?, EthSendTransaction> request = web3j.ethSendTransaction(transaction);
+        request.setNeedTransCallback(true);
+        request.setTransactionSucCallback(callback);
+        return request.send();
     }
 
     @Override
