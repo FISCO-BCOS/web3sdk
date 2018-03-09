@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-
+import org.bcos.channel.client.TransactionSucCallback;
 import org.bcos.web3j.abi.EventEncoder;
 import org.bcos.web3j.abi.EventValues;
 import org.bcos.web3j.abi.FunctionEncoder;
@@ -218,6 +218,25 @@ public abstract class Contract extends ManagedTransaction {
     }
 
     /**
+     * @author tabsu
+     * @param function
+     * @param callback to get transaction receipt message.
+     * @return void
+     */
+    protected void executeTransactionAsync(Function function, TransactionSucCallback callback) {
+        try {
+            send(contractAddress, FunctionEncoder.encode(function), BigInteger.ZERO, gasPrice, gasLimit, callback);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (TransactionTimeoutException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    /**
      * Execute the provided payable function as a transaction asynchronously.
      *
      * @param function to transact with
@@ -229,7 +248,11 @@ public abstract class Contract extends ManagedTransaction {
         return Async.run(() -> executeTransaction(FunctionEncoder.encode(function), weiValue));
     }
 
-    protected EventValues extractEventParameters(
+    /**
+     *
+     * @desc 为了能在sol实例化出来的java类里面用到static的方法，而不需要实例化这个java类(load方法，用了name service，屏蔽了自身address)
+     */
+    protected static EventValues extractEventParameters(
             Event event, Log log) {
 
         List<String> topics = log.getTopics();
@@ -251,7 +274,7 @@ public abstract class Contract extends ManagedTransaction {
         return new EventValues(indexedValues, nonIndexedValues);
     }
 
-    protected List<EventValues> extractEventParameters(
+    protected static List<EventValues> extractEventParameters(
             Event event, TransactionReceipt transactionReceipt) {
 
         List<Log> logs = transactionReceipt.getLogs();

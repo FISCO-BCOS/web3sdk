@@ -8,6 +8,8 @@ import java.util.concurrent.ExecutionException;
 import rx.Observable;
 
 import org.bcos.web3j.protocol.Web3jService;
+import org.bcos.channel.client.TransactionSucCallback;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class Request<S, T extends Response> {
     private String jsonrpc = "2.0";
@@ -21,6 +23,28 @@ public class Request<S, T extends Response> {
     // http://stackoverflow.com/a/3437930/3211687
     private Class<T> responseType;
 
+    //添加属性支持交易回调
+    @JsonIgnore
+    private boolean needTransCallback;
+    @JsonIgnore
+    private TransactionSucCallback transactionSucCallback;
+
+    public boolean isNeedTransCallback() {
+        return needTransCallback;
+    }
+
+    public void setNeedTransCallback(boolean needTransCallback) {
+        this.needTransCallback = needTransCallback;
+    }
+
+    public void setTransactionSucCallback(TransactionSucCallback transactionSucCallback) {
+        this.transactionSucCallback = transactionSucCallback;
+    }
+
+    public TransactionSucCallback getTransactionSucCallback() {
+        return transactionSucCallback;
+    }
+    
     public Request() {
     }
 

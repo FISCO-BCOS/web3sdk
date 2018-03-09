@@ -200,4 +200,7 @@ public interface Ethereum {
     Request<?, ShhMessages> shhGetMessages(BigInteger filterId);
 
     BigInteger getBlockNumberCache();
+
+    Request<?, org.bcos.web3j.protocol.core.methods.response.EthGetProofMerkle> ethGetProofMerkle(
+            org.bcos.web3j.protocol.core.methods.request.ProofMerkle proofMerkle);
 }

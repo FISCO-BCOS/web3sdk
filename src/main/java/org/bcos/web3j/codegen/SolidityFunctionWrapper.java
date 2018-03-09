@@ -11,6 +11,7 @@ import java.util.concurrent.Future;
 
 import javax.lang.model.element.Modifier;
 
+import org.bcos.channel.client.TransactionSucCallback;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
@@ -136,6 +137,10 @@ public class SolidityFunctionWrapper {
         for (AbiDefinition functionDefinition : functionDefinitions) {
             if (functionDefinition.getType().equals("function")) {
                 methodSpecs.add(buildFunction(functionDefinition));
+                //添加带有callback的方法
+                if (!functionDefinition.isConstant()) {
+                    methodSpecs.add(buildFunctionWithCallback(functionDefinition));
+                }
 
             } else if (functionDefinition.getType().equals("event")) {
                 buildEventFunctions(functionDefinition, classBuilder);
@@ -314,6 +319,32 @@ public class SolidityFunctionWrapper {
         return methodBuilder.build();
     }
 
+    /**
+     * @desc 创建带有callback的方法
+     * @param functionDefinition
+     * @return
+     * @throws ClassNotFoundException
+     */
+    static MethodSpec buildFunctionWithCallback(AbiDefinition functionDefinition) throws ClassNotFoundException {
+        String functionName = functionDefinition.getName();
+
+        MethodSpec.Builder methodBuilder =
+                MethodSpec.methodBuilder(functionName)
+                        .addModifiers(Modifier.PUBLIC);
+
+        String inputParams = addParameters(methodBuilder, functionDefinition.getInputs());
+        methodBuilder.addParameter(ParameterSpec.builder(buildTypeName("TransactionSucCallback"), "callback").build());
+        List<TypeName> outputParameterTypes = buildTypeNames(functionDefinition.getOutputs());
+        if (functionDefinition.isConstant()) {
+            buildConstantFunction(
+                    functionDefinition, methodBuilder, outputParameterTypes, inputParams);
+        } else {
+            buildTransactionFunctionWithCallback(functionDefinition, methodBuilder, inputParams);
+        }
+
+        return methodBuilder.build();
+    }
+
     private static void buildConstantFunction(
             AbiDefinition functionDefinition,
             MethodSpec.Builder methodBuilder,
@@ -374,6 +405,23 @@ public class SolidityFunctionWrapper {
         } else {
             methodBuilder.addStatement("return executeTransactionAsync(function)");
         }
+    }
+
+    private static void buildTransactionFunctionWithCallback(
+            AbiDefinition functionDefinition,
+            MethodSpec.Builder methodBuilder,
+            String inputParams) throws ClassNotFoundException {
+
+        String functionName = functionDefinition.getName();
+
+        //methodBuilder.returns(ParameterizedTypeName.get(Future.class, TransactionReceipt.class));
+
+        methodBuilder.addStatement("$T function = new $T($S, $T.<$T>asList($L), $T"
+                        + ".<$T<?>>emptyList())",
+                Function.class, Function.class, functionName,
+                Arrays.class, Type.class, inputParams, Collections.class,
+                TypeReference.class);
+        methodBuilder.addStatement("executeTransactionAsync(function, callback)");
     }
 
     static TypeSpec buildEventResponseObject(String className,
@@ -456,6 +504,7 @@ public class SolidityFunctionWrapper {
         MethodSpec.Builder transactionMethodBuilder = MethodSpec
                 .methodBuilder(generatedFunctionName)
                 .addModifiers(Modifier.PUBLIC)
+                .addModifiers(Modifier.STATIC)
                 .addParameter(TransactionReceipt.class, "transactionReceipt")
                 .returns(parameterizedTypeName);
 
