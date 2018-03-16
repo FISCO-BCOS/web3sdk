@@ -127,6 +127,7 @@ public class ChannelHandler extends SimpleChannelInboundHandler<ByteBuf> {
 		
 		try {
 			if(threadPool == null) {
+				logger.debug("未配置线程池，单线程执行");
 				connections.onReceiveMessage(ctx, in);
 			}
 			else {

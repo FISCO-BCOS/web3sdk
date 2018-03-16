@@ -17,7 +17,7 @@ import org.bcos.web3j.protocol.core.Response;
  */
 public class ChannelEthereumService extends Service {
 	private static Logger logger = LoggerFactory.getLogger(ChannelEthereumService.class);
-			
+
 	private org.bcos.channel.client.Service channelService;
 	
     public ChannelEthereumService( boolean includeRawResponses) {
@@ -32,21 +32,27 @@ public class ChannelEthereumService extends Service {
     public <T extends Response> T send(
             Request request, Class<T> responseType) throws IOException {
         byte[] payload = objectMapper.writeValueAsBytes(request);
-        
+
         EthereumRequest ethereumRequest = new EthereumRequest();
         ethereumRequest.setKeyID(channelService.getOrgID());
         ethereumRequest.setBankNO("");
         ethereumRequest.setContent(new String(payload));
         ethereumRequest.setMessageID(channelService.newSeq());
-        
+
         if(timeout != 0) {
         	ethereumRequest.setTimeout(timeout);
         }
 
+        EthereumResponse response;
+        if (!request.isNeedTransCallback()) {
+            response = channelService.sendEthereumMessage(ethereumRequest);
+        } else {
+            response = channelService.sendEthereumMessage(ethereumRequest, request.getTransactionSucCallback());
+        }
+
         logger.debug("发送ethereum请求:{} {}", ethereumRequest.getMessageID(), objectMapper.writeValueAsString(request));
-        EthereumResponse response = channelService.sendEthereumMessage(ethereumRequest);
         logger.debug("收到ethereum响应:{} {} {}", ethereumRequest.getMessageID(), response.getErrorCode(), response.getContent());
-        
+
         return objectMapper.readValue(response.getContent(), responseType);
     }
 
@@ -57,7 +63,7 @@ public class ChannelEthereumService extends Service {
 	public void setChannelService(org.bcos.channel.client.Service channelService) {
 		this.channelService = channelService;
 	}
-	
+
 	public Integer getTimeout() {
 		return timeout;
 	}

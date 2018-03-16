@@ -4,7 +4,8 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
-
+import org.bcos.channel.client.TransactionSucCallback;
+import org.bcos.web3j.protocol.core.Request;
 import org.bcos.web3j.crypto.Credentials;
 import org.bcos.web3j.crypto.TransactionEncoder;
 import org.bcos.web3j.protocol.Web3j;
@@ -14,8 +15,6 @@ import org.bcos.web3j.protocol.core.methods.response.EthBlockNumber;
 import org.bcos.web3j.protocol.core.methods.response.EthGetTransactionCount;
 import org.bcos.web3j.protocol.core.methods.response.EthSendTransaction;
 import org.bcos.web3j.utils.Numeric;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * TransactionManager implementation using Ethereum wallet file to create and sign transactions
@@ -25,7 +24,7 @@ import org.slf4j.LoggerFactory;
  * <a href="https://github.com/ethereum/EIPs/issues/155">EIP155</a>.
  */
 public class RawTransactionManager extends TransactionManager {
-    static Logger logger = LoggerFactory.getLogger(RawTransactionManager.class);
+
     private final Web3j web3j;
     final Credentials credentials;
 
@@ -76,7 +75,6 @@ public class RawTransactionManager extends TransactionManager {
 			Random r = new Random();
 			BigInteger randomid = new BigInteger(250,r);
             BigInteger blockLimit = getBlockLimit();
-            logger.info("sendTransaction randomid: {} blockLimit:{}", randomid,blockLimit);
             RawTransaction rawTransaction = RawTransaction.createTransaction(
 
                 randomid,
@@ -88,6 +86,25 @@ public class RawTransactionManager extends TransactionManager {
                 data);
 
         return signAndSend(rawTransaction);
+    }
+
+    @Override
+    public EthSendTransaction sendTransaction(BigInteger gasPrice, BigInteger gasLimit, String to, String data, BigInteger value, TransactionSucCallback callback) throws IOException {
+        Random r = new Random();
+        BigInteger randomid = new BigInteger(250,r);
+        BigInteger blockLimit = getBlockLimit();
+        RawTransaction rawTransaction = RawTransaction.createTransaction(
+
+                randomid,
+                gasPrice,
+                gasLimit,
+                blockLimit,
+                to,
+                value,
+                data);
+
+
+        return signAndSend(rawTransaction, callback);
     }
 
     public EthSendTransaction signAndSend(RawTransaction rawTransaction)
@@ -106,6 +123,24 @@ public class RawTransactionManager extends TransactionManager {
         return web3j.ethSendRawTransaction(hexValue).send();
     }
 
+    public EthSendTransaction signAndSend(RawTransaction rawTransaction, TransactionSucCallback callback)
+            throws IOException {
+
+        byte[] signedMessage;
+
+        if (chainId > ChainId.NONE) {
+            signedMessage = TransactionEncoder.signMessage(rawTransaction, chainId, credentials);
+        } else {
+            signedMessage = TransactionEncoder.signMessage(rawTransaction, credentials);
+        }
+
+        String hexValue = Numeric.toHexString(signedMessage);
+        Request<?, EthSendTransaction> request = web3j.ethSendRawTransaction(hexValue);
+        request.setNeedTransCallback(true);
+        request.setTransactionSucCallback(callback);
+        return request.send();
+    }
+    
     @Override
     public String getFromAddress() {
         return credentials.getAddress();
