@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
-
+import org.bcos.channel.client.TransactionSucCallback;
 import org.bcos.web3j.protocol.Web3j;
 import org.bcos.web3j.protocol.core.methods.response.EthGasPrice;
 import org.bcos.web3j.protocol.core.methods.response.EthGetTransactionReceipt;
@@ -39,8 +39,12 @@ public abstract class ManagedTransaction {
     protected TransactionReceipt send(
             String to, String data, BigInteger value, BigInteger gasPrice, BigInteger gasLimit)
             throws InterruptedException, IOException, TransactionTimeoutException {
+        return transactionManager.executeTransaction(gasPrice, gasLimit, to, data, value);
+    }
 
-        return transactionManager.executeTransaction(
-                gasPrice, gasLimit, to, data, value);
+    protected void send(
+            String to, String data, BigInteger value, BigInteger gasPrice, BigInteger gasLimit, TransactionSucCallback callback)
+            throws InterruptedException, IOException, TransactionTimeoutException {
+        transactionManager.executeTransaction(gasPrice, gasLimit, to, data, value, callback);
     }
 }

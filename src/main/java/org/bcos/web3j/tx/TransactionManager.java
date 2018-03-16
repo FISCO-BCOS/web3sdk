@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
-
+import org.bcos.channel.client.TransactionSucCallback;
 import org.bcos.web3j.protocol.Web3j;
 import org.bcos.web3j.protocol.core.methods.response.EthGetTransactionReceipt;
 import org.bcos.web3j.protocol.core.methods.response.EthSendTransaction;
@@ -18,7 +18,7 @@ import org.bcos.web3j.protocol.exceptions.TransactionTimeoutException;
 public abstract class TransactionManager {
 
     private static final int SLEEP_DURATION = 1500;
-    private static final int ATTEMPTS = 10;
+    private static final int ATTEMPTS = 7;
 
     private final int sleepDuration;
     private final int attempts;
@@ -47,11 +47,24 @@ public abstract class TransactionManager {
         return processResponse(ethSendTransaction);
     }
 
+    void executeTransaction(
+            BigInteger gasPrice, BigInteger gasLimit, String to,
+            String data, BigInteger value, TransactionSucCallback callback)
+            throws InterruptedException, IOException, TransactionTimeoutException {
+
+        sendTransaction(gasPrice, gasLimit, to, data, value, callback);
+    }
+
     public abstract EthSendTransaction sendTransaction(
             BigInteger gasPrice, BigInteger gasLimit, String to,
             String data, BigInteger value)
             throws IOException;
 
+    public abstract EthSendTransaction sendTransaction(
+            BigInteger gasPrice, BigInteger gasLimit, String to,
+            String data, BigInteger value, TransactionSucCallback callback)
+            throws IOException;
+            
     public abstract String getFromAddress();
 
     private TransactionReceipt processResponse(EthSendTransaction transactionResponse)

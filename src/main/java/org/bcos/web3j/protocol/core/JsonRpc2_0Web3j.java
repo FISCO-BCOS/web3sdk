@@ -7,6 +7,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
+import org.bcos.web3j.protocol.core.methods.request.ProofMerkle;
 import org.bcos.web3j.protocol.core.methods.response.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -131,7 +132,18 @@ public class JsonRpc2_0Web3j implements Web3j {
                 logger.error("Exception: " + e);
             }
         }
+        logger.debug("getBlockNumber: " + getBlockNumber().add(new BigInteger("1000")));
         return getBlockNumber().add(new BigInteger("500"));
+    }
+
+    @Override
+    public Request<?, EthGetProofMerkle> ethGetProofMerkle(ProofMerkle proofMerkle) {
+        return new Request<>(
+                "eth_getProofMerkle",
+                Arrays.asList(proofMerkle.getBlockHash(), proofMerkle.getTransactionIndex()),
+                ID,
+                web3jService,
+                EthGetProofMerkle.class);
     }
 
     @Override

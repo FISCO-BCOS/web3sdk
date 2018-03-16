@@ -99,7 +99,6 @@ public class Server {
 			//成功连接到新节点，发送topic
 			if(fromRemote) {
 				try {
-					/*
 					// 综合所有的topics
 					Set<String> allTopics = new HashSet<String>();
 					for (ConnectionInfo connectionInfo : localConnections.getConnections()) {
@@ -122,11 +121,6 @@ public class Server {
 					message.writeExtra(out);
 					
 					ctx.writeAndFlush(out);
-					*/
-					
-					logger.debug("已建立与远端节点的新连接，将topic发送到该连接");
-					
-					broadcastTopic(ctx);
 				} catch (Exception e) {
 					logger.error("错误", e);
 				}
@@ -135,7 +129,7 @@ public class Server {
 		
 		@Override
 		public void onDisconnect(ChannelHandlerContext ctx) {
-			//有sdk断开，需更新topic
+			//有sdk断开，需更新topic			
 			if(!fromRemote) {
 				//需要清除该连接的信息
 				logger.debug("SDK断连，更新topic信息并重新广播到节点");
@@ -213,11 +207,8 @@ public class Server {
 			throw e;
 		}
 	}
-	public void broadcastTopic() {
-		broadcastTopic(null);
-	}
 	
-	public void broadcastTopic(ChannelHandlerContext ctx) {
+	public void broadcastTopic() {
 		try {
 			Message message = new Message();
 			message.setResult(0);
@@ -228,47 +219,27 @@ public class Server {
 			Set<String> allTopics = new HashSet<String>();
 			for(ConnectionInfo connectionInfo: localConnections.getConnections()) {
 				//有效的连接，才增加到全局topic
-				ChannelHandlerContext localCtx = localConnections.getNetworkConnectionByHost(connectionInfo.getHost(), connectionInfo.getPort());
-				
-				if(localCtx != null && localCtx.channel().isActive()) {
-					logger.debug("节点:{}:{} 关注topics: {}", connectionInfo.getHost(), connectionInfo.getPort(), connectionInfo.getTopics());
-					allTopics.addAll(connectionInfo.getTopics());
-				}
+				allTopics.addAll(connectionInfo.getTopics());
 			}
 			
 			message.setData(objectMapper.writeValueAsBytes(allTopics.toArray()));
 			
-			logger.debug("全部topics: {}", new String(message.getData()));
+			logger.debug("topics: {}", new String(message.getData()));
 			
-			if(ctx == null) {
-				//广播到所有远端节点
-				for(String key: remoteConnections.getNetworkConnections().keySet()) {
-					ChannelHandlerContext remoteCtx = remoteConnections.getNetworkConnections().get(key);
-					
-					if(remoteCtx != null && remoteCtx.channel().isActive()) {
-						ByteBuf out = remoteCtx.alloc().buffer();
-						message.writeHeader(out);
-						message.writeExtra(out);
-						
-						if(remoteCtx != null && remoteCtx.channel().isActive()) {
-							logger.debug("topic广播至 {}:{}", ((SocketChannel) remoteCtx.channel()).remoteAddress().getAddress().getHostAddress(),
-									((SocketChannel) remoteCtx.channel()).remoteAddress().getPort());
-							
-							remoteCtx.writeAndFlush(out);
-						}
-					}
-				}
-			}
-			else {
-				//发送到指定远端节点
-				logger.debug("topic发送至 {}:{}", ((SocketChannel) ctx.channel()).remoteAddress().getAddress().getHostAddress(),
-						((SocketChannel) ctx.channel()).remoteAddress().getPort());
+			//广播到所有远端节点
+			for(String key: remoteConnections.getNetworkConnections().keySet()) {
+				ChannelHandlerContext remoteCtx = remoteConnections.getNetworkConnections().get(key);
 				
-				ByteBuf out = ctx.alloc().buffer();
+				ByteBuf out = remoteCtx.alloc().buffer();
 				message.writeHeader(out);
 				message.writeExtra(out);
 				
-				ctx.writeAndFlush(out);
+				if(remoteCtx != null && remoteCtx.channel().isActive()) {
+					logger.debug("topic发送至 {}:{}", ((SocketChannel) remoteCtx.channel()).remoteAddress().getAddress().getHostAddress(),
+							((SocketChannel) remoteCtx.channel()).remoteAddress().getPort());
+					
+					remoteCtx.writeAndFlush(out);
+				}
 			}
 		}
 		catch(Exception e) {
@@ -283,7 +254,7 @@ public class Server {
 			ChannelHandlerContext remoteCtx = null;
 
 			ConnectionPair pair = seq2Connections.get(message.getSeq());
-			
+
 			if (pair != null) {
 				// 已有这个seq，发往远端的响应
 				logger.debug("已有seq");
@@ -291,9 +262,7 @@ public class Server {
 				// 发送到远端的响应
 				remoteCtx = pair.remoteConnection;
 
-				if(message.getType() != 0x31) {
-					pair.localConnection = ctx;
-				}
+				pair.localConnection = ctx;
 				
 				ByteBuf out = remoteCtx.alloc().buffer();
 				message.writeHeader(out);
@@ -387,52 +356,69 @@ public class Server {
 			ChannelHandlerContext localCtx = null;
 
 			ConnectionPair pair = seq2Connections.get(message.getSeq());
-			
-			if(message.getType() == 0x30) {
-				//链上链下二期，需要找到关注该topic的连接
-				Short length = (short) message.getData()[0];
-				String topic = new String(message.getData(), 1, length - 1);
-				
-				Set<ChannelHandlerContext> topicCtxs = new HashSet<ChannelHandlerContext>();
-				for (ConnectionInfo connectionInfo : localConnections.getConnections()) {
-					if(connectionInfo.getTopics().contains(topic)) {
-						ChannelHandlerContext topicCtx = localConnections.getNetworkConnectionByHost(connectionInfo.getHost(), connectionInfo.getPort());
-						
-						if(topicCtx != null && topicCtx.channel().isActive()) {
-							topicCtxs.add(topicCtx);
-						}
-					}
-				}
-				
-				logger.debug("下发topic:{} 共{}个连接关注该topic", topic, topicCtxs.size());
-				
-				if(topicCtxs.isEmpty()) {
-					// 找不到连接，错误
-					logger.error("找不到可下发的连接，返回错误99");
 
-					message.setType((short) 0x31);
-					message.setResult(99);
+			if (pair != null) {
+				// 已有这个seq，可能是发送响应或者收到回包消息
+				logger.debug("已有seq");
 
-					ByteBuf out = ctx.alloc().buffer();
-					message.writeHeader(out);
-					message.writeExtra(out);
+				// 收到来自远端的回包
+				localCtx = pair.localConnection;
 
-					ctx.writeAndFlush(out);
-
+				if(message.getResult() != 0 && message.getType() == 0x31) {
+					//链上链下二期错误时，执行retry
+					logger.error("对端返回错误:{}，重试", message.getResult());
+					
+					pair.retrySendRemoteMessage();
 					return;
 				}
 				
-				//随机下发
-				Random random = new Random();
-				Integer index = random.nextInt(topicCtxs.size());
-				ChannelHandlerContext target = (ChannelHandlerContext) topicCtxs.toArray()[index];
-				
-				logger.debug("下发给 {}:{}", ((SocketChannel) target.channel()).remoteAddress().getAddress().getHostAddress(),
-						((SocketChannel) target.channel()).remoteAddress().getPort());
-				
-				localCtx = target;
-				
-				if(pair == null) {
+				pair.remoteConnection = ctx;
+			} else {
+				// 没有这个seq，可能是新发请求或者新收到的push
+				if(message.getType() == 0x30) {
+					//链上链下二期，需要找到关注该topic的连接
+					Short length = (short) message.getData()[0];
+					String topic = new String(message.getData(), 1, length - 1);
+					
+					Set<ChannelHandlerContext> topicCtxs = new HashSet<ChannelHandlerContext>();
+					for (ConnectionInfo connectionInfo : localConnections.getConnections()) {
+						if(connectionInfo.getTopics().contains(topic)) {
+							ChannelHandlerContext topicCtx = localConnections.getNetworkConnectionByHost(connectionInfo.getHost(), connectionInfo.getPort());
+							
+							if(topicCtx != null && topicCtx.channel().isActive()) {
+								topicCtxs.add(topicCtx);
+							}
+						}
+					}
+					
+					logger.debug("下发topic:{} 共{}个连接关注该topic", topic, topicCtxs.size());
+					
+					if(topicCtxs.isEmpty()) {
+						// 找不到连接，错误
+						logger.error("找不到可下发的连接，返回错误99");
+
+						message.setType((short) 0x31);
+						message.setResult(99);
+
+						ByteBuf out = ctx.alloc().buffer();
+						message.writeHeader(out);
+						message.writeExtra(out);
+
+						ctx.writeAndFlush(out);
+
+						return;
+					}
+					
+					//随机下发
+					Random random = new Random();
+					Integer index = random.nextInt(topicCtxs.size());
+					ChannelHandlerContext target = (ChannelHandlerContext) topicCtxs.toArray()[index];
+					
+					logger.debug("下发给 {}:{}", ((SocketChannel) target.channel()).remoteAddress().getAddress().getHostAddress(),
+							((SocketChannel) target.channel()).remoteAddress().getPort());
+					
+					localCtx = target;
+					
 					pair = new ConnectionPair();
 					pair.localConnection = localCtx;
 					pair.remoteConnection = ctx;
@@ -443,34 +429,11 @@ public class Server {
 					pair.init();
 				}
 				else {
-					pair.remoteConnection = ctx;
-				}
-			}
-			else {
-				if (pair != null) {
-					// 已有这个seq，可能是发送响应或者收到回包消息
-					logger.debug("已有seq");
-	
-					// 收到来自远端的回包
-					localCtx = pair.localConnection;
-	
-					if(message.getResult() != 0 && message.getType() == 0x31) {
-						//链上链下二期错误时，执行retry
-						logger.error("对端返回错误:{}，重试", message.getResult());
-						
-						pair.retrySendRemoteMessage();
-						return;
-					}
-					
-					pair.remoteConnection = ctx;
-				} else {
-					// 没有这个seq，可能是新发请求或者新收到的push
-					
 					//其他消息（链上链下一期），随机发
 					localCtx = localConnections.randomNetworkConnection();
 				}
 			}
-			
+
 			if (localCtx == null || !localCtx.channel().isActive()) {
 				// 找不到连接，错误
 				logger.error("发送连接异常，该连接不可用，返回错误99");
