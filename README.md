@@ -227,6 +227,22 @@ contract Ok{
 ```
     num = ok.get().get();
 ```
+
+### 2.6、 交易回调通知
+
+交易回调通知是指针对合约的交易接口（非constant function和构造函数），通过web3j生成的java代码后，会在原来的java函数基础上，新增了同名的重载函数，与原来的区别在于多了一个TransactionSucCallback的参数。原有接口web3j在底层实现的机制是通过轮训机制来获取交易回执结果的，而TransactionSucCallback是通过服务端，也就是区块链节点来主动push通知，相比之下，会更有效率和时效性。当触发到onResponse的时候，代表这笔交易已经成功上链。使用例子：
+
+```
+ObjectMapper objectMapper = ObjectMapperFactory.getObjectMapper();
+Uint256 num = new Uint256(Num);
+ok.trans(num, new TransactionSucCallback() {
+	@Override
+    public void onResponse(EthereumResponse response) {
+              TransactionReceipt transactionReceipt = objectMapper.readValue(ethereumResponse.getContent(), TransactionReceipt.class);
+              //解析event log
+   	}
+});
+```
 ## （五）合约编译及java Wrap代码生成
 * 智能合约语法及细节参考 <a href="https://solidity.readthedocs.io/en/develop/solidity-in-depth.html">solidity官方文档</a>。
 * 安装fisco-solc,fisco-solc为solidity编译器。
