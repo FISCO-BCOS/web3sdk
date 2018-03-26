@@ -44,7 +44,39 @@ import io.netty.handler.timeout.IdleStateHandler;
 
 public class ChannelConnections {
 	private static Logger logger = LoggerFactory.getLogger(ChannelConnections.class);
-	
+
+	public String getCaCertPath() {
+		return caCertPath;
+	}
+
+	public void setCaCertPath(String caCertPath) {
+		this.caCertPath = caCertPath;
+	}
+
+	public String getClientKeystorePath() {
+		return clientKeystorePath;
+	}
+
+	public void setClientKeystorePath(String clientKeystorePath) {
+		this.clientKeystorePath = clientKeystorePath;
+	}
+
+	public String getKeystorePassWord() {
+		return keystorePassWord;
+	}
+
+	public void setKeystorePassWord(String keystorePassWord) {
+		this.keystorePassWord = keystorePassWord;
+	}
+
+	public String getClientCertPassWord() {
+		return clientCertPassWord;
+	}
+
+	public void setClientCertPassWord(String clientCertPassWord) {
+		this.clientCertPassWord = clientCertPassWord;
+	}
+
 	public interface Callback {
 		void onConnect(ChannelHandlerContext ctx);
 		void onDisconnect(ChannelHandlerContext ctx);
@@ -53,6 +85,10 @@ public class ChannelConnections {
 
 	private Callback callback;
 	private List<String> connectionsStr;
+	private String caCertPath = "classpath:ca.crt";
+	private String clientKeystorePath = "classpath:client.keystore";
+	private String keystorePassWord = "123456";
+	private String clientCertPassWord = "123456";
 	private List<ConnectionInfo> connections = new ArrayList<ConnectionInfo>();
 	private Boolean running = false;
 	private ThreadPoolTaskExecutor threadPool;
@@ -192,10 +228,10 @@ public class ChannelConnections {
                     
                     ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
                     
-                    Resource keystoreResource = resolver.getResource("classpath:client.keystore");
-                    Resource caResource = resolver.getResource("classpath:ca.crt");
-                    
-                	ks.load(keystoreResource.getInputStream(), "123456".toCharArray());
+                    Resource keystoreResource = resolver.getResource(getClientKeystorePath());
+                    Resource caResource = resolver.getResource(getCaCertPath());
+
+					ks.load(keystoreResource.getInputStream(), getKeystorePassWord().toCharArray());
                 	
                 	/*
                 	 * 每次连接使用新的handler
@@ -206,9 +242,8 @@ public class ChannelConnections {
                 	handler.setIsServer(true);
                 	handler.setThreadPool(selfThreadPool);
                 	
-                	SslContext sslCtx = SslContextBuilder.forServer((PrivateKey)ks.getKey("client", "123456".toCharArray()), (X509Certificate)ks.getCertificate("ca"))
+                	SslContext sslCtx = SslContextBuilder.forServer((PrivateKey)ks.getKey("client", getClientCertPassWord().toCharArray()), (X509Certificate)ks.getCertificate("client"))
                 			.trustManager(caResource.getFile())
-                			.keyManager((PrivateKey)ks.getKey("client", "123456".toCharArray()), (X509Certificate)ks.getCertificate("ca") )
                 			.build();
                 	
                 	ch.pipeline().addLast(
@@ -280,16 +315,15 @@ public class ChannelConnections {
 		final ThreadPoolTaskExecutor selfThreadPool = threadPool;
 		
 		ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-		final Resource keystoreResource = resolver.getResource("classpath:client.keystore");
-        final Resource caResource = resolver.getResource("classpath:ca.crt");
+		final Resource keystoreResource = resolver.getResource(getClientKeystorePath());
+        final Resource caResource = resolver.getResource(getCaCertPath());
         
 		bootstrap.handler(new ChannelInitializer<SocketChannel>() {
             @Override
             public void initChannel(SocketChannel ch) throws Exception {
             	KeyStore ks = KeyStore.getInstance("JKS");
             	InputStream ksInputStream = keystoreResource.getInputStream();
-            	ks.load(ksInputStream, 	"123456".toCharArray());
-
+            	ks.load(ksInputStream, 	getKeystorePassWord().toCharArray());
 				/*
 				 * 每次连接使用新的handler 连接信息从socketChannel中获取
 				 */
@@ -299,8 +333,8 @@ public class ChannelConnections {
 				handler.setThreadPool(selfThreadPool);
 
 				SslContext sslCtx = SslContextBuilder.forClient().trustManager(caResource.getFile())
-						.keyManager((PrivateKey) ks.getKey("client", "123456".toCharArray()),
-								(X509Certificate) ks.getCertificate("ca"))
+						.keyManager((PrivateKey) ks.getKey("client", getClientCertPassWord().toCharArray()),
+								(X509Certificate) ks.getCertificate("client"))
 						.build();
 
 				ch.pipeline().addLast(sslCtx.newHandler(ch.alloc()),
@@ -320,8 +354,9 @@ public class ChannelConnections {
 						}
 						
 						//尝试重连
-						Thread.sleep(heartBeatDelay);
+						
 						reconnect();
+						Thread.sleep(heartBeatDelay);
 					}
 				} catch (InterruptedException e) {
 					logger.error("系统错误", e);

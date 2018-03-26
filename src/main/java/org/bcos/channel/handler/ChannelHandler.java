@@ -12,7 +12,6 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.timeout.IdleStateEvent;
 
-//@io.netty.channel.ChannelHandler.Sharable
 public class ChannelHandler extends SimpleChannelInboundHandler<ByteBuf> {
 	private static Logger logger = LoggerFactory.getLogger(ChannelHandler.class);
 	
@@ -127,7 +126,6 @@ public class ChannelHandler extends SimpleChannelInboundHandler<ByteBuf> {
 		
 		try {
 			if(threadPool == null) {
-				logger.debug("未配置线程池，单线程执行");
 				connections.onReceiveMessage(ctx, in);
 			}
 			else {
@@ -138,8 +136,6 @@ public class ChannelHandler extends SimpleChannelInboundHandler<ByteBuf> {
 					}
 				});
 			}
-			
-			logger.debug("开始处理");
 		}
 		catch(RejectedExecutionException e) {
 			logger.error("线程池已满，拒绝请求", e);
