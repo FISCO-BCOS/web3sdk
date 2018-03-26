@@ -62,12 +62,10 @@ public class TransactionEncoder {
     static List<RlpType> asRlpValues(
             RawTransaction rawTransaction, Sign.SignatureData signatureData) {
         List<RlpType> result = new ArrayList<>();
-
         result.add(RlpString.create(rawTransaction.getRandomid()));
         result.add(RlpString.create(rawTransaction.getGasPrice()));
         result.add(RlpString.create(rawTransaction.getGasLimit()));
         result.add(RlpString.create(rawTransaction.getBlockLimit()));
-
         // an empty to address (contract creation) should not be encoded as a numeric 0 value
         String to = rawTransaction.getTo();
         if (to != null && to.length() > 0) {
@@ -83,6 +81,15 @@ public class TransactionEncoder {
         // value field will already be hex encoded, so we need to convert into binary first
         byte[] data = Numeric.hexStringToByteArray(rawTransaction.getData());
         result.add(RlpString.create(data));
+        String contractName = rawTransaction.getContractName();
+        if (contractName != null && contractName.length() > 0) {
+            result.add(RlpString.create(rawTransaction.getContractName()));
+        } else {
+            result.add(RlpString.create(""));
+        }
+
+        result.add(RlpString.create(rawTransaction.getVersion()));
+        result.add(RlpString.create(rawTransaction.getType()));
 
         if (signatureData != null) {
             result.add(RlpString.create(signatureData.getV()));

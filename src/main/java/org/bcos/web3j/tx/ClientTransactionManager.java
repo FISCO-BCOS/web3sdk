@@ -37,20 +37,20 @@ public class ClientTransactionManager extends TransactionManager {
     @Override
     public EthSendTransaction sendTransaction(
             BigInteger gasPrice, BigInteger gasLimit, String to,
-            String data, BigInteger value)
+            String data, BigInteger value,  BigInteger type, boolean isInitByName)
             throws IOException {
 
         Transaction transaction = new Transaction(
-                fromAddress, null, gasPrice, gasLimit, to, value, data);
+                fromAddress, null, gasPrice, gasLimit, to, value, data, type, isInitByName);
 
         return web3j.ethSendTransaction(transaction)
                 .send();
     }
 
     @Override
-    public EthSendTransaction sendTransaction(BigInteger gasPrice, BigInteger gasLimit, String to, String data, BigInteger value, TransactionSucCallback callback) throws IOException {
+    public EthSendTransaction sendTransaction(BigInteger gasPrice, BigInteger gasLimit, String to, String data, BigInteger value,  BigInteger type, boolean isInitByName, TransactionSucCallback callback) throws IOException {
         Transaction transaction = new Transaction(
-                fromAddress, null, gasPrice, gasLimit, to, value, data);
+                fromAddress, null, gasPrice, gasLimit, to, value, data,type,isInitByName);
 
         Request<?, EthSendTransaction> request = web3j.ethSendTransaction(transaction);
         request.setNeedTransCallback(true);

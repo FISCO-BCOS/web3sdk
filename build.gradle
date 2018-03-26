@@ -42,8 +42,8 @@ dependencies {
     compile logger,spring
     runtime logger,spring
     
-    compile "com.fasterxml.jackson.core:jackson-databind:2.8.8.1"
-    runtime "com.fasterxml.jackson.core:jackson-databind:2.8.8.1"
+    compile "com.fasterxml.jackson.core:jackson-databind:2.8.11"
+    runtime "com.fasterxml.jackson.core:jackson-databind:2.8.11"
     compile 'io.netty:netty-all:4.1.15.Final'
     runtime 'io.netty:netty-all:4.1.15.Final'
     compile 'io.netty:netty-tcnative:2.0.0.Final'

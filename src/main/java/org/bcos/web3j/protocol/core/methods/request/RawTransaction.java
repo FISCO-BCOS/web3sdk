@@ -2,6 +2,7 @@ package org.bcos.web3j.protocol.core.methods.request;
 
 import java.math.BigInteger;
 
+import org.bcos.web3j.tx.TransactionConstant;
 import org.bcos.web3j.utils.Numeric;
 
 /**
@@ -18,14 +19,25 @@ public class RawTransaction {
     private String to;
     private BigInteger value;
     private String data;
+    private String contractName;
+    private BigInteger version = TransactionConstant.version;
+    private BigInteger type;//0 new合约,1 call
 
     private RawTransaction(BigInteger randomid, BigInteger gasPrice, BigInteger gasLimit, BigInteger blockLimit, String to,
-                           BigInteger value, String data) {
+                           BigInteger value, String data, BigInteger type, boolean isInitByName) {
         this.randomid = randomid;
         this.gasPrice = gasPrice;
         this.gasLimit = gasLimit;
         this.blockLimit = blockLimit;
-        this.to = to;
+        this.type = type;
+        if (isInitByName)
+        {
+            this.contractName = to;
+        }
+        else
+        {
+            this.to = to;
+        }
         this.value = value;
 
         if (data != null) {
@@ -35,29 +47,30 @@ public class RawTransaction {
 
     public static RawTransaction createContractTransaction(
             BigInteger randomid, BigInteger gasPrice, BigInteger gasLimit, BigInteger blockLimit, BigInteger value,
-            String init) {
+            String init, BigInteger type, boolean isInitByName) {
 
-        return new RawTransaction(randomid, gasPrice, gasLimit, blockLimit,"", value, init);
+        return new RawTransaction(randomid, gasPrice, gasLimit, blockLimit,"", value, init, type, isInitByName);
     }
 
     public static RawTransaction createEtherTransaction(
             BigInteger randomid, BigInteger gasPrice, BigInteger gasLimit, BigInteger blockLimit, String to,
-            BigInteger value) {
+            BigInteger value, BigInteger type, boolean isInitByName) {
 
-        return new RawTransaction(randomid, gasPrice, gasLimit, blockLimit, to, value, "");
+        return new RawTransaction(randomid, gasPrice, gasLimit, blockLimit, to, value, "", type, isInitByName);
 
-    }
-
-    public static RawTransaction createTransaction(
-            BigInteger randomid, BigInteger gasPrice, BigInteger gasLimit, BigInteger blockLimit, String to, String data) {
-        return createTransaction(randomid, gasPrice, gasLimit, blockLimit, to, BigInteger.ZERO, data);
     }
 
     public static RawTransaction createTransaction(
             BigInteger randomid, BigInteger gasPrice, BigInteger gasLimit, BigInteger blockLimit, String to,
-            BigInteger value, String data) {
+            String data, BigInteger type, boolean isInitByName) {
+        return createTransaction(randomid, gasPrice, gasLimit, blockLimit, to, BigInteger.ZERO, data, type, isInitByName);
+    }
 
-        return new RawTransaction(randomid, gasPrice, gasLimit, blockLimit, to, value, data);
+    public static RawTransaction createTransaction(
+            BigInteger randomid, BigInteger gasPrice, BigInteger gasLimit, BigInteger blockLimit, String to,
+            BigInteger value, String data, BigInteger type, boolean isInitByName) {
+
+        return new RawTransaction(randomid, gasPrice, gasLimit, blockLimit, to, value, data, type, isInitByName);
     }
 
     public BigInteger getRandomid() {
@@ -87,4 +100,10 @@ public class RawTransaction {
     public String getData() {
         return data;
     }
+
+    public BigInteger getType() { return type; }
+
+    public BigInteger getVersion() { return version; }
+
+    public String getContractName() { return contractName; }
 }
