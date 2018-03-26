@@ -109,7 +109,7 @@ public class JsonRpc2_0Web3j implements Web3j {
             public void run() {
                 while (true) {
                     try {
-                    	Thread.sleep(2000);
+                    	Thread.sleep(10000);
                     	
                         EthBlockNumber ethBlockNumber = ethBlockNumber().sendAsync().get();
                         setBlockNumber(ethBlockNumber.getBlockNumber());
@@ -132,7 +132,6 @@ public class JsonRpc2_0Web3j implements Web3j {
                 logger.error("Exception: " + e);
             }
         }
-        logger.debug("getBlockNumber: " + getBlockNumber().add(new BigInteger("1000")));
         return getBlockNumber().add(new BigInteger("500"));
     }
 
@@ -288,6 +287,17 @@ public class JsonRpc2_0Web3j implements Web3j {
     }
 
     @Override
+    public Request<?, EthGetBalance> ethGetBalanceCNS(
+            String contractName, DefaultBlockParameter defaultBlockParameter) {
+        return new Request<>(
+                "eth_getBalanceCNS",
+                Arrays.asList(contractName, defaultBlockParameter.getValue()),
+                ID,
+                web3jService,
+                EthGetBalance.class);
+    }
+
+    @Override
     public Request<?, EthGetStorageAt> ethGetStorageAt(
             String address, BigInteger position, DefaultBlockParameter defaultBlockParameter) {
         return new Request<>(
@@ -302,11 +312,36 @@ public class JsonRpc2_0Web3j implements Web3j {
     }
 
     @Override
+    public Request<?, EthGetStorageAt> ethGetStorageAtCNS(
+            String contractName, BigInteger position, DefaultBlockParameter defaultBlockParameter) {
+        return new Request<>(
+                "eth_getStorageAtCNS",
+                Arrays.asList(
+                        contractName,
+                        Numeric.encodeQuantity(position),
+                        defaultBlockParameter.getValue()),
+                ID,
+                web3jService,
+                EthGetStorageAt.class);
+    }
+
+    @Override
     public Request<?, EthGetTransactionCount> ethGetTransactionCount(
             String address, DefaultBlockParameter defaultBlockParameter) {
         return new Request<>(
                 "eth_getTransactionCount",
                 Arrays.asList(address, defaultBlockParameter.getValue()),
+                ID,
+                web3jService,
+                EthGetTransactionCount.class);
+    }
+
+    @Override
+    public Request<?, EthGetTransactionCount> ethGetTransactionCountCNS(
+            String contractName, DefaultBlockParameter defaultBlockParameter) {
+        return new Request<>(
+                "eth_getTransactionCountCNS",
+                Arrays.asList(contractName, defaultBlockParameter.getValue()),
                 ID,
                 web3jService,
                 EthGetTransactionCount.class);
@@ -367,6 +402,17 @@ public class JsonRpc2_0Web3j implements Web3j {
     }
 
     @Override
+    public Request<?, EthGetCode> ethGetCodeCNS(
+            String contractName, DefaultBlockParameter defaultBlockParameter) {
+        return new Request<>(
+                "eth_getCodeCNS",
+                Arrays.asList(contractName, defaultBlockParameter.getValue()),
+                ID,
+                web3jService,
+                EthGetCode.class);
+    }
+
+    @Override
     public Request<?, EthSign> ethSign(String address, String sha3HashOfDataToSign) {
         return new Request<>(
                 "eth_sign",
@@ -390,6 +436,18 @@ public class JsonRpc2_0Web3j implements Web3j {
 
     @Override
     public Request<?, org.bcos.web3j.protocol.core.methods.response.EthSendTransaction>
+    ethSendTransactionCNS(String contractName,
+            Transaction transaction) {
+        return new Request<>(
+                "eth_sendTransactionCNS",
+                Arrays.asList(contractName,transaction),
+                ID,
+                web3jService,
+                org.bcos.web3j.protocol.core.methods.response.EthSendTransaction.class);
+    }
+
+    @Override
+    public Request<?, org.bcos.web3j.protocol.core.methods.response.EthSendTransaction>
             ethSendRawTransaction(
             String signedTransactionData) {
         return new Request<>(
@@ -406,6 +464,18 @@ public class JsonRpc2_0Web3j implements Web3j {
         return new Request<Object, EthCall>(
                 "eth_call",
                 Arrays.asList(transaction, defaultBlockParameter),
+                ID,
+                web3jService,
+                org.bcos.web3j.protocol.core.methods.response.EthCall.class);
+    }
+
+    @Override
+    public Request<?, org.bcos.web3j.protocol.core.methods.response.EthCall> ethCallCNS(
+            String contractName,
+            Transaction transaction, DefaultBlockParameter defaultBlockParameter) {
+        return new Request<Object, EthCall>(
+                "eth_callCNS",
+                Arrays.asList(contractName,transaction, defaultBlockParameter),
                 ID,
                 web3jService,
                 org.bcos.web3j.protocol.core.methods.response.EthCall.class);

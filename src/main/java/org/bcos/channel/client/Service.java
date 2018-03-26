@@ -38,6 +38,22 @@ import io.netty.util.Timer;
 import io.netty.util.TimerTask;
 
 public class Service {
+	public Integer getConnectSeconds() {
+		return connectSeconds;
+	}
+
+	public void setConnectSeconds(Integer connectSeconds) {
+		this.connectSeconds = connectSeconds;
+	}
+
+	public Integer getConnectSleepPerMillis() {
+		return connectSleepPerMillis;
+	}
+
+	public void setConnectSleepPerMillis(Integer connectSleepPerMillis) {
+		this.connectSleepPerMillis = connectSleepPerMillis;
+	}
+
 	class ConnectionCallback implements ChannelConnections.Callback {
 		public Service getChannelService() {
 			return channelService;
@@ -182,7 +198,8 @@ public class Service {
 		this.allChannelConnections = keyID2connections;
 	}
 
-	public void run() {
+
+	public void run() throws Exception {
 		logger.debug("初始化ChannelService");
 
 		try {
@@ -196,13 +213,45 @@ public class Service {
 
 				if(entry.getKey().equals(orgID)) {
 					entry.getValue().startConnect();
+
+					int sleepTime = 0;
+					boolean running = false;
+					while (true) {
+						for (String key : entry.getValue().getNetworkConnections().keySet()) {
+							if (entry.getValue().getNetworkConnections().get(key) != null
+									&& entry.getValue().getNetworkConnections().get(key).channel().isActive()) {
+								running = true;
+								break;
+							}
+						}
+
+						if (running || sleepTime > connectSeconds*1000)
+						{
+							break;
+						}
+						else
+						{
+							Thread.sleep(connectSleepPerMillis);
+							sleepTime += connectSleepPerMillis;
+						}
+					}
+					if(!running)
+					{
+						logger.error("connectSeconds = " + connectSeconds);
+						logger.error("init ChannelService fail!");
+						throw new Exception();
+					}
 				}
 			}
-		} catch (Exception e) {
-			logger.error("系统错误", e);
-
+		}
+		catch (InterruptedException e) {
+			logger.error("system error ", e);
+		}
+		catch (Exception e) {
+			logger.error("system error ", e);
 			throw e;
 		}
+
 	}
 
 	public EthereumResponse sendEthereumMessage(EthereumRequest request) {
@@ -885,6 +934,8 @@ public class Service {
 		this.threadPool = threadPool;
 	}
 
+	private Integer connectSeconds = 3;
+	private Integer connectSleepPerMillis = 1;
 	private String orgID;
 	private ConcurrentHashMap<String, ChannelConnections> allChannelConnections;
 	private ChannelPushCallback pushCallback;

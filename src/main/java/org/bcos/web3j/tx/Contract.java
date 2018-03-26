@@ -29,6 +29,8 @@ import org.bcos.web3j.protocol.exceptions.TransactionTimeoutException;
 import org.bcos.web3j.utils.Async;
 import org.bcos.web3j.utils.Numeric;
 
+import static org.bcos.web3j.tx.TransactionConstant.*;
+
 
 /**
  * Solidity contract type abstraction for interacting with smart contracts via native Java types.
@@ -40,33 +42,81 @@ public abstract class Contract extends ManagedTransaction {
 
     private final String contractBinary;
     private String contractAddress;
+    private String contractName;
+    private boolean isInitByName = false;
     private final BigInteger gasPrice;
     private final BigInteger gasLimit;
     private TransactionReceipt transactionReceipt;
 
     protected Contract(String contractBinary, String contractAddress,
                        Web3j web3j, TransactionManager transactionManager,
-                       BigInteger gasPrice, BigInteger gasLimit) {
+                       BigInteger gasPrice, BigInteger gasLimit, Boolean isInitByName) {
         super(web3j, transactionManager);
 
         this.contractBinary = contractBinary;
-        this.contractAddress = contractAddress;
+        if (isInitByName)
+        {
+            this.contractName = contractAddress;
+        }
+        else
+        {
+            this.contractAddress = contractAddress;
+        }
+        this.isInitByName = isInitByName;
         this.gasPrice = gasPrice;
         this.gasLimit = gasLimit;
     }
 
     protected Contract(String contractBinary, String contractAddress,
+                       Web3j web3j, TransactionManager transactionManager,
+                       BigInteger gasPrice, BigInteger gasLimit) {
+        super(web3j, transactionManager);
+        this.isInitByName = false;
+        this.contractBinary = contractBinary;
+        if (isInitByName)
+        {
+            this.contractName = contractAddress;
+        }
+        else
+        {
+            this.contractAddress = contractAddress;
+        }
+        this.gasPrice = gasPrice;
+        this.gasLimit = gasLimit;
+    }
+
+    protected Contract(String contractBinary, String contractAddress,
+                          Web3j web3j, Credentials credentials,
+                          BigInteger gasPrice, BigInteger gasLimit, boolean isInitByName) {
+        this(contractBinary, contractAddress, web3j, new RawTransactionManager(web3j, credentials),
+                gasPrice, gasLimit,isInitByName);
+    }
+    protected Contract(String contractBinary, String contractAddress,
                        Web3j web3j, Credentials credentials,
                        BigInteger gasPrice, BigInteger gasLimit) {
         this(contractBinary, contractAddress, web3j, new RawTransactionManager(web3j, credentials),
-                gasPrice, gasLimit);
+                gasPrice, gasLimit,false);
+    }
+    @Deprecated
+    protected Contract(String contractAddress,
+                       Web3j web3j, TransactionManager transactionManager,
+                       BigInteger gasPrice, BigInteger gasLimit, boolean isInitByName) {
+        this("", contractAddress, web3j, transactionManager, gasPrice, gasLimit,isInitByName);
     }
 
     @Deprecated
     protected Contract(String contractAddress,
                        Web3j web3j, TransactionManager transactionManager,
                        BigInteger gasPrice, BigInteger gasLimit) {
-        this("", contractAddress, web3j, transactionManager, gasPrice, gasLimit);
+        this("", contractAddress, web3j, transactionManager, gasPrice, gasLimit,false);
+    }
+
+    @Deprecated
+    protected Contract(String contractAddress,
+                       Web3j web3j, Credentials credentials,
+                       BigInteger gasPrice, BigInteger gasLimit, boolean isInitByName) {
+        this("", contractAddress, web3j, new RawTransactionManager(web3j, credentials),
+                gasPrice, gasLimit, isInitByName);
     }
 
     @Deprecated
@@ -74,7 +124,7 @@ public abstract class Contract extends ManagedTransaction {
                        Web3j web3j, Credentials credentials,
                        BigInteger gasPrice, BigInteger gasLimit) {
         this("", contractAddress, web3j, new RawTransactionManager(web3j, credentials),
-                gasPrice, gasLimit);
+                gasPrice, gasLimit, false);
     }
 
     public void setContractAddress(String contractAddress) {
@@ -83,6 +133,14 @@ public abstract class Contract extends ManagedTransaction {
 
     public String getContractAddress() {
         return contractAddress;
+    }
+
+    public void setContractName(String contractName) {
+        this.contractName = contractName;
+    }
+
+    public String getContractName() {
+        return contractName;
     }
 
     public void setTransactionReceipt(TransactionReceipt transactionReceipt) {
@@ -106,15 +164,37 @@ public abstract class Contract extends ManagedTransaction {
      * @throws IOException if unable to connect to web3j node
      */
     public boolean isValid() throws IOException {
-        if (contractAddress.equals("")) {
-            throw new UnsupportedOperationException(
-                    "Contract binary not present, you will need to regenerate your smart "
-                            + "contract wrapper with web3j v2.2.0+");
+        if(isInitByName)
+        {
+            if (contractName.equals("")) {
+                throw new UnsupportedOperationException(
+                        "Contract binary not present, you will need to regenerate your smart "
+                                + "contract wrapper with web3j v2.2.0+");
+            }
+        }
+        else
+        {
+            if (contractAddress.equals("")) {
+                throw new UnsupportedOperationException(
+                        "Contract binary not present, you will need to regenerate your smart "
+                                + "contract wrapper with web3j v2.2.0+");
+            }
         }
 
-        EthGetCode ethGetCode = web3j
+        EthGetCode ethGetCode;
+        if (isInitByName)
+        {
+            ethGetCode = web3j
+                .ethGetCodeCNS(contractName, DefaultBlockParameterName.LATEST)
+                .send();
+        }
+        else
+        {
+            ethGetCode = web3j
                 .ethGetCode(contractAddress, DefaultBlockParameterName.LATEST)
                 .send();
+        }
+
         if (ethGetCode.hasError()) {
             return false;
         }
@@ -147,11 +227,14 @@ public abstract class Contract extends ManagedTransaction {
     private List<Type> executeCall(
             Function function) throws InterruptedException, ExecutionException {
         String encodedFunction = FunctionEncoder.encode(function);
+
         org.bcos.web3j.protocol.core.methods.response.EthCall ethCall = web3j.ethCall(
-                Transaction.createEthCallTransaction(
-                        transactionManager.getFromAddress(), contractAddress, encodedFunction),
-                DefaultBlockParameterName.LATEST)
-                .sendAsync().get();
+                    Transaction.createEthCallTransaction(
+                            transactionManager.getFromAddress(), isInitByName?contractName:contractAddress, encodedFunction, callType,isInitByName),
+                    DefaultBlockParameterName.LATEST)
+                    .sendAsync().get();
+
+
 
         String value = ethCall.getValue();
         return FunctionReturnDecoder.decode(value, function.getOutputParameters());
@@ -184,7 +267,7 @@ public abstract class Contract extends ManagedTransaction {
 
     protected TransactionReceipt executeTransaction(Function function) throws InterruptedException,
             IOException, TransactionTimeoutException {
-        return executeTransaction(FunctionEncoder.encode(function), BigInteger.ZERO);
+        return executeTransaction(FunctionEncoder.encode(function), BigInteger.ZERO, callType);
     }
 
 
@@ -201,10 +284,16 @@ public abstract class Contract extends ManagedTransaction {
      * @throws TransactionTimeoutException if the transaction was not mined while waiting
      */
     protected TransactionReceipt executeTransaction(
-            String data, BigInteger weiValue)
+            String data, BigInteger weiValue, BigInteger type)
             throws InterruptedException, IOException, TransactionTimeoutException {
 
-        return send(contractAddress, data, weiValue, gasPrice, gasLimit);
+        if (isInitByName) {
+            return send(contractName, data, weiValue, gasPrice, gasLimit,type,isInitByName);
+        }
+        else
+        {
+            return send(contractAddress, data, weiValue, gasPrice, gasLimit,type,isInitByName);
+        }
     }
 
     /**
@@ -225,7 +314,13 @@ public abstract class Contract extends ManagedTransaction {
      */
     protected void executeTransactionAsync(Function function, TransactionSucCallback callback) {
         try {
-            send(contractAddress, FunctionEncoder.encode(function), BigInteger.ZERO, gasPrice, gasLimit, callback);
+            if (isInitByName) {
+                send(contractName, FunctionEncoder.encode(function), BigInteger.ZERO, gasPrice, gasLimit, callType,isInitByName,callback);
+            }
+            else
+            {
+                send(contractAddress, FunctionEncoder.encode(function), BigInteger.ZERO, gasPrice, gasLimit, callType,isInitByName,callback);
+            }
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -245,7 +340,7 @@ public abstract class Contract extends ManagedTransaction {
      */
     protected CompletableFuture<TransactionReceipt> executeTransactionAsync(
             Function function, BigInteger weiValue) {
-        return Async.run(() -> executeTransaction(FunctionEncoder.encode(function), weiValue));
+        return Async.run(() -> executeTransaction(FunctionEncoder.encode(function), weiValue, callType));
     }
 
     /**
@@ -329,7 +424,7 @@ public abstract class Contract extends ManagedTransaction {
             T contract, String binary, String encodedConstructor, BigInteger value)
             throws InterruptedException, IOException, TransactionTimeoutException {
         TransactionReceipt transactionReceipt =
-                contract.executeTransaction(binary + encodedConstructor, value);
+                contract.executeTransaction(binary + encodedConstructor, value, creatType);
 
         String contractAddress = transactionReceipt.getContractAddress();
         if (contractAddress == null) {
