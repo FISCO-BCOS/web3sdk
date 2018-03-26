@@ -21,19 +21,19 @@
 		</property>
     </bean>
 
-	<bean id="toolConf" class="cn.webank.contract.tools.ToolConf">
+	<bean id="toolConf" class="org.bcos.contract.tools.ToolConf">
 		<property name="systemProxyAddress" value="0xa160be9a3b1538e19633c72e3ff31ad07a496e7c" />
 		<property name="outPutpath" value="./output/" />
 	</bean>
 
-	<bean id="channelService" class="cn.webank.channel.client.Service">
+	<bean id="channelService" class="org.bcos.channel.client.Service">
 		<property name="orgID" value="WB" />
 		<property name="connectSeconds" value="10" />
 		<property name="connectSleepPerMillis" value="10" />
 		<property name="allChannelConnections">
 			<map>
 				<entry key="WB">
-					<bean class="cn.webank.channel.handler.ChannelConnections">
+					<bean class="org.bcos.channel.handler.ChannelConnections">
 						<property name="caCertPath" value="classpath:ca.crt" />
 						<property name="clientKeystorePath" value="classpath:client.keystore" />
 						<property name="keystorePassWord" value="123456" />
