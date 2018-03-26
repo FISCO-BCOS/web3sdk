@@ -20,25 +20,27 @@
 			<bean class="java.util.concurrent.ThreadPoolExecutor.AbortPolicy" />
 		</property>
     </bean>
-    
-	<bean id="channelService" class="org.bcos.channel.client.Service">
-		<property name="orgID" value="BOCHK" />
+
+	<bean id="toolConf" class="cn.webank.contract.tools.ToolConf">
+		<property name="systemProxyAddress" value="0xa160be9a3b1538e19633c72e3ff31ad07a496e7c" />
+		<property name="outPutpath" value="./output/" />
+	</bean>
+
+	<bean id="channelService" class="cn.webank.channel.client.Service">
+		<property name="orgID" value="WB" />
+		<property name="connectSeconds" value="10" />
+		<property name="connectSleepPerMillis" value="10" />
 		<property name="allChannelConnections">
 			<map>
-				<entry key="BOCHK">
-					<bean class="org.bcos.channel.handler.ChannelConnections">
+				<entry key="WB">
+					<bean class="cn.webank.channel.handler.ChannelConnections">
+						<property name="caCertPath" value="classpath:ca.crt" />
+						<property name="clientKeystorePath" value="classpath:client.keystore" />
+						<property name="keystorePassWord" value="123456" />
+						<property name="clientCertPassWord" value="123456" />
                         <property name="connectionsStr">
 							<list>
-								<value>e809c18573588a401890600ff9c2912054706d4ae401ffc6bc9de248d2b58ab95d50869f5c437ccb3a1d82533ea4ed2b4efa3dafb5ee75413dd73c57b23a8af7@127.0.0.1:8842</value>
-							</list>
-						</property>
-                    </bean>
-				</entry>
-				<entry key ="WB">
-					<bean class="org.bcos.channel.handler.ChannelConnections">
-                        <property name="connectionsStr">
-							<list>
-								<value>4d9c5fecb52d3a471da9eeb16bfb91f1e04cb24c677b63f7385b71d0e5623d25d1776a31bf79c9b16e03b548d58001530f1337e26109e8c29f2ae6f3d3ec254c</value>
+								<value>node1@127.0.0.1:8922</value>
 							</list>
 						</property>
                     </bean>

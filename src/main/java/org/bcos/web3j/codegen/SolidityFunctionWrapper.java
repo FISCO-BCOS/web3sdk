@@ -55,16 +55,19 @@ import org.bcos.web3j.utils.Version;
 public class SolidityFunctionWrapper {
 
     private static final String BINARY = "BINARY";
+    private static final String ABI = "ABI";
     private static final String WEB3J = "web3j";
     private static final String CREDENTIALS = "credentials";
     private static final String TRANSACTION_MANAGER = "transactionManager";
     private static final String INITIAL_VALUE = "initialWeiValue";
     private static final String CONTRACT_ADDRESS = "contractAddress";
+    private static final String CONTRACT_NAME = "contractName";
     private static final String GAS_PRICE = "gasPrice";
     private static final String GAS_LIMIT = "gasLimit";
     private static final String START_BLOCK = "startBlock";
     private static final String END_BLOCK = "endBlock";
     private static final String WEI_VALUE = "weiValue";
+    private static final String IS_INITBYNAME = "isInitByName";
 
     private static final String CODEGEN_WARNING = "Auto generated code.<br>\n"
             + "<strong>Do not modify!</strong><br>\n"
@@ -78,14 +81,19 @@ public class SolidityFunctionWrapper {
             throws IOException, ClassNotFoundException {
         String className = Strings.capitaliseFirstLetter(contractName);
 
-        TypeSpec.Builder classBuilder = createClassBuilder(className, bin);
+        TypeSpec.Builder classBuilder = createClassBuilder(className, bin, abi);
 
         classBuilder.addMethod(buildConstructor(Credentials.class, CREDENTIALS));
         classBuilder.addMethod(buildConstructor(TransactionManager.class, TRANSACTION_MANAGER));
+        classBuilder.addMethod(buildConstructorWithDefaultParam(Credentials.class, CREDENTIALS));
+        classBuilder.addMethod(buildConstructorWithDefaultParam(TransactionManager.class, TRANSACTION_MANAGER));
+
         classBuilder.addMethods(
                 buildFunctionDefinitions(className, classBuilder, loadContractDefinition(abi)));
         classBuilder.addMethod(buildLoad(className, Credentials.class, CREDENTIALS));
         classBuilder.addMethod(buildLoad(className, TransactionManager.class, TRANSACTION_MANAGER));
+        classBuilder.addMethod(buildLoadByName(className, Credentials.class, CREDENTIALS));
+        classBuilder.addMethod(buildLoadByName(className, TransactionManager.class, TRANSACTION_MANAGER));
 
         JavaFile javaFile = JavaFile.builder(basePackageName, classBuilder.build())
                 .indent("    ")
@@ -95,7 +103,7 @@ public class SolidityFunctionWrapper {
         javaFile.writeTo(new File(destinationDirLocation));
     }
 
-    private TypeSpec.Builder createClassBuilder(String className, String binary) {
+    private TypeSpec.Builder createClassBuilder(String className, String binary,String abi) {
 
         String javadoc = CODEGEN_WARNING + getWeb3jVersion();
 
@@ -103,7 +111,8 @@ public class SolidityFunctionWrapper {
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
                 .addJavadoc(javadoc)
                 .superclass(Contract.class)
-                .addField(createBinaryDefinition(binary));
+                .addField(createBinaryDefinition(binary))
+                .addField(createABIDefinition(abi));
     }
 
     private String getWeb3jVersion() {
@@ -123,6 +132,13 @@ public class SolidityFunctionWrapper {
         return FieldSpec.builder(String.class, BINARY)
                 .addModifiers(Modifier.PRIVATE, Modifier.FINAL, Modifier.STATIC)
                 .initializer("$S", binary)
+                .build();
+    }
+
+    private FieldSpec createABIDefinition(String abi) {
+        return FieldSpec.builder(String.class, ABI)
+                .addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC)
+                .initializer("$S", abi)
                 .build();
     }
 
@@ -167,7 +183,6 @@ public class SolidityFunctionWrapper {
             methodSpecs.add(buildDeployAsyncNoParams(
                     transactionManagerMethodBuilder, className, TRANSACTION_MANAGER));
         }
-
         return methodSpecs;
     }
 
@@ -179,7 +194,20 @@ public class SolidityFunctionWrapper {
                 .addParameter(authType, authName)
                 .addParameter(BigInteger.class, GAS_PRICE)
                 .addParameter(BigInteger.class, GAS_LIMIT)
-                .addStatement("super($N, $N, $N, $N, $N, $N)",
+                .addParameter(Boolean.class, IS_INITBYNAME)
+                .addStatement("super($N, $N, $N, $N, $N, $N, $N)",
+                        BINARY, CONTRACT_ADDRESS, WEB3J, authName, GAS_PRICE, GAS_LIMIT,IS_INITBYNAME)
+                .build();
+    }
+    private static MethodSpec buildConstructorWithDefaultParam(Class authType, String authName) {
+        return MethodSpec.constructorBuilder()
+                .addModifiers(Modifier.PRIVATE)
+                .addParameter(String.class, CONTRACT_ADDRESS)
+                .addParameter(Web3j.class, WEB3J)
+                .addParameter(authType, authName)
+                .addParameter(BigInteger.class, GAS_PRICE)
+                .addParameter(BigInteger.class, GAS_LIMIT)
+                .addStatement("super($N, $N, $N, $N, $N, $N, false)",
                         BINARY, CONTRACT_ADDRESS, WEB3J, authName, GAS_PRICE, GAS_LIMIT)
                 .build();
     }
@@ -206,6 +234,7 @@ public class SolidityFunctionWrapper {
                         + "$T.<$T>asList($L)"
                         + ")",
                 String.class, FunctionEncoder.class, Arrays.class, Type.class, inputParams);
+
         methodBuilder.addStatement(
                 "return deployAsync($L.class, $L, $L, $L, $L, $L, encodedConstructor, $L)",
                 className, WEB3J, authName, GAS_PRICE, GAS_LIMIT, BINARY, INITIAL_VALUE);
@@ -233,6 +262,7 @@ public class SolidityFunctionWrapper {
                 .addParameter(BigInteger.class, INITIAL_VALUE);
     }
 
+
     private static MethodSpec buildLoad(
             String className, Class authType, String authName) {
         return MethodSpec.methodBuilder("load")
@@ -243,10 +273,26 @@ public class SolidityFunctionWrapper {
                 .addParameter(authType, authName)
                 .addParameter(BigInteger.class, GAS_PRICE)
                 .addParameter(BigInteger.class, GAS_LIMIT)
-                .addStatement("return new $L($L, $L, $L, $L, $L)", className,
+                .addStatement("return new $L($L, $L, $L, $L, $L, false)", className,
                         CONTRACT_ADDRESS, WEB3J, authName, GAS_PRICE, GAS_LIMIT)
                 .build();
     }
+
+    private static MethodSpec buildLoadByName(
+            String className, Class authType, String authName) {
+        return MethodSpec.methodBuilder("loadByName")
+                .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+                .returns(TypeVariableName.get(className, Type.class))
+                .addParameter(String.class, CONTRACT_NAME)
+                .addParameter(Web3j.class, WEB3J)
+                .addParameter(authType, authName)
+                .addParameter(BigInteger.class, GAS_PRICE)
+                .addParameter(BigInteger.class, GAS_LIMIT)
+                .addStatement("return new $L($L, $L, $L, $L, $L, true)", className,
+                        CONTRACT_NAME, WEB3J, authName, GAS_PRICE, GAS_LIMIT)
+                .build();
+    }
+
 
     static String addParameters(
             MethodSpec.Builder methodBuilder, List<AbiDefinition.NamedType> namedTypes) {

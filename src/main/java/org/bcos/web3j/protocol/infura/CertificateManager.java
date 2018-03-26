@@ -103,10 +103,11 @@ public class CertificateManager {
     private static boolean isTrustedEndPoint(SSLSocket socket) throws IOException {
         try {
             socket.startHandshake();
-            socket.close();
             return true;
         } catch (SSLException e) {
             return false;
+        } finally {
+        	socket.close();
         }
     }
 

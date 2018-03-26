@@ -18,7 +18,7 @@ import org.bcos.web3j.protocol.exceptions.TransactionTimeoutException;
 public abstract class TransactionManager {
 
     private static final int SLEEP_DURATION = 1500;
-    private static final int ATTEMPTS = 7;
+    private static final int ATTEMPTS = 10;
 
     private final int sleepDuration;
     private final int attempts;
@@ -39,30 +39,30 @@ public abstract class TransactionManager {
 
     TransactionReceipt executeTransaction(
             BigInteger gasPrice, BigInteger gasLimit, String to,
-            String data, BigInteger value)
+            String data, BigInteger value, BigInteger type, boolean isInitByName)
             throws InterruptedException, IOException, TransactionTimeoutException {
 
         EthSendTransaction ethSendTransaction = sendTransaction(
-                gasPrice, gasLimit, to, data, value);
+                gasPrice, gasLimit, to, data, value, type, isInitByName);
         return processResponse(ethSendTransaction);
     }
 
     void executeTransaction(
             BigInteger gasPrice, BigInteger gasLimit, String to,
-            String data, BigInteger value, TransactionSucCallback callback)
+            String data, BigInteger value, BigInteger type, boolean isInitByName, TransactionSucCallback callback)
             throws InterruptedException, IOException, TransactionTimeoutException {
 
-        sendTransaction(gasPrice, gasLimit, to, data, value, callback);
+        sendTransaction(gasPrice, gasLimit, to, data, value,type,isInitByName, callback);
     }
 
     public abstract EthSendTransaction sendTransaction(
             BigInteger gasPrice, BigInteger gasLimit, String to,
-            String data, BigInteger value)
+            String data, BigInteger value, BigInteger type, boolean isInitByName)
             throws IOException;
 
     public abstract EthSendTransaction sendTransaction(
             BigInteger gasPrice, BigInteger gasLimit, String to,
-            String data, BigInteger value, TransactionSucCallback callback)
+            String data, BigInteger value, BigInteger type, boolean isInitByName,TransactionSucCallback callback)
             throws IOException;
             
     public abstract String getFromAddress();
