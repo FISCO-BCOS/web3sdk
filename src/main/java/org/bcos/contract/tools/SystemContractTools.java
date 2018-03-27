@@ -28,11 +28,11 @@ public class SystemContractTools {
 	static Logger logger = LoggerFactory.getLogger(SystemContractTools.class);
 	private static String LOGO = "\n"
 			+ "命令输入参考如下！ \n"
-			+ "Usage: ./web3sdk SystemProxy  \n"
-			+ "Usage: ./web3sdk AuthorityFilter  \n"
-			+ "Usage: ./web3sdk NodeAction all|registerNode|cancelNode \n"
-			+ "Usage: ./web3sdk CAAction all|update|updateStatus \n"
-			+ "Usage: ./web3sdk ConfigAction get|set \n";
+			+ "Usage: java  -cp 'conf/:apps/*:lib/*'  org.bcos.contract.tools.SystemContractTools SystemProxy  \n"
+			+ "Usage: java  -cp 'conf/:apps/*:lib/*'  org.bcos.contract.tools.SystemContractTools AuthorityFilter  \n"
+			+ "Usage: java  -cp 'conf/:apps/*:lib/*'  org.bcos.contract.tools.SystemContractTools NodeAction all|registerNode|cancelNode \n"
+			+ "Usage: java  -cp 'conf/:apps/*:lib/*'  org.bcos.contract.tools.SystemContractTools CAAction all|update|updateStatus \n"
+			+ "Usage: java  -cp 'conf/:apps/*:lib/*'  org.bcos.contract.tools.SystemContractTools ConfigAction get|set \n";
 
 	static String getAction(SystemProxy systemProxy,String filename){
 		String address = new String();
