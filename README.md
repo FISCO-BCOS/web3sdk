@@ -46,6 +46,10 @@ web3sdk是用来访问fisco-bcos节点的java API。<br />
 				<map>
 					<entry key="WB"> <!-- 配置本机构的区块链节点列表（如有DMZ，则为区块链前置）-->
 						<bean class="org.bcos.channel.handler.ChannelConnections">
+						    <property name="caCertPath" value="classpath:ca.crt" />
+						    <property name="clientKeystorePath" value="classpath:client.keystore" />
+						    <property name="keystorePassWord" value="123456" />
+						    <property name="clientCertPassWord" value="123456" />
 							<property name="connectionsStr">
 								<list>
 									<value>NodeA@127.0.0.1:30333</value><!-- 格式：节点名@IP地址:channelport，节点名可以为任意名称 -->
@@ -265,4 +269,3 @@ ok.trans(num, new TransactionSucCallback() {
 2、节点listen ip是否正确，最好直接监听0.0.0.0。<br />
 3、检查channelPort是否能telnet通，需要能telnet通。如果不通检查网络策略，检查服务是否启动。<br />
 4、服务端和客户端ca.crt是否一致，需要一致。<br />
-

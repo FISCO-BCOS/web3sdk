@@ -37,14 +37,14 @@ public abstract class ManagedTransaction {
     }
 
     protected TransactionReceipt send(
-            String to, String data, BigInteger value, BigInteger gasPrice, BigInteger gasLimit)
+            String to, String data, BigInteger value, BigInteger gasPrice, BigInteger gasLimit, BigInteger type, boolean isInitByName)
             throws InterruptedException, IOException, TransactionTimeoutException {
-        return transactionManager.executeTransaction(gasPrice, gasLimit, to, data, value);
+        return transactionManager.executeTransaction(gasPrice, gasLimit, to, data, value,type, isInitByName);
     }
 
     protected void send(
-            String to, String data, BigInteger value, BigInteger gasPrice, BigInteger gasLimit, TransactionSucCallback callback)
+            String to, String data, BigInteger value, BigInteger gasPrice, BigInteger gasLimit, BigInteger type, boolean isInitByName, TransactionSucCallback callback)
             throws InterruptedException, IOException, TransactionTimeoutException {
-        transactionManager.executeTransaction(gasPrice, gasLimit, to, data, value, callback);
+        transactionManager.executeTransaction(gasPrice, gasLimit, to, data, value, type, isInitByName, callback);
     }
 }
