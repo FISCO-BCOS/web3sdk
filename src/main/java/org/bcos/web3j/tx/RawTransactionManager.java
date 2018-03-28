@@ -15,6 +15,8 @@ import org.bcos.web3j.protocol.core.methods.response.EthBlockNumber;
 import org.bcos.web3j.protocol.core.methods.response.EthGetTransactionCount;
 import org.bcos.web3j.protocol.core.methods.response.EthSendTransaction;
 import org.bcos.web3j.utils.Numeric;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TransactionManager implementation using Ethereum wallet file to create and sign transactions
@@ -24,7 +26,7 @@ import org.bcos.web3j.utils.Numeric;
  * <a href="https://github.com/ethereum/EIPs/issues/155">EIP155</a>.
  */
 public class RawTransactionManager extends TransactionManager {
-
+    static Logger logger = LoggerFactory.getLogger(RawTransactionManager.class);
     private final Web3j web3j;
     final Credentials credentials;
 
@@ -70,26 +72,28 @@ public class RawTransactionManager extends TransactionManager {
     @Override
     public EthSendTransaction sendTransaction(
             BigInteger gasPrice, BigInteger gasLimit, String to,
-            String data, BigInteger value) throws IOException {
+            String data, BigInteger value, BigInteger type, boolean isInitByName) throws IOException {
 
 			Random r = new Random();
 			BigInteger randomid = new BigInteger(250,r);
             BigInteger blockLimit = getBlockLimit();
+            logger.info("sendTransaction randomid: {} blockLimit:{}", randomid,blockLimit);
             RawTransaction rawTransaction = RawTransaction.createTransaction(
-
-                randomid,
-                gasPrice,
-                gasLimit,
-                blockLimit,
-                to,
-                value,
-                data);
+                    randomid,
+                    gasPrice,
+                    gasLimit,
+                    blockLimit,
+                    to,
+                    value,
+                    data,
+                    type,
+                    isInitByName);
 
         return signAndSend(rawTransaction);
     }
 
     @Override
-    public EthSendTransaction sendTransaction(BigInteger gasPrice, BigInteger gasLimit, String to, String data, BigInteger value, TransactionSucCallback callback) throws IOException {
+    public EthSendTransaction sendTransaction(BigInteger gasPrice, BigInteger gasLimit, String to, String data, BigInteger value, BigInteger type, boolean isInitByName, TransactionSucCallback callback) throws IOException {
         Random r = new Random();
         BigInteger randomid = new BigInteger(250,r);
         BigInteger blockLimit = getBlockLimit();
@@ -101,7 +105,9 @@ public class RawTransactionManager extends TransactionManager {
                 blockLimit,
                 to,
                 value,
-                data);
+                data,
+                type,
+                isInitByName);
 
 
         return signAndSend(rawTransaction, callback);

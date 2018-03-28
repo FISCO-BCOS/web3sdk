@@ -62,7 +62,7 @@ public class Transfer extends ManagedTransaction {
                             + " = " + weiValue + " Wei");
         }
 
-        return send(toAddress, "", weiValue.toBigIntegerExact(), gasPrice, gasLimit);
+        return send(toAddress, "", weiValue.toBigIntegerExact(), gasPrice, gasLimit,TransactionConstant.callType,false);
     }
 
     public static TransactionReceipt sendFunds(
