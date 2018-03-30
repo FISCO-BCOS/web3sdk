@@ -84,12 +84,9 @@ public class TransactionEncoder {
         String contractName = rawTransaction.getContractName();
         if (contractName != null && contractName.length() > 0) {
             result.add(RlpString.create(rawTransaction.getContractName()));
-        } else {
-            result.add(RlpString.create(""));
-        }
-
-        result.add(RlpString.create(rawTransaction.getVersion()));
-        result.add(RlpString.create(rawTransaction.getType()));
+            result.add(RlpString.create(rawTransaction.getVersion()));
+            result.add(RlpString.create(rawTransaction.getType()));
+        }        
 
         if (signatureData != null) {
             result.add(RlpString.create(signatureData.getV()));
