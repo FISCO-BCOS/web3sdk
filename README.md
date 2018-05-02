@@ -4,7 +4,11 @@
 web3sdk是用来访问fisco-bcos节点的java API。<br />
 主要由两部分组成：<br />
 1、AMOP（链上链下）系统旨在为联盟链提供一个安全高效的消息信道。<br />
-2、web3j(Web3 Java Ethereum Ðapp API),这个部分来源于[web3j](https://github.com/web3j/web3j)，并针对bcos的做了相应改动。主要改动点为：1、交易结构中增加了randomid和blocklimit，这个改动对于sdk的使用者是透明的。2、为web3增加了AMOP消息信道。<br />
+2、web3j(Web3 Java Ethereum Ðapp API),这个部分来源于[web3j](https://github.com/web3j/web3j)，并针对bcos的做了相应改动。
+主要改动点为：
+   - 交易结构中增加了randomid和blocklimit，这个改动对于sdk的使用者是透明的。
+   - 为web3增加了AMOP消息信道。<br />
+   
 本文档主要说明如何使用AMOP消息信道调用web3j的API。AMOP（链上链下）的使用可以参考AMOP使用指南。web3j的使用可以参考[web3j](https://github.com/web3j/web3j)和[存证sample](https://github.com/FISCO-BCOS/evidenceSample)。
 
 ## （二）运行环境
