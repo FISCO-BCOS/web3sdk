@@ -62,7 +62,7 @@ web3sdk是用来访问fisco-bcos节点的java API。<br />
 		</bean>
 	</bean>
 ```
-2、ca.crt(用来验证节点或者前置的CA证书)：
+2、[ca.crt](https://github.com/morebtcg/FISCO-BCOS-OPENSOURCES/blob/master/doc/CA%E6%9C%BA%E6%9E%84%E8%BA%AB%E4%BB%BD%E8%AE%A4%E8%AF%81%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3.md)(用来验证节点或者前置的CA证书)：
 ```
 和节点的ca.crt保持一致。
 ```
