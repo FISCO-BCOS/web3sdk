@@ -21,7 +21,7 @@ public abstract class ChannelResponseCallback2 {
 	
 	public final void onResponse(ChannelResponse response) {
 		if(response.getErrorCode() == 99) {
-			logger.error("本地节点错误，尝试下一个本地节点");
+			logger.error("Local node error，try the next local nodec");
 			
 			retrySendMessage(); //1表示客户端错误
 		}
@@ -30,7 +30,7 @@ public abstract class ChannelResponseCallback2 {
 				onResponseMessage(response);
 			}
 			catch(Exception e) {
-				logger.error("回包处理错误:", e);
+				logger.error("response package processing error:", e);
 			}
 			
 			if(message.getSeq() != null) {
@@ -44,19 +44,19 @@ public abstract class ChannelResponseCallback2 {
 	}
 	
 	public final void onTimeout() {
-		logger.error("发送消息超时:{}", message.getSeq());
+		logger.error("send message timeout:{}", message.getSeq());
 
 		ChannelResponse response = new ChannelResponse();
 		response.setErrorCode(102);
 		response.setMessageID(message.getSeq());
-		response.setErrorMessage("发送消息超时");
+		response.setErrorMessage("send message timeout");
 		response.setContent("");
 
 		try {
 			onResponseMessage(response);
 		}
 		catch(Exception e) {
-			logger.error("超时处理错误:", e);
+			logger.error("timeout processing error:", e);
 		}
 		
 		service.getSeq2Callback().remove(message.getSeq());
@@ -67,14 +67,14 @@ public abstract class ChannelResponseCallback2 {
 		Integer errorCode = 0;
 		try {
 			// 选取客户端节点
-			logger.debug("本地节点数:{}", fromConnectionInfos.size());
+			logger.debug("Number of local nodes:{}", fromConnectionInfos.size());
 
 			setFromConnection(null);
 			if (fromConnectionInfos.size() > 0) {
 				Random random = new Random();
 				Integer index = random.nextInt(fromConnectionInfos.size());
 
-				logger.debug("选取:{}", index);
+				logger.debug("selected:{}", index);
 
 				setFromConnection(fromConnectionInfos.get(index));
 
@@ -83,10 +83,10 @@ public abstract class ChannelResponseCallback2 {
 
 			if (getFromConnection() == null) {
 				// 所有节点已尝试，无法再重试了
-				logger.error("发送消息失败，所有重试均失败");
+				logger.error("Failed to send message,all retry failed");
 
 				errorCode = 99;
-				throw new Exception("发送消息失败，所有重试均失败");
+				throw new Exception("Failed to send message,all retry failed");
 			}
 			
 			ChannelHandlerContext ctx = fromChannelConnections.getNetworkConnectionByHost(getFromConnection().getHost(), getFromConnection().getPort());
@@ -98,15 +98,15 @@ public abstract class ChannelResponseCallback2 {
 
 				ctx.writeAndFlush(out);
 
-				logger.debug("发送消息至  " + fromConnection.getHost() + ":" + String.valueOf(fromConnection.getPort()) + " 成功");
+				logger.debug("send message to  " + fromConnection.getHost() + ":" + String.valueOf(fromConnection.getPort()) + " 成功");
 			}
 			else {
-				logger.error("发送节点不可用");
+				logger.error("sending node unavailable");
 				
 				retrySendMessage();
 			}
 		} catch (Exception e) {
-			logger.error("发送消息异常", e);
+			logger.error("send message exception ", e);
 
 			ChannelResponse response = new ChannelResponse();
 			response.setErrorCode(errorCode);
@@ -116,7 +116,7 @@ public abstract class ChannelResponseCallback2 {
 				onResponseMessage(response);
 			}
 			catch(Exception ee) {
-				logger.error("异常处理错误", ee);
+				logger.error("onResponseMessage error:", ee);
 			}
 			
 			//彻底失败后，删掉这个seq

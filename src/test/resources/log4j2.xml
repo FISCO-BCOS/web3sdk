@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="info">
 	<Properties>
-        <Property name="logPath">/data/app/logs/bsp-ebcfs/</Property>
+        <Property name="logPath">./log/</Property>
     </Properties>
 	<Appenders>
 		<Console name="console" target="SYSTEM_OUT">
@@ -70,36 +70,12 @@
 			</Filters>
 		</RollingFile>
 
-		<RollingFile name="wemqClient" fileName="${logPath}wemq-client.log"
-					 filePattern="${logPath}wemq-client.log.%d{yyyy-MM-dd}.%i.log.gz">
-			<PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5p %c{1}(%L) - %m%n" />
-			<Policies>
-				<TimeBasedTriggeringPolicy />
-				<SizeBasedTriggeringPolicy size="200 MB" />
-			</Policies>
-			<DefaultRolloverStrategy max="24" />
-		</RollingFile>
-
-		<RollingFile name="rmbClient" fileName="${logPath}rmb-client.log"
-					 filePattern="${logPath}rmb-client.log.%d{yyyy-MM-dd}.%i.log.gz">
-			<PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5p %c{1}(%L) - %m%n" />
-			<Policies>
-				<TimeBasedTriggeringPolicy />
-				<SizeBasedTriggeringPolicy size="200 MB" />
-			</Policies>
-			<DefaultRolloverStrategy max="24" />
-		</RollingFile>
+		
 		<Async name="asyncConsole" bufferSize="512">
 			<AppenderRef ref="console" />
 		</Async>
 		<Async name="asyncFile" bufferSize="512">
 			<AppenderRef ref="fileAppender" />
-		</Async>
-		<Async name="asyncWemq" bufferSize="512">
-		        <AppenderRef ref="wemqClient" />
-		</Async>
-		<Async name="asyncRMB" bufferSize="512">
-			 <AppenderRef ref="rmbClient" />
 		</Async>
 		
 		<Async name="asyncDEBUG" bufferSize="512">
@@ -120,21 +96,12 @@
 	</Appenders>
 
 	<Loggers>
-		<Logger name="wemqClient" level="info" additivity="true">
-			<AppenderRef ref="asyncWemq" />
-		</Logger>
-		<Logger name="WemqRemoting" level="info" additivity="true">
-			<AppenderRef ref="asyncWemq" />
-		</Logger>
-		<Logger name="WemqCommon" level="info" additivity="true">
-			<AppenderRef ref="asyncWemq" />
-		</Logger>
 		<Root level="DEBUG">
-            <AppenderRef ref="asyncFile" />
-			<AppenderRef ref="asyncDEBUG" />
-			<AppenderRef ref="asyncINFO" />
-			<AppenderRef ref="asyncWARN" />
-			<AppenderRef ref="asyncERROR" />
+             <AppenderRef ref="asyncFile" /> 
+ 			<AppenderRef ref="asyncDEBUG" /> 
+ 			<AppenderRef ref="asyncINFO" /> 
+ 			<AppenderRef ref="asyncWARN" /> 
+ 			<AppenderRef ref="asyncERROR" /> 
         </Root>
 	</Loggers>
 </Configuration>

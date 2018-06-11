@@ -26,7 +26,7 @@ public class ChannelMessage extends Message {
 	
 	@Override
 	public void readExtra(ByteBuf in) {
-		logger.debug("解析channel数据包: {}", result);
+		logger.debug("readExtra channel package: {}", result);
 		if (result == 0) {
 			byte[] toNodeBytes = new byte[128];
 			in.readBytes(toNodeBytes, 0, 128);

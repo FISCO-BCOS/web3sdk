@@ -80,7 +80,7 @@ class ConnectionPair {
 			@Override
 			public void run(Timeout timeout) throws Exception {
 				//处理超时逻辑
-				logger.trace("清理过期session:{}", selfSeq);
+				logger.trace("clean timeout session:{}", selfSeq);
 				
 				selfServer.server.getSeq2Connections().remove(selfSeq);
 			}
@@ -91,14 +91,14 @@ class ConnectionPair {
 		Integer errorCode = 0;
 		try {
 			// 选取客户端节点
-			logger.debug("远端节点数:{}", remoteConnectionInfos.size());
+			logger.debug("remoteConnection size :{}", remoteConnectionInfos.size());
 
 			remoteConnectionInfo = null;
 			if (remoteConnectionInfos.size() > 0) {
 				Random random = new Random();
 				Integer index = random.nextInt(remoteConnectionInfos.size());
 
-				logger.debug("选取:{}", index);
+				logger.debug("selected:{}", index);
 
 				remoteConnectionInfo = remoteConnectionInfos.get(index);
 
@@ -107,10 +107,10 @@ class ConnectionPair {
 
 			if (remoteConnectionInfo == null) {
 				// 所有节点已尝试，无法再重试了
-				logger.error("发送消息失败，所有重试均失败");
+				logger.error("remoteConnectionInfo null");
 
 				errorCode = 99;
-				throw new Exception("发送消息失败，所有重试均失败");
+				throw new Exception("remoteConnectionInfo null");
 			}
 			
 			ChannelHandlerContext ctx = remoteChannelConnections.getNetworkConnectionByHost(remoteConnectionInfo.getHost(), remoteConnectionInfo.getPort());
@@ -123,22 +123,21 @@ class ConnectionPair {
 
 				ctx.writeAndFlush(out);
 
-				logger.debug("发送消息至  " + remoteConnectionInfo.getHost() + ":" + String.valueOf(remoteConnectionInfo.getPort()) + " 成功");
+				logger.debug("send message to  " + remoteConnectionInfo.getHost() + ":" + String.valueOf(remoteConnectionInfo.getPort()) + " success");
 			}
 			else {
-				logger.error("发送节点不可用");
-				
+				logger.error("local node inactive");
 				retrySendRemoteMessage();
 			}
 		} catch (Exception e) {
-			logger.error("发送消息异常", e);
+			logger.error("send message error", e);
 
 			ChannelResponse response = new ChannelResponse();
 			response.setErrorCode(errorCode);
 			response.setErrorMessage(e.getMessage());
 
 			// 找不到连接，错误
-			logger.error("发送连接异常，返回错误99");
+			logger.error("connection error 99");
 			
 			if(message.getType() == 0x20 || message.getType() == 0x21) {
 				message.setType((short) 0x21);
