@@ -21,8 +21,9 @@ public class ConfigActionTools {
                     }
                     System.out.println("key="+args[2]);
                     List<Type> value = configAction.get(new Utf8String(args[2])).get();
-                    System.out.println(args[2]+"="+value.get(0)+","+value.get(1));
-                case "all":
+                    System.out.println(args[2]+"="+value.get(0)+","+value.get(1).getValue());
+                    break;
+                case "set":
                     if( args.length< 4 ){
                         System.out.println("Please input: key value");
                         break;

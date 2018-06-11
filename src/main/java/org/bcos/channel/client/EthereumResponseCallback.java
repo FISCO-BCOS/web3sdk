@@ -12,11 +12,11 @@ public abstract class EthereumResponseCallback {
 	public abstract void onResponse(EthereumResponse response);
 	
 	public void onTimeout() {
-		logger.error("处理Ethereum消息超时:{}");
+		logger.error("Processing Ethereum message timeout:{}");
 		
 		EthereumResponse response = new EthereumResponse();
 		response.setErrorCode(102);
-		response.setErrorMessage("处理Ethereum消息超时");
+		response.setErrorMessage("Processing Ethereum message timeout");
 		
 		response.setContent("");
 		

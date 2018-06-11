@@ -19,7 +19,7 @@ import java.util.List;
 public class SystemProxyTools {
     static void processSystemProxy(SystemProxy systemProxy, Web3j web3j, Credentials credentials, BigInteger gasPrice, BigInteger gasLimit) {
         try {
-            System.out.println("-----------------系统路由表----------------------");
+            System.out.println("-----------------System routing table----------------------");
             Uint256 routelength = systemProxy.getRouteSize().get();
             for( int i=0;i<routelength.getValue().intValue();i++){
                 Utf8String key = systemProxy.getRouteNameByIndex(new Uint256(i)).get();

@@ -71,7 +71,7 @@ public class Service {
 				message.setType((short)0x32); //topic设置topic消息0x32
 				message.setSeq(UUID.randomUUID().toString().replaceAll("-", ""));
 
-				logger.debug("已建立连接，将topic发送到该连接:{}", message.getSeq());
+				logger.debug("connection established，send topic to the connection:{}", message.getSeq());
 
 				message.setData(objectMapper.writeValueAsBytes(topics.toArray()));
 
@@ -83,7 +83,7 @@ public class Service {
 
 				ctx.writeAndFlush(out);
 			} catch (Exception e) {
-				logger.error("错误", e);
+				logger.error("error:", e);
 			}
 		}
 
@@ -97,10 +97,10 @@ public class Service {
 				Message msg = new Message();
 				msg.readHeader(message);
 
-				logger.trace("收到Message type: {}", msg.getType());
+				logger.trace("receive Message type: {}", msg.getType());
 
 				if(msg.getType() == 0x20 || msg.getType() == 0x21) {
-					logger.debug("channel消息");
+					logger.debug("channel message");
 
 					ChannelMessage channelMessage = new ChannelMessage(msg);
 					channelMessage.readExtra(message);
@@ -108,7 +108,7 @@ public class Service {
 					channelService.onReceiveChannelMessage(ctx, channelMessage);
 				}
 				else if(msg.getType() == 0x30 || msg.getType() == 0x31) {
-					logger.debug("channel2消息");
+					logger.debug("channel2 message");
 
 					ChannelMessage2 channelMessage = new ChannelMessage2(msg);
 					channelMessage.readExtra(message);
@@ -116,7 +116,7 @@ public class Service {
 					channelService.onReceiveChannelMessage2(ctx, channelMessage);
 				}
 				else if(msg.getType() == 0x12) {
-					logger.debug("ethereum消息");
+					logger.debug("Ethereum message");
 
 					EthereumMessage ethereumMessage = new EthereumMessage(msg);
 					ethereumMessage.readExtra(message);
@@ -130,13 +130,13 @@ public class Service {
                     try {
                         content = new String(msg.getData(), "utf-8");
                     } catch (UnsupportedEncodingException e) {
-                        logger.error("心跳包无法解析");
+                        logger.error("heartbeat packet cannot be parsed");
                     } catch (Exception e) {
-                        logger.error("心跳包异常");
+                        logger.error("heartbeat packet Exception");
                     }
 
                     if(content.equals("0")) {
-                        logger.trace("心跳请求，发送心跳响应");
+                        logger.trace("heartbeat packet，send heartbeat packet back");
                         Message response = new Message();
 
                         response.setSeq(msg.getSeq());
@@ -151,18 +151,18 @@ public class Service {
                         ctx.writeAndFlush(out);
                     }
                     else if(content.equals("1")) {
-                        logger.trace("心跳响应");
+                        logger.trace("heartbeat response");
                     }
                 }
                 else if (msg.getType() == 0x1000) {
                     //交易上链成功回调的消息
-                    logger.debug("交易上链成功回调消息");
+                    logger.debug("EthereumMessage response");
                     EthereumMessage ethereumMessage = new EthereumMessage(msg);
                     ethereumMessage.readExtra(message);
                     channelService.onReceiveTransactionMessage(ctx, ethereumMessage);
                 }
                 else {
-                    logger.error("未知消息类型:{}", msg.getType());
+                    logger.error("unknown message type:{}", msg.getType());
                 }
 			}finally {
 				message.release();
@@ -200,7 +200,7 @@ public class Service {
 
 
 	public void run() throws Exception {
-		logger.debug("初始化ChannelService");
+		logger.debug("init ChannelService");
 
 		try {
 			ConnectionCallback connectionCallback = new ConnectionCallback();
@@ -246,6 +246,7 @@ public class Service {
 		}
 		catch (InterruptedException e) {
 			logger.error("system error ", e);
+			Thread.currentThread().interrupt();
 		}
 		catch (Exception e) {
 			logger.error("system error ", e);
@@ -261,7 +262,8 @@ public class Service {
 					semaphore.acquire(1);
 
 				} catch (InterruptedException e) {
-					logger.error("错误:", e);
+					logger.error("error :", e);
+                    Thread.currentThread().interrupt();
 				}
 			}
 
@@ -270,10 +272,10 @@ public class Service {
 				ethereumResponse = response;
 
 				if(ethereumResponse != null && ethereumResponse.getContent() != null) {
-					logger.debug("收到响应: {}", response.getContent());
+					logger.debug("response: {}", response.getContent());
 				}
 				else {
-					logger.error("ethereum错误");
+					logger.error("ethereum error");
 				}
 
 				semaphore.release();
@@ -289,7 +291,8 @@ public class Service {
 		try {
 			callback.semaphore.acquire(1);
 		} catch (InterruptedException e) {
-			logger.error("系统错误:", e);
+			logger.error("system error:", e);
+            Thread.currentThread().interrupt();
 		}
 
 		return callback.ethereumResponse;
@@ -302,7 +305,8 @@ public class Service {
 					semaphore.acquire(1);
 
 				} catch (InterruptedException e) {
-					logger.error("错误:", e);
+					logger.error("error:", e);
+                    Thread.currentThread().interrupt();
 				}
 			}
 
@@ -311,7 +315,7 @@ public class Service {
 				channelResponse = response;
 
 
-				logger.debug("收到响应: {}", response.getContent());
+				logger.debug("response: {}", response.getContent());
 
 				semaphore.release();
 			}
@@ -327,7 +331,8 @@ public class Service {
 		try {
 			callback.semaphore.acquire(1);
 		} catch (InterruptedException e) {
-			logger.error("系统错误:", e);
+			logger.error("system error:", e);
+            Thread.currentThread().interrupt();
 		}
 
 		return callback.channelResponse;
@@ -340,7 +345,8 @@ public class Service {
                     semaphore.acquire(1);
 
                 } catch (InterruptedException e) {
-                    logger.error("错误:", e);
+                    logger.error("error:", e);
+                    Thread.currentThread().interrupt();
                 }
             }
 
@@ -348,7 +354,7 @@ public class Service {
             public void onResponse(EthereumResponse response) {
                 ethereumResponse = response;
 
-                logger.info("收到响应: {}", response.getContent());
+                logger.info("response: {}", response.getContent());
 
                 semaphore.release();
             }
@@ -362,7 +368,8 @@ public class Service {
         try {
             callback.semaphore.acquire(1);
         } catch (InterruptedException e) {
-            logger.error("系统错误:", e);
+            logger.error("system error:", e);
+            Thread.currentThread().interrupt();
         }
 
         return callback.ethereumResponse;
@@ -394,7 +401,8 @@ public class Service {
 					semaphore.acquire(1);
 
 				} catch (InterruptedException e) {
-					logger.error("错误:", e);
+					logger.error("error:", e);
+                    Thread.currentThread().interrupt();
 				}
 			}
 
@@ -402,7 +410,7 @@ public class Service {
 			public void onResponseMessage(ChannelResponse response) {
 				channelResponse = response;
 
-				logger.debug("收到响应: {}", response.getContent());
+				logger.debug("response: {}", response.getContent());
 
 				semaphore.release();
 			}
@@ -418,14 +426,15 @@ public class Service {
 		try {
 			callback.semaphore.acquire(1);
 		} catch (InterruptedException e) {
-			logger.error("系统错误:", e);
+			logger.error("system error:", e);
+            Thread.currentThread().interrupt();
 		}
 
 		return callback.channelResponse;
 	}
 
 	public void asyncSendEthereumMessage(EthereumRequest request, EthereumResponseCallback callback) {
-		logger.debug("处理Ethereum请求: " + request.getMessageID());
+		logger.debug("Ethereum message: " + request.getMessageID());
 
 		Boolean sended = false;
 
@@ -442,9 +451,9 @@ public class Service {
 			if (fromChannelConnections == null) {
 				// 没有找到对应的链
 				// 返回错误
-				logger.error("没有找到本机构:{}", orgID);
+				logger.error("not found:{}", orgID);
 
-				throw new Exception("未找到本机构");
+				throw new Exception("not found orgID");
 			}
 
 
@@ -470,17 +479,17 @@ public class Service {
 
 			ctx.writeAndFlush(out);
 
-			logger.debug("发送Ethereum消息至 " + ((SocketChannel)ctx.channel()).remoteAddress().getAddress().getHostAddress()
+			logger.debug("send Ethereum message to " + ((SocketChannel)ctx.channel()).remoteAddress().getAddress().getHostAddress()
 					+ ":"
-					+ ((SocketChannel)ctx.channel()).remoteAddress().getPort() + " 成功");
+					+ ((SocketChannel)ctx.channel()).remoteAddress().getPort() + " success");
 
 			sended = true;
 		} catch (Exception e) {
-			logger.error("系统错误", e);
+			logger.error("system error", e);
 
 			EthereumResponse response = new EthereumResponse();
 			response.setErrorCode(-1);
-			response.setErrorMessage("系统错误");
+			response.setErrorMessage("system error");
 			response.setContent("");
 			response.setMessageID(request.getMessageID());
 
@@ -493,7 +502,7 @@ public class Service {
 
 	public void asyncSendChannelMessage(ChannelRequest request, ChannelResponseCallback callback) {
 		try {
-			logger.debug("处理链上链下请求: " + request.getMessageID());
+			logger.debug("processing ChannelRequest: " + request.getMessageID());
 			callback.setService(this);
 
 			ChannelMessage channelMessage = new ChannelMessage();
@@ -512,13 +521,13 @@ public class Service {
 				if (fromChannelConnections == null) {
 					// 没有找到对应的链
 					// 返回错误
-					logger.error("没有找到本机构:{}", request.getFromOrg());
+					logger.error("not found :{}", request.getFromOrg());
 
-					throw new Exception("未找到本机构");
+					throw new Exception("not found local node");
 				}
 				fromConnectionInfos.addAll(fromChannelConnections.getConnections());
 
-				logger.debug("发送结构:{} 节点数:{}", request.getFromOrg(), fromChannelConnections.getConnections().size());
+				logger.debug("FromOrg:{} nodes:{}", request.getFromOrg(), fromChannelConnections.getConnections().size());
 
 				callback.setFromChannelConnections(fromChannelConnections);
 				callback.setFromConnectionInfos(fromConnectionInfos);
@@ -526,12 +535,12 @@ public class Service {
 				//设置目的节点
 				ChannelConnections toChannelConnections = allChannelConnections.get(request.getToOrg());
 				if (toChannelConnections == null) {
-					logger.error("未找到目的机构: {}", request.getToOrg());
+					logger.error("not found ToOrg: {}", request.getToOrg());
 
-					throw new Exception("未找到目标机构");
+					throw new Exception("not found ToOrg");
 				}
 				toConnectionInfos.addAll(toChannelConnections.getConnections());
-				logger.debug("机构:{} 节点数:{}", request.getToOrg(), toChannelConnections.getConnections().size());
+				logger.debug("org:{} nodes:{}", request.getToOrg(), toChannelConnections.getConnections().size());
 
 				callback.setToConnectionInfos(toConnectionInfos);
 
@@ -555,7 +564,7 @@ public class Service {
 
 				callback.retrySendMessage(0);
 			} catch (Exception e) {
-				logger.error("发送消息异常 消息未发出", e);
+				logger.error("send message fail: ", e);
 
 				ChannelResponse response = new ChannelResponse();
 				response.setErrorCode(100);
@@ -567,13 +576,13 @@ public class Service {
 				return;
 			}
 		} catch (Exception e) {
-			logger.error("系统错误", e);
+			logger.error("system error", e);
 		}
 	}
 
 	public void asyncSendChannelMessage2(ChannelRequest request, ChannelResponseCallback2 callback) {
 		try {
-			logger.debug("处理链上链下请求: " + request.getMessageID());
+			logger.debug("ChannelRequest: " + request.getMessageID());
 			callback.setService(this);
 
 			ChannelMessage2 channelMessage = new ChannelMessage2();
@@ -592,12 +601,12 @@ public class Service {
 				if (fromChannelConnections == null) {
 					// 没有找到对应的链
 					// 返回错误
-					logger.error("没有找到本机构:{}", orgID);
+					logger.error("not found orgID:{}", orgID);
 
-					throw new Exception("未找到本机构");
+					throw new Exception("not found orgID");
 				}
 				fromConnectionInfos.addAll(fromChannelConnections.getConnections());
-				logger.debug("发送机构:{} 节点数:{}", request.getFromOrg(), fromChannelConnections.getConnections().size());
+				logger.debug("FromOrg:{} nodes:{}", request.getFromOrg(), fromChannelConnections.getConnections().size());
 
 				callback.setFromChannelConnections(fromChannelConnections);
 				callback.setFromConnectionInfos(fromConnectionInfos);
@@ -622,7 +631,7 @@ public class Service {
 
 				callback.retrySendMessage();
 			} catch (Exception e) {
-				logger.error("发送消息异常 消息未发出", e);
+				logger.error("send message fail:", e);
 
 				ChannelResponse response = new ChannelResponse();
 				response.setErrorCode(100);
@@ -634,54 +643,16 @@ public class Service {
 				return;
 			}
 		} catch (Exception e) {
-			logger.error("系统错误", e);
+			logger.error("system error", e);
 		}
 	}
 
 	public void setTopics(List<String> topics) {
 		try {
-			//设置到自身的topic
 			this.topics = topics;
-
-			/*
-			Message message = new Message();
-			message.setResult(0);
-			message.setType((short)0x32); //topic设置topic消息0x32
-			message.setSeq(newSeq());
-			message.setData(objectMapper.writeValueAsBytes(topics));
-
-			logger.debug("设置topic:{} {}", message.getSeq(), new String(message.getData()));
-
-			//发送到所有前置
-			ChannelConnections fromChannelConnections = allChannelConnections.get(orgID);
-			if (fromChannelConnections == null) {
-				// 没有找到对应的链
-				// 返回错误
-				logger.error("没有找到本机构:{}", orgID);
-
-				throw new Exception("未找到本机构");
-			}
-
-			for(String key: fromChannelConnections.getNetworkConnections().keySet()) {
-				ChannelHandlerContext ctx = fromChannelConnections.getNetworkConnections().get(key);
-
-				if (ctx != null && ctx.channel().isActive()) {
-					ByteBuf out = ctx.alloc().buffer();
-					message.writeHeader(out);
-					message.writeExtra(out);
-
-					ctx.writeAndFlush(out);
-
-					String host = ((SocketChannel)ctx.channel()).remoteAddress().getAddress().getHostAddress();
-					Integer port = ((SocketChannel)ctx.channel()).remoteAddress().getPort();
-
-					logger.debug("发送topic至  " + host + ":" + String.valueOf(port) + " 成功");
-				}
-			}
-			*/
 		}
 		catch (Exception e) {
-			logger.error("系统错误", e);
+			logger.error("system error", e);
 		}
 	}
 
@@ -702,9 +673,9 @@ public class Service {
 
 			ctx.writeAndFlush(out);
 
-			logger.debug("发送回包成功 seq:{} 长度:{}", response.getMessageID(), out.readableBytes());
+			logger.debug("response seq:{} length:{}", response.getMessageID(), out.readableBytes());
 		} catch (Exception e) {
-			logger.error("系统错误", e);
+			logger.error("system error", e);
 		}
 	}
 
@@ -725,21 +696,21 @@ public class Service {
 
 			ctx.writeAndFlush(out);
 
-			logger.debug("发送回包成功 seq:{} 长度:{}", response.getMessageID(), out.readableBytes());
+			logger.debug("response seq:{} length:{}", response.getMessageID(), out.readableBytes());
 		} catch (Exception e) {
-			logger.error("系统错误", e);
+			logger.error("system error:", e);
 		}
 	}
 
 	public void onReceiveChannelMessage(ChannelHandlerContext ctx, ChannelMessage message) {
 		ChannelResponseCallback callback = (ChannelResponseCallback)seq2Callback.get(message.getSeq());
-		logger.debug("收到消息 seq:{}", message.getSeq());
+		logger.debug("onReceiveChannelMessage seq:{}", message.getSeq());
 
 		if(message.getType() == 0x20) { //链上链下请求
-			logger.debug("channel请求消息 PUSH");
+			logger.debug("channel Message PUSH");
 			if(callback != null) {
 				//清空callback再处理
-				logger.debug("seq已存在，清除:{}", message.getSeq());
+				logger.debug("seq already existed，clean:{}", message.getSeq());
 				seq2Callback.remove(message.getSeq());
 			}
 
@@ -760,22 +731,22 @@ public class Service {
 					pushCallback.onPush(push);
 				}
 				else {
-					logger.error("无法push消息，未设置push callback");
+					logger.error("can not push，unset push callback");
 				}
 			}
 			catch(Exception e) {
-				logger.error("处理PUSH消息失败:", e);
+				logger.error("pushCallback error:", e);
 			}
 		}
 		else if(message.getType() == 0x21) { //链上链下回包
-			logger.debug("channel回包消息:{}", message.getSeq());
+			logger.debug("channel response:{}", message.getSeq());
 			if(callback != null) {
-				logger.debug("已找到callback 回包消息");
+				logger.debug("found callback response");
 
 				ChannelResponse response = new ChannelResponse();
 				if(message.getResult() != 0) {
 					response.setErrorCode(message.getResult());
-					response.setErrorMessage("回包错误");
+					response.setErrorMessage("response error");
 				}
 
 				response.setErrorCode(message.getResult());
@@ -787,7 +758,7 @@ public class Service {
 				callback.onResponse(response);
 			}
 			else {
-				logger.error("未找到回包callback，可能已超时:{}", message.getData());
+				logger.error("can not found response callback，timeout:{}", message.getData());
 				return;
 			}
 		}
@@ -795,10 +766,10 @@ public class Service {
 
 	public void onReceiveEthereumMessage(ChannelHandlerContext ctx, EthereumMessage message) {
 		EthereumResponseCallback callback = (EthereumResponseCallback)seq2Callback.get(message.getSeq());
-		logger.debug("收到ethereum消息 seq:{}", message.getSeq());
+		logger.debug("EthereumResponse seq:{}", message.getSeq());
 
 		if(callback != null) {
-			logger.debug("已找到callback ethereum回包消息");
+			logger.debug("found callback EthereumResponse");
 
 			if(callback.getTimeout() != null) {
 				callback.getTimeout().cancel();
@@ -806,7 +777,7 @@ public class Service {
 
 			EthereumResponse response = new EthereumResponse();
 			if(message.getResult() != 0) {
-				response.setErrorMessage("回包错误");
+				response.setErrorMessage("EthereumResponse error");
 			}
 
 			response.setErrorCode(message.getResult());
@@ -818,19 +789,19 @@ public class Service {
 			seq2Callback.remove(message.getSeq());
 		}
 		else {
-			logger.debug("无callback push消息");
+			logger.debug("no callback push message");
 		}
 	}
 
 	public void onReceiveChannelMessage2(ChannelHandlerContext ctx, ChannelMessage2 message) {
 		ChannelResponseCallback2 callback = (ChannelResponseCallback2)seq2Callback.get(message.getSeq());
-		logger.debug("收到消息 seq:{}", message.getSeq());
+		logger.debug("ChannelResponse seq:{}", message.getSeq());
 
 		if(message.getType() == 0x30) { //链上链下请求
-			logger.debug("channel请求消息 PUSH");
+			logger.debug("channel PUSH");
 			if(callback != null) {
 				//清空callback再处理
-				logger.debug("seq已存在，清除:{}", message.getSeq());
+				logger.debug("seq already existed，clear:{}", message.getSeq());
 				seq2Callback.remove(message.getSeq());
 			}
 
@@ -851,22 +822,22 @@ public class Service {
 					pushCallback.onPush(push);
 				}
 				else {
-					logger.error("无法push消息，未设置push callback");
+					logger.error("can not push，unset push callback");
 				}
 			}
 			catch(Exception e) {
-				logger.error("处理PUSH消息失败:", e);
+				logger.error("push error:", e);
 			}
 		}
 		else if(message.getType() == 0x31) { //链上链下回包
-			logger.debug("channel回包消息:{}", message.getSeq());
+			logger.debug("channel message:{}", message.getSeq());
 			if(callback != null) {
-				logger.debug("已找到callback 回包消息");
+				logger.debug("found callback response");
 
 				ChannelResponse response = new ChannelResponse();
 				if(message.getResult() != 0) {
 					response.setErrorCode(message.getResult());
-					response.setErrorMessage("回包错误");
+					response.setErrorMessage("response errors");
 				}
 
 				response.setErrorCode(message.getResult());
@@ -878,7 +849,7 @@ public class Service {
 				callback.onResponse(response);
 			}
 			else {
-				logger.error("未找到回包callback，可能已超时:{}", message.getData());
+				logger.error("can not found response callback，timeout:{}", message.getData());
 				return;
 			}
 		}
@@ -898,7 +869,7 @@ public class Service {
 
             EthereumResponse response = new EthereumResponse();
             if(message.getResult() != 0) {
-                response.setErrorMessage("回包错误");
+                response.setErrorMessage("EthereumResponse error");
             }
 
             response.setErrorCode(message.getResult());

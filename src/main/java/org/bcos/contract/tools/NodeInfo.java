@@ -5,89 +5,49 @@ package org.bcos.contract.tools;
  */
 public class NodeInfo {
     private String id;
-    private String ip;
-    private Integer port;
-    private Integer category;
-    private String desc;
-    private String CAhash = "";
-    private String agencyinfo;
-    private Integer idx;
-
-
+    private String name;
+    private String agency;
+    private String caHash;
+    
     public String getId() {
-        return id;
-    }
+		return id;
+	}
 
-    public void setId(String id) {
-        this.id = id;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public String getIp() {
-        return ip;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setIp(String ip) {
-        this.ip = ip;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public Integer getPort() {
-        return port;
-    }
+	public String getAgency() {
+		return agency;
+	}
 
-    public void setPort(Integer port) {
-        this.port = port;
-    }
+	public void setAgency(String agency) {
+		this.agency = agency;
+	}
 
-    public Integer getCategory() {
-        return category;
-    }
+	public String getCaHash() {
+		return caHash;
+	}
 
-    public void setCategory(Integer category) {
-        this.category = category;
-    }
+	public void setCaHash(String caHash) {
+		this.caHash = caHash;
+	}
 
-    public String getDesc() {
-        return desc;
-    }
-
-    public void setDesc(String desc) {
-        this.desc = desc;
-    }
-
-    public String getCAhash() {
-        return CAhash;
-    }
-
-    public void setCAhash(String CAhash) {
-        this.CAhash = CAhash;
-    }
-
-    public String getAgencyinfo() {
-        return agencyinfo;
-    }
-
-    public void setAgencyinfo(String agencyinfo) {
-        this.agencyinfo = agencyinfo;
-    }
-
-    public Integer getIdx() {
-        return idx;
-    }
-
-    public void setIdx(Integer idx) {
-        this.idx = idx;
-    }
-    @Override
+	@Override
     public String toString() {
         return "NodeInfo{" +
                 "id='" + id + '\'' +
-                ", ip='" + ip + '\'' +
-                ", port=" + port +
-                ", category=" + category +
-                ", desc='" + desc + '\'' +
-                ", CAhash='" + desc + '\'' +
-                ", agencyinfo='" + agencyinfo + '\'' +
-                ", idx=" + idx +
+                ", name='" + name + '\'' +
+                ", agency=" + agency +
+                ", caHash=" + caHash +
                 '}';
     }
 }

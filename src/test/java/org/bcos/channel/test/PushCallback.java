@@ -16,13 +16,9 @@ class PushCallback extends ChannelPushCallback {
 	@Override
 	public void onPush(ChannelPush push) {
 		DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-		logger.debug("收到PUSH消息:" + push.getContent());
+		logger.debug("push:" + push.getContent());
 		
-		System.out.println(df.format(LocalDateTime.now()) + "server:收到PUSH消息:" + push.getContent());
-		
-		logger.debug("获取块高");
-		
-		
+		System.out.println(df.format(LocalDateTime.now()) + "server:push:" + push.getContent());
 		ChannelResponse response = new ChannelResponse();
 		response.setContent("receive request seq:" + String.valueOf(push.getMessageID()));
 		response.setErrorCode(0);

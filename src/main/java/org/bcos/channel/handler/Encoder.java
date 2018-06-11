@@ -12,7 +12,7 @@ public class Encoder extends MessageToByteEncoder<Message> {
 	
 	@Override
 	protected void encode(ChannelHandlerContext ctx, Message msg, ByteBuf out) throws Exception {
-		logger.debug("发送数据:" + msg.getLength() + "," + msg.getData());
+		logger.debug("encode:" + msg.getLength() + "," + msg.getData());
 		
 		out.writeIntLE(msg.getLength());
 		out.writeShortLE(msg.getType());
