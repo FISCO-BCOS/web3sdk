@@ -10,6 +10,9 @@ import org.bcos.web3j.protocol.core.methods.response.DbPutString;
 import org.bcos.web3j.protocol.core.methods.response.EthAccounts;
 import org.bcos.web3j.protocol.core.methods.response.EthBlock;
 import org.bcos.web3j.protocol.core.methods.response.EthBlockNumber;
+
+//增加eth_pbftView接口
+import org.bcos.web3j.protocol.core.methods.response.EthPbftView;
 import org.bcos.web3j.protocol.core.methods.response.EthCoinbase;
 import org.bcos.web3j.protocol.core.methods.response.EthCompileLLL;
 import org.bcos.web3j.protocol.core.methods.response.EthCompileSerpent;
@@ -81,6 +84,9 @@ public interface Ethereum {
     Request<?, EthAccounts> ethAccounts();
 
     Request<?, EthBlockNumber> ethBlockNumber();
+    
+    //增加eth_pbftView接口
+    Request<?, EthPbftView> ethPbftView();
 
     Request<?, EthGetBalance> ethGetBalance(
             String address, DefaultBlockParameter defaultBlockParameter);

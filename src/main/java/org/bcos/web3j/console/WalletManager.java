@@ -37,7 +37,10 @@ abstract class WalletManager {
             char[] input2 = console.readPassword("Please re-enter the password: ");
 
             if (Arrays.equals(input1, input2)) {
-                return new String(input1);
+            	String s = new String(input1);
+            	Arrays.fill(input1, ' ');
+            	Arrays.fill(input2, ' ');
+                return s;
             } else {
                 console.printf("Sorry, passwords did not match\n");
             }
@@ -85,6 +88,7 @@ abstract class WalletManager {
             char[] password = console.readPassword(
                     "Please enter your existing wallet file password: ");
             String currentPassword = new String(password);
+            Arrays.fill(password, ' ');
             try {
                 return WalletUtils.loadCredentials(currentPassword, walletFile);
             } catch (CipherException e) {

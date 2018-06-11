@@ -11,7 +11,7 @@ public class ChannelServer {
 	static Logger logger = LoggerFactory.getLogger(ChannelServer.class);
 	
 	public static void main(String[] args) throws Exception {
-		logger.debug("初始化Server");
+		logger.debug("init Server");
 
 		ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
 
@@ -22,14 +22,14 @@ public class ChannelServer {
 		
 		service.setPushCallback(cb);
 
-		System.out.println("3s后开始测试...");
+		System.out.println("3s...");
 		Thread.sleep(1000);
-		System.out.println("2s后开始测试...");
+		System.out.println("2s...");
 		Thread.sleep(1000);
-		System.out.println("1s后开始测试...");
+		System.out.println("1s...");
 		Thread.sleep(1000);
 
-		System.out.println("开始测试");
+		System.out.println("start testing");
 		System.out.println("===================================================================");
 	}
 }

@@ -91,7 +91,7 @@ public class ChannelPush {
 	}
 	
 	public void sendResponse(ChannelResponse response) {
-		logger.debug("发送回包 seq:{}", response.getMessageID());
+		logger.debug("send ChannelResponse seq:{}", response.getMessageID());
 		
 		response.setMessageID(seq);
 		

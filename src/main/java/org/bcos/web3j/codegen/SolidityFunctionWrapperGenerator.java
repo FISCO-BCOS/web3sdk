@@ -26,22 +26,28 @@ public class SolidityFunctionWrapperGenerator {
             + "-o|--output <destination base directory>";
 
     private String binaryFileLocation;
+    private String guomiBinaryFileLocation;
     private String absFileLocation;
     private File destinationDirLocation;
     private String basePackageName;
-
+    
     private SolidityFunctionWrapperGenerator(
             String binaryFileLocation,
             String absFileLocation,
             String destinationDirLocation,
             String basePackageName) {
-
-        this.binaryFileLocation = binaryFileLocation;
+    	this.binaryFileLocation = binaryFileLocation;
         this.absFileLocation = absFileLocation;
         this.destinationDirLocation = new File(destinationDirLocation);
         this.basePackageName = basePackageName;
+        this.guomiBinaryFileLocation = "";
     }
-
+   
+    public void setGuomiBinaryFileLocation(String guomiBinaryFileLocation)
+    {
+    	this.guomiBinaryFileLocation = guomiBinaryFileLocation;
+    }
+    
     public static void run(String[] args) throws Exception {
         if (args.length < 1 || !args[0].equals("generate")) {
             exitError(USAGE);
@@ -52,7 +58,7 @@ public class SolidityFunctionWrapperGenerator {
 
     public static void main(String[] args) throws Exception {
 
-        if (args.length != 6) {
+        if (args.length < 6) {
             exitError(USAGE);
         }
 
@@ -60,6 +66,8 @@ public class SolidityFunctionWrapperGenerator {
         String absFileLocation = parsePositionalArg(args, 1);
         String destinationDirLocation = parseParameterArgument(args, "-o", "--outputDir");
         String basePackageName = parseParameterArgument(args, "-p", "--package");
+        
+        String guomiBinaryFileLocation = parseParameterArgument(args, "-g", "--guomi-binary");
 
         if (binaryFileLocation.equals("")
                 || absFileLocation.equals("")
@@ -68,12 +76,17 @@ public class SolidityFunctionWrapperGenerator {
             exitError(USAGE);
         }
 
-        new SolidityFunctionWrapperGenerator(
+        SolidityFunctionWrapperGenerator solidityFunctionGenerator = 
+        		new SolidityFunctionWrapperGenerator(
                 binaryFileLocation,
                 absFileLocation,
                 destinationDirLocation,
-                basePackageName)
-                .generate();
+                basePackageName);
+        if(guomiBinaryFileLocation.equals("") == false)
+        	solidityFunctionGenerator.setGuomiBinaryFileLocation(guomiBinaryFileLocation);
+        
+        //generate java code of solidity function
+        solidityFunctionGenerator.generate();
     }
 
     private static String parsePositionalArg(String[] args, int idx) {
@@ -98,24 +111,26 @@ public class SolidityFunctionWrapperGenerator {
         }
         return "";
     }
-
-    private void generate() throws IOException, ClassNotFoundException {
-
-        File binaryFile = new File(binaryFileLocation);
+    
+    private String readBinFile(String binaryFileLocation) throws IOException, ClassNotFoundException{
+    	File binaryFile = new File(binaryFileLocation);
         if (!binaryFile.exists()) {
             exitError("Invalid input binary file specified: " + binaryFileLocation);
         }
-
         byte[] bytes = Files.readBytes(new File(binaryFile.toURI()));
         String binary = new String(bytes);
+        return binary;
+    }
 
+    private void generate() throws IOException, ClassNotFoundException {
+    	String binary = readBinFile(binaryFileLocation);
         File absFile = new File(absFileLocation);
         if (!absFile.exists() || !absFile.canRead()) {
             exitError("Invalid input ABI file specified: " + absFileLocation);
         }
         String fileName = absFile.getName();
         String contractName = getFileNameNoExtension(fileName);
-        bytes = Files.readBytes(new File(absFile.toURI()));
+        byte[] bytes = Files.readBytes(new File(absFile.toURI()));
         String abi = new String(bytes);
 
         List<AbiDefinition> functionDefinitions = loadContractDefinition(absFile);
@@ -123,11 +138,22 @@ public class SolidityFunctionWrapperGenerator {
         if (functionDefinitions.isEmpty()) {
             exitError("Unable to parse input ABI file");
         } else {
-
             String className = Strings.capitaliseFirstLetter(contractName);
             System.out.printf("Generating " + basePackageName + "." + className + " ... ");
-            new SolidityFunctionWrapper().generateJavaFiles(
-                    contractName, binary, abi, destinationDirLocation.toString(), basePackageName);
+            SolidityFunctionWrapper solidityFunctionWrapper = new SolidityFunctionWrapper();
+			if (guomiBinaryFileLocation.equals("") == true)
+			{	
+				solidityFunctionWrapper.setEncryptType(0);
+				solidityFunctionWrapper.generateJavaFiles(contractName, binary, abi,
+						destinationDirLocation.toString(), basePackageName);
+			}
+			else
+			{
+				String guomiBinary = readBinFile(guomiBinaryFileLocation);
+				solidityFunctionWrapper.setEncryptType(1);
+				solidityFunctionWrapper.generateJavaFiles(contractName, binary, abi,
+						destinationDirLocation.toString(), basePackageName, guomiBinary);
+			}
             System.out.println("File written to " + destinationDirLocation.toString() + "\n");
         }
     }
