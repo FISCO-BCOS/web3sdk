@@ -26,7 +26,7 @@ public class ChannelHandler extends SimpleChannelInboundHandler<ByteBuf> {
 			case READER_IDLE:
 			case WRITER_IDLE:
 			case ALL_IDLE:
-				logger.error("事件:{} 连接{}:{} 长时间没有活动，断连", e.state(), host, port);
+				logger.error("event:{} connect{}:{} long time Inactive，disconnect", e.state(), host, port);
 				channelInactive(ctx);
 				ctx.disconnect();
 				ctx.close();
@@ -44,10 +44,10 @@ public class ChannelHandler extends SimpleChannelInboundHandler<ByteBuf> {
 			String host = ((SocketChannel)ctx.channel()).remoteAddress().getAddress().getHostAddress();
 			Integer port = ((SocketChannel)ctx.channel()).remoteAddress().getPort();
 			
-			logger.debug("已成功连接[" + host + "]:[" + String.valueOf(port) + "]," + String.valueOf(ctx.channel().isActive()));
+			logger.debug("success,connected[" + host + "]:[" + String.valueOf(port) + "]," + String.valueOf(ctx.channel().isActive()));
 			
 			if(isServer) {
-				logger.debug("server接收新连接: {}:{}", host, port);
+				logger.debug("server accept new connect: {}:{}", host, port);
 				//将此新连接增加到connections
 				ConnectionInfo info = new ConnectionInfo();
 				info.setHost(host);
@@ -61,32 +61,32 @@ public class ChannelHandler extends SimpleChannelInboundHandler<ByteBuf> {
 				//更新ctx信息
 				ChannelHandlerContext connection = connections.getNetworkConnectionByHost(host, port);
 				if(connection != null && connection.channel().isActive()) {
-					logger.debug("连接已存在且有效 关闭重连: {}:{}", host, port);
+					logger.debug("connect available, close reconnect: {}:{}", host, port);
 					
 					ctx.channel().disconnect();
 					ctx.channel().close();
 				}
 				else {
-					logger.debug("client成功连接 {}:{}", host, port);
+					logger.debug("client connect success {}:{}", host, port);
 					connections.setNetworkConnectionByHost(host, port, ctx);
 					connections.getCallback().onConnect(ctx);
 				}
 			}
 		}
 		catch(Exception e) {
-			logger.error("系统错误", e);
+			logger.error("error", e);
 		}
 	}
 	
 	@Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
 		try {
-			logger.debug("断连");
+			logger.debug("disconnect");
 			//已断连，获取ip信息
 			String host = ((SocketChannel)ctx.channel()).remoteAddress().getAddress().getHostAddress();
 			Integer port = ((SocketChannel)ctx.channel()).remoteAddress().getPort();
 			
-			logger.debug("断开 " + host + ":" + String.valueOf(port) + " ," + String.valueOf(ctx.channel().isActive()));
+			logger.debug("disconnect " + host + ":" + String.valueOf(port) + " ," + String.valueOf(ctx.channel().isActive()));
 			
 			if(isServer) {
 				//server模式下，移除该connectionInfo
@@ -109,7 +109,7 @@ public class ChannelHandler extends SimpleChannelInboundHandler<ByteBuf> {
 			connections.getCallback().onDisconnect(ctx);
 		}
 		catch(Exception e) {
-			logger.error("系统错误", e);
+			logger.error("error ", e);
 		}
     }
 	
@@ -121,7 +121,7 @@ public class ChannelHandler extends SimpleChannelInboundHandler<ByteBuf> {
 		final ChannelHandlerContext ctxF = ctx;
 		final ByteBuf in = (ByteBuf)msg;
 		
-		logger.trace("接收消息，来自" + host + ":" + port + " in:" + in.readableBytes());
+		logger.trace("receive，from" + host + ":" + port + " in:" + in.readableBytes());
 		logger.trace("threadPool:{}", threadPool == null);
 		
 		try {
@@ -138,18 +138,18 @@ public class ChannelHandler extends SimpleChannelInboundHandler<ByteBuf> {
 			}
 		}
 		catch(RejectedExecutionException e) {
-			logger.error("线程池已满，拒绝请求", e);
+			logger.error("threadPool is full,reject to request", e);
 		}
     }
 	
 	@Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-		logger.error("网络错误", cause);
+		logger.error("network error ", cause);
 		//已断连，获取ip信息
 		String host = ((SocketChannel)ctx.channel()).remoteAddress().getAddress().getHostAddress();
 		Integer port = ((SocketChannel)ctx.channel()).remoteAddress().getPort();
 		
-		logger.debug("断开 " + host + ":" + String.valueOf(port) + " ," + String.valueOf(ctx.channel().isActive()));
+		logger.debug("disconnect " + host + ":" + String.valueOf(port) + " ," + String.valueOf(ctx.channel().isActive()));
 		
 		if(isServer) {
 			//server模式下，移除该connection

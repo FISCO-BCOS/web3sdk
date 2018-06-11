@@ -50,8 +50,8 @@ public class ChannelEthereumService extends Service {
             response = channelService.sendEthereumMessage(ethereumRequest, request.getTransactionSucCallback());
         }
 
-        logger.debug("发送ethereum请求:{} {}", ethereumRequest.getMessageID(), objectMapper.writeValueAsString(request));
-        logger.debug("收到ethereum响应:{} {} {}", ethereumRequest.getMessageID(), response.getErrorCode(), response.getContent());
+        logger.debug("Ethereum Request:{} {}", ethereumRequest.getMessageID(), objectMapper.writeValueAsString(request));
+        logger.debug("Ethereum Response:{} {} {}", ethereumRequest.getMessageID(), response.getErrorCode(), response.getContent());
 
         return objectMapper.readValue(response.getContent(), responseType);
     }

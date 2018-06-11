@@ -21,13 +21,11 @@ public abstract class ChannelResponseCallback {
 	
 	public final void onResponse(ChannelResponse response) {
 		if(response.getErrorCode() == 99) {
-			logger.error("本地节点错误，尝试下一个本地节点");
-			
+			logger.error("Local node error，try the next local node");
 			retrySendMessage(1); //1表示客户端错误
 		}
 		else if(response.getErrorCode() == 100) {
-			logger.error("远端节点错误，尝试下一个远端节点");
-			
+			logger.error("Remote node error，try the next remote node");
 			retrySendMessage(2); //2表示服务端错误，错误码可重用
 		}
 		else {
@@ -35,7 +33,7 @@ public abstract class ChannelResponseCallback {
 				onResponseMessage(response);
 			}
 			catch(Exception e) {
-				logger.error("回包处理错误:", e);
+				logger.error("c:", e);
 			}
 			
 			if(message.getSeq() != null) {
@@ -49,19 +47,19 @@ public abstract class ChannelResponseCallback {
 	}
 	
 	public final void onTimeout() {
-		logger.error("发送消息超时:{}", message.getSeq());
+		logger.error("send message timeout:{}", message.getSeq());
 
 		ChannelResponse response = new ChannelResponse();
 		response.setErrorCode(102);
 		response.setMessageID(message.getSeq());
-		response.setErrorMessage("发送消息超时");
+		response.setErrorMessage("send message timeout");
 		response.setContent("");
 
 		try {
 			onResponseMessage(response);
 		}
 		catch(Exception e) {
-			logger.error("超时处理错误:", e);
+			logger.error("timeout processing error:", e);
 		}
 		
 		service.getSeq2Callback().remove(message.getSeq());
@@ -75,56 +73,56 @@ public abstract class ChannelResponseCallback {
 				message.setFromNode("");
 				
 				//选取客户端节点
-				logger.debug("本地节点数:{}", fromConnectionInfos.size());
+				logger.debug("Number of local nodes:{}", fromConnectionInfos.size());
 				if (fromConnectionInfos.size() > 0) {
 					Random random = new Random();
 					Integer index = random.nextInt(fromConnectionInfos.size());
 
-					logger.debug("选取:{}", index);
+					logger.debug("selected:{}", index);
 
 					setFromConnection(fromConnectionInfos.get(index));
 					message.setFromNode(getFromConnection().getNodeID());
 
 					Boolean res = fromConnectionInfos.remove(fromConnectionInfos.get(index));
-					logger.debug("处理后本地节点数:{} {}", res, fromConnectionInfos.size());
+					logger.debug("Number of local nodes after processing:{} {}", res, fromConnectionInfos.size());
 				}
 				
 				if(message.getFromNode().isEmpty()) {
 					// 所有节点已尝试，无法再重试了
-					logger.error("所有本地区块链节点均不可用");
+					logger.error("All local nodes are unavailable");
 
 					errorCode = 99;
-					throw new Exception("所有本地区块链节点均不可用");
+					throw new Exception("All local nodes are unavailable");
 				}
 			}
 			
 			if(errorType == 2 || errorType == 0) {
 				message.setToNode("");
 				// 选取服务端节点
-				logger.debug("对端节点数:{}", toConnectionInfos.size());
+				logger.debug("Number of peer nodes:{}", toConnectionInfos.size());
 				if (toConnectionInfos.size() > 0) {
 					Random random = new Random();
 					Integer index = random.nextInt(toConnectionInfos.size());
 
-					logger.debug("选取:{}", index);
+					logger.debug("selected:{}", index);
 
 					setToConnection(toConnectionInfos.get(index));
 					message.setToNode(getToConnection().getNodeID());
 
 					Boolean res = toConnectionInfos.remove(toConnectionInfos.get(index));
-					logger.debug("处理后对端节点数:{} {}", res, toConnectionInfos.size());
+					logger.debug("Number of peer nodes after processing:{} {}", res, toConnectionInfos.size());
 				}
 
 				if (message.getToNode().isEmpty()) {
 					// 所有节点已尝试，无法再重试了
-					logger.error("所有对端区块链节点均不可用");
+					logger.error("All peer nodes are unavailable");
 
 					errorCode = 103;
-					throw new Exception("所有对端区块链节点均不可用");
+					throw new Exception("All peer nodes are unavailable");
 				}
 			}
 			
-			logger.debug("尝试从{} 发送到:{}", message.getFromNode(), message.getToNode());
+			logger.debug("try from {} send to:{}", message.getFromNode(), message.getToNode());
 			
 			message.setFromNode(fromConnection.getNodeID());
 			
@@ -137,15 +135,15 @@ public abstract class ChannelResponseCallback {
 
 				ctx.writeAndFlush(out);
 
-				logger.debug("发送消息至 " + fromConnection.getHost() + ":" + String.valueOf(fromConnection.getPort()) + " 成功");
+				logger.debug("send message to " + fromConnection.getHost() + ":" + String.valueOf(fromConnection.getPort()) + " success");
 			}
 			else {
-				logger.error("发送节点不可用");
+				logger.error("sending node unavailable");
 				
 				retrySendMessage(1);
 			}
 		} catch (Exception e) {
-			logger.error("发送消息异常", e);
+			logger.error("send message exception ", e);
 
 			ChannelResponse response = new ChannelResponse();
 			response.setErrorCode(errorCode);
@@ -155,7 +153,7 @@ public abstract class ChannelResponseCallback {
 				onResponseMessage(response);
 			}
 			catch(Exception ee) {
-				logger.error("异常处理错误", ee);
+				logger.error("onResponseMessage error:", ee);
 			}
 			
 			//彻底失败后，删掉这个seq

@@ -7,6 +7,67 @@ LANG=zh_CN.UTF-8
 ##
 ##############################################################################
 
+echo "SystemContract Command reference is as follows"
+echo "Usage:./web3sdk InitSystemContract"
+echo "Usage:./web3sdk SystemProxy"
+echo "Usage:./web3sdk AuthorityFilter"
+echo "Usage:./web3sdk NodeAction all|registerNode|cancelNode"
+echo "Usage:./web3sdk CAAction all|add|remove"
+echo "Usage:./web3sdk ConfigAction get|set"
+echo "Usage:./web3sdk ConsensusControl deploy|turnoff|list"
+echo "Usage:./web3sdk CNSAction add|update|get|list|historylist|reset"
+
+echo "==================================================================="
+
+echo "WEB3RPC Command reference is as follows"
+echo "Usage: ./web3sdk web3_clientVersion "
+echo "Usage: ./web3sdk eth_accounts"
+echo "Usage: ./web3sdk eth_blockNumber"
+echo "Usage: ./web3sdk eth_pbftView"
+echo "Usage: ./web3sdk eth_getCode address blockNumber"
+echo "Usage: ./web3sdk eth_getBlockTransactionCountByHash blockHash"
+echo "Usage: ./web3sdk eth_getTransactionCount address blockNumber"
+echo "Usage: ./web3sdk eth_getBlockTransactionCountByNumber blockNumber"
+echo "Usage: ./web3sdk eth_sendRawTransaction signTransactionData"
+echo "Usage: ./web3sdk eth_getBlockByHash blockHash true|false"
+echo "Usage: ./web3sdk eth_getBlockByNumber blockNumber"
+echo "Usage: ./web3sdk eth_getTransactionByBlockNumberAndIndex blockNumber transactionPosition"
+echo "Usage: ./web3sdk eth_getTransactionByBlockHashAndIndex blockHash transactionPosition"
+echo "Usage: ./web3sdk eth_getTransactionReceipt transactionHash"
+
+echo "==================================================================="
+
+echo "Permission Command reference is as follows"
+echo "Usage: ./web3sdk ARPI_Model "
+echo "Usage: ./web3sdk PermissionInfo "
+echo "Usage: ./web3sdk FilterChain addFilter name1 version1 desc1 "
+echo "Usage: ./web3sdk FilterChain delFilter num "
+echo "Usage: ./web3sdk FilterChain showFilter "
+echo "Usage: ./web3sdk FilterChain resetFilter "
+echo "Usage: ./web3sdk Filter getFilterStatus num "
+echo "Usage: ./web3sdk Filter enableFilter num "
+echo "Usage: ./web3sdk Filter disableFilter num "
+echo "Usage: ./web3sdk Filter setUsertoNewGroup num account "
+echo "Usage: ./web3sdk Filter setUsertoExistingGroup num account group "
+echo "Usage: ./web3sdk Filter listUserGroup num account "
+echo "Usage: ./web3sdk Group getBlackStatus num account "
+echo "Usage: ./web3sdk Group enableBlack num account "
+echo "Usage: ./web3sdk Group disableBlack num account "
+echo "Usage: ./web3sdk Group getDeployStatus num account "
+echo "Usage: ./web3sdk Group enableDeploy num account "
+echo "Usage: ./web3sdk Group disableDeploy num account "
+echo "Usage: ./web3sdk Group addPermission num account A.address fun(string) "
+echo "Usage: ./web3sdk Group delPermission num account A.address fun(string) "
+echo "Usage: ./web3sdk Group checkPermission num account A.address fun(string) "
+echo "Usage: ./web3sdk Group listPermission num account "
+
+
+#第一个参数不能为空
+if [ $# -lt 1 ]; then
+    echo "arg1 can not be empty"
+    exit 1
+fi
+
 # Attempt to set APP_HOME
 # Resolve links: $0 may be a link
 PRG="$0"
@@ -65,9 +126,17 @@ case "`uname`" in
     ;;
 esac
 
+CLASSPATH=$APP_HOME/conf
 
+for f in $APP_HOME/lib/*.jar
+do 
+CLASSPATH=$CLASSPATH:$f
+done
 
-CLASSPATH=$APP_HOME/conf/:$APP_HOME/lib/*:$APP_HOME/lib/aopalliance-1.0.jar:$APP_HOME/lib/asm-5.0.3.jar:$APP_HOME/lib/asm-analysis-5.0.3.jar:$APP_HOME/lib/asm-commons-5.0.3.jar:$APP_HOME/lib/asm-tree-5.0.3.jar:$APP_HOME/lib/asm-util-5.0.3.jar:$APP_HOME/lib/bcprov-jdk15on-1.54.jar:$APP_HOME/lib/commons-codec-1.9.jar:$APP_HOME/lib/commons-io-2.5.jar:$APP_HOME/lib/commons-logging-1.2.jar:$APP_HOME/lib/fastjson-1.2.24.jar:$APP_HOME/lib/httpclient-4.5.2.jar:$APP_HOME/lib/httpcore-4.4.4.jar:$APP_HOME/lib/httpmime-4.3.1.jar:$APP_HOME/lib/jackson-annotations-2.8.0.jar:$APP_HOME/lib/jackson-core-2.8.5.jar:$APP_HOME/lib/jackson-databind-2.8.5.jar:$APP_HOME/lib/javapoet-1.7.0.jar:$APP_HOME/lib/jffi-1.2.14.jar:$APP_HOME/lib/jffi-1.2.14-native.jar:$APP_HOME/lib/jnr-constants-0.9.6.jar:$APP_HOME/lib/jnr-enxio-0.14.jar:$APP_HOME/lib/jnr-ffi-2.1.2.jar:$APP_HOME/lib/jnr-posix-3.0.33.jar:$APP_HOME/lib/jnr-unixsocket-0.15.jar:$APP_HOME/lib/jnr-x86asm-1.0.2.jar:$APP_HOME/lib/netty-all-4.1.15.Final.jar:$APP_HOME/lib/netty-tcnative-2.0.0.Final.jar:$APP_HOME/lib/rxjava-1.2.4.jar:$APP_HOME/lib/scrypt-1.4.0.jar:$APP_HOME/lib/slf4j-api-1.7.10.jar:$APP_HOME/lib/spring-aop-4.1.8.RELEASE.jar:$APP_HOME/lib/spring-beans-4.1.8.RELEASE.jar:$APP_HOME/lib/spring-context-4.1.8.RELEASE.jar:$APP_HOME/lib/spring-core-4.1.8.RELEASE.jar:$APP_HOME/lib/spring-expression-4.1.8.RELEASE.jar:$APP_HOME/lib/spring-jdbc-4.1.8.RELEASE.jar:$APP_HOME/lib/spring-test-4.1.8.RELEASE.jar:$APP_HOME/lib/spring-tx-4.1.8.RELEASE.jar:$APP_HOME/apps/web3sdk.jar
+for f in $APP_HOME/apps/*.jar
+do 
+CLASSPATH=$CLASSPATH:$f
+done
 
 
 # Determine the Java command to use to start the JVM.
@@ -164,5 +233,23 @@ function splitJvmOpts() {
 }
 eval splitJvmOpts $DEFAULT_JVM_OPTS $JAVA_OPTS $WEB3J_OPTS
 
-exec "$JAVACMD" "${JVM_OPTS[@]}" -classpath "$CLASSPATH" org.bcos.web3j.console.Runner "$@"
+if [ $1 == "InitSystemContract" ] ; then
+	exec "$JAVACMD" "${JVM_OPTS[@]}" -classpath "$CLASSPATH" org.bcos.contract.tools.InitSystemContract "$@"
+	
+elif [ $1 == "SystemProxy" -o $1 == "AuthorityFilter" -o $1 == "NodeAction" -o $1 == "CAAction" -o $1 == "ConfigAction" -o $1 == "ConsensusControl" -o $1 == "CNSAction" ] ; then
+	exec "$JAVACMD" "${JVM_OPTS[@]}" -classpath "$CLASSPATH" org.bcos.contract.tools.SystemContractTools "$@"
+	
+elif [ $1 == "eth_accounts" -o $1 == "web3_clientVersion" -o $1 == "eth_blockNumber" -o $1 == "eth_pbftView" -o $1 == "eth_getCode" -o $1 == "eth_getBlockTransactionCountByHash" -o $1 == "eth_getTransactionCount" -o $1 == "eth_getBlockTransactionCountByNumber" -o $1 == "eth_sendRawTransaction" -o $1 == "eth_getBlockByHash" -o $1 == "eth_getBlockByNumber" -o $1 == "eth_getTransactionByBlockNumberAndIndex" -o $1 == "eth_getTransactionByBlockHashAndIndex" -o $1 == "eth_getTransactionReceipt" ] ; then
+	exec "$JAVACMD" "${JVM_OPTS[@]}" -classpath "$CLASSPATH" org.bcos.web3j.console.Web3RpcApi "$@"
+	
+elif [ $1 == "ARPI_Model" ] ; then
+    exec "$JAVACMD" "${JVM_OPTS[@]}" -classpath "$CLASSPATH" org.bcos.contract.tools.ARPI_Model "$@"
+    
+elif [ $1 == "PermissionInfo" -o $1 == "FilterChain" -o $1 == "Filter" -o $1 == "Group" ] ; then
+    exec "$JAVACMD" "${JVM_OPTS[@]}" -classpath "$CLASSPATH" org.bcos.contract.tools.AuthorityManager "$@" 
+       
+else	
+	exec "$JAVACMD" "${JVM_OPTS[@]}" -classpath "$CLASSPATH" org.bcos.web3j.console.Runner "$@"
+fi	
+
 

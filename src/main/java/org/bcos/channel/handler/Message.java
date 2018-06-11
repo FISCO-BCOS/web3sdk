@@ -17,24 +17,16 @@ public class Message implements Serializable {
 	public static final int HEADER_LENGTH = 4 + 2 + 32 + 4;
 	
 	public void readHeader(ByteBuf in) {
-		//logger.debug("读取channel消息: {}:", ByteBufUtil.hexDump(in));
-		
+
 		length = in.readInt();
-		//logger.debug("读取length:{}", length);
 		type = in.readShort();
-		//logger.debug("读取type:{}", type);
-		
 		byte[] dst = new byte[32];
 		in.readBytes(dst);
-		
 		try {
 			seq = new String(dst, "utf-8");
-			//logger.debug("读取seq:{}", seq);
 		} catch (UnsupportedEncodingException e) {
-			//logger.error("解析seq错误，非法字符", e);
 		}
 		result = in.readInt();
-		//logger.debug("读取result:{}", result);
 	}
 	
 	public void readExtra(ByteBuf in) {
@@ -50,11 +42,9 @@ public class Message implements Serializable {
 		
 		out.writeInt(length);
 		out.writeShort(type);
-		//out.writeInt(seq);
 		out.writeBytes(seq.getBytes(), 0, 32);
 		out.writeInt(result);
-		
-		//logger.debug("写入channel消息: {}:", ByteBufUtil.hexDump(out));
+
 	}
 	
 	public void writeExtra(ByteBuf out) {

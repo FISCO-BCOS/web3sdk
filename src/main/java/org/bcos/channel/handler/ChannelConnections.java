@@ -158,14 +158,14 @@ public class ChannelConnections {
 		}
 		
 		if(activeConnections.isEmpty()) {
-			logger.error("无可用连接");
-			throw new Exception("错误，无可用连接");
+			logger.error("activeConnections isEmpty");
+			throw new Exception("activeConnections isEmpty");
 		}
 		
 		Random random = new Random();
 		Integer index = random.nextInt(activeConnections.size());
 		
-		logger.debug("选取:{}", index);
+		logger.debug("selected:{}", index);
 		
 		return activeConnections.get(index);
 	}
@@ -204,11 +204,11 @@ public class ChannelConnections {
 	
 	public void startListen(Integer port) {
 		if(running) {
-			logger.debug("服务已启动");
+			logger.debug("running");
 			return;
 		}
 		
-		logger.debug("初始化connections listen");
+		logger.debug("init connections listen");
 		
 		EventLoopGroup bossGroup = new NioEventLoopGroup();
 		EventLoopGroup workerGroup = new NioEventLoopGroup();
@@ -261,12 +261,12 @@ public class ChannelConnections {
 			running = true;
 		}
 		catch(Exception e) {
-			logger.error("系统错误", e);
+			logger.error("error ", e);
 		}
 	}
 	
 	public void init() {
-		logger.debug("初始化connections");
+		logger.debug("init connections");
 		
 		Set<String> hostSet = new HashSet<String>();
 		
@@ -287,9 +287,9 @@ public class ChannelConnections {
 				
 				networkConnections.put(split1[1], null);
 
-				logger.debug("添加直连节点:[" + split1[0] + "]:[" + split1[1] + "]");
+				logger.debug("add direct node :[" + split1[0] + "]:[" + split1[1] + "]");
 			} else {
-				logger.debug("添加非直连节点:[" + split1[0] + "]");
+				logger.debug("add undirected node:[" + split1[0] + "]");
 			}
 			
 			connection.setConfig(true);
@@ -299,11 +299,11 @@ public class ChannelConnections {
 	
 	public void startConnect() {
 		if(running) {
-			logger.debug("服务已启动");
+			logger.debug("running");
 			return;
 		}
 		
-		logger.debug("初始化connections connect");
+		logger.debug("init connections connect");
 		//初始化netty
 		EventLoopGroup workerGroup = new NioEventLoopGroup();
 		
@@ -359,7 +359,8 @@ public class ChannelConnections {
 						Thread.sleep(heartBeatDelay);
 					}
 				} catch (InterruptedException e) {
-					logger.error("系统错误", e);
+					logger.error("error", e);
+					Thread.currentThread().interrupt();
 				}
 			}
 		};
@@ -374,12 +375,12 @@ public class ChannelConnections {
 				
 				String host = split[0];
 				Integer port = Integer.parseInt(split[1]);
-				logger.debug("尝试连接到: {}:{}", host, port);
+				logger.debug("try connect to: {}:{}", host, port);
 
 				bootstrap.connect(host, port);
 			}
 			else {
-				logger.trace("发送心跳至 {}", ctx.getKey());
+				logger.trace("send heart beat to {}", ctx.getKey());
 				//连接还在，发送心跳
 				EthereumMessage ethereumMessage = new EthereumMessage();
 				

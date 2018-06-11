@@ -27,6 +27,7 @@ public class CertificateManager {
 
     static File buildKeyStore(String url, char[] keyStorePassword) {
         KeyStore keyStore;
+        FileOutputStream fileOutputStream  = null;
         try {
             keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
             keyStore.load(null, keyStorePassword);
@@ -50,9 +51,8 @@ public class CertificateManager {
             SecureRandom random = new SecureRandom();
             File keyFile = File.createTempFile("web3j-", "" + random.nextLong());
 
-            FileOutputStream fileOutputStream = new FileOutputStream(keyFile);
+            fileOutputStream = new FileOutputStream(keyFile);
             keyStore.store(fileOutputStream, keyStorePassword);
-            fileOutputStream.close();
 
             deleteFileOnShutdown(keyFile);
 
@@ -70,6 +70,15 @@ public class CertificateManager {
             throw new RuntimeException(e);
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
+        } finally {
+        	try {
+        		if(fileOutputStream != null) {
+        			fileOutputStream.close();
+        		}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
         }
     }
 

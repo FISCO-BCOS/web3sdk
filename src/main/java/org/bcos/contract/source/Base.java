@@ -1,5 +1,10 @@
 package org.bcos.contract.source;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.Future;
 import org.bcos.web3j.abi.EventEncoder;
 import org.bcos.web3j.abi.EventValues;
 import org.bcos.web3j.abi.TypeReference;
@@ -8,6 +13,7 @@ import org.bcos.web3j.abi.datatypes.Event;
 import org.bcos.web3j.abi.datatypes.Utf8String;
 import org.bcos.web3j.abi.datatypes.generated.Uint256;
 import org.bcos.web3j.crypto.Credentials;
+import org.bcos.web3j.crypto.EncryptType;
 import org.bcos.web3j.protocol.Web3j;
 import org.bcos.web3j.protocol.core.DefaultBlockParameter;
 import org.bcos.web3j.protocol.core.methods.request.EthFilter;
@@ -15,11 +21,6 @@ import org.bcos.web3j.protocol.core.methods.response.Log;
 import org.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.bcos.web3j.tx.Contract;
 import org.bcos.web3j.tx.TransactionManager;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.Future;
 import rx.Observable;
 import rx.functions.Func1;
 
@@ -31,24 +32,30 @@ import rx.functions.Func1;
  * <p>Generated with web3j version none.
  */
 public final class Base extends Contract {
-    private static final String BINARY = "60606040523415600e57600080fd5b603580601b6000396000f3006060604052600080fd00a165627a7a723058207b5da91ae5fa1ecd0b9693f44172f9c1d93dff320a2b61be80e6c40e879dcb150029";
+    private static String BINARY = "60606040523415600b57fe5b5b60338060196000396000f30060606040525bfe00a165627a7a72305820c8b8216518ba99b7df1caef499ea66b0362702c95c5c5354390d4c143c1459900029";
 
     public static final String ABI = "[{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"addr\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"code\",\"type\":\"uint256\"},{\"indexed\":false,\"name\":\"msg\",\"type\":\"string\"}],\"name\":\"LogMessage\",\"type\":\"event\"}]";
 
+    private static String GUOMI_BINARY = "60606040523415600b57fe5b5b60338060196000396000f30060606040525bfe00a165627a7a723058208742f10f77f73c2085b44b6b7a5c7d69cd71c890ec889fd5b75cc0e24e827ffb0029";
+
     private Base(String contractAddress, Web3j web3j, Credentials credentials, BigInteger gasPrice, BigInteger gasLimit, Boolean isInitByName) {
         super(BINARY, contractAddress, web3j, credentials, gasPrice, gasLimit, isInitByName);
+        if(EncryptType.encryptType == 1) super.setContractBinary(GUOMI_BINARY);
     }
 
     private Base(String contractAddress, Web3j web3j, TransactionManager transactionManager, BigInteger gasPrice, BigInteger gasLimit, Boolean isInitByName) {
         super(BINARY, contractAddress, web3j, transactionManager, gasPrice, gasLimit, isInitByName);
+        if(EncryptType.encryptType == 1) super.setContractBinary(GUOMI_BINARY);
     }
 
     private Base(String contractAddress, Web3j web3j, Credentials credentials, BigInteger gasPrice, BigInteger gasLimit) {
         super(BINARY, contractAddress, web3j, credentials, gasPrice, gasLimit, false);
+        if(EncryptType.encryptType == 1) super.setContractBinary(GUOMI_BINARY);
     }
 
     private Base(String contractAddress, Web3j web3j, TransactionManager transactionManager, BigInteger gasPrice, BigInteger gasLimit) {
         super(BINARY, contractAddress, web3j, transactionManager, gasPrice, gasLimit, false);
+        if(EncryptType.encryptType == 1) super.setContractBinary(GUOMI_BINARY);
     }
 
     public static List<LogMessageEventResponse> getLogMessageEvents(TransactionReceipt transactionReceipt) {
@@ -87,10 +94,12 @@ public final class Base extends Contract {
     }
 
     public static Future<Base> deploy(Web3j web3j, Credentials credentials, BigInteger gasPrice, BigInteger gasLimit, BigInteger initialWeiValue) {
+        if(EncryptType.encryptType == 1) setBinary(getGuomiBinary());
         return deployAsync(Base.class, web3j, credentials, gasPrice, gasLimit, BINARY, "", initialWeiValue);
     }
 
     public static Future<Base> deploy(Web3j web3j, TransactionManager transactionManager, BigInteger gasPrice, BigInteger gasLimit, BigInteger initialWeiValue) {
+        if(EncryptType.encryptType == 1) setBinary(getGuomiBinary());
         return deployAsync(Base.class, web3j, transactionManager, gasPrice, gasLimit, BINARY, "", initialWeiValue);
     }
 
@@ -108,6 +117,14 @@ public final class Base extends Contract {
 
     public static Base loadByName(String contractName, Web3j web3j, TransactionManager transactionManager, BigInteger gasPrice, BigInteger gasLimit) {
         return new Base(contractName, web3j, transactionManager, gasPrice, gasLimit, true);
+    }
+
+    public static void setBinary(String binary) {
+        BINARY = binary;
+    }
+
+    public static String getGuomiBinary() {
+        return GUOMI_BINARY;
     }
 
     public static class LogMessageEventResponse {

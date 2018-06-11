@@ -12,6 +12,8 @@ import java.util.concurrent.Future;
 import javax.lang.model.element.Modifier;
 
 import org.bcos.channel.client.TransactionSucCallback;
+import org.bcos.contract.source.AuthorityFilter;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
@@ -23,6 +25,8 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
+//import com.sun.media.jfxmedia.logging.Logger;
+
 import rx.functions.Func1;
 
 import org.bcos.web3j.abi.EventEncoder;
@@ -36,6 +40,7 @@ import org.bcos.web3j.abi.datatypes.StaticArray;
 import org.bcos.web3j.abi.datatypes.Type;
 import org.bcos.web3j.abi.datatypes.generated.AbiTypes;
 import org.bcos.web3j.crypto.Credentials;
+import org.bcos.web3j.crypto.EncryptType;
 import org.bcos.web3j.protocol.ObjectMapperFactory;
 import org.bcos.web3j.protocol.Web3j;
 import org.bcos.web3j.protocol.core.DefaultBlockParameter;
@@ -55,6 +60,7 @@ import org.bcos.web3j.utils.Version;
 public class SolidityFunctionWrapper {
 
     private static final String BINARY = "BINARY";
+    private static final String GUOMI_BINARY = "GUOMI_BINARY";
     private static final String ABI = "ABI";
     private static final String WEB3J = "web3j";
     private static final String CREDENTIALS = "credentials";
@@ -68,52 +74,94 @@ public class SolidityFunctionWrapper {
     private static final String END_BLOCK = "endBlock";
     private static final String WEI_VALUE = "weiValue";
     private static final String IS_INITBYNAME = "isInitByName";
-
+    
     private static final String CODEGEN_WARNING = "Auto generated code.<br>\n"
             + "<strong>Do not modify!</strong><br>\n"
             + "Please use the "
             + "<a href=\"https://docs.web3j.io/command_line.html\">web3j command line tools</a>, "
             + "or {@link " + SolidityFunctionWrapperGenerator.class.getName() + "} to update.\n";
 
-    public void generateJavaFiles(
-            String contractName, String bin, String abi, String destinationDirLocation,
-            String basePackageName)
-            throws IOException, ClassNotFoundException {
-        String className = Strings.capitaliseFirstLetter(contractName);
+    private static int encryptType = 0;
+	// ======================
+	/*
+	 * add guomi compiler binary support
+	 * 
+	 * @ author: fisco-bcos-dev
+	 */
+	public void setEncryptType(int encryptType) {
+		this.encryptType = encryptType;
+	}
 
-        TypeSpec.Builder classBuilder = createClassBuilder(className, bin, abi);
+	private FieldSpec createGuomiBinaryDefinition(String guomi_binary) {
+		return FieldSpec.builder(String.class, GUOMI_BINARY).addModifiers(Modifier.PRIVATE, Modifier.STATIC)
+				.initializer("$S", guomi_binary).build();
+	}
 
-        classBuilder.addMethod(buildConstructor(Credentials.class, CREDENTIALS));
-        classBuilder.addMethod(buildConstructor(TransactionManager.class, TRANSACTION_MANAGER));
-        classBuilder.addMethod(buildConstructorWithDefaultParam(Credentials.class, CREDENTIALS));
-        classBuilder.addMethod(buildConstructorWithDefaultParam(TransactionManager.class, TRANSACTION_MANAGER));
+	private static MethodSpec buildSetBinary() {
+		return MethodSpec.methodBuilder("setBinary").addModifiers(Modifier.PUBLIC, Modifier.STATIC).returns(void.class)
+				.addParameter(String.class, "binary").addStatement("BINARY = binary").build();
+	}
 
-        classBuilder.addMethods(
-                buildFunctionDefinitions(className, classBuilder, loadContractDefinition(abi)));
-        classBuilder.addMethod(buildLoad(className, Credentials.class, CREDENTIALS));
-        classBuilder.addMethod(buildLoad(className, TransactionManager.class, TRANSACTION_MANAGER));
-        classBuilder.addMethod(buildLoadByName(className, Credentials.class, CREDENTIALS));
-        classBuilder.addMethod(buildLoadByName(className, TransactionManager.class, TRANSACTION_MANAGER));
+	private static MethodSpec buildGetGuomiBinary() {
+		return MethodSpec.methodBuilder("getGuomiBinary").addModifiers(Modifier.PUBLIC, Modifier.STATIC).returns(String.class)
+				.addStatement("return GUOMI_BINARY").build();
+	}
+	// ===========================
+	public void generateJavaFiles(String contractName, String bin, String abi, String destinationDirLocation,
+			String basePackageName, String guomiBinary) throws IOException, ClassNotFoundException {
+		String className = Strings.capitaliseFirstLetter(contractName);
+		TypeSpec.Builder classBuilder = createClassBuilder(className, bin, abi);
+		if (classBuilder != null) {
+			classBuilder.addField(createGuomiBinaryDefinition(guomiBinary)); // generate and set GUOMI_BINARY
+			classBuilder.addMethod(buildSetBinary()); // generate method "setBinary"
+			classBuilder.addMethod(buildGetGuomiBinary()); // generate method "getGuomiBinary"
+			JavaFile javaFile = JavaFile.builder(basePackageName, classBuilder.build()).indent("    ")
+					.skipJavaLangImports(true).build();
+			javaFile.writeTo(new File(destinationDirLocation));
+		} else {
+			System.out.println("genearate java code failed, exit now");
+			System.exit(1);
+		}
+	}
 
-        JavaFile javaFile = JavaFile.builder(basePackageName, classBuilder.build())
-                .indent("    ")
-                .skipJavaLangImports(true)
-                .build();
+	public void generateJavaFiles(String contractName, String bin, String abi, String destinationDirLocation,
+			String basePackageName) throws IOException, ClassNotFoundException {
+		String className = Strings.capitaliseFirstLetter(contractName);
+		TypeSpec.Builder classBuilder = createClassBuilder(className, bin, abi);
+		if (classBuilder != null) {
+			JavaFile javaFile = JavaFile.builder(basePackageName, classBuilder.build()).indent("    ")
+					.skipJavaLangImports(true).build();
+			javaFile.writeTo(new File(destinationDirLocation));
+		} else {
+			System.out.println("genearate java code failed, exit now");
+			System.exit(1);
+		}
+	}
+    
 
-        javaFile.writeTo(new File(destinationDirLocation));
-    }
+	private TypeSpec.Builder createClassBuilder(String className, String binary, String abi) {
 
-    private TypeSpec.Builder createClassBuilder(String className, String binary,String abi) {
+		String javadoc = CODEGEN_WARNING + getWeb3jVersion();
+		try {
+			TypeSpec.Builder classBuilder = TypeSpec.classBuilder(className)
+					.addModifiers(Modifier.PUBLIC, Modifier.FINAL).addJavadoc(javadoc).superclass(Contract.class)
+					.addField(createBinaryDefinition(binary)).addField(createABIDefinition(abi));
+			classBuilder.addMethod(buildConstructor(Credentials.class, CREDENTIALS));
+			classBuilder.addMethod(buildConstructor(TransactionManager.class, TRANSACTION_MANAGER));
+			classBuilder.addMethod(buildConstructorWithDefaultParam(Credentials.class, CREDENTIALS));
+			classBuilder.addMethod(buildConstructorWithDefaultParam(TransactionManager.class, TRANSACTION_MANAGER));
 
-        String javadoc = CODEGEN_WARNING + getWeb3jVersion();
-
-        return TypeSpec.classBuilder(className)
-                .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-                .addJavadoc(javadoc)
-                .superclass(Contract.class)
-                .addField(createBinaryDefinition(binary))
-                .addField(createABIDefinition(abi));
-    }
+			classBuilder.addMethods(buildFunctionDefinitions(className, classBuilder, loadContractDefinition(abi)));
+			classBuilder.addMethod(buildLoad(className, Credentials.class, CREDENTIALS));
+			classBuilder.addMethod(buildLoad(className, TransactionManager.class, TRANSACTION_MANAGER));
+			classBuilder.addMethod(buildLoadByName(className, Credentials.class, CREDENTIALS));
+			classBuilder.addMethod(buildLoadByName(className, TransactionManager.class, TRANSACTION_MANAGER));
+			return classBuilder;
+		} catch (Exception e) {
+			System.out.println("create class builder failed, error msg:" + e.getMessage());
+			return null;
+		}
+	}
 
     private String getWeb3jVersion() {
         String version;
@@ -130,10 +178,11 @@ public class SolidityFunctionWrapper {
 
     private FieldSpec createBinaryDefinition(String binary) {
         return FieldSpec.builder(String.class, BINARY)
-                .addModifiers(Modifier.PRIVATE, Modifier.FINAL, Modifier.STATIC)
+                .addModifiers(Modifier.PRIVATE, Modifier.STATIC)
                 .initializer("$S", binary)
                 .build();
     }
+    
 
     private FieldSpec createABIDefinition(String abi) {
         return FieldSpec.builder(String.class, ABI)
@@ -186,31 +235,46 @@ public class SolidityFunctionWrapper {
         return methodSpecs;
     }
 
-    private static MethodSpec buildConstructor(Class authType, String authName) {
-        return MethodSpec.constructorBuilder()
-                .addModifiers(Modifier.PRIVATE)
-                .addParameter(String.class, CONTRACT_ADDRESS)
-                .addParameter(Web3j.class, WEB3J)
-                .addParameter(authType, authName)
-                .addParameter(BigInteger.class, GAS_PRICE)
-                .addParameter(BigInteger.class, GAS_LIMIT)
-                .addParameter(Boolean.class, IS_INITBYNAME)
-                .addStatement("super($N, $N, $N, $N, $N, $N, $N)",
-                        BINARY, CONTRACT_ADDRESS, WEB3J, authName, GAS_PRICE, GAS_LIMIT,IS_INITBYNAME)
-                .build();
-    }
-    private static MethodSpec buildConstructorWithDefaultParam(Class authType, String authName) {
-        return MethodSpec.constructorBuilder()
-                .addModifiers(Modifier.PRIVATE)
-                .addParameter(String.class, CONTRACT_ADDRESS)
-                .addParameter(Web3j.class, WEB3J)
-                .addParameter(authType, authName)
-                .addParameter(BigInteger.class, GAS_PRICE)
-                .addParameter(BigInteger.class, GAS_LIMIT)
-                .addStatement("super($N, $N, $N, $N, $N, $N, false)",
-                        BINARY, CONTRACT_ADDRESS, WEB3J, authName, GAS_PRICE, GAS_LIMIT)
-                .build();
-    }
+	private static MethodSpec buildConstructor(Class authType, String authName) {
+		if (encryptType == 1) {
+			return MethodSpec.constructorBuilder().addModifiers(Modifier.PRIVATE)
+					.addParameter(String.class, CONTRACT_ADDRESS).addParameter(Web3j.class, WEB3J)
+					.addParameter(authType, authName).addParameter(BigInteger.class, GAS_PRICE)
+					.addParameter(BigInteger.class, GAS_LIMIT).addParameter(Boolean.class, IS_INITBYNAME)
+					.addStatement("super($N, $N, $N, $N, $N, $N, $N)", BINARY, CONTRACT_ADDRESS, WEB3J, authName,
+							GAS_PRICE, GAS_LIMIT, IS_INITBYNAME)
+					.addStatement("if($T.encryptType == 1) super.setContractBinary(GUOMI_BINARY)", EncryptType.class)
+					.build();
+		} else {
+			return MethodSpec.constructorBuilder().addModifiers(Modifier.PRIVATE)
+					.addParameter(String.class, CONTRACT_ADDRESS).addParameter(Web3j.class, WEB3J)
+					.addParameter(authType, authName).addParameter(BigInteger.class, GAS_PRICE)
+					.addParameter(BigInteger.class, GAS_LIMIT).addParameter(Boolean.class, IS_INITBYNAME)
+					.addStatement("super($N, $N, $N, $N, $N, $N, $N)", BINARY, CONTRACT_ADDRESS, WEB3J, authName,
+							GAS_PRICE, GAS_LIMIT, IS_INITBYNAME)
+					.build();
+		}
+	}
+
+	private static MethodSpec buildConstructorWithDefaultParam(Class authType, String authName) {
+		if (encryptType == 1) {
+			return MethodSpec.constructorBuilder().addModifiers(Modifier.PRIVATE)
+					.addParameter(String.class, CONTRACT_ADDRESS).addParameter(Web3j.class, WEB3J)
+					.addParameter(authType, authName).addParameter(BigInteger.class, GAS_PRICE)
+					.addParameter(BigInteger.class, GAS_LIMIT)
+					.addStatement("super($N, $N, $N, $N, $N, $N, false)", BINARY, CONTRACT_ADDRESS, WEB3J, authName,
+							GAS_PRICE, GAS_LIMIT)
+					.addStatement("if($T.encryptType == 1) super.setContractBinary(GUOMI_BINARY)", EncryptType.class)
+					.build();
+		} else {
+			return MethodSpec.constructorBuilder().addModifiers(Modifier.PRIVATE)
+					.addParameter(String.class, CONTRACT_ADDRESS).addParameter(Web3j.class, WEB3J)
+					.addParameter(authType, authName).addParameter(BigInteger.class, GAS_PRICE)
+					.addParameter(BigInteger.class, GAS_LIMIT).addStatement("super($N, $N, $N, $N, $N, $N, false)",
+							BINARY, CONTRACT_ADDRESS, WEB3J, authName, GAS_PRICE, GAS_LIMIT)
+					.build();
+		}
+	}
 
     private static MethodSpec buildDeploy(
             String className, AbiDefinition functionDefinition,
@@ -226,15 +290,17 @@ public class SolidityFunctionWrapper {
         }
     }
 
-    private static MethodSpec buildDeployAsyncWithParams(
+	private static MethodSpec buildDeployAsyncWithParams(
             MethodSpec.Builder methodBuilder, String className, String inputParams,
             String authName) {
-
+      
         methodBuilder.addStatement("$T encodedConstructor = $T.encodeConstructor("
                         + "$T.<$T>asList($L)"
                         + ")",
                 String.class, FunctionEncoder.class, Arrays.class, Type.class, inputParams);
-
+        if(encryptType ==1) {
+        	methodBuilder.addStatement("if($T.encryptType == 1) setBinary(getGuomiBinary())", EncryptType.class).build();
+        }
         methodBuilder.addStatement(
                 "return deployAsync($L.class, $L, $L, $L, $L, $L, encodedConstructor, $L)",
                 className, WEB3J, authName, GAS_PRICE, GAS_LIMIT, BINARY, INITIAL_VALUE);
@@ -244,6 +310,9 @@ public class SolidityFunctionWrapper {
     private static MethodSpec buildDeployAsyncNoParams(
             MethodSpec.Builder methodBuilder, String className,
             String authName) {
+    	  if(encryptType ==1) {
+          	methodBuilder.addStatement("if($T.encryptType == 1) setBinary(getGuomiBinary())", EncryptType.class).build();
+          }
         methodBuilder.addStatement("return deployAsync($L.class, $L, $L, $L, $L, $L, \"\", $L)",
                 className, WEB3J, authName, GAS_PRICE, GAS_LIMIT, BINARY, INITIAL_VALUE);
         return methodBuilder.build();

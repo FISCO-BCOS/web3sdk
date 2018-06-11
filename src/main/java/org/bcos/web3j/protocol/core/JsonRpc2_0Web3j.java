@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.bcos.web3j.protocol.core.methods.request.ProofMerkle;
 import org.bcos.web3j.protocol.core.methods.response.*;
@@ -25,6 +26,9 @@ import org.bcos.web3j.protocol.core.methods.response.DbPutString;
 import org.bcos.web3j.protocol.core.methods.response.EthAccounts;
 import org.bcos.web3j.protocol.core.methods.response.EthBlock;
 import org.bcos.web3j.protocol.core.methods.response.EthBlockNumber;
+
+//增加eth_pbftView接口
+import org.bcos.web3j.protocol.core.methods.response.EthPbftView;
 import org.bcos.web3j.protocol.core.methods.response.EthCall;
 import org.bcos.web3j.protocol.core.methods.response.EthCoinbase;
 import org.bcos.web3j.protocol.core.methods.response.EthCompileLLL;
@@ -110,8 +114,7 @@ public class JsonRpc2_0Web3j implements Web3j {
                 while (true) {
                     try {
                     	Thread.sleep(10000);
-                    	
-                        EthBlockNumber ethBlockNumber = ethBlockNumber().sendAsync().get();
+                        EthBlockNumber ethBlockNumber = ethBlockNumber().sendAsync().get(10000, TimeUnit.MILLISECONDS);
                         setBlockNumber(ethBlockNumber.getBlockNumber());
                     } catch (Exception e) {
                         logger.error("Exception: " + e);
@@ -273,6 +276,17 @@ public class JsonRpc2_0Web3j implements Web3j {
                 ID,
                 web3jService,
                 EthBlockNumber.class);
+    }
+    
+    //增加eth_pbftView接口
+    @Override
+    public Request<?, EthPbftView> ethPbftView() {
+        return new Request<>(
+                "eth_pbftView",
+                Collections.<String>emptyList(),
+                ID,
+                web3jService,
+                EthPbftView.class);
     }
 
     @Override

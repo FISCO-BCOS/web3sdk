@@ -4,18 +4,31 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+import org.bcos.web3j.tx.RawTransactionManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * File utility functions.
  */
 public class Files {
-
+    static Logger logger = LoggerFactory.getLogger(Files.class);
     private Files() { }
 
     public static byte[] readBytes(File file) throws IOException {
         byte[] bytes = new byte[(int) file.length()];
-        FileInputStream fileInputStream = new FileInputStream(file);
-        fileInputStream.read(bytes);
-        fileInputStream.close();
+        FileInputStream fileInputStream = null;
+        try {
+            fileInputStream = new FileInputStream(file);
+            fileInputStream.read(bytes);
+        }catch (Exception e)
+        {
+            logger.error("readBytes error :", e);
+            throw e;
+        }finally {
+            if (fileInputStream != null) {
+                fileInputStream.close();
+            }
+        }
         return bytes;
     }
 
