@@ -34,9 +34,15 @@ public class ConsensusControlTools {
                     break;
                 case "list":
                     Address addr = mgr.getAddr().get();
+                    if (addr == null || addr.equals(new Address("0x0"))) {
+                        System.err.println("[WARNNING] the 'ContractControl' contract haven't been depolyed, please [deploy] the contract before exec [list] command");
+                        return;
+                    }
+
                     ConsensusControl control = ConsensusControl.load(addr.toString(), web3, credentials, gasPrice, gasLimit);
                     DynamicArray<Bytes32> tmp = control.lookupAgencyList().get();
                     List<Bytes32> agencyList = tmp.getValue();
+                    System.out.println("Current contract agency list and agency node count:");
                     for (Bytes32 agency : agencyList) {
                         Uint256 count = control.lookupAgencyCount(agency).get();
                         System.out.println("   agency:" + hexToString(agency) + "| count:" + count.getValue());

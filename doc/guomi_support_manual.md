@@ -9,7 +9,7 @@
         - [2.1.1 安装依赖软件](#211-安装依赖软件)
         - [2.1.2 部署国密版FISCO BCOS](#212-部署国密版fisco-bcos)
     - [2.2 部署web3sdk](#22-部署web3sdk)
-        - [2.2.1 编译客户端源码](#221-编译客户端源码)
+        - [2.2.1 编译web3sdk源码](#221-编译web3sdk源码)
         - [2.2.2 生成客户端证书](#222-生成客户端证书)
         - [2.2.3 开启国密算法，配置链上节点信息和证书](#223-开启国密算法配置链上节点信息和证书)
 - [3. 国密版FISCO BCOS系统合约部署](#3-国密版fisco-bcos系统合约部署)
@@ -38,7 +38,7 @@ FISCO BCOS支持国密算法，具体包括：
 
 <br>
 
-详细信息可参考[FISCO BCOS 国密特性文档](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/dev/doc/国密操作文档.md#12-国密版fisco-bcos特性列表). 本文档主要介绍如何在开启国密验证算法的FISCO BCOS环境下，使用websdk客户端部署系统合约、发交易以及使用系统合约工具。
+详细信息可参考[FISCO BCOS 国密特性文档](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/master/doc/国密操作文档.md#12-国密版fisco-bcos特性列表). 本文档主要介绍如何在开启国密验证算法的FISCO BCOS环境下，使用websdk客户端部署系统合约、发交易以及使用系统合约工具。
 主要包括如下内容：
 
 <br>
@@ -53,9 +53,6 @@ FISCO BCOS支持国密算法，具体包括：
 [返回目录](#目录)
 
 <br>
-
-***************************************
-
 <br>
 
 # 2. 适配于国密版FISCO BCOS的web3sdk环境部署
@@ -93,7 +90,7 @@ ln -s /usr/bin/fromdos /usr/bin/dos2unix
 
 ### 2.1.2 部署国密版FISCO BCOS
 
-在FISCO BCOS基础上**开启国密验证算法**，可参考[FISCO BCOS 国密特性文档](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/dev/doc/国密操作文档.md).
+在FISCO BCOS基础上**开启国密验证算法**，可参考[FISCO BCOS 国密特性文档](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/master/doc/国密操作文档.md).
 
 
 <br>
@@ -108,7 +105,7 @@ ln -s /usr/bin/fromdos /usr/bin/dos2unix
 
 依赖部署完毕后，可拉取web3sdk代码，编译客户端代码，配置链上节点信息，主要包括如下过程：
 
-### 2.2.1 编译客户端源码
+### 2.2.1 编译web3sdk源码
 
 <br>
 
@@ -116,10 +113,17 @@ ln -s /usr/bin/fromdos /usr/bin/dos2unix
 - 编译web3sdk源码，生成jar包
 
 ```bash
-#拉取git代码
-git clone xxxx.git 
-# 编译websdk源码，生成dist目录
-gradle build
+#=== 进入web3sdk源码放置目录（假设为/mydata/）=====
+$ mkdir -p /mydata
+$ cd /mydata
+
+#==== 拉取git代码 ====
+$ git clone https://github.com/FISCO-BCOS/web3sdk
+
+#===编译websdk源码，生成dist目录 ===
+$ cd web3sdk
+$ gradle build
+
 ```
 
 <br>
@@ -146,7 +150,7 @@ gradle build
 
 <br>
 
-> 国密版客户端证书ca.crt, client.keystore生成方法请参考[国密操作文档的生成客户端证书](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/dev/doc/%E5%9B%BD%E5%AF%86%E6%93%8D%E4%BD%9C%E6%96%87%E6%A1%A3.md#32-%E7%94%9F%E6%88%90%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%AF%81%E4%B9%A6)一节
+> 国密版客户端证书ca.crt, client.keystore生成方法请参考[国密操作文档的生成客户端证书](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/master/doc/%E5%9B%BD%E5%AF%86%E6%93%8D%E4%BD%9C%E6%96%87%E6%A1%A3.md#32-%E7%94%9F%E6%88%90%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%AF%81%E4%B9%A6)一节
 
 <br>
 
@@ -160,7 +164,7 @@ gradle build
 
 | 配置文件                   | 详细说明                                     |
 | ---------------------- | ---------------------------------------- |
-| applicationContext.xml | 主要包括三项配置: <br> - encryptType: 配置国密算法开启/关闭开关，0表示不使用国密算法发交易，1表示开启国密算法发交易，默认为0(即不使用国密算法发交易) ;  <br>  - systemProxyAddress: 配置FISCO BCOS系统合约地址, 部署系统合约成功后，要将systemProxyAddress对应的值改为部署的系统合约地址;  <br> - privKey: 向FISCO BCOS节点发交易或发消息的账户私钥，**国密版用户公私钥对和账户的生成方法请参考[4. 生成国密秘钥对和账户](4-生成国密秘钥对和账户)** <br> - ChannelConnections：配置FISCO BCOS节点信息和证书，证书相关配置如下:  <br>  (1) caCertPath: CA证书路径，默认为dist/conf/ca.crt; <br> (2) clientKeystorePath: 客户端证书路径，默认为dist/conf/client.keystore; <br> (3)keystorePassWord: 客户端证书文件访问口令, 默认为123456; <br> (4) clientCertPassWord: 客户端证书验证口令, 默认为123456 |
+| applicationContext.xml | 主要包括三项配置: <br> - encryptType: 配置国密算法开启/关闭开关，0表示不使用国密算法发交易，1表示开启国密算法发交易，默认为0(即不使用国密算法发交易) ;  <br>  - systemProxyAddress: 配置FISCO BCOS系统合约地址, 部署系统合约成功后，要将systemProxyAddress对应的值改为部署的系统合约地址;  <br> - privKey: 向FISCO BCOS节点发交易或发消息的账户私钥，**国密版用户公私钥对和账户的生成方法请参考[生成国密秘钥对和账户一章](#4-生成国密秘钥对和账户)** <br> - ChannelConnections：配置FISCO BCOS节点信息和证书，证书相关配置如下:  <br>  (1) caCertPath: CA证书路径，默认为dist/conf/ca.crt; <br> (2) clientKeystorePath: 客户端证书路径，默认为dist/conf/client.keystore; <br> (3)keystorePassWord: 客户端证书文件访问口令, 默认为123456; <br> (4) clientCertPassWord: 客户端证书验证口令, 默认为123456 |
 | ca.crt                 | CA证书，必须与链上FISCO BCOS节点CA证书保持一致           |
 | client.keystore        | 客户端证书(默认访问口令和验证口令均为123456)               |
 | 日志配置文件                 | - commons-logging.properties： 配置日志类, 默认为org.apache.commons.logging.impl.SimpleLog;  <br>  - log4j2.xml：日志常见配置，包括路径、格式、缓存大小等; <br> - simplelog.properties: 日志级别设置，默认为WARN |
@@ -236,7 +240,7 @@ gradle build
 
 # 3. 国密版FISCO BCOS系统合约部署
 
-部署完适配于[国密版FISCO BCOS](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/dev/doc/国密操作文档.md)的websdk后，可调用InitSystemContract部署系统合约，系统合约部署工具InitSystemContract由`src/main/java/org/bcos/contract/tools/InitSystemContract.java`调用合约生成的java代码实现，使用如下命令部署系统合约：
+部署完适配于[国密版FISCO BCOS](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/master/doc/国密操作文档.md)的websdk后，可调用InitSystemContract部署系统合约，系统合约部署工具InitSystemContract由`src/main/java/org/bcos/contract/tools/InitSystemContract.java`调用合约生成的java代码实现，使用如下命令部署系统合约：
 
 ```bash
 ##进入dist目录
@@ -274,9 +278,9 @@ Contract Deployment Completed System Agency Contract:0xc9ed60a2ebdf22936fdc92013
 
 **(1) 设置配置文件的系统合约地址：将dist/conf/applicationContext.xml的systemProxyAddress字段更新为输出的系统合约地址**
 
-**(2) 设置私钥地址：参考[4. 生成国密秘钥对和账户](#4-生成国密秘钥对和账户)，生成国密秘钥对和账户，将dist/conf/applicationContext.xml的privKey更新为生成的国密秘钥privateKey**
+**(2) 设置私钥地址：参考 [4.生成国密秘钥对和账户](#4-生成国密秘钥对和账户) ，生成国密秘钥对和账户，将dist/conf/applicationContext.xml的privKey更新为生成的国密秘钥privateKey**
 
-执行完上述两步操作后，按照[FISCO BCOS 国密特性文档](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/dev/doc/国密操作文档.md#7-多记账节点组网) **多记账节点组网**一节进行加入新节点等操作。
+执行完上述两步操作后，按照[FISCO BCOS 国密特性文档](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/master/doc/国密操作文档.md#7-多记账节点组网) **多记账节点组网**一节进行加入新节点等操作。
 
 <br>
 <br>
@@ -585,7 +589,7 @@ java -cp 'conf/:apps/\*:lib/\*' org.bcos.contract.tools.SystemContractTools "Con
 
 ## 5.3 测试工具使用方法
 
-web3sdk提供了一些测试工具，方便确定web3sdk与[FISCO BCOS](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/dev/doc/国密操作文档.md)通信是否正常，本节简要介绍这些测试工具使用方法：
+web3sdk提供了一些测试工具，方便确定web3sdk与[FISCO BCOS](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/master/doc/国密操作文档.md)通信是否正常，本节简要介绍这些测试工具使用方法：
 
 **(1) Ok合约测试工具**
 
@@ -662,14 +666,14 @@ compile.sh脚本将放置于`dist/contracts`目录下的sol合约转换成java�
 
 - ${package_name}: 生成的java代码import的包名;
 - ${enable_guomi}: 表明生成的java代码是否要求支持使用国密算法发交易；0表示不支持国密算法，1表示支持国密算法;
-- ${fisco_solc_guomi_path}: [国密版本fisco-solc编译器](https://github.com/FISCO-BCOS/fisco-solc) 路径，默认在\`which fisco-solc\`-guomi路径下，如何编译国密版本编译器可参考[编译国密版fisco-solc](https://github.com/FISCO-BCOS/fisco-solc/tree/dev#312-编译国密版fisco-solc);
+- ${fisco_solc_guomi_path}: [国密版本fisco-solc编译器](https://github.com/FISCO-BCOS/fisco-solc) 路径，默认在\`which fisco-solc\`-guomi路径下，如何编译国密版本编译器可参考[编译国密版fisco-solc](https://github.com/FISCO-BCOS/fisco-solc/tree/master#312-编译国密版fisco-solc);
 
 **说明**: 
 
-- 使用默认fisco-solc编译器编译dist/contracts目录下所有合约代码，使用[国密版本fisco-solc编译器](https://github.com/FISCO-BCOS/fisco-solc/tree/dev#312-编译国密版fisco-solc)编译dist/contacts目录下素有合约代码，并将其转换成支持国密算法的java代码，java代码包名由${package_name}指定;
+- 使用默认fisco-solc编译器编译dist/contracts目录下所有合约代码，使用[国密版本fisco-solc编译器](https://github.com/FISCO-BCOS/fisco-solc/tree/master#312-编译国密版fisco-solc)编译dist/contacts目录下所有合约代码，并将其转换成支持国密算法的java代码，java代码包名由${package_name}指定;
 - 执行成功后，在dist/output/目录下生成相应的java代码(java代码相对dist/output路径由包名${package_name}决定);
 - 使用该方法生成的java代码支持使用国密算法发交易;
-- 开启国密算法方法可参考[2.2.2 开启国密算法，配置链上节点信息和证书](#222-开启国密算法配置链上节点信息和证书)
+- 开启国密算法方法可参考[2.2.3 开启国密算法，配置链上节点信息和证书](#223-开启国密算法配置链上节点信息和证书)
 
 <br>
 
@@ -718,9 +722,9 @@ if (credentials != null) {
 
 <br>
 
-**当web3sdk与[国密版本的FISCO BCOS](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/dev/doc/国密操作文档.md)节点通信时，必须使用上述方法初始化Credentials对象**
+**当web3sdk与[国密版本的FISCO BCOS](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/master/doc/国密操作文档.md)节点通信时，必须使用上述方法初始化Credentials对象**
 
-老版web3sdk使用如下方法初始化Credentials对象，**但用该方法初始化的web3sdk不能与[国密版本的FISCO BCOS](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/dev/doc/国密操作文档.md)通信**：
+老版web3sdk使用如下方法初始化Credentials对象，**但用该方法初始化的web3sdk不能与[国密版本的FISCO BCOS](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/master/doc/国密操作文档.md)通信**：
 
 <br>
 
