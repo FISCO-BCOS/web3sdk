@@ -19,7 +19,7 @@ public class Channel2Client {
 	
 	public static void main(String[] args) throws Exception {
 		if(args.length < 2) {
-			System.out.println("参数: 目标topic         总请求量");
+			System.out.println("param: target topic         total number of request");
 			return;
 		}
 		String topic = args[0];
@@ -27,21 +27,21 @@ public class Channel2Client {
 		
 		DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		
-		logger.debug("初始化链上链下客户端");
+		logger.debug("init client");
 
 		ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
 
 		Service service = context.getBean(Service.class);
-		service.run(); //阻塞到连接成功，或通知
+		service.run();
 		
-		System.out.println("3s后开始测试...");
+		System.out.println("3s ...");
 		Thread.sleep(1000);
-		System.out.println("2s后开始测试...");
+		System.out.println("2s ...");
 		Thread.sleep(1000);
-		System.out.println("1s后开始测试...");
+		System.out.println("1s ...");
 		Thread.sleep(1000);
 
-		System.out.println("开始测试");
+		System.out.println("start test");
 		System.out.println("===================================================================");
 		
 		for(Integer i = 0; i < count; ++i) {
@@ -53,11 +53,11 @@ public class Channel2Client {
 			
 			request.setContent("request seq:" + request.getMessageID());
 			
-			System.out.println(df.format(LocalDateTime.now()) + " 发送请求 seq:" + String.valueOf(request.getMessageID()) + ", 内容:" + request.getContent());
+			System.out.println(df.format(LocalDateTime.now()) + " request seq:" + String.valueOf(request.getMessageID()) + ", Content:" + request.getContent());
 			
 			ChannelResponse response = service.sendChannelMessage2(request);
 			
-			System.out.println(df.format(LocalDateTime.now()) + "收到回包 seq:" + String.valueOf(response.getMessageID()) + ", 错误码:" + response.getErrorCode() + ", 内容:" + response.getContent());
+			System.out.println(df.format(LocalDateTime.now()) + "response seq:" + String.valueOf(response.getMessageID()) + ", ErrorCode:" + response.getErrorCode() + ", Content:" + response.getContent());
 		}
 	}
 }

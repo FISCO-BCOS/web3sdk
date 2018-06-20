@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.security.SignatureException;
 import java.util.Arrays;
 
+import org.bcos.web3j.crypto.sm2.SM2Sign;
 import org.bouncycastle.asn1.x9.X9ECParameters;
 import org.bouncycastle.asn1.x9.X9IntegerConverter;
 import org.bouncycastle.crypto.digests.SHA256Digest;
@@ -29,44 +30,25 @@ import static org.bcos.web3j.utils.Assertions.verifyPrecondition;
  * BitcoinJ ECKey</a> implementation.
  */
 public class Sign {
+    private static SignInterface signInterface = new ECDSASign();
 
+    public static SignInterface getSignInterface() {
+        return signInterface;
+    }
+
+    public static void setSignInterface(SignInterface signInterface) {
+        Sign.signInterface = signInterface;
+    }
     private static final X9ECParameters CURVE_PARAMS = CustomNamedCurves.getByName("secp256k1");
     private static final ECDomainParameters CURVE = new ECDomainParameters(
             CURVE_PARAMS.getCurve(), CURVE_PARAMS.getG(), CURVE_PARAMS.getN(), CURVE_PARAMS.getH());
     private static final BigInteger HALF_CURVE_ORDER = CURVE_PARAMS.getN().shiftRight(1);
 
     public static SignatureData signMessage(byte[] message, ECKeyPair keyPair) {
-        BigInteger privateKey = keyPair.getPrivateKey();
-        BigInteger publicKey = keyPair.getPublicKey();
-
-        byte[] messageHash = Hash.sha3(message);
-
-        ECDSASignature sig = sign(messageHash, privateKey);
-        // Now we have to work backwards to figure out the recId needed to recover the signature.
-        int recId = -1;
-        for (int i = 0; i < 4; i++) {
-            BigInteger k = recoverFromSignature(i, sig, messageHash);
-            if (k != null && k.equals(publicKey)) {
-                recId = i;
-                break;
-            }
-        }
-        if (recId == -1) {
-            throw new RuntimeException(
-                    "Could not construct a recoverable key. This should never happen.");
-        }
-
-        int headerByte = recId + 27;
-
-        // 1 header + 32 bytes for R + 32 bytes for S
-        byte v = (byte) headerByte;
-        byte[] r = Numeric.toBytesPadded(sig.r, 32);
-        byte[] s = Numeric.toBytesPadded(sig.s, 32);
-
-        return new SignatureData(v, r, s);
+        return signInterface.signMessage(message,keyPair);
     }
 
-    private static ECDSASignature sign(byte[] transactionHash, BigInteger privateKey) {
+    public static ECDSASignature sign(byte[] transactionHash, BigInteger privateKey) {
         ECDSASigner signer = new ECDSASigner(new HMacDSAKCalculator(new SHA256Digest()));
 
         ECPrivateKeyParameters privKey = new ECPrivateKeyParameters(privateKey, CURVE);
@@ -98,7 +80,7 @@ public class Sign {
      * @param message Hash of the data that was signed.
      * @return An ECKey containing only the public part, or null if recovery wasn't possible.
      */
-    private static BigInteger recoverFromSignature(int recId, ECDSASignature sig, byte[] message) {
+    public static BigInteger recoverFromSignature(int recId, ECDSASignature sig, byte[] message) {
         verifyPrecondition(recId >= 0, "recId must be positive");
         verifyPrecondition(sig.r.signum() >= 0, "r must be positive");
         verifyPrecondition(sig.s.signum() >= 0, "s must be positive");
@@ -230,9 +212,9 @@ public class Sign {
         return new FixedPointCombMultiplier().multiply(CURVE.getG(), privKey);
     }
 
-    private static class ECDSASignature {
-        private final BigInteger r;
-        private final BigInteger s;
+    public static class ECDSASignature {
+        public final BigInteger r;
+        public final BigInteger s;
 
         ECDSASignature(BigInteger r, BigInteger s) {
             this.r = r;
@@ -276,11 +258,20 @@ public class Sign {
         private final byte v;
         private final byte[] r;
         private final byte[] s;
+        private final byte[] pub;
 
         public SignatureData(byte v, byte[] r, byte[] s) {
             this.v = v;
             this.r = r;
             this.s = s;
+            pub = null;
+        }
+
+        public SignatureData(byte v, byte[] r, byte[] s,byte[] pub) {
+            this.v = v;
+            this.r = r;
+            this.s = s;
+            this.pub = pub;
         }
 
         public byte getV() {
@@ -293,6 +284,10 @@ public class Sign {
 
         public byte[] getS() {
             return s;
+        }
+
+        public byte[] getPub() {
+            return pub;
         }
 
         @Override
@@ -320,6 +315,7 @@ public class Sign {
             int result = (int) v;
             result = 31 * result + Arrays.hashCode(r);
             result = 31 * result + Arrays.hashCode(s);
+            result = 63 * result + Arrays.hashCode(pub);
             return result;
         }
     }

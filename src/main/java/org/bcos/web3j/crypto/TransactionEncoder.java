@@ -3,6 +3,7 @@ package org.bcos.web3j.crypto;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bcos.web3j.crypto.sm2.util.encoders.Hex;
 import org.bcos.web3j.protocol.core.methods.request.RawTransaction;
 import org.bcos.web3j.rlp.RlpEncoder;
 import org.bcos.web3j.rlp.RlpList;
@@ -10,13 +11,15 @@ import org.bcos.web3j.rlp.RlpString;
 import org.bcos.web3j.rlp.RlpType;
 import org.bcos.web3j.utils.Bytes;
 import org.bcos.web3j.utils.Numeric;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Create RLP encoded transaction, implementation as per p4 of the
  * <a href="http://gavwood.com/paper.pdf">yellow paper</a>.
  */
 public class TransactionEncoder {
-
+    private static Logger logger = LoggerFactory.getLogger(TransactionEncoder.class);
     public static byte[] signMessage(RawTransaction rawTransaction, Credentials credentials) {
         byte[] encodedTransaction = encode(rawTransaction);
         Sign.SignatureData signatureData = Sign.signMessage(
@@ -40,7 +43,7 @@ public class TransactionEncoder {
         byte v = (byte) (signatureData.getV() + (chainId << 1) + 8);
 
         return new Sign.SignatureData(
-                v, signatureData.getR(), signatureData.getS());
+                v, signatureData.getR(), signatureData.getS() ,signatureData.getPub());
     }
 
     public static byte[] encode(RawTransaction rawTransaction) {
@@ -89,11 +92,20 @@ public class TransactionEncoder {
         }        
 
         if (signatureData != null) {
-            result.add(RlpString.create(signatureData.getV()));
-            result.add(RlpString.create(Bytes.trimLeadingZeroes(signatureData.getR())));
-            result.add(RlpString.create(Bytes.trimLeadingZeroes(signatureData.getS())));
+            if (EncryptType.encryptType == 1) {
+                result.add(RlpString.create(Bytes.trimLeadingZeroes(signatureData.getPub())));
+                //logger.debug("RLP-Pub:{},RLP-PubLen:{}",Hex.toHexString(signatureData.getPub()),signatureData.getPub().length);
+                result.add(RlpString.create(Bytes.trimLeadingZeroes(signatureData.getR())));
+                //logger.debug("RLP-R:{},RLP-RLen:{}",Hex.toHexString(signatureData.getR()),signatureData.getR().length);
+                result.add(RlpString.create(Bytes.trimLeadingZeroes(signatureData.getS())));
+                //logger.debug("RLP-S:{},RLP-SLen:{}",Hex.toHexString(signatureData.getS()),signatureData.getS().length);
+            }
+            else{
+                result.add(RlpString.create(signatureData.getV()));
+                result.add(RlpString.create(Bytes.trimLeadingZeroes(signatureData.getR())));
+                result.add(RlpString.create(Bytes.trimLeadingZeroes(signatureData.getS())));
+            }
         }
-
         return result;
     }
 }

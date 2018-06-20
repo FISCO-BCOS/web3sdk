@@ -27,7 +27,7 @@ List logger = [
 	"org.apache.logging.log4j:log4j-web:2.1"
 ]
 
-def spring_version="4.1.8.RELEASE"
+def spring_version="4.3.16.RELEASE"
 List spring =[ 
 	"org.springframework:spring-core:$spring_version", 
 	"org.springframework:spring-beans:$spring_version", 
@@ -37,10 +37,15 @@ List spring =[
 	"org.springframework:spring-test:$spring_version"
 ]
 
+List alibaba = [
+        'com.alibaba:druid:1.0.29',
+        'com.alibaba:fastjson:1.2.29'
+]
+
 // In this section you declare the dependencies for your production and test code
 dependencies {
-    compile logger,spring
-    runtime logger,spring
+    compile logger,spring,alibaba
+    runtime logger,spring,alibaba
     
     compile "com.fasterxml.jackson.core:jackson-databind:2.8.11"
     runtime "com.fasterxml.jackson.core:jackson-databind:2.8.11"
@@ -90,8 +95,12 @@ jar {
 			into 'dist/lib'
 		}
 		copy {
-			from file('.').listFiles().findAll{File f -> (f.name.endsWith('.bat') || f.name.endsWith('.sh') || f.name.endsWith('.env'))}
-			into 'dist'
+            from file('src/test/resources/')
+            into 'dist/conf'
+        }
+		copy {
+			from file('.').listFiles().findAll{File f -> (f.name.endsWith('.crt') || f.name.endsWith('.keystore'))}
+			into 'dist/conf'
 		}
 	}
 }
