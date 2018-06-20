@@ -24,7 +24,7 @@ public class ChannelMessage2 extends Message {
 	
 	@Override
 	public void readExtra(ByteBuf in) {
-		logger.debug("解析channel2数据包: {}", result);
+		logger.debug("readExtra channel2 package: {}", result);
 		if (result == 0) {
 			Short topicLength = in.readUnsignedByte();
 			

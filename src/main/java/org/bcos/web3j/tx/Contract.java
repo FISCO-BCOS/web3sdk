@@ -40,14 +40,19 @@ public abstract class Contract extends ManagedTransaction {
     // https://www.reddit.com/r/ethereum/comments/5g8ia6/attention_miners_we_recommend_raising_gas_limit/
     public static final BigInteger GAS_LIMIT = BigInteger.valueOf(4_300_000);
 
-    private final String contractBinary;
+    private String contractBinary;
     private String contractAddress;
     private String contractName;
     private boolean isInitByName = false;
     private final BigInteger gasPrice;
     private final BigInteger gasLimit;
     private TransactionReceipt transactionReceipt;
-
+    
+    //update contract binary according to crypto type
+    public void setContractBinary(String contractBinary)
+    {
+    	this.contractBinary = contractBinary;
+    }
     protected Contract(String contractBinary, String contractAddress,
                        Web3j web3j, TransactionManager transactionManager,
                        BigInteger gasPrice, BigInteger gasLimit, Boolean isInitByName) {
@@ -73,7 +78,7 @@ public abstract class Contract extends ManagedTransaction {
         super(web3j, transactionManager);
         this.isInitByName = false;
         this.contractBinary = contractBinary;
-        if (isInitByName)
+        /*if (isInitByName)
         {
             this.contractName = contractAddress;
         }
@@ -81,6 +86,8 @@ public abstract class Contract extends ManagedTransaction {
         {
             this.contractAddress = contractAddress;
         }
+        */
+        this.contractAddress = contractAddress;
         this.gasPrice = gasPrice;
         this.gasLimit = gasLimit;
     }

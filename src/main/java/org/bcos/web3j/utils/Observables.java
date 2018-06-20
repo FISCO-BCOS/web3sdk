@@ -17,7 +17,9 @@ public class Observables {
      * @return Observable to omit this range of values
      */
     public static Observable<BigInteger> range(BigInteger startValue, BigInteger endValue) {
-        if (startValue.compareTo(BigInteger.ZERO) == -1) {
+        //if (startValue.compareTo(BigInteger.ZERO) == -1) {
+        //the value 0 if x == y; a value less than 0 if x < y; and a value greater than 0 if x > y
+        if (startValue.compareTo(BigInteger.ZERO) < 0) {
             throw new IllegalArgumentException("Negative start index cannot be used");
         } else if (startValue.compareTo(endValue) > -1) {
             throw new IllegalArgumentException(

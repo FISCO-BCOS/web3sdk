@@ -52,7 +52,7 @@ public class TransactionReceipt {
     }
 
     public BigInteger getTransactionIndex() {
-        return Numeric.decodeQuantity(transactionIndex);
+        return new BigInteger(transactionIndex);
     }
 
     public String getTransactionIndexRaw() {
@@ -72,7 +72,7 @@ public class TransactionReceipt {
     }
 
     public BigInteger getBlockNumber() {
-        return Numeric.decodeQuantity(blockNumber);
+        return new BigInteger(blockNumber);
     }
 
     public String getBlockNumberRaw() {

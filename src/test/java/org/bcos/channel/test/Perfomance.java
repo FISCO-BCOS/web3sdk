@@ -18,7 +18,7 @@ public class Perfomance {
 	
 	public static void main(String[] args) throws Exception {
 		if(args.length < 6) {
-			System.out.println("参数: 请求方         接收方         总请求量          发送TPS     包大小           超时时间");
+			System.out.println("Param: request         receive         total;          TPS     package size          timeout");
 			return;
 		}
 		String from = args[0];
@@ -27,8 +27,6 @@ public class Perfomance {
 		Integer tps = Integer.parseInt(args[3]);
 		Integer packageSize = Integer.parseInt(args[4]);
 		Integer timeout = Integer.parseInt(args[5]);
-		
-		logger.debug("初始化");
 
 		ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
 
@@ -36,14 +34,14 @@ public class Perfomance {
 		service.setPushCallback(new PushCallback());
 		service.run();
 
-		System.out.println("3s后开始测试...");
+		System.out.println("3s...");
 		Thread.sleep(1000);
-		System.out.println("2s后开始测试...");
+		System.out.println("2s...");
 		Thread.sleep(1000);
-		System.out.println("1s后开始测试...");
+		System.out.println("1s...");
 		Thread.sleep(1000);
 
-		System.out.println("开始测试");
+		System.out.println("start");
 		System.out.println("===================================================================");
 
 		ChannelRequest request = new ChannelRequest();
@@ -77,7 +75,7 @@ public class Perfomance {
 		for (Integer seq = 0; seq < count; ++seq) {
 			limiter.acquire();
 			if((seq + 1) % (count / 10) == 0) {
-				System.out.println("已发送:" + String.valueOf((seq + 1) * 100 / count) + "%");
+				System.out.println("send:" + String.valueOf((seq + 1) * 100 / count) + "%");
 			}
 			
 			request.setContent(message);
@@ -94,6 +92,6 @@ public class Perfomance {
 			service.asyncSendChannelMessage(request, callback);
 		}
 		
-		System.out.println("共发送:" + String.valueOf(count) + "条");
+		System.out.println("total :" + String.valueOf(count) + " ");
 	}
 }

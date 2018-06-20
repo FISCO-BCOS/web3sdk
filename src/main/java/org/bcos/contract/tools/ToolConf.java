@@ -5,6 +5,8 @@ package org.bcos.contract.tools;
  */
 public class ToolConf {
     private String systemProxyAddress;
+    private String privKey;
+    private String account;
     private String outPutpath;
 
 
@@ -16,7 +18,23 @@ public class ToolConf {
         this.systemProxyAddress = systemProxyAddress;
     }
 
-    public String getOutPutpath() {
+    public String getPrivKey() {
+		return privKey;
+	}
+
+	public void setPrivKey(String privKey) {
+		this.privKey = privKey;
+	}
+
+	public String getAccount() {
+		return account;
+	}
+
+	public void setAccount(String account) {
+		this.account = account;
+	}
+
+	public String getOutPutpath() {
         return outPutpath;
     }
 

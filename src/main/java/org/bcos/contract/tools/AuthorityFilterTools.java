@@ -19,7 +19,7 @@ public class AuthorityFilterTools {
             System.out.println("to :"+args[2]);
             System.out.println("func :"+args[3]);
 
-            System.out.println("权限校验结果:"+authorityFilter.process(new Address(args[2])
+            System.out.println("Permission verification results:"+authorityFilter.process(new Address(args[2])
                     ,new Address("")
                     ,new Address(args[3]),
                     new Utf8String(args[4]),

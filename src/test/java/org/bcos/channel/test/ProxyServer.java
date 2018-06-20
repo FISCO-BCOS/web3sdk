@@ -11,20 +11,10 @@ public class ProxyServer {
 static Logger logger = LoggerFactory.getLogger(ProxyServer.class);
 	
 	public static void main(String[] args) throws Exception {
-		logger.debug("初始化Server");
 
 		ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
-
 		Server server = context.getBean(Server.class);
-		
-		System.out.println("3s后开始测试...");
-		Thread.sleep(1000);
-		System.out.println("2s后开始测试...");
-		Thread.sleep(1000);
-		System.out.println("1s后开始测试...");
-		Thread.sleep(1000);
-
-		System.out.println("开始测试");
+		System.out.println("start testing");
 		System.out.println("===================================================================");
 		
 		server.run();

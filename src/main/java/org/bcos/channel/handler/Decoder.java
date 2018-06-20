@@ -16,7 +16,7 @@ public class Decoder extends ByteToMessageDecoder {
 
 	@Override
 	protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
-		logger.debug("接收数据:" + in.readableBytes());
+		logger.debug("decode:" + in.readableBytes());
 		
 		while (true) {
 			if (dataLength > 0) {
@@ -32,7 +32,7 @@ public class Decoder extends ByteToMessageDecoder {
 				message.setType(type);
 				message.setData(data.array());
 
-				logger.debug("新消息: " + String.valueOf(message.getLength()) + "," + String.valueOf(message.getType()));
+				logger.debug("new message: " + String.valueOf(message.getLength()) + "," + String.valueOf(message.getType()));
 				out.add(message);
 				dataLength = 0;
 			} else {
@@ -41,7 +41,7 @@ public class Decoder extends ByteToMessageDecoder {
 				}
 
 				dataLength = in.readInt();
-				logger.debug("数据长度" + String.valueOf(dataLength));
+				logger.debug("dataLength " + String.valueOf(dataLength));
 			}
 		}
 	}

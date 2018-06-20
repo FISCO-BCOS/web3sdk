@@ -9,7 +9,7 @@ public class Main {
 static Logger logger = LoggerFactory.getLogger(Main.class);
 	
 	public static void main(String[] args) throws Exception {
-		logger.debug("初始化ProxyServer");
+		logger.debug("Init proxy server");
 
 		ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
 
@@ -22,7 +22,7 @@ static Logger logger = LoggerFactory.getLogger(Main.class);
 		System.out.println("1...");
 		Thread.sleep(1000);
 
-		System.out.println("启动Proxy服务");
+		System.out.println("Start proxy server");
 		System.out.println("===================================================================");
 		
 		server.run();

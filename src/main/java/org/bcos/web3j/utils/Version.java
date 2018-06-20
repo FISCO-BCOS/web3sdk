@@ -1,6 +1,7 @@
 package org.bcos.web3j.utils;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 /**
@@ -25,7 +26,15 @@ public class Version {
 
     private static Properties loadProperties() throws IOException {
         Properties properties = new Properties();
-        properties.load(Version.class.getResourceAsStream("/version.properties"));
+        InputStream in = null;
+        try {
+        	 in = Version.class.getResourceAsStream("/version.properties");
+             properties.load(in);
+        } finally {
+        	if (in != null) {
+        		in.close();
+        	}
+        }
         return properties;
     }
 }

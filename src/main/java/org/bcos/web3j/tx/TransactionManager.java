@@ -96,7 +96,7 @@ public abstract class TransactionManager {
         for (int i = 0; i < attempts; i++) {
 
             if (!receiptOptional.isPresent()) {
-                Thread.sleep(sleepDuration*(i*i)+sleepDuration);
+                Thread.sleep(((long)sleepDuration*(i*i)+sleepDuration));
                 sumTime += (sleepDuration*(i*i)+sleepDuration);
                 receiptOptional = sendTransactionReceiptRequest(transactionHash);
             } else {
