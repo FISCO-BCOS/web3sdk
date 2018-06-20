@@ -20,7 +20,7 @@ web3sdk是用来访问fisco-bcos节点的java API。<br />
 - **[部署合约](#23部署合约)**
 - **[提供将合约代码转换成java代码的工具](#1合约编译及java-wrap代码生成)**
 - **[提供系统合约部署和使用工具](#2系统合约相关接口说明)**
-- **[使用国密算法发交易](doc/guomi_support_manual.md)**：[国密版FISCO BCOS](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/dev/doc/国密操作文档.md) 使用国密算法验证交易，客户端相应地需使用国密算法对交易进行签名，web3sdk客户端为国密版FISCO BCOS提供了支持，具体使用方法可参考文档[《web3sdk对国密版FISCO BCOS的支持》](doc/guomi_support_manual.md)
+- **[使用国密算法发交易](doc/guomi_support_manual.md)**：[国密版FISCO BCOS](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/master/doc/国密操作文档.md) 使用国密算法验证交易，客户端相应地需使用国密算法对交易进行签名，web3sdk客户端为国密版FISCO BCOS提供了支持，具体使用方法可参考文档[《web3sdk对国密版FISCO BCOS的支持》](doc/guomi_support_manual.md)
 
 
 
