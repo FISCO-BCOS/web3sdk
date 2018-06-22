@@ -1,4 +1,3 @@
-
 # web3sdk使用指南
 
 ## （一）介绍
@@ -301,7 +300,6 @@ ok.trans(num, new TransactionSucCallback() {
 ```
 ./web3sdk InitSystemContract   
 ./web3sdk SystemProxy          
-./web3sdk AuthorityFilter
 ./web3sdk NodeAction all|registerNode|cancelNode
 ./web3sdk CAAction add|remove|all
 ./web3sdk ConfigAction get|set
@@ -309,7 +307,7 @@ ok.trans(num, new TransactionSucCallback() {
 ```
 
 InitSystemContract用来部署一套系统合约（用来做链的初始化和测试，生产环境请谨慎操作）。部署完成后需要将系统合约地址替换到各个节点的config.json和web3sdk工具的applicationContext.xml配置中，并重启节点。
-SystemProxy|AuthorityFilter|......等其他工具applicationContext.xml配置中系统合约的地址。
+SystemProxy......等其他工具applicationContext.xml配置中系统合约的地址。
 系统合约接口代码参照：org.bcos.contract.tools.InitSystemContract,org.bcos.contract.tools.SystemContractTools
 
 ### 3.web3j API说明
@@ -403,4 +401,3 @@ org.bcos.contract.tools.AuthorityManagerTools
 3、检查channelPort是否能telnet通，需要能telnet通。如果不通检查网络策略，检查服务是否启动。<br />
 4、服务端和客户端ca.crt是否一致，需要一致。<br />
 5、[FISCO-BCOS中client.keystore 的生成方法](https://github.com/FISCO-BCOS/web3sdk/issues/20)
-
