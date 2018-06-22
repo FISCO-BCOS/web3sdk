@@ -508,7 +508,7 @@ org.bcos.web3j.abi.datatypes.generated.Uint256@ee871267
 | maxBlockTransactions| 控制一个块内允许打包的最大交易数量上限 <br>  设置范围: [0, 2000) <br> 默认值:1000|
 | intervalBlockTime| 设置出块间隔时间 <br> 设置范围：大于等于1000 <br> 默认值: 1000 |
 | maxBlockHeadGas| 控制一个块允许最大Gas消耗上限 <br> 取值范围: 大于等于2000,000,000 <br> 默认值: 2000,000,000|
-||maxTransactionGas | 设置一笔交易允许消耗的最大gas <br> 取值范围: 大于等于30,000,000 <br> 默认值: 30,000,000 |
+| maxTransactionGas| 设置一笔交易允许消耗的最大gas <br> 取值范围: 大于等于30,000,000 <br> 默认值: 30,000,000 |
 | maxNonceCheckBlock| 控制Nonce排重覆盖的块范围 <br> 取值范围： 大于等于1000 <br>  缺省值: 1000 |
 | maxBlockLimit| 控制允许交易上链延迟的最大块范围 <br> 取值范围：大于等于1000 <br> 缺省值：1000|
 | CAVerify| 控制是否打开CA验证 <br> 取值：true或者false  <br>  缺省值: false|
@@ -564,19 +564,18 @@ java -cp 'conf/:apps/\*:lib/\*' org.bcos.contract.tools.SystemContractTools "Con
 
 **(6) 联盟控制合约ConsensusControl**
 
-**① 获取联盟共识模板合约地址**
+**① 部署联盟共识模板合约**
 
-**调用方法**: java -cp 'conf/:apps/\*:lib/\*' org.bcos.contract.tools.SystemContractTools "ConsensusControl"
+**调用方法**: java -cp 'conf/:apps/\*:lib/\*' org.bcos.contract.tools.SystemContractTools "ConsensusControl" "deploy"
 
-**功能**: 获取联盟共识模板合约地址
+**② 获取联盟共识模板合约列表**
+**调用方法**: java -cp 'conf/:apps/\*:lib/\*' org.bcos.contract.tools.SystemContractTools "ConsensusControl" "list"
 
 <br>
 
-**② 关闭联盟共识特性**
+**③ 关闭联盟共识特性**
 
 **调用方法**:  java -cp 'conf/:apps/\*:lib/\*' org.bcos.contract.tools.SystemContractTools "ConsensusControl" "turnoff"
-
-**功能**: 关闭联盟共识模板功能
 
 <br>
 
