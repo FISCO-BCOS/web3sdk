@@ -69,11 +69,6 @@ public class SystemContractTools {
 			case "SystemProxy":
 				SystemProxyTools.processSystemProxy(systemProxy, web3, credentials, gasPrice, gasLimit);
 				break;
-			case "AuthorityFilter":
-				AuthorityFilter authorityFilter = AuthorityFilter.load(getAction(systemProxy, "AuthorityFilter"), web3,
-						credentials, gasPrice, gasLimit);
-				AuthorityFilterTools.processAuthorityFilter(authorityFilter, args);
-				break;
 			case "NodeAction":
 				NodeAction nodeAction = NodeAction.load(getAction(systemProxy, "NodeAction"), web3, credentials,
 						gasPrice, gasLimit);
