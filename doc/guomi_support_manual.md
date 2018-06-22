@@ -564,19 +564,18 @@ java -cp 'conf/:apps/\*:lib/\*' org.bcos.contract.tools.SystemContractTools "Con
 
 **(6) 联盟控制合约ConsensusControl**
 
-**① 获取联盟共识模板合约地址**
+**① 部署联盟共识模板合约**
 
-**调用方法**: java -cp 'conf/:apps/\*:lib/\*' org.bcos.contract.tools.SystemContractTools "ConsensusControl"
+**调用方法**: java -cp 'conf/:apps/\*:lib/\*' org.bcos.contract.tools.SystemContractTools "ConsensusControl" "deploy"
 
-**功能**: 获取联盟共识模板合约地址
+**② 获取联盟共识模板合约列表**
+**调用方法**: java -cp 'conf/:apps/\*:lib/\*' org.bcos.contract.tools.SystemContractTools "ConsensusControl" "list"
 
 <br>
 
-**② 关闭联盟共识特性**
+**③ 关闭联盟共识特性**
 
 **调用方法**:  java -cp 'conf/:apps/\*:lib/\*' org.bcos.contract.tools.SystemContractTools "ConsensusControl" "turnoff"
-
-**功能**: 关闭联盟共识模板功能
 
 <br>
 
