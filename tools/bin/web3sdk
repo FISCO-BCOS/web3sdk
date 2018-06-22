@@ -10,7 +10,6 @@ LANG=zh_CN.UTF-8
 echo "SystemContract Command reference is as follows"
 echo "Usage:./web3sdk InitSystemContract"
 echo "Usage:./web3sdk SystemProxy"
-echo "Usage:./web3sdk AuthorityFilter"
 echo "Usage:./web3sdk NodeAction all|registerNode|cancelNode"
 echo "Usage:./web3sdk CAAction all|add|remove"
 echo "Usage:./web3sdk ConfigAction get|set"
@@ -236,7 +235,7 @@ eval splitJvmOpts $DEFAULT_JVM_OPTS $JAVA_OPTS $WEB3J_OPTS
 if [ $1 == "InitSystemContract" ] ; then
 	exec "$JAVACMD" "${JVM_OPTS[@]}" -classpath "$CLASSPATH" org.bcos.contract.tools.InitSystemContract "$@"
 	
-elif [ $1 == "SystemProxy" -o $1 == "AuthorityFilter" -o $1 == "NodeAction" -o $1 == "CAAction" -o $1 == "ConfigAction" -o $1 == "ConsensusControl" -o $1 == "CNSAction" ] ; then
+elif [ $1 == "SystemProxy" -o $1 == "NodeAction" -o $1 == "CAAction" -o $1 == "ConfigAction" -o $1 == "ConsensusControl" -o $1 == "CNSAction" ] ; then
 	exec "$JAVACMD" "${JVM_OPTS[@]}" -classpath "$CLASSPATH" org.bcos.contract.tools.SystemContractTools "$@"
 	
 elif [ $1 == "eth_accounts" -o $1 == "web3_clientVersion" -o $1 == "eth_blockNumber" -o $1 == "eth_pbftView" -o $1 == "eth_getCode" -o $1 == "eth_getBlockTransactionCountByHash" -o $1 == "eth_getTransactionCount" -o $1 == "eth_getBlockTransactionCountByNumber" -o $1 == "eth_sendRawTransaction" -o $1 == "eth_getBlockByHash" -o $1 == "eth_getBlockByNumber" -o $1 == "eth_getTransactionByBlockNumberAndIndex" -o $1 == "eth_getTransactionByBlockHashAndIndex" -o $1 == "eth_getTransactionReceipt" ] ; then
