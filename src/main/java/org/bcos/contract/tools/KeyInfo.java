@@ -1,29 +1,16 @@
 package org.bcos.contract.tools;
 
-import java.io.*;
-import java.io.InputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
-
-import java.util.Map;
-import java.util.HashMap;
-
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import org.bcos.contract.tools.RetCode;
-import org.bcos.contract.tools.KeyInfoInterface;
+import java.io.*;
 
 public class KeyInfo implements KeyInfoInterface {
 	private static String privateKey;
 	private static String publicKey;
 	private static String account;
-	private static Logger logger = LogManager.getLogger(KeyInfo.class);
+	private static Logger logger = LoggerFactory.getLogger(KeyInfo.class);
 
 	public final static String privJsonKey = "privateKey";
 	public final static String pubJsonKey = "publicKey";
