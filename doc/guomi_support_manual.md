@@ -38,15 +38,15 @@ FISCO BCOS支持国密算法，具体包括：
 
 <br>
 
-详细信息可参考[FISCO BCOS 国密特性文档](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/master/doc/国密操作文档.md#12-国密版fisco-bcos特性列表). 本文档主要介绍如何在开启国密验证算法的FISCO BCOS环境下，使用websdk客户端部署系统合约、发交易以及使用系统合约工具。
+详细信息可参考[FISCO BCOS 国密特性文档](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/master/doc/国密操作文档.md#12-国密版fisco-bcos特性列表). 本文档主要介绍如何在开启国密验证算法的FISCO BCOS环境下，使用web3sdk客户端部署系统合约、发交易以及使用系统合约工具。
 主要包括如下内容：
 
 <br>
 
-- 适配于国密版FISCO BCOS的websdk环境配置
+- 适配于国密版FISCO BCOS的web3sdk环境配置
 - 为开启国密验证算法的FISCO BCOS部署系统合约
 - 系统合约工具的使用
-- 如何使用websdk工具将合约代码转换成支持国密算法的java代码，并调用该代码发交易
+- 如何使用web3sdk工具将合约代码转换成支持国密算法的java代码，并调用该代码发交易
 
 <br>
 
@@ -120,7 +120,7 @@ $ cd /mydata
 #==== 拉取git代码 ====
 $ git clone https://github.com/FISCO-BCOS/web3sdk
 
-#===编译websdk源码，生成dist目录 ===
+#===编译web3sdk源码，生成dist目录 ===
 $ cd web3sdk
 $ gradle build
 
@@ -128,16 +128,16 @@ $ gradle build
 
 <br>
 
-编译成功后，会在websdk目录下生成dist目录，该目录主要包括如下内容：
+编译成功后，会在web3sdk目录下生成dist目录，该目录主要包括如下内容：
 
 
 | 目录             | 说明                                       |
 | -------------- | ---------------------------------------- |
-| dist/apps      | websdk项目编译生成的jar包web3sdk.jar             |
+| dist/apps      | web3sdk项目编译生成的jar包web3sdk.jar             |
 | dist/bin       | - web3sdk: 可执行脚本，调用web3sdk.jar执行web3sdk内方法(如部署系统合约、调用合约工具方法等) <br>  - compile.sh: 调用该脚本可将dist/contracts目录下的合约代码转换成java代码，该功能便于用户基于web3sdk开发更多应用 |
 | dist/conf      | 配置目录, 用于配置节点信息、证书信息、日志目录等，详细信息会在下节叙述     |
 | dist/contracts | 合约存放目录，调用compile.sh脚本可将存放于该目录下的.sol格式合约代码转换成java代码 |
-| dist/lib       | 存放websdk依赖库的jar包                         |
+| dist/lib       | 存放web3sdk依赖库的jar包                         |
 
 <br>
 
@@ -240,7 +240,7 @@ $ gradle build
 
 # 3. 国密版FISCO BCOS系统合约部署
 
-部署完适配于[国密版FISCO BCOS](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/master/doc/国密操作文档.md)的websdk后，可调用InitSystemContract部署系统合约，系统合约部署工具InitSystemContract由`src/main/java/org/bcos/contract/tools/InitSystemContract.java`调用合约生成的java代码实现，使用如下命令部署系统合约：
+部署完适配于[国密版FISCO BCOS](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/master/doc/国密操作文档.md)的web3sdk后，可调用InitSystemContract部署系统合约，系统合约部署工具InitSystemContract由`src/main/java/org/bcos/contract/tools/InitSystemContract.java`调用合约生成的java代码实现，使用如下命令部署系统合约：
 
 ```bash
 ##进入dist目录
@@ -508,7 +508,7 @@ org.bcos.web3j.abi.datatypes.generated.Uint256@ee871267
 | maxBlockTransactions| 控制一个块内允许打包的最大交易数量上限 <br>  设置范围: [0, 2000) <br> 默认值:1000|
 | intervalBlockTime| 设置出块间隔时间 <br> 设置范围：大于等于1000 <br> 默认值: 1000 |
 | maxBlockHeadGas| 控制一个块允许最大Gas消耗上限 <br> 取值范围: 大于等于2000,000,000 <br> 默认值: 2000,000,000|
-| maxTransactionGas| 设置一笔交易允许消耗的最大gas <br> 取值范围: 大于等于30,000,000 <br> 默认值: 30,000,000 |
+| maxTransactionGas | 设置一笔交易允许消耗的最大gas <br> 取值范围: 大于等于30,000,000 <br> 默认值: 30,000,000 |
 | maxNonceCheckBlock| 控制Nonce排重覆盖的块范围 <br> 取值范围： 大于等于1000 <br>  缺省值: 1000 |
 | maxBlockLimit| 控制允许交易上链延迟的最大块范围 <br> 取值范围：大于等于1000 <br> 缺省值：1000|
 | CAVerify| 控制是否打开CA验证 <br> 取值：true或者false  <br>  缺省值: false|
@@ -537,19 +537,19 @@ org.bcos.web3j.abi.datatypes.generated.Uint256@ee871267
 ```bash
 
 # =====更改出块时间为2s====
-java -cp 'conf/:apps/\*:lib/\*' org.bcos.contract.tools.SystemContractTools "ConfigAction" set "intervalBlockTime" 2000
+java -cp 'conf/:apps/*:lib/*' org.bcos.contract.tools.SystemContractTools "ConfigAction" set "intervalBlockTime" 2000
 
 # =====允许空块落盘=====
-java -cp 'conf/:apps/\*:lib/\*' org.bcos.contract.tools.SystemContractTools "ConfigAction" set "omitEmptyBlock" false
+java -cp 'conf/:apps/*:lib/*' org.bcos.contract.tools.SystemContractTools "ConfigAction" set "omitEmptyBlock" false
 
 # ====调整一笔交易允许消耗的最大交易gas为40,000,000
-java -cp 'conf/:apps/\*:lib/\*' org.bcos.contract.tools.SystemContractTools "ConfigAction" set "maxTransactionGas" 40000000
+java -cp 'conf/:apps/*:lib/*' org.bcos.contract.tools.SystemContractTools "ConfigAction" set "maxTransactionGas" 40000000
 
 # ====调整一个块允许消耗的最大交易gas为3000,000,000
-java -cp 'conf/:apps/\*:lib/\*' org.bcos.contract.tools.SystemContractTools "ConfigAction" set "maxBlockHeadGas" 3000000000
+java -cp 'conf/:apps/*:lib/*' org.bcos.contract.tools.SystemContractTools "ConfigAction" set "maxBlockHeadGas" 3000000000
 
 # ==== 打开CA认证开关====
-java -cp 'conf/:apps/\*:lib/\*' org.bcos.contract.tools.SystemContractTools "ConfigAction" set "CAVerify" true
+java -cp 'conf/:apps/*:lib/*' org.bcos.contract.tools.SystemContractTools "ConfigAction" set "CAVerify" true
 
 # .......
 
@@ -568,14 +568,19 @@ java -cp 'conf/:apps/\*:lib/\*' org.bcos.contract.tools.SystemContractTools "Con
 
 **调用方法**: java -cp 'conf/:apps/\*:lib/\*' org.bcos.contract.tools.SystemContractTools "ConsensusControl" "deploy"
 
-**② 获取联盟共识模板合约列表**
+<br>
+
+**② 列出所有联盟共识合约地址**
+
 **调用方法**: java -cp 'conf/:apps/\*:lib/\*' org.bcos.contract.tools.SystemContractTools "ConsensusControl" "list"
 
 <br>
 
-**③ 关闭联盟共识特性**
+**② 关闭联盟共识特性**
 
 **调用方法**:  java -cp 'conf/:apps/\*:lib/\*' org.bcos.contract.tools.SystemContractTools "ConsensusControl" "turnoff"
+
+**功能**: 关闭联盟共识模板功能
 
 <br>
 

@@ -60,6 +60,18 @@ echo "Usage: ./web3sdk Group delPermission num account A.address fun(string) "
 echo "Usage: ./web3sdk Group checkPermission num account A.address fun(string) "
 echo "Usage: ./web3sdk Group listPermission num account "
 
+echo "==================================================================="
+
+echo "UTXO Command reference is as follows"
+echo "Usage: ./web3sdk InitTokens Type"
+echo "Usage: ./web3sdk SendSelectedTokens Type"
+echo "Usage: ./web3sdk RegisterAccount Account"
+echo "Usage: ./web3sdk TokenTracking TokenKey"
+echo "Usage: ./web3sdk GetBalance Account"
+echo "Usage: ./web3sdk SelectTokens Account Value"
+echo "Usage: ./web3sdk GetToken TokenKey"
+echo "Usage: ./web3sdk GetTx TxKey"
+echo "Usage: ./web3sdk GetVault Account TokenType"
 
 #第一个参数不能为空
 if [ $# -lt 1 ]; then
@@ -246,7 +258,10 @@ elif [ $1 == "ARPI_Model" ] ; then
     
 elif [ $1 == "PermissionInfo" -o $1 == "FilterChain" -o $1 == "Filter" -o $1 == "Group" ] ; then
     exec "$JAVACMD" "${JVM_OPTS[@]}" -classpath "$CLASSPATH" org.bcos.contract.tools.AuthorityManager "$@" 
-       
+
+elif [ $1 == "InitTokens" -o $1 == "SendSelectedTokens" -o $1 == "RegisterAccount" -o $1 == "TokenTracking" -o $1 == "GetBalance" -o $1 == "SelectTokens" -o $1 == "GetToken" -o $1 == "GetTx" -o $1 == "GetVault" ] ; then
+    exec "$JAVACMD" "${JVM_OPTS[@]}" -classpath "$CLASSPATH" org.bcos.contract.tools.UTXODemo "$@" 
+	
 else	
 	exec "$JAVACMD" "${JVM_OPTS[@]}" -classpath "$CLASSPATH" org.bcos.web3j.console.Runner "$@"
 fi	

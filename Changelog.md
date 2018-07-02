@@ -1,5 +1,12 @@
+### V1.2.1 (2018-07-02)
+
+* Added
+
+1. UTXO支持web3sdk调用
+
 ### V1.2.0 (2018-06-11)  
-* Added:
+
+* Added
 1. web3sdk增加系统合约部署和调用工具。
 2. web3sdk增加命令行调用取块高，视图等rpc接口。
 3. 增加web3sdk使用SM3交易HASH运算功能
