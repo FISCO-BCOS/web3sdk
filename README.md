@@ -301,7 +301,7 @@ web3sdk将系统合约部署于链上，并可通过工具调用这些系统合�
 | TransactionFilterChain | 设置transaction过滤器                         |
 | ConfigAction           | 设置/获取区块链系统参数，可参考[系统参数说明文档](https://github.com/FISCO-BCOS/Wiki/tree/master/%E7%B3%BB%E7%BB%9F%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3) |
 | ConsensusControlMg     | 联盟控制合约，可参考[联盟控制模板参考文档](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/master/doc/%E5%BC%B9%E6%80%A7%E8%81%94%E7%9B%9F%E9%93%BE%E5%85%B1%E8%AF%86%E6%A1%86%E6%9E%B6%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3.md)             |
-| CAAction               | 设置/删除/查询CA证书                             |
+| CAAction               | 证书列表黑名单管理: 包括将证书加入黑名单列表，将制定证书从黑名单列表删除，获取证书黑名单列表功能             |
 | ContractAbiMgr         | ABI相关合约                                  |
 
 <br>
@@ -425,9 +425,9 @@ org.bcos.web3j.abi.datatypes.generated.Uint256@ee871267
 <br>
 
 
-**(3) CA证书管理合约CAAction**
+**(3) 节点证书管理合约CAAction**
 
-**① 添加节点CA证书**
+**① 将指定节点证书加入黑名单列表**
 
 **调用方法**: 
 
@@ -439,11 +439,11 @@ chmod a+x web3sdk
 ./web3sdk CAAction add ${node_ca_path}
 ```
 
-**功能**：在系统合约CAAction中添加${node_ca_path}路径指定的节点CA证书信息(注: ${node_ca_path}是节点配置文件相对于/mydata/web3sdk/dist/conf的路径)
+**功能**：通过系统合约CAAction，将路径${node_ca_path}指定的节点证书信息添加到黑名单列表，其他节点将拒绝与此节点连接(注: ${node_ca_path}是节点配置文件相对于dist/conf的路径)
 
 <br>
 
-**② 删除节点CA证书**
+**② 从黑名单列表中删除指定节点证书信息**
 
 **调用方法**:
 
@@ -455,11 +455,11 @@ chmod a+x web3sdk
 ./web3sdk CAAction remove ${node_ca_path}
 ```
 
-**功能**：将${node_ca_path}路径指定的节点CA证书信息从系统合约CAAction中删除(注: ${node_ca_path}是节点配置文件相对于/mydata/web3sdk/dist/conf的路径)
+**功能**：通过系统合约CAAction，将${node_ca_path}指定的节点证书信息从黑名单列表中删除，其他节点恢复与该节点的连接(注: ${node_ca_path}是节点配置文件相对于dist/conf的路径)
 
 <br>
 
-**③ 显示所有CA证书信息**
+**③ 显示区块链黑名单节点证书信息**
 
 **调用方法**: 
 
@@ -471,7 +471,7 @@ chmod a+x web3sdk
 ./web3sdk CAAction all
 ```
 
-**功能**: 显示记录在系统合约CAAction中的所有CA证书信息
+**功能**: 显示记录在系统合约CAAction中的所有黑名单节点证书信息
 
 <br>
 
