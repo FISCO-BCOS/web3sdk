@@ -243,10 +243,10 @@ $ gradle build
 部署完适配于[国密版FISCO BCOS](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/master/doc/国密操作文档.md)的web3sdk后，可调用InitSystemContract部署系统合约，系统合约部署工具InitSystemContract由`src/main/java/org/bcos/contract/tools/InitSystemContract.java`调用合约生成的java代码实现，使用如下命令部署系统合约：
 
 ```bash
-##进入dist目录
-cd dist
-####执行部署工具InitSystemContract部署系统合约: java -cp 'conf/:apps/*:lib/*' org.bcos.contract.tools.InitSystemContract
-[app@VM_105_81_centos dist]$ java -cp 'conf/:apps/*:lib/*' org.bcos.contract.tools.InitSystemContract
+##进入bin目录(设web3sdk位于/mydata目录下)
+cd /mydata/web3sdk/dist/bin && chmod a+x web3sdk
+####执行部署工具InitSystemContract部署系统合约: ./web3sdk InitSystemContract
+[app@VM_105_81_centos bin]$ ./web3sdk InitSystemContract
 ===================================================================
 Start deployment...
 ===================================================================
@@ -362,7 +362,7 @@ web3sdk将系统合约部署于链上，并可通过工具调用这些系统合�
 | TransactionFilterChain | 设置transaction过滤器                         |
 | ConfigAction           | 设置/获取区块链系统参数，可参考[系统参数说明文档](https://github.com/FISCO-BCOS/Wiki/tree/master/%E7%B3%BB%E7%BB%9F%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3) |
 | ConsensusControlMg     | 联盟控制合约，可参考[联盟控制模板参考文档](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/master/doc/%E5%BC%B9%E6%80%A7%E8%81%94%E7%9B%9F%E9%93%BE%E5%85%B1%E8%AF%86%E6%A1%86%E6%9E%B6%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3.md)             |
-| CAAction               | 设置/删除/查询CA证书                             |
+| CAAction               | 证书列表黑名单管理: 包括将证书加入黑名单列表，将制定证书从黑名单列表删除，获取证书黑名单列表功能              |
 | ContractAbiMgr         | ABI相关合约                                  |
 
 <br>
@@ -377,7 +377,15 @@ web3sdk使用SystemContractTools调用系统合约，主要功能如下：
 
 **(1) 系统合约代理合约SystemProxy**
 
-**调用方法**: java -cp 'conf/:apps/\*:lib/\*' org.bcos.contract.tools.SystemContractTools "SystemProxy"
+**调用方法**: 
+
+```bash
+##设web3sdk代码位于/mydata/目录下
+#----进入bin目录---
+cd /mydata/web3sdk/dist/bin
+chmod a+x web3sdk
+./web3sdk SystemProxy
+```
 
 **功能**：遍历系统代理合约路由表，输出所有系统合约地址
 
@@ -390,9 +398,32 @@ web3sdk使用SystemContractTools调用系统合约，主要功能如下：
 
 **(2) 权限控制合约AuthorityFilter**
 
-**调用方法**：java -cp 'conf/:apps/\*:lib/\*' org.bcos.contract.tools.SystemContractTools "AuthorityFilter" "${account_name}" "${contract_address}" "${func}"
+**调用方法**：
 
-**功能**：验证用户${account_name}对部署于地址${contract_address}中合约的${func}函数的访问权限;
+```bash
+./web3sdk ARPI_Model 
+./web3sdk PermissionInfo 
+./web3sdk FilterChain addFilter name1 version1 desc1 
+./web3sdk FilterChain delFilter num 
+./web3sdk FilterChain showFilter 
+./web3sdk FilterChain resetFilter 
+./web3sdk Filter getFilterStatus num 
+./web3sdk Filter enableFilter num 
+./web3sdk Filter disableFilter num 
+./web3sdk Filter setUsertoNewGroup num account 
+./web3sdk Filter setUsertoExistingGroup num account group 
+./web3sdk Filter listUserGroup num account 
+./web3sdk Group getBlackStatus num account 
+./web3sdk Group enableBlack num account 
+./web3sdk Group disableBlack num account 
+./web3sdk Group getDeployStatus num account 
+./web3sdk Group enableDeploy num account 
+./web3sdk Group disableDeploy num account 
+./web3sdk Group addPermission num account A.address fun(string) 
+./web3sdk Group delPermission num account A.address fun(string) 
+./web3sdk Group checkPermission num account A.address fun(string) 
+./web3sdk Group listPermission num account 
+```
 
 <br>
 
@@ -405,7 +436,15 @@ web3sdk使用SystemContractTools调用系统合约，主要功能如下：
 
 **① 加入节点**
 
-**调用方法**: java -cp 'conf/:apps/\*:lib/\*' org.bcos.contract.tools.SystemContractTools "NodeAction" "registerNode" "${node_json_path}"
+**调用方法**: 
+
+```bash
+##设web3sdk代码位于/mydata/目录下
+#----进入bin目录---
+cd /mydata/web3sdk/dist/bin
+chmod a+x web3sdk
+./web3sdk NodeAction registerNode ${node_json_path}
+```
 
 **功能**：将${node_json_path}中指定的节点加入到FISCO BCOS区块链网络中(注: ${node_json_path}是节点配置文件相对于dist/conf的路径)
 
@@ -436,7 +475,15 @@ web3sdk使用SystemContractTools调用系统合约，主要功能如下：
 
 **② 退出节点**
 
-**调用方法**：java -cp 'conf/:apps/\*:lib/\*' org.bcos.contract.tools.SystemContractTools "NodeAction" "cancelNode" "${node_json_path}"
+**调用方法**
+
+```bash
+##设web3sdk代码位于/mydata/目录下
+#----进入bin目录---
+cd /mydata/web3sdk/dist/bin
+chmod a+x web3sdk
+./web3sdk NodeAction cancelNode ${node_json_path}
+```
 
 **功能**：将${node_json_path}指定的节点从FISCO BCOS区块链网络中退出(注: ${node_json_path}是节点配置文件相对于dist/conf的路径，节点配置文件说明同上)
 
@@ -444,12 +491,20 @@ web3sdk使用SystemContractTools调用系统合约，主要功能如下：
 
 **③ 显示节点连接信息**
 
-**调用方法**: java -cp 'conf/:apps/\*:lib/\*' org.bcos.contract.tools.SystemContractTools "NodeAction" "all"
+**调用方法**: 
+
+```bash
+##设web3sdk代码位于/mydata/目录下
+#----进入bin目录---
+cd /mydata/web3sdk/dist/bin
+chmod a+x web3sdk
+./web3sdk NodeAction all
+```
 
 **功能**：显示FISCO BCOS区块链网络中所有节点信息，输出示例如下：
 
 ```bash
-[app@VM_105_221_centos guomiweb3sdk]$  java -cp 'conf/:apps/*:lib/*' org.bcos.contract.tools.SystemContractTools "NodeAction" all
+$  ./web3sdk NodeAction all
 ===================================================================
 NodeIdsLength= 1
 ----------node 0---------
@@ -467,27 +522,51 @@ org.bcos.web3j.abi.datatypes.generated.Uint256@ee871267
 <br>
 
 
-**(4) CA证书管理合约CAAction**
+**(4) 节点证书管理合约CAAction**
 
-**① 添加节点CA证书**
+**① 将指定节点证书加入黑名单列表**
 
-**调用方法**: java -cp 'conf/:apps/\*:lib/\*' org.bcos.contract.tools.SystemContractTools "CAAction" "add" "${node_ca_path}"
+**调用方法**: 
 
-**功能**：在系统合约CAAction中添加${node_ca_path}路径指定的节点CA证书信息(注: ${node_ca_path}是节点配置文件相对于dist/conf的路径)
+```bash
+##设web3sdk代码位于/mydata/目录下
+#----进入bin目录---
+cd /mydata/web3sdk/dist/bin
+chmod a+x web3sdk
+./web3sdk CAAction add ${node_ca_path}
+```
+
+**功能**：通过系统合约CAAction，将路径${node_ca_path}指定的节点证书信息添加到黑名单列表，其他节点将拒绝与此节点连接(注: ${node_ca_path}是节点配置文件相对于dist/conf的路径)
 
 <br>
 
-**② 删除节点CA证书**
+**② 从黑名单列表中删除指定节点证书信息**
 
-**调用方法**: java -cp 'conf/:apps/\*:lib/\*' org.bcos.contract.tools.SystemContractTools "CAAction" "remove" "${node_ca_path}"
+**调用方法**: 
 
-**功能**：将${node_ca_path}路径指定的节点CA证书信息从系统合约CAAction中删除(注: ${node_ca_path}是节点配置文件相对于dist/conf的路径)
+```bash
+##设web3sdk代码位于/mydata/目录下
+#----进入bin目录---
+cd /mydata/web3sdk/dist/bin
+chmod a+x web3sdk
+./web3sdk CAAction remove ${node_ca_path}
+```
 
-**③ 显示所有CA证书信息**
+**功能**：通过系统合约CAAction，将${node_ca_path}指定的节点证书信息从黑名单列表中删除，其他节点恢复与该节点的连接(注: ${node_ca_path}是节点配置文件相对于dist/conf的路径)
 
-**调用方法**: java -cp 'conf/:apps/\*:lib/\*' org.bcos.contract.tools.SystemContractTools "CAAction" "all"
+**③ 显示区块链黑名单节点证书信息**
 
-**功能**: 显示记录在系统合约CAAction中的所有CA证书信息
+**调用方法**: 
+
+```bash
+##设web3sdk代码位于/mydata/目录下
+#----进入bin目录---
+cd /mydata/web3sdk/dist/bin
+chmod a+x web3sdk
+./web3sdk CAAction all
+```
+
+**功能**: 显示记录在系统合约CAAction中的所有黑名单节点证书信息
 
 <br>
 
@@ -518,7 +597,7 @@ org.bcos.web3j.abi.datatypes.generated.Uint256@ee871267
 
 **① 获取系统参数**
 
-**调用方法**: java -cp 'conf/:apps/\*:lib/\*' org.bcos.contract.tools.SystemContractTools "ConfigAction" "get" "${配置项}"
+**调用方法**: 在/mydata/web3sdk/dist/bin目录下执行./web3sdk ConfigAction get ${配置项}
 
 **功能**: 从系统合约ConfigAction读取${key}对应的值(ConfigAction中记录的系统参数说明参考[系统参数说明文档](https://github.com/FISCO-BCOS/Wiki/tree/master/%E7%B3%BB%E7%BB%9F%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3))
 
@@ -526,7 +605,7 @@ org.bcos.web3j.abi.datatypes.generated.Uint256@ee871267
 
 **② 设置系统参数信息**
 
-**调用方法**: java -cp 'conf/:apps/\*:lib/\*' org.bcos.contract.tools.SystemContractTools "ConfigAction" "set" "${配置项}" "${配置项的值}"
+**调用方法**: 在/mydata/web3sdk/dist/bin目录下执行./web3sdk ConfigAction set ${配置项} ${配置项的值}"
 
 **功能**: 将记录在系统合约ConfigAction中${key}对应的值设置为${setted_value}(ConfigAction中记录的系统参数说明参考[系统参数说明文档](https://github.com/FISCO-BCOS/Wiki/tree/master/%E7%B3%BB%E7%BB%9F%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3))
 
@@ -535,24 +614,27 @@ org.bcos.web3j.abi.datatypes.generated.Uint256@ee871267
 **通过ConfigAction配置系统参数的例子如下:**
 
 ```bash
+##设web3sdk代码位于/mydata/目录下
+#----进入bin目录---
+$ cd /mydata/web3sdk/dist/bin
+$ chmod a+x web3sdk
 
 # =====更改出块时间为2s====
-java -cp 'conf/:apps/*:lib/*' org.bcos.contract.tools.SystemContractTools "ConfigAction" set "intervalBlockTime" 2000
+$ ./web3sdk ConfigAction set intervalBlockTime 2000
 
 # =====允许空块落盘=====
-java -cp 'conf/:apps/*:lib/*' org.bcos.contract.tools.SystemContractTools "ConfigAction" set "omitEmptyBlock" false
+$ ./web3sdk ConfigAction set omitEmptyBlock false
 
 # ====调整一笔交易允许消耗的最大交易gas为40,000,000
-java -cp 'conf/:apps/*:lib/*' org.bcos.contract.tools.SystemContractTools "ConfigAction" set "maxTransactionGas" 40000000
+$ ./web3sdk ConfigAction set maxTransactionGas 40000000
 
 # ====调整一个块允许消耗的最大交易gas为3000,000,000
-java -cp 'conf/:apps/*:lib/*' org.bcos.contract.tools.SystemContractTools "ConfigAction" set "maxBlockHeadGas" 3000000000
+$ ./web3sdk ConfigAction set maxBlockHeadGas 3000000000
 
 # ==== 打开CA认证开关====
-java -cp 'conf/:apps/*:lib/*' org.bcos.contract.tools.SystemContractTools "ConfigAction" set "CAVerify" true
+$ ./web3sdk ConfigAction set CAVerify true
 
-# .......
-
+# ......
 ```
 
 <br>
@@ -566,19 +648,19 @@ java -cp 'conf/:apps/*:lib/*' org.bcos.contract.tools.SystemContractTools "Confi
 
 **① 部署联盟共识模板合约**
 
-**调用方法**: java -cp 'conf/:apps/\*:lib/\*' org.bcos.contract.tools.SystemContractTools "ConsensusControl" "deploy"
+**调用方法**: ./web3sdk ConsensusControl deploy
 
 <br>
 
 **② 列出所有联盟共识合约地址**
 
-**调用方法**: java -cp 'conf/:apps/\*:lib/\*' org.bcos.contract.tools.SystemContractTools "ConsensusControl" "list"
+**调用方法**: ./web3sdk ConsensusControl list
 
 <br>
 
 **② 关闭联盟共识特性**
 
-**调用方法**:  java -cp 'conf/:apps/\*:lib/\*' org.bcos.contract.tools.SystemContractTools "ConsensusControl" "turnoff"
+**调用方法**:  ./web3sdk ConsensusControl list turnoff
 
 **功能**: 关闭联盟共识模板功能
 
