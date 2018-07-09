@@ -37,7 +37,7 @@ public abstract class TransactionManager {
         this.sleepDuration = sleepDuration;
     }
 
-    TransactionReceipt executeTransaction(
+    public TransactionReceipt executeTransaction(
             BigInteger gasPrice, BigInteger gasLimit, String to,
             String data, BigInteger value, BigInteger type, boolean isInitByName)
             throws InterruptedException, IOException, TransactionTimeoutException {

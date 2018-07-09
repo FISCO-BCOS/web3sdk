@@ -45,7 +45,14 @@ public class Transaction {
         this.value = value;
 
         if (data != null) {
-            this.data = Numeric.prependHexPrefix(data);
+        	if (this.to != null && this.to != "")
+        	{
+        		this.data = Numeric.prependHexPrefix(data);
+        	}
+        	else
+        	{
+        		this.data = data;
+        	}
         }
 
         this.nonce = nonce;
