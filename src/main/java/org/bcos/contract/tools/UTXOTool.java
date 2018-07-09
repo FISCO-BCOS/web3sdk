@@ -237,6 +237,12 @@ public class UTXOTool  {
 			}
     		
 			try {
+				if (utxotype == "TokenTracking")
+				{
+					// Specific format adjustment
+					result = result.replaceAll("\"\\{", "\\{");
+					result = result.replaceAll("\\}\"", "\\}");
+				}
 				JSONObject jsStr = JSONObject.parseObject(result);
 				code = jsStr.getIntValue("code");
 				if (code != 0) {
