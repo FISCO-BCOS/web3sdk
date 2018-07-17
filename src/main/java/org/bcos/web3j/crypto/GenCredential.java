@@ -1,29 +1,17 @@
 package org.bcos.web3j.crypto;
 
-import org.bcos.web3j.crypto.Credentials;
-
-import org.bcos.web3j.crypto.ECKeyPair;
-import org.bcos.web3j.crypto.Keys;
-import org.bcos.web3j.crypto.Sign;
-import org.bcos.web3j.crypto.EncryptType;
 import org.bcos.web3j.crypto.sm2.crypto.asymmetric.SM2KeyGenerator;
 import org.bcos.web3j.crypto.sm2.crypto.asymmetric.SM2PrivateKey;
 import org.bcos.web3j.crypto.sm2.crypto.asymmetric.SM2PublicKey;
 import org.bcos.web3j.crypto.sm2.util.encoders.Hex;
-
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
 import java.security.KeyPair;
-import java.util.UUID;
 
 public class GenCredential {
-	private static Logger logger = LogManager.getLogger(GenCredential.class);
+	private static Logger logger = LoggerFactory.getLogger(GenCredential.class);
 
 	public static ECKeyPair createGuomiKeyPair() {
 		System.out.println("=====INIT GUOMI KEYPAIR ====");

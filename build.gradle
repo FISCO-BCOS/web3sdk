@@ -21,6 +21,7 @@ repositories {
 
 List logger = [
 	"org.slf4j:jul-to-slf4j:1.7.10",
+	"org.slf4j:jcl-over-slf4j:1.7.10",
 	"org.apache.logging.log4j:log4j-api:2.1",
 	"org.apache.logging.log4j:log4j-core:2.1",
 	"org.apache.logging.log4j:log4j-slf4j-impl:2.1",
@@ -41,6 +42,11 @@ List alibaba = [
         'com.alibaba:druid:1.0.29',
         'com.alibaba:fastjson:1.2.29'
 ]
+
+//排除commons-logging，用slf4j替换之。
+configurations.all {
+	exclude group: "commons-logging", module: "commons-logging"
+}
 
 // In this section you declare the dependencies for your production and test code
 dependencies {
