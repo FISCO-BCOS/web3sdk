@@ -19,11 +19,19 @@ public final class Numeric {
     private Numeric() {
     }
 
-    public static String encodeQuantity(BigInteger value) {
-        if (value.signum() != -1) {
-            return HEX_PREFIX + value.toString(16);
-        } else {
-            throw new MessageEncodingException("Negative values are not supported");
+    public static BigInteger decodeQuantity(String value) {
+        if (!isValidHexQuantity(value)) {
+        	try {
+	            return new BigInteger(value);
+	        } catch (NumberFormatException e) {
+	            throw new MessageDecodingException("value is not a hex number or a decimal number");
+	        }
+        }else{
+	        try {
+	            return new BigInteger(value.substring(2), 16);
+	        } catch (NumberFormatException e) {
+	            throw new MessageDecodingException("Negative ", e);
+	        }
         }
     }
 
