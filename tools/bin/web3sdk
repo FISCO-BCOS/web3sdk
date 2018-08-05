@@ -7,76 +7,110 @@ LANG=zh_CN.UTF-8
 ##
 ##############################################################################
 
-echo "SystemContract Command reference is as follows"
-echo "Usage:./web3sdk InitSystemContract"
-echo "Usage:./web3sdk SystemProxy"
-echo "Usage:./web3sdk NodeAction all|registerNode|cancelNode"
-echo "Usage:./web3sdk CAAction all|add|remove"
-echo "Usage:./web3sdk ConfigAction get|set"
-echo "Usage:./web3sdk ConsensusControl deploy|turnoff|list"
-echo "Usage:./web3sdk CNSAction add|update|get|list|historylist|reset"
+# @function: output log with red color (error log)
+# @param: content: error message
+function LOG_ERROR()
+{
+    local content=${1}
+    echo -e "\033[31m"${content}"\033[0m"
+}
 
-echo "==================================================================="
+# @function: output information log
+# @param: content: information message
+function LOG_INFO()
+{
+    local content=${1}
+    echo -e "\033[32m"${content}"\033[0m"
+}
 
-echo "WEB3RPC Command reference is as follows"
-echo "Usage: ./web3sdk web3_clientVersion "
-echo "Usage: ./web3sdk eth_accounts"
-echo "Usage: ./web3sdk eth_blockNumber"
-echo "Usage: ./web3sdk eth_pbftView"
-echo "Usage: ./web3sdk eth_getCode address blockNumber"
-echo "Usage: ./web3sdk eth_getBlockTransactionCountByHash blockHash"
-echo "Usage: ./web3sdk eth_getTransactionCount address blockNumber"
-echo "Usage: ./web3sdk eth_getBlockTransactionCountByNumber blockNumber"
-echo "Usage: ./web3sdk eth_sendRawTransaction signTransactionData"
-echo "Usage: ./web3sdk eth_getBlockByHash blockHash true|false"
-echo "Usage: ./web3sdk eth_getBlockByNumber blockNumber"
-echo "Usage: ./web3sdk eth_getTransactionByBlockNumberAndIndex blockNumber transactionPosition"
-echo "Usage: ./web3sdk eth_getTransactionByBlockHashAndIndex blockHash transactionPosition"
-echo "Usage: ./web3sdk eth_getTransactionReceipt transactionHash"
+# @function: execute command
+# @params: 1. command: command to be executed
+function execute_cmd()
+{
+    local command="${1}"
+    eval "${command}"
+    local ret=$?
+    if [ $ret -ne 0 ];then
+        LOG_ERROR "execute command ${command} FAILED"
+        exit 1
+    fi
+    return 0
+}
 
-echo "==================================================================="
+function Usage() {
+    LOG_INFO "###### SystemContract TOOLS(please refer to https://fisco-bcos-test.readthedocs.io/zh/latest/docs/web3sdk/advanced/index.html)"
+    LOG_INFO "--Deploy system contract: \n\t./web3sdk InitSystemContract\n"
+    LOG_INFO "--Get system contract routers: \n\t./web3sdk SystemProxy\n"
+    LOG_INFO "--Manager leaders: \n\t./web3sdk NodeAction all|registerNode|cancelNode\n"
+    LOG_INFO "--Manager black-list of certificates : \n\t./web3sdk CAAction all|add|remove\n"
+    LOG_INFO "--Manager system params of FISCO-BCOS blockchain: \n\t./web3sdk ConfigAction get|set\n"
+    LOG_INFO "--ConsensusControl: \n\t./web3sdk ConsensusControl deploy|turnoff|list\n"
+    LOG_INFO "--CNS tools: \n\t./web3sdk CNSAction add|update|get|list|historylist|reset\n"
+    LOG_INFO "\n"
+    LOG_INFO "###### Web3j API (please refer to https://fisco-bcos-test.readthedocs.io/zh/latest/docs/web3sdk/advanced/web3sdk_api.html)"
+    
+    LOG_INFO "--Obtain version of web3j: \n\t./web3sdk web3_clientVersion\n"
+    LOG_INFO "--Obtain account: \n\t./web3sdk eth_accounts\n"
+    LOG_INFO "--Obtain current block number: \n\t./web3sdk eth_blockNumber\n"
+    LOG_INFO "--Obtain current pbft view: \n\t./web3sdk eth_pbftView\n"
+    LOG_INFO "--Obtain binary code of specified contract: \n\t./web3sdk eth_getCode address blockNumber\n"
+    LOG_INFO "--Get transaction according to transaction hash: \n\t./web3sdk eth_getBlockTransactionCountByHash blockHash\n"
+    LOG_INFO "--Get transaction count of specified account located in specified block: \n\t./web3sdk eth_getTransactionCount address blockNumber\n"
+    LOG_INFO "--Get total count of transactions located in specifed block: \n\t./web3sdk eth_getBlockTransactionCountByNumber blockNumber\n"
+    LOG_INFO "--Send signed data to block-chain: \n\t./web3sdk eth_sendRawTransaction signTransactionData\n"
+    LOG_INFO "--Get specified block according to block hash: \n\t./web3sdk eth_getBlockByHash blockHash true|false\n"
+    LOG_INFO "--Get specified block according to block number: \n\t./web3sdk eth_getBlockByNumber blockNumber\n"
+    LOG_INFO "--Get specified transaction according to block height and transaction position: \n\t./web3sdk eth_getTransactionByBlockNumberAndIndex blockNumber transactionPosition\n"
+    LOG_INFO "--Get specified transaction according to block hash and transaction position: \n\t./web3sdk eth_getTransactionByBlockHashAndIndex blockHash transactionPosition\n"
+    LOG_INFO "--Get transaction receipt according to transaction hash: \n\t./web3sdk eth_getTransactionReceipt transactionHash\n"
+    LOG_INFO "\n"
+    LOG_INFO "###### Permission Control API(please refer to https://fisco-bcos-test.readthedocs.io/zh/latest/docs/web3sdk/advanced/web3sdk_api.html)"
+    LOG_INFO "--Deploy permission control contract: \n\t./web3sdk ARPI_Model\n"
+    LOG_INFO "--Obtain permission information: \n\t./web3sdk PermissionInfo\n"
+    LOG_INFO "--Add specified filter: \n\t./web3sdk FilterChain addFilter name1 version1 desc1\n"
+    LOG_INFO "--Delete specified filter: \n\t./web3sdk FilterChain delFilter num\n"
+    LOG_INFO "--Show all filters: \n\t./web3sdk FilterChain showFilter\n"
+    LOG_INFO "--Reset all filters: \n\t./web3sdk FilterChain resetFilter\n"
+    LOG_INFO "--Get status of specified filter: \n\t./web3sdk Filter getFilterStatus num\n"
+    LOG_INFO "--Enable specified filter: \n\t./web3sdk Filter enableFilter num\n"
+    LOG_INFO "--Disable specified filter: \n\t./web3sdk Filter disableFilter num\n"
+    LOG_INFO "--Set specified account to specified group: \n\t./web3sdk Filter setUsertoNewGroup num account\n"
+    LOG_INFO "--Add specified account to existed group: \n\t./web3sdk Filter setUsertoExistingGroup num account group\n"
+    LOG_INFO "--Query group information of speicifed account: \n\t./web3sdk Filter listUserGroup num account\n"
+    LOG_INFO "--Query whether specified account owned to specified group has been added to black-name list or not: \n\t./web3sdk Group getBlackStatus num account\n"
+    LOG_INFO "--Add specified account to black-name list: \n\t./web3sdk Group enableBlack num account\n"
+    LOG_INFO "--Remove specified account from black-name list: \n\t./web3sdk Group disableBlack num account\n"
+    LOG_INFO "--Query whether specified account has permission to deploy contracts: \n\t./web3sdk Group getDeployStatus num account\n"
+    LOG_INFO "--Enable the contract deployment permission for specified account: \n\t./web3sdk Group enableDeploy num account\n"
+    LOG_INFO "--Remove the contract deployment permission for specified account: \n\t./web3sdk Group disableDeploy num account\n"
+    LOG_INFO "--Add permission for specified account to callback function of specified contract: \n\t./web3sdk Group addPermission num account A.address fun(string)\n"
+    LOG_INFO "--Remove permission for specified account to callback function of specified contract: \n\t./web3sdk Group delPermission num account A.address fun(string)\n"
+    LOG_INFO "--Check whether specified account can callback specified function of specified contract: \n\t./web3sdk Group checkPermission num account A.address fun(string)\n"
+    LOG_INFO "--List permissons of account owned to specified group: \n\t./web3sdk Group listPermission num account\n"
+    LOG_INFO "\n"
+    LOG_INFO "###### UTXO API"
 
-echo "Permission Command reference is as follows"
-echo "Usage: ./web3sdk ARPI_Model "
-echo "Usage: ./web3sdk PermissionInfo "
-echo "Usage: ./web3sdk FilterChain addFilter name1 version1 desc1 "
-echo "Usage: ./web3sdk FilterChain delFilter num "
-echo "Usage: ./web3sdk FilterChain showFilter "
-echo "Usage: ./web3sdk FilterChain resetFilter "
-echo "Usage: ./web3sdk Filter getFilterStatus num "
-echo "Usage: ./web3sdk Filter enableFilter num "
-echo "Usage: ./web3sdk Filter disableFilter num "
-echo "Usage: ./web3sdk Filter setUsertoNewGroup num account "
-echo "Usage: ./web3sdk Filter setUsertoExistingGroup num account group "
-echo "Usage: ./web3sdk Filter listUserGroup num account "
-echo "Usage: ./web3sdk Group getBlackStatus num account "
-echo "Usage: ./web3sdk Group enableBlack num account "
-echo "Usage: ./web3sdk Group disableBlack num account "
-echo "Usage: ./web3sdk Group getDeployStatus num account "
-echo "Usage: ./web3sdk Group enableDeploy num account "
-echo "Usage: ./web3sdk Group disableDeploy num account "
-echo "Usage: ./web3sdk Group addPermission num account A.address fun(string) "
-echo "Usage: ./web3sdk Group delPermission num account A.address fun(string) "
-echo "Usage: ./web3sdk Group checkPermission num account A.address fun(string) "
-echo "Usage: ./web3sdk Group listPermission num account "
-
-echo "==================================================================="
-
-echo "UTXO Command reference is as follows"
-echo "Usage: ./web3sdk InitTokens Type"
-echo "Usage: ./web3sdk SendSelectedTokens Type"
-echo "Usage: ./web3sdk RegisterAccount Account"
-echo "Usage: ./web3sdk TokenTracking TokenKey"
-echo "Usage: ./web3sdk GetBalance Account"
-echo "Usage: ./web3sdk SelectTokens Account Value"
-echo "Usage: ./web3sdk GetToken TokenKey"
-echo "Usage: ./web3sdk GetTx TxKey"
-echo "Usage: ./web3sdk GetVault Account TokenType"
+    LOG_INFO "UTXO Command reference is as follows"
+    LOG_INFO "--Init specified type tokens: \n\t./web3sdk InitTokens Type\n"
+    LOG_INFO "--Send tokens: \n\t./web3sdk SendSelectedTokens Type\n"
+    LOG_INFO "--Register Account: \n\t./web3sdk RegisterAccount Account\n"
+    LOG_INFO "--Track token transferred records : \n\t./web3sdk TokenTracking TokenKey\n"
+    LOG_INFO "--Get balance of specified account: \n\t./web3sdk GetBalance Account\n"
+    LOG_INFO "--Select specified amount of token from specified account: \n\t./web3sdk SelectTokens Account Value\n"
+    LOG_INFO "--Get token according to TokenKey: \n\t./web3sdk GetToken TokenKey\n"
+    LOG_INFO "--Get UTXO transaction according to TxKey: \n\t./web3sdk GetTx TxKey\n"
+    LOG_INFO "--Get value of specified token: \n\t./web3sdk GetVault Account TokenType\n"
+}
 
 #第一个参数不能为空
 if [ $# -lt 1 ]; then
-    echo "arg1 can not be empty"
+    Usage
     exit 1
+fi
+
+if [ "${1}" == "-h" ] || [ "${1}" == "--help" ] || [ "${1}" == "help" ];then
+    Usage
+    exit 0
 fi
 
 # Attempt to set APP_HOME
@@ -107,13 +141,13 @@ DEFAULT_JVM_OPTS=""
 MAX_FD="maximum"
 
 warn ( ) {
-    echo "$*"
+    LOG_INFO "$*"
 }
 
 die ( ) {
-    echo
-    echo "$*"
-    echo
+    LOG_INFO
+    LOG_INFO "$*"
+    LOG_INFO
     exit 1
 }
 
@@ -214,13 +248,13 @@ if $cygwin ; then
     # Now convert the arguments - kludge to limit ourselves to /bin/sh
     i=0
     for arg in "$@" ; do
-        CHECK=`echo "$arg"|egrep -c "$OURCYGPATTERN" -`
-        CHECK2=`echo "$arg"|egrep -c "^-"`                                 ### Determine if an option
+        CHECK=`LOG_INFO "$arg"|egrep -c "$OURCYGPATTERN" -`
+        CHECK2=`LOG_INFO "$arg"|egrep -c "^-"`                                 ### Determine if an option
 
         if [ $CHECK -ne 0 ] && [ $CHECK2 -eq 0 ] ; then                    ### Added a condition
-            eval `echo args$i`=`cygpath --path --ignore --mixed "$arg"`
+            eval `LOG_INFO args$i`=`cygpath --path --ignore --mixed "$arg"`
         else
-            eval `echo args$i`="\"$arg\""
+            eval `LOG_INFO args$i`="\"$arg\""
         fi
         i=$((i+1))
     done
@@ -248,7 +282,8 @@ if [ $1 == "InitSystemContract" ] ; then
 	exec "$JAVACMD" "${JVM_OPTS[@]}" -classpath "$CLASSPATH" org.bcos.contract.tools.InitSystemContract "$@"
 	
 elif [ $1 == "SystemProxy" -o $1 == "NodeAction" -o $1 == "CAAction" -o $1 == "ConfigAction" -o $1 == "ConsensusControl" -o $1 == "CNSAction" ] ; then
-	exec "$JAVACMD" "${JVM_OPTS[@]}" -classpath "$CLASSPATH" org.bcos.contract.tools.SystemContractTools "$@"
+    command="$JAVACMD ${JVM_OPTS[@]} -classpath $CLASSPATH org.bcos.contract.tools.SystemContractTools $@"
+    execute_cmd "${command}"
 	
 elif [ $1 == "eth_accounts" -o $1 == "web3_clientVersion" -o $1 == "eth_blockNumber" -o $1 == "eth_pbftView" -o $1 == "eth_getCode" -o $1 == "eth_getBlockTransactionCountByHash" -o $1 == "eth_getTransactionCount" -o $1 == "eth_getBlockTransactionCountByNumber" -o $1 == "eth_sendRawTransaction" -o $1 == "eth_getBlockByHash" -o $1 == "eth_getBlockByNumber" -o $1 == "eth_getTransactionByBlockNumberAndIndex" -o $1 == "eth_getTransactionByBlockHashAndIndex" -o $1 == "eth_getTransactionReceipt" ] ; then
 	exec "$JAVACMD" "${JVM_OPTS[@]}" -classpath "$CLASSPATH" org.bcos.web3j.console.Web3RpcApi "$@"
