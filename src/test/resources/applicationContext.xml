@@ -25,27 +25,29 @@
 	</bean>
 
 	<bean id="toolConf" class="org.bcos.contract.tools.ToolConf">
-		<property name="systemProxyAddress" value="0x919868496524eedc26dbb81915fa1547a20f8998" />
+		<property name="systemProxyAddress" value="【系统合约代理地址,对应节点config.json里的systemproxyaddress】" />
+                <!--GOD账户的私钥:对应搭链创建god帐号环境$fiscobcos/tool/godInfo.txt里的privKey】-->
 		<property name="privKey" value="bcec428d5205abe0f0cc8a734083908d9eb8563e31f943d760786edf42ad67dd" />
+                <!--GOD账户: 【对应搭链创建god帐号环境$fiscobcos/tool/godInfo.txt里的address】-->
 		<property name="account" value="0x776bd5cf9a88e9437dc783d6414bccc603015cf0" />
 		<property name="outPutpath" value="./output/" />
 	</bean>
 	
 	<bean id="channelService" class="org.bcos.channel.client.Service">
-		<property name="orgID" value="WB" />
+		<property name="orgID" value="WB" /> <!-- 配置本机构名称 -->
 		<property name="connectSeconds" value="10" />
 		<property name="connectSleepPerMillis" value="10" />
 		<property name="allChannelConnections">
 			<map>
-				<entry key="WB">
+				<entry key="WB"> <!-- 配置本机构的区块链节点列表（如有DMZ，则为区块链前置）-->
 					<bean class="org.bcos.channel.handler.ChannelConnections">
 						<property name="caCertPath" value="classpath:ca.crt" />
 						<property name="clientKeystorePath" value="classpath:client.keystore" />
-						<property name="keystorePassWord" value="123456" />
-						<property name="clientCertPassWord" value="123456" />
+						<property name="keystorePassWord" value="【生成client.keystore时对应的密码】" />
+						<property name="clientCertPassWord" value="【生成client.keystore时对应的密码】" />
                         <property name="connectionsStr">
 							<list>
-								<value>node1@***REMOVED***:30304</value>  
+								<value>[nodeid]@[ip]:[channelPort]</value>  
 							</list>
 						</property>
                     </bean>
