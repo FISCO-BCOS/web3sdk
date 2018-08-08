@@ -23,14 +23,10 @@ function LOG_INFO()
 function execute_cmd()
 {
     local command="${1}"
-    local ignored=0
-    if [ $# -gt 1 ];then
-        ignored=${2}
-    fi
 
-    eval "${command}"
+    eval ${command}
     local ret=$?
-    if [ $ret -ne 0 ] && [ $ret -ne ${ignored} ];then
+    if [ $ret -ne 0 ];then
         LOG_ERROR "execute command ${command} FAILED"
         exit 1
     fi
@@ -66,7 +62,7 @@ function compile()
     do
 	item=`basename $itemfile ".sol"`
     	LOG_INFO "compiling ${itemfile} ..."
-    	execute_cmd "${solc_bin} --abi --bin -o ${output_dir} ${itemfile}" 1
+    	execute_cmd "${solc_bin} --abi --bin -o ${output_dir} ${itemfile} --overwrite"
     done
     LOG_INFO "... ... COMPILE SUCCESS ... ... "
 }
