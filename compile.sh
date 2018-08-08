@@ -43,7 +43,6 @@ function install_centos_pkg()
 function install_deps_centos()
 {
     install_centos_pkg "git"    
-    install_centos_pkg "dos2unix"    
     install_centos_pkg "lsof"    
     install_centos_pkg "unzip"    
 }
@@ -67,10 +66,6 @@ function install_deps_ubuntu()
     install_ubuntu_pkg "lsof"
     install_ubuntu_pkg "tofrodos"
     install_ubuntu_pkg "unzip"
-    if [ $? -eq 0 ];then
-        execute_cmd "sudo ln -s /usr/bin/todos /usr/bin/unxi2dos"
-        execute_cmd "sudo ln -s /usr/bin/fromdos /usr/bin/dos2unix"
-    fi
 }
 
 
