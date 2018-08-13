@@ -27,7 +27,8 @@
 
 	<!-- 系统合约地址配置，使用系统合约工具时需配置-->
 	<bean id="toolConf" class="org.bcos.contract.tools.ToolConf">
-		<property name="systemProxyAddress" value="【系统合约代理地址,对应节点config.json里的systemproxyaddress】" />
+		<!--系统合约地址: 【系统合约代理地址,对应节点config.json里的systemproxyaddress】-->
+		<property name="systemProxyAddress" value="0x0" />
                 <!--GOD账户的私钥: -->
                 <!--非国密版FISCO-BCOS获取GOD账户和账户私钥: 【参考https://fisco-bcos-test.readthedocs.io/zh/latest/docs/web3sdk/config_web3sdk.html】-->
 		<!--国密版FISCO-BCOS获取GOD账户和账户私钥：【参考https://fisco-bcos-test.readthedocs.io/zh/latest/docs/guomi/config_guomi.html#sdk】-->
@@ -50,8 +51,10 @@
 						<property name="caCertPath" value="classpath:ca.crt" />
 						<!--client.keystore证书路径-->
 						<property name="clientKeystorePath" value="classpath:client.keystore" />
-						<property name="keystorePassWord" value="【生成client.keystore时对应的keystore密码】" />
-						<property name="clientCertPassWord" value="【生成client.keystore时对应的证书密码】" />
+ 						<!--【生成client.keystore时对应的keystore密码】-->
+						<property name="keystorePassWord" value="123456" />
+						<!--【生成client.keystore时对应的证书密码】-->
+						<property name="clientCertPassWord" value="123456" />
                         <property name="connectionsStr">
 							<list>
 								<value>[nodeid]@[ip]:[channelPort]</value>  
