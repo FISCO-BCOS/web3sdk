@@ -20,10 +20,12 @@
 		</property>
     </bean>
 
+	<!-- 国密开关 -->
 	<bean id="encryptType" class="org.bcos.web3j.crypto.EncryptType">
 		<constructor-arg value="0"/>
 	</bean>
 
+	<!-- 系统合约地址配置，使用系统合约工具时需配置-->
 	<bean id="toolConf" class="org.bcos.contract.tools.ToolConf">
 		<property name="systemProxyAddress" value="【系统合约代理地址,对应节点config.json里的systemproxyaddress】" />
                 <!--GOD账户的私钥: -->
@@ -35,6 +37,7 @@
 		<property name="outPutpath" value="./output/" />
 	</bean>
 	
+	<!-- 区块链节点信息配置 -->
 	<bean id="channelService" class="org.bcos.channel.client.Service">
 		<property name="orgID" value="fisco" /> <!-- 配置本机构名称 -->
 		<property name="connectSeconds" value="10" />
