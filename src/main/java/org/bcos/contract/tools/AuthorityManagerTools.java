@@ -57,9 +57,17 @@ public class AuthorityManagerTools {
         }
 	    String privKey=toolConf.getPrivKey();
 	    credentials = GenCredential.create(privKey);
-        systemProxy = SystemProxy.load(toolConf.getSystemProxyAddress(), web3j,credentials, gasPrice,
-        		gasLimited);
-	  	transactionFilterChain=TransactionFilterChain.load(SystemContractTools.getAction(systemProxy, "TransactionFilterChain").toString(), web3j,  credentials, gasPrice, gasLimited);
+	    try {
+	          systemProxy = SystemProxy.load(toolConf.getSystemProxyAddress(), web3j,credentials, gasPrice,
+	          gasLimited);
+	          transactionFilterChain=TransactionFilterChain.load(SystemContractTools.getAction(systemProxy, "TransactionFilterChain").toString(), web3j,  credentials, gasPrice, gasLimited);
+	          if("".equals(transactionFilterChain.getContractAddress())||null==transactionFilterChain.getContractAddress()){
+	        	  System.out.println("systemProxy or privKey is wrong!!!please cherk applicationContext.xml");
+	        	  flag=false;
+	          }
+	    } catch (Exception e) {
+	    	System.out.println(transactionFilterChain.getContractAddress()+"is null");
+	    }
         return flag;
 	}
 	
@@ -95,7 +103,7 @@ public class AuthorityManagerTools {
 	  		System.out.println("The number parameter is required to be non-negative and less than the length of the FilterChain "+filtersLength);
 	  		return 0;
 	  	}else{
-	  		System.out.println("Start the delFilter operation：");
+	  		System.out.println("Start the delFilter operation:");
 	  		try {
 	  			transactionFilterChain.delFilter(new Uint256(filterNum)).get();
 	  			int filtersLengthNow=transactionFilterChain.getFiltersLength().get().getValue().intValue();
@@ -117,7 +125,7 @@ public class AuthorityManagerTools {
 	  		List<Type> result2=authorityFilter.getInfo().get();
 	  		Bool authorityFlag=authorityFilter.getEnable().get();
 	  		if(authorityFlag.getValue()){
-	  			System.out.println("Filter[" + i+ "]information： "+((Utf8String) result2.get(0)).getValue()+" "+((Utf8String) result2.get(1)).getValue()+" "+((Utf8String) result2.get(2)).getValue()+" The Filter permission control has started");
+	  			System.out.println("Filter[" + i+ "]information: "+((Utf8String) result2.get(0)).getValue()+" "+((Utf8String) result2.get(1)).getValue()+" "+((Utf8String) result2.get(2)).getValue()+" The Filter permission control has started");
 	  		}else{
 	  			System.out.println("Filter[" + i+ "]information: "+((Utf8String) result2.get(0)).getValue()+" "+((Utf8String) result2.get(1)).getValue()+" "+((Utf8String) result2.get(2)).getValue()+" The Filter permission controls the off state");
 	  		}
@@ -126,8 +134,13 @@ public class AuthorityManagerTools {
 	
 	//resetFilter
 	public void resetFilter()throws Exception{
-		System.out.println("Start restoring the chain operation：");
+		System.out.println("Start restoring the chain operation:");
 		int filtersLength=transactionFilterChain.getFiltersLength().get().getValue().intValue();
+		//增加filter=0时的校验
+		if(filtersLength==0){
+		System.out.println("The number of filters on the chain:"+filtersLength);
+		 	return;
+		}
 		for(int i=0; i<filtersLength;i++){
 	  		Address filterAddress=transactionFilterChain.getFilter(new Uint256(i)).get();
 	  		authorityFilter=AuthorityFilter.load(filterAddress.toString(), web3j,  credentials, gasPrice, gasLimited);
@@ -197,7 +210,7 @@ public class AuthorityManagerTools {
 		authorityFilter=AuthorityFilter.load(filterAddress.toString(), web3j,  credentials, gasPrice, gasLimited);
 		authorityFilter.setUserToNewGroup(new Address(account)).get();
 		Address user=authorityFilter.getUserGroup(new Address(account)).get();
-		System.out.println("Account assigned to the new role operation is completed, the role of："+user.toString());
+		System.out.println("Account assigned to the new role operation is completed, the role of:"+user.toString());
 	}
 	
 	//setUsertoExistingGroup
@@ -300,7 +313,7 @@ public class AuthorityManagerTools {
 		if(group==null){
 			return;
 		}
-		System.out.println("Start adding permission operation：");
+		System.out.println("Start adding permission operation:");
 		String funcDesc="contract: "+address+"function: "+func;
 		Bool permission=new Bool(true);
 		String funchash=sha3(func);
@@ -314,7 +327,7 @@ public class AuthorityManagerTools {
 		if(group==null){
 			return;
 		}
-		System.out.println("Start deleting permission operation：");
+		System.out.println("Start deleting permission operation:");
 		String funchash=sha3(func);
 		boolean flag=group.getPermission(new Address(address), new Utf8String(funchash)).get().getValue();
 		if(flag){
@@ -359,7 +372,7 @@ public class AuthorityManagerTools {
 				for (int i=0;i<rlist.size();i++){
 					Utf8String desc=group.getFuncDescwithPermissionByKey(rlist.get(i)).get();
 					if(!"".equals(desc)&&desc!=null){
-						System.out.println("["+idx+"]："+desc);
+						System.out.println("["+idx+"]:"+desc);
 						idx++;
 					}
 				}
@@ -382,6 +395,11 @@ public class AuthorityManagerTools {
 		}
 		authorityFilter=AuthorityFilter.load(filterAddress.toString(), web3j,  credentials, gasPrice, gasLimited);
 		Address groupAdress=authorityFilter.getUserGroup(new Address(account)).get();
+		Address zeroAddress=new Address(new BigInteger("0"));
+		  if(groupAdress.toString().equals(zeroAddress.toString())){
+		  System.out.println("account is wrong!");
+		  return null;
+		}
 		Group group=Group.load(groupAdress.toString(), web3j,  credentials, gasPrice, gasLimited);
 		return group;
 	}
