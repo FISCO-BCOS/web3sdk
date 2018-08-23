@@ -219,7 +219,7 @@ $ gradle build
                                                 <property name="clientCertPassWord" value="123456" /> <!--客户端证书验证口令, 默认是123456-->
                         <property name="connectionsStr">
                                                         <list> <!--##连接信息，包括要连接节点的IP和channelPort, 节点名称可任意填，无限制##-->
-                                                                <value>node1@10.107.105.81:7703</value>  
+                                                                <value>node1@127.0.0.1:7703</value>  
                                                         </list>
                                                 </property>
                     </bean>
