@@ -20,6 +20,7 @@ import org.bcos.contract.tools.ToolConf;
 import java.math.BigInteger;
 import java.security.KeyPair;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import static java.lang.System.exit;
 import static java.lang.System.mapLibraryName;
@@ -44,13 +45,13 @@ public class TestOk {
 				java.math.BigInteger gasPrice = new BigInteger("300000000");
 				java.math.BigInteger gasLimit = new BigInteger("300000000");
 				java.math.BigInteger initialWeiValue = new BigInteger("0");
-				Ok okDemo = Ok.deploy(web3, credentials, gasPrice, gasLimit, initialWeiValue).get();
+				Ok okDemo = Ok.deploy(web3, credentials, gasPrice, gasLimit, initialWeiValue).get(10000, TimeUnit.MILLISECONDS);
 				if (okDemo != null) {
 					while (true) {
 						System.out.println("####contract address is: " + okDemo.getContractAddress());
-						TransactionReceipt receipt = okDemo.trans(new Uint256(4)).get();
+						TransactionReceipt receipt = okDemo.trans(new Uint256(4)).get(10000, TimeUnit.MILLISECONDS);
 						System.out.println("###callback trans success");
-						Uint256 toBalance = okDemo.get().get();
+						Uint256 toBalance = okDemo.get().get(10000, TimeUnit.MILLISECONDS);
 						System.out.println("============to balance:" + toBalance.getValue());
 						Thread.sleep(1000);
 					}
