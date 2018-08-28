@@ -11,7 +11,7 @@ import java.util.concurrent.ScheduledExecutorService;
  */
 public class Async {
 
-    private static final Executor executor = Executors.newCachedThreadPool();
+    private static final Executor executor = Executors.newFixedThreadPool(Web3AsyncThreadPoolSize.web3AsyncPoolSize);
 
     public static <T> CompletableFuture<T> run(Callable<T> callable) {
         CompletableFuture<T> result = new CompletableFuture<>();
