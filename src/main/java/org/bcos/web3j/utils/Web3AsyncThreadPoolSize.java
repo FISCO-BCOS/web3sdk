@@ -8,11 +8,11 @@ public class Web3AsyncThreadPoolSize {
     public Web3AsyncThreadPoolSize(int web3AsyncPoolSize){
         this.web3AsyncPoolSize = web3AsyncPoolSize;
     }
-    public int getBlockLimit() {
+    public int getWeb3AsyncThreadPoolSize() {
         return web3AsyncPoolSize;
     }
 
-    public void setBlockLimit(int web3AsyncPoolSize) {
+    public void setWeb3AsyncThreadPoolSize(int web3AsyncPoolSize) {
         Web3AsyncThreadPoolSize.web3AsyncPoolSize = web3AsyncPoolSize;
     }
 }
