@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 import org.bcos.web3j.protocol.core.methods.request.ProofMerkle;
 import org.bcos.web3j.protocol.core.methods.response.*;
 import org.bcos.web3j.utils.BlockLimit;
+import org.bcos.web3j.utils.Web3AsyncThreadPoolSize;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rx.Observable;
@@ -109,7 +110,8 @@ public class JsonRpc2_0Web3j implements Web3j {
         this.web3jService = web3jService;
         this.web3jRx = new JsonRpc2_0Rx(this, scheduledExecutorService);
         this.blockTime = pollingInterval;
-        ExecutorService cachedThreadPool = Executors.newCachedThreadPool();
+        ExecutorService cachedThreadPool = Executors.newFixedThreadPool(Web3AsyncThreadPoolSize.web3AsyncPoolSize);
+
         cachedThreadPool.execute(new Runnable() {
             public void run() {
                 while (true) {
