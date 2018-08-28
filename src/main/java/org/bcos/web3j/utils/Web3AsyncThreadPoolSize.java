@@ -5,15 +5,10 @@ package org.bcos.web3j.utils;
  */
 public class Web3AsyncThreadPoolSize {
     public static Integer web3AsyncPoolSize = 100;
-    public Web3AsyncThreadPoolSize(int web3AsyncPoolSize){
+	public static Integer web3AsyncCorePoolSize = 50;
+    public Web3AsyncThreadPoolSize(int web3AsyncPoolSize,int web3AsyncCorePoolSize){
         this.web3AsyncPoolSize = web3AsyncPoolSize;
-    }
-    public int getWeb3AsyncThreadPoolSize() {
-        return web3AsyncPoolSize;
-    }
-
-    public void setWeb3AsyncThreadPoolSize(int web3AsyncPoolSize) {
-        Web3AsyncThreadPoolSize.web3AsyncPoolSize = web3AsyncPoolSize;
+		this.web3AsyncCorePoolSize = web3AsyncCorePoolSize;
     }
 }
 
