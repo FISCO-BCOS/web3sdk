@@ -56,19 +56,20 @@ public class ChannelConnections {
 		this.caCertPath = caCertPath;
 	}
 	
-	public InputStream getInputStream(String filePath) throws IOException{
-	    // if starts with "classpath:"
-	    if(filePath.startsWith("classpath:")){
-	        ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-	        Resource caResource = resolver.getResource(filePath);
-	        return caResource.getInputStream();
-	    }
-	    else{
-            File file = new File(filePath); 
-            InputStream inputStream = new FileInputStream(file);
-            return inputStream;
-	    }
-	}
+	public InputStream getInputStream(String filePath) throws IOException {
+        if (filePath.startsWith("classpath:") || filePath.startsWith("file:")) {
+            ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+            Resource caResource = resolver.getResource(filePath);
+            try (InputStream inputStream = caResource.getInputStream()) {
+                return inputStream;
+            }
+        } else {
+            File file = new File(filePath);
+            try (InputStream inputStream = new FileInputStream(file)) {
+                return inputStream;
+            }
+        }
+    }
 
 	public String getClientKeystorePath() {
 		return clientKeystorePath;
