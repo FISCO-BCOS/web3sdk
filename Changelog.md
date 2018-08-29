@@ -1,3 +1,34 @@
+### V1.2.2 (2018-08-29)
+
+* Updates
+
+1. 增加错误提示。
+2. 透传节点的json rpc错误。
+3. 默认连接时间从3秒改到30秒。
+4. TestOk中的Future设置超时时间。
+5. blockLimit可以配置
+```
+ <bean id="blockLimit" class="org.bcos.web3j.utils.BlockLimit">
+  <constructor-arg value="500"/>
+ </bean>
+```
+6. jsonrpc线程池可以配置
+```
+ <bean id="async" class="org.bcos.web3j.utils.Async">
+   <constructor-arg type="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor" ref="pool" />
+ </bean>
+ 
+ <bean id="pool" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+   <property name="corePoolSize" value="50" />
+   <property name="maxPoolSize" value="100" />
+   <property name="queueCapacity" value="500" />
+   <property name="keepAliveSeconds" value="60" />
+   <property name="rejectedExecutionHandler">
+    <bean class="java.util.concurrent.ThreadPoolExecutor.AbortPolicy" />
+   </property>
+ </bean>
+```
+
 ### V1.2.1 (2018-07-02)
 
 * Added
