@@ -239,7 +239,7 @@ public class Service {
 					{
 						logger.error("connectSeconds = " + connectSeconds);
 						logger.error("init ChannelService fail!");
-						throw new Exception();
+						throw new Exception("Init ChannelService fail!Please Refer To Link Below:https://github.com/FISCO-BCOS/web3sdk/wiki/web3sdk-debug");
 					}
 				}
 			}
@@ -489,7 +489,7 @@ public class Service {
 
 			EthereumResponse response = new EthereumResponse();
 			response.setErrorCode(-1);
-			response.setErrorMessage("system error");
+			response.setErrorMessage(e.getMessage()+"Please Refer To Link Below:https://github.com/FISCO-BCOS/web3sdk/wiki/web3sdk-debug");
 			response.setContent("");
 			response.setMessageID(request.getMessageID());
 
@@ -905,7 +905,7 @@ public class Service {
 		this.threadPool = threadPool;
 	}
 
-	private Integer connectSeconds = 3;
+	private Integer connectSeconds = 30;
 	private Integer connectSleepPerMillis = 1;
 	private String orgID;
 	private ConcurrentHashMap<String, ChannelConnections> allChannelConnections;
