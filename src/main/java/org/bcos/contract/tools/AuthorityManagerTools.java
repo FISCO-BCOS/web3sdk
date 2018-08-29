@@ -57,9 +57,17 @@ public class AuthorityManagerTools {
         }
 	    String privKey=toolConf.getPrivKey();
 	    credentials = GenCredential.create(privKey);
-        systemProxy = SystemProxy.load(toolConf.getSystemProxyAddress(), web3j,credentials, gasPrice,
-        		gasLimited);
-	  	transactionFilterChain=TransactionFilterChain.load(SystemContractTools.getAction(systemProxy, "TransactionFilterChain").toString(), web3j,  credentials, gasPrice, gasLimited);
+        try {
+	          systemProxy = SystemProxy.load(toolConf.getSystemProxyAddress(), web3j,credentials, gasPrice,
+	          gasLimited);
+	          transactionFilterChain=TransactionFilterChain.load(SystemContractTools.getAction(systemProxy, "TransactionFilterChain").toString(), web3j,  credentials, gasPrice, gasLimited);
+	          if("".equals(transactionFilterChain.getContractAddress())||null==transactionFilterChain.getContractAddress()){
+	        	  System.out.println("systemProxy or privKey is wrong!!!please cherk applicationContext.xml");
+	        	  flag=false;
+	          }
+	    } catch (Exception e) {
+	    	System.out.println(transactionFilterChain.getContractAddress()+"is null");
+	    }
         return flag;
 	}
 	
@@ -128,6 +136,10 @@ public class AuthorityManagerTools {
 	public void resetFilter()throws Exception{
 		System.out.println("Start restoring the chain operation：");
 		int filtersLength=transactionFilterChain.getFiltersLength().get().getValue().intValue();
+		if(filtersLength==0){
+		System.out.println("The number of filters on the chain:"+filtersLength);
+		 	return;
+		}
 		for(int i=0; i<filtersLength;i++){
 	  		Address filterAddress=transactionFilterChain.getFilter(new Uint256(i)).get();
 	  		authorityFilter=AuthorityFilter.load(filterAddress.toString(), web3j,  credentials, gasPrice, gasLimited);
@@ -382,6 +394,11 @@ public class AuthorityManagerTools {
 		}
 		authorityFilter=AuthorityFilter.load(filterAddress.toString(), web3j,  credentials, gasPrice, gasLimited);
 		Address groupAdress=authorityFilter.getUserGroup(new Address(account)).get();
+		Address zeroAddress=new Address(new BigInteger("0"));
+		  if(groupAdress.toString().equals(zeroAddress.toString())){
+		  System.out.println("account is wrong!");
+		  return null;
+		}
 		Group group=Group.load(groupAdress.toString(), web3j,  credentials, gasPrice, gasLimited);
 		return group;
 	}
