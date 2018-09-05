@@ -10,6 +10,7 @@ import org.bcos.web3j.protocol.core.methods.response.EthGetTransactionReceipt;
 import org.bcos.web3j.protocol.core.methods.response.EthSendTransaction;
 import org.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.bcos.web3j.protocol.exceptions.TransactionTimeoutException;
+import org.bcos.web3j.utils.AttemptsConf;
 
 /**
  * Transaction manager abstraction for executing transactions with Ethereum client via
@@ -17,8 +18,8 @@ import org.bcos.web3j.protocol.exceptions.TransactionTimeoutException;
  */
 public abstract class TransactionManager {
 
-    private static final int SLEEP_DURATION = 1500;
-    private static final int ATTEMPTS = 10;
+    private static final int SLEEP_DURATION = AttemptsConf.sleepDuration;
+    private static final int ATTEMPTS =  AttemptsConf.attempts;
 
     private final int sleepDuration;
     private final int attempts;
@@ -96,8 +97,8 @@ public abstract class TransactionManager {
         for (int i = 0; i < attempts; i++) {
 
             if (!receiptOptional.isPresent()) {
-                Thread.sleep(((long)sleepDuration*(i*i)+sleepDuration));
-                sumTime += (sleepDuration*(i*i)+sleepDuration);
+                Thread.sleep((long)sleepDuration);
+                sumTime += sleepDuration;
                 receiptOptional = sendTransactionReceiptRequest(transactionHash);
             } else {
                 return receiptOptional.get();
