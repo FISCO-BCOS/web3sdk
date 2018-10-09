@@ -57,7 +57,8 @@
 						<property name="clientCertPassWord" value="123456" />
                         <property name="connectionsStr">
 							<list>
-								<value>[nodeid]@[ip]:[channelPort]</value>  
+                 <!--[nodeid]@[ip]:[channelPort]-->
+								<value>node1@127.0.0.1:30304</value>  
 							</list>
 						</property>
                     </bean>
