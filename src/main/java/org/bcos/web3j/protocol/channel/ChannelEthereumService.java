@@ -1,7 +1,5 @@
 package org.bcos.web3j.protocol.channel;
 
-import java.io.IOException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,6 +9,8 @@ import org.bcos.channel.dto.EthereumResponse;
 import org.bcos.web3j.protocol.Service;
 import org.bcos.web3j.protocol.core.Request;
 import org.bcos.web3j.protocol.core.Response;
+
+import java.io.IOException;
 
 /**
  * Channel implementation of our services API.
@@ -52,8 +52,23 @@ public class ChannelEthereumService extends Service {
 
         logger.debug("Ethereum Request:{} {}", ethereumRequest.getMessageID(), objectMapper.writeValueAsString(request));
         logger.debug("Ethereum Response:{} {} {}", ethereumRequest.getMessageID(), response.getErrorCode(), response.getContent());
-
-        return objectMapper.readValue(response.getContent(), responseType);
+        if(response.getErrorCode() == 0)
+        {
+            try {
+                T t = objectMapper.readValue(response.getContent(), responseType);
+                if (t.getError() != null)
+                {
+                    throw new IOException(t.getError().getMessage());
+                }
+                return t;
+            }
+            catch(Exception e) {
+                throw new IOException(response.getContent());
+            }
+        }
+        else {
+            throw new IOException(response.getErrorMessage());
+        }
     }
 
 	public org.bcos.channel.client.Service getChannelService() {

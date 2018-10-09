@@ -30,7 +30,6 @@ public class Ethereum {
 		Service service = context.getBean(Service.class);
 		service.run();
 
-		Thread.sleep(3000);
 		System.out.println("start...");
 		System.out.println("===================================================================");
 
