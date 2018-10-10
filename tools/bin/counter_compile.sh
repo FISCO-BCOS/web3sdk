@@ -38,11 +38,11 @@ function execute_cmd()
 function Usage()
 {
     LOG_INFO "Usage":
-    LOG_INFO "       ./compile_demo ${pacakge_name}"
+    LOG_INFO "       ./counter_compile.sh ${pacakge_name}"
 }
 
 #get demo
-execute_cmd "wget https://raw.githubusercontent.com/cyjseagull/fisco-doc-test/master/docs/web3sdk/codes/Counter.sol -O Counter.sol"
+execute_cmd "wget https://raw.githubusercontent.com/FISCO-BCOS/FISCO-BCOS-DOC/master/docs/web3sdk/codes/Counter.sol -O Counter.sol"
 #move Counter.sol to contract compiliation direcotry
 execute_cmd "mv Counter.sol ../contracts"
 
