@@ -38,7 +38,7 @@ function execute_cmd()
 function Usage()
 {
     LOG_INFO "Usage":
-    LOG_INFO "       ./compile_demo ${pacakge_name}"
+    LOG_INFO "       ./counter_compile.sh ${pacakge_name}"
 }
 
 #get demo
