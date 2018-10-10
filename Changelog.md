@@ -1,3 +1,11 @@
+### V1.2.3 (2018-10-10)
+* Updates
+
+1. 增加web3sdk编译脚本compile.sh(脚本带有安装gradle功能)
+2. tools/bin目录下增加counter_compile.sh脚本, 从https://raw.githubusercontent.com/FISCO-BCOS/FISCO-BCOS-DOC/master/docs/web3sdk/codes/Counter.sol下载示例solidity源码并编译
+3. 修改tools/bin/web3sdk脚本，增加脚本执行异常判断，异常后终止脚本，并输出错误信息
+4. applicationContext.xml增加必要的解释说明
+
 ### V1.2.2 (2018-08-29)
 
 * Updates
