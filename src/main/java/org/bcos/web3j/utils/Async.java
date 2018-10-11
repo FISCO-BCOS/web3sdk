@@ -19,7 +19,9 @@ import java.util.concurrent.ScheduledExecutorService;
 public class Async {
     static Logger logger = LoggerFactory.getLogger(Async.class);
     private static Executor executor = Executors.newFixedThreadPool(Web3AsyncThreadPoolSize.web3AsyncPoolSize);
-    ;
+    public Async(){
+     
+    }
     public Async(ThreadPoolTaskExecutor pool){
             logger.info("Async:ThreadPoolTaskExecutor getCorePoolSize " + pool.getCorePoolSize() + " getMaxPoolSize " + pool.getMaxPoolSize());
             Async.executor = pool;
