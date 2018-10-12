@@ -95,5 +95,6 @@ if grep -Eqi "Ubuntu" /etc/issue || grep -Eq "Ubuntu" /etc/*-release; then
 else
     install_deps_centos
 fi
+
 install_gradle
 compile_sdk_client
