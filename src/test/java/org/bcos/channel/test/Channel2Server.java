@@ -16,10 +16,10 @@ public class Channel2Server {
 	public static void main(String[] args) throws Exception {
 		if(args.length < 1) {
 			System.out.println("Param: topic");
-		//	return;
+			return;
 		}
 		
-		String topic = "1";
+		String topic = args[0];
 		
 		logger.debug("init Server");
 
