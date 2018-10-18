@@ -15,7 +15,6 @@ import java.util.concurrent.ScheduledExecutorService;
 /**
  * Async task facilitation.
  */
-@Component
 public class Async {
     static Logger logger = LoggerFactory.getLogger(Async.class);
     private static Executor executor = Executors.newFixedThreadPool(Web3AsyncThreadPoolSize.web3AsyncPoolSize);
@@ -24,7 +23,8 @@ public class Async {
             logger.info("Async:ThreadPoolTaskExecutor getCorePoolSize " + pool.getCorePoolSize() + " getMaxPoolSize " + pool.getMaxPoolSize());
             Async.executor = pool;
     }
-
+     public Async( ){
+     }
     public static <T> CompletableFuture<T> run(Callable<T> callable) {
         CompletableFuture<T> result = new CompletableFuture<>();
         CompletableFuture.runAsync(() -> {

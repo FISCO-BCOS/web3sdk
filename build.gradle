@@ -20,14 +20,10 @@ repositories {
 
 
 List logger = [
-	"org.slf4j:jul-to-slf4j:1.7.10",
-	"org.apache.logging.log4j:log4j-api:2.1",
-	"org.apache.logging.log4j:log4j-core:2.1",
-	"org.apache.logging.log4j:log4j-slf4j-impl:2.1",
-	"org.apache.logging.log4j:log4j-web:2.1"
+		 'org.slf4j:slf4j-log4j12:1.7.25'
 ]
 
-def spring_version="4.3.16.RELEASE"
+def spring_version="4.3.18.RELEASE"
 List spring =[ 
 	"org.springframework:spring-core:$spring_version", 
 	"org.springframework:spring-beans:$spring_version", 
@@ -45,18 +41,12 @@ List alibaba = [
 // In this section you declare the dependencies for your production and test code
 dependencies {
     compile logger,spring,alibaba
-    runtime logger,spring,alibaba
-    
     compile 'org.apache.commons:commons-lang3:3.1'
     compile "com.fasterxml.jackson.core:jackson-databind:2.9.6"
-    runtime "com.fasterxml.jackson.core:jackson-databind:2.9.6"
     compile 'io.netty:netty-all:4.1.15.Final'
-    runtime 'io.netty:netty-all:4.1.15.Final'
-    compile 'io.netty:netty-tcnative:2.0.0.Final'
-    runtime 'io.netty:netty-tcnative:2.0.0.Final'
+    compile 'io.netty:netty-tcnative:2.0.18.Final'
    	compile 'com.google.guava:guava:19.0'
-   	runtime 'com.google.guava:guava:19.0'
-   	
+
    	// web3j依赖
    	compile 'org.apache.httpcomponents:httpclient:4.5.5',
             'org.bouncycastle:bcprov-jdk15on:1.54',
@@ -64,8 +54,7 @@ dependencies {
             'com.squareup:javapoet:1.7.0',
             'io.reactivex:rxjava:1.2.4',
 			'com.github.jnr:jnr-unixsocket:0.15'
-			
-	//testCompile 'junit:junit:4.12'
+
 }
 
 sourceSets {
