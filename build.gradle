@@ -88,9 +88,5 @@ jar {
             from file('src/test/resources/')
             into 'dist/conf'
         }
-		copy {
-			from file('.').listFiles().findAll{File f -> (f.name.endsWith('.crt') || f.name.endsWith('.keystore'))}
-			into 'dist/conf'
-		}
 	}
 }
