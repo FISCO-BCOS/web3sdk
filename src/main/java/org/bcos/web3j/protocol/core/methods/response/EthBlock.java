@@ -133,6 +133,7 @@ public class EthBlock extends Response<EthBlock.Block> {
         }
 
         public BigInteger getNonce() {
+            if(nonce == null) return new BigInteger("0");
             return Numeric.decodeQuantity(nonce);
         }
 

@@ -1,3 +1,17 @@
+### V1.2.4 (2018-10-17)
+* Updates
+
+1. 安全考虑，升级依赖库。
+2. 部分代码优化。
+3. 修改此函数public static BigInteger decodeQuantity(String value) 解决issue37。
+4. 修改EthBlock getnonce() 函数。
+5. 修改日志配置文件，简化日志配置。
+6. 增加 .gradlew脚本。可以直接执行./gradlew build。
+```
+删除Async 中的@Component注解
+
+```
+
 ### V1.2.3 (2018-10-10)
 * Updates
 
