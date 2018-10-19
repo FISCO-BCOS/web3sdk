@@ -32,3 +32,4 @@ gradle.properties
 /target
 /out
 /log
+/dist
