@@ -42,9 +42,9 @@ function install_centos_pkg()
 
 function install_deps_centos()
 {
-    install_centos_pkg "git"    
-    install_centos_pkg "lsof"    
-    install_centos_pkg "unzip"    
+    install_centos_pkg "git"
+    install_centos_pkg "lsof"
+    install_centos_pkg "unzip"
 }
 
 function install_ubuntu_pkg()
@@ -69,24 +69,10 @@ function install_deps_ubuntu()
 }
 
 
-function install_gradle()
-{
-    if [ ! -d "${HOME}/opt/gradle-4.6" ];then
-        execute_cmd "wget https://services.gradle.org/distributions/gradle-4.6-bin.zip -O gradle-4.6-bin.zip"
-        execute_cmd "mkdir -p ~/opt && unzip gradle-4.6-bin.zip && mv gradle-4.6 ~/opt/"
-        execute_cmd "rm -rf gradle-4.6-bin.zip"
-    fi
-
-    if ! grep -Eq "gradle" ~/.bashrc;then
-        LOG_INFO "export grandle"
-        execute_cmd 'echo "export PATH=\$PATH:\$HOME/opt/gradle-4.6/bin" >> ~/.bashrc'
-    fi
-    source ~/.bashrc
-}
 
 function compile_sdk_client()
 {
-    execute_cmd "gradle build"
+    execute_cmd "./gradlew build"
 }
 
 #centos
@@ -96,5 +82,4 @@ else
     install_deps_centos
 fi
 
-install_gradle
 compile_sdk_client
