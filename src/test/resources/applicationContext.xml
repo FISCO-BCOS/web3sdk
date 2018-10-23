@@ -20,6 +20,10 @@
 		</property>
     </bean>
 
+	<bean id="async" class="org.bcos.web3j.utils.Async">
+		<constructor-arg type="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor" ref="pool" />
+	</bean>
+
 	<!-- 国密开关 -->
 	<bean id="encryptType" class="org.bcos.web3j.crypto.EncryptType">
 		<constructor-arg value="0"/>
@@ -58,7 +62,7 @@
                         <property name="connectionsStr">
 							<list>
                  <!--[nodeid]@[ip]:[channelPort]-->
-								<value>node1@127.0.0.1:30304</value>  
+								<value>node1@127.0.0.1:8891</value>
 							</list>
 						</property>
                     </bean>
