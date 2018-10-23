@@ -1,3 +1,17 @@
+### V1.2.4 (2018-10-17)
+* Updates
+
+1. 安全考虑，升级依赖库。
+2. 部分代码优化。
+3. 配合后端解决blocknumber不是统一16进制的问题。
+4. 修改EthBlock getnonce() 函数。
+5. 修改日志配置文件，简化日志配置。
+6. 修改compile.sh脚本，增加 .gradlew脚本。可以直接执行./gradlew build。
+```
+删除Async 中的@Component注解
+
+```
+
 ### V1.2.3 (2018-10-10)
 * Updates
 
