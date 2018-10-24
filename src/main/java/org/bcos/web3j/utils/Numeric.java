@@ -28,26 +28,23 @@ public final class Numeric {
     }
 
     public static BigInteger decodeQuantity(String value) {
-        if (!isValidHexQuantity(value)) {
-            throw new MessageDecodingException("Value must be in format 0x[1-9]+[0-9]* or 0x0");
-        }
-        try {
-            return new BigInteger(value.substring(2), 16);
-        } catch (NumberFormatException e) {
-            throw new MessageDecodingException("Negative ", e);
+        if (!isValidQuantity(value)) {
+            try {
+                return new BigInteger(value);
+            } catch (NumberFormatException e) {
+                throw new MessageDecodingException("value is not a hex number or a decimal number");
+            }
+        } else {
+            try {
+                return new BigInteger(value.substring(2), 16);
+            } catch (NumberFormatException e) {
+                throw new MessageDecodingException("Negative ", e);
+            }
         }
     }
 
-    private static boolean isValidHexQuantity(String value) {
+    private static boolean isValidQuantity(String value) {
         if (value == null) {
-            return false;
-        }
-
-        if (value.length() < 3) {
-            return false;
-        }
-
-        if (!value.startsWith(HEX_PREFIX)) {
             return false;
         }
 
