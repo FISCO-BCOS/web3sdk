@@ -28,26 +28,33 @@ public final class Numeric {
     }
 
     public static BigInteger decodeQuantity(String value) {
-        if (!isValidQuantity(value)) {
+        if (!isValidHexQuantity(value)) {
             try {
                 return new BigInteger(value);
             } catch (NumberFormatException e) {
-                throw new MessageDecodingException("value is not a hex number or a decimal number");
+                throw new MessageDecodingException("Negative ", e);
             }
         } else {
             try {
                 return new BigInteger(value.substring(2), 16);
             } catch (NumberFormatException e) {
-                throw new MessageDecodingException("Negative ", e);
+                throw new MessageDecodingException("value is not a hex number or a decimal number");
             }
         }
     }
 
-    private static boolean isValidQuantity(String value) {
+    private static boolean isValidHexQuantity(String value) {
         if (value == null) {
             return false;
         }
 
+        if (value.length() < 3) {
+            return false;
+        }
+
+        if (!value.startsWith(HEX_PREFIX)) {
+            return false;
+        }
         // If TestRpc resolves the following issue, we can reinstate this code
         // https://github.com/ethereumjs/testrpc/issues/220
         // if (value.length() > 3 && value.charAt(2) == '0') {
