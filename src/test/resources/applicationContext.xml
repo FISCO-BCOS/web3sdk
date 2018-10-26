@@ -32,12 +32,15 @@
 	<!-- 系统合约地址配置，使用系统合约工具时需配置-->
 	<bean id="toolConf" class="org.bcos.contract.tools.ToolConf">
 		<!--系统合约地址: 【系统合约代理地址,对应节点config.json里的systemproxyaddress】-->
+		<property name="systemProxyAddress" value="0x0" />
 		<property name="systemProxyAddress" value="0x4b54936265f4c693f06c0af56b10357463d36896" />
-                <!--GOD账户的私钥: -->
-                <!--非国密版FISCO-BCOS获取GOD账户和账户私钥: 【参考https://fisco-bcos-test.readthedocs.io/zh/latest/docs/web3sdk/config_web3sdk.html】-->
+		<!--GOD账户的私钥: -->
+		<!--非国密版FISCO-BCOS获取GOD账户和账户私钥: 【参考https://fisco-bcos-test.readthedocs.io/zh/latest/docs/web3sdk/config_web3sdk.html】-->
 		<!--国密版FISCO-BCOS获取GOD账户和账户私钥：【参考https://fisco-bcos-test.readthedocs.io/zh/latest/docs/guomi/config_guomi.html#sdk】-->
+		<property name="privKey" value="bcec428d5205abe0f0cc8a734083908d9eb8563e31f943d760786edf42ad67dd" />
 		<property name="privKey" value="b83261efa42895c38c6c2364ca878f43e77f3cddbc922bf57d0d48070f79feb6" />
-                <!--GOD账户-->
+		<!--GOD账户-->
+		<property name="account" value="0x776bd5cf9a88e9437dc783d6414bccc603015cf0" />
 		<property name="account" value="0x148947262ec5e21739fe3a931c29e8b84ee34a0f" />
 		<property name="outPutpath" value="./output/" />
 	</bean>
