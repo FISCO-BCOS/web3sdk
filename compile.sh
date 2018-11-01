@@ -72,6 +72,7 @@ function install_deps_ubuntu()
 
 function compile_sdk_client()
 {
+    chmod +x ./gradlew
     execute_cmd "./gradlew build"
 }
 
