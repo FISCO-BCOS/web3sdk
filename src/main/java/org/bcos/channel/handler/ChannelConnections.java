@@ -1,12 +1,8 @@
 package org.bcos.channel.handler;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyStore;
 import java.security.PrivateKey;
-import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,8 +13,8 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.security.cert.X509Certificate;
 
-import org.bcos.channel.dto.EthereumMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -26,6 +22,7 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
+import org.bcos.channel.dto.EthereumMessage;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
@@ -55,21 +52,6 @@ public class ChannelConnections {
 	public void setCaCertPath(String caCertPath) {
 		this.caCertPath = caCertPath;
 	}
-	
-	public InputStream getInputStream(String filePath) throws IOException {
-        if (filePath.startsWith("classpath:") || filePath.startsWith("file:")) {
-            ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-            Resource caResource = resolver.getResource(filePath);
-            try (InputStream inputStream = caResource.getInputStream()) {
-                return inputStream;
-            }
-        } else {
-            File file = new File(filePath);
-            try (InputStream inputStream = new FileInputStream(file)) {
-                return inputStream;
-            }
-        }
-    }
 
 	public String getClientKeystorePath() {
 		return clientKeystorePath;
@@ -243,7 +225,13 @@ public class ChannelConnections {
                 @Override
                 public void initChannel(SocketChannel ch) throws Exception {
                     KeyStore ks = KeyStore.getInstance("JKS");
-					ks.load(getInputStream(getClientKeystorePath()), getKeystorePassWord().toCharArray());
+                    
+                    ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+                    
+                    Resource keystoreResource = resolver.getResource(getClientKeystorePath());
+                    Resource caResource = resolver.getResource(getCaCertPath());
+
+					ks.load(keystoreResource.getInputStream(), getKeystorePassWord().toCharArray());
                 	
                 	/*
                 	 * 每次连接使用新的handler
@@ -255,7 +243,7 @@ public class ChannelConnections {
                 	handler.setThreadPool(selfThreadPool);
                 	
                 	SslContext sslCtx = SslContextBuilder.forServer((PrivateKey)ks.getKey("client", getClientCertPassWord().toCharArray()), (X509Certificate)ks.getCertificate("client"))
-                			.trustManager(getInputStream(getCaCertPath()))
+                			.trustManager(caResource.getFile())
                 			.build();
                 	
                 	ch.pipeline().addLast(
@@ -327,13 +315,15 @@ public class ChannelConnections {
 		final ThreadPoolTaskExecutor selfThreadPool = threadPool;
 		
 		ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+		final Resource keystoreResource = resolver.getResource(getClientKeystorePath());
+        final Resource caResource = resolver.getResource(getCaCertPath());
         
 		bootstrap.handler(new ChannelInitializer<SocketChannel>() {
             @Override
             public void initChannel(SocketChannel ch) throws Exception {
             	KeyStore ks = KeyStore.getInstance("JKS");
-
-            	ks.load(getInputStream(getClientKeystorePath()), 	getKeystorePassWord().toCharArray());
+            	InputStream ksInputStream = keystoreResource.getInputStream();
+            	ks.load(ksInputStream, 	getKeystorePassWord().toCharArray());
 				/*
 				 * 每次连接使用新的handler 连接信息从socketChannel中获取
 				 */
@@ -342,7 +332,7 @@ public class ChannelConnections {
 				handler.setIsServer(false);
 				handler.setThreadPool(selfThreadPool);
 
-				SslContext sslCtx = SslContextBuilder.forClient().trustManager(getInputStream(getCaCertPath()))
+				SslContext sslCtx = SslContextBuilder.forClient().trustManager(caResource.getFile())
 						.keyManager((PrivateKey) ks.getKey("client", getClientCertPassWord().toCharArray()),
 								(X509Certificate) ks.getCertificate("client"))
 						.build();

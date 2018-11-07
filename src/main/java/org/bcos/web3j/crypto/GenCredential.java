@@ -11,9 +11,8 @@ import org.bcos.web3j.crypto.sm2.crypto.asymmetric.SM2PrivateKey;
 import org.bcos.web3j.crypto.sm2.crypto.asymmetric.SM2PublicKey;
 import org.bcos.web3j.crypto.sm2.util.encoders.Hex;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -23,7 +22,7 @@ import java.security.KeyPair;
 import java.util.UUID;
 
 public class GenCredential {
-	private static Logger logger = LogManager.getLogger(GenCredential.class);
+	private static Logger logger = LoggerFactory.getLogger(GenCredential.class);
 
 	public static ECKeyPair createGuomiKeyPair() {
 		System.out.println("=====INIT GUOMI KEYPAIR ====");
