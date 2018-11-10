@@ -29,17 +29,12 @@ public final class Numeric {
 
     public static BigInteger decodeQuantity(String value) {
         if (!isValidHexQuantity(value)) {
-            try {
-                return new BigInteger(value);
-            } catch (NumberFormatException e) {
-                throw new MessageDecodingException("Negative ", e);
-            }
-        } else {
-            try {
-                return new BigInteger(value.substring(2), 16);
-            } catch (NumberFormatException e) {
-                throw new MessageDecodingException("value is not a hex number or a decimal number");
-            }
+            throw new MessageDecodingException("Value must be in format 0x[1-9]+[0-9]* or 0x0");
+        }
+        try {
+            return new BigInteger(value.substring(2), 16);
+        } catch (NumberFormatException e) {
+            throw new MessageDecodingException("Negative ", e);
         }
     }
 
@@ -55,6 +50,7 @@ public final class Numeric {
         if (!value.startsWith(HEX_PREFIX)) {
             return false;
         }
+
         // If TestRpc resolves the following issue, we can reinstate this code
         // https://github.com/ethereumjs/testrpc/issues/220
         // if (value.length() > 3 && value.charAt(2) == '0') {
@@ -81,7 +77,8 @@ public final class Numeric {
     }
 
     public static boolean containsHexPrefix(String input) {
-        return input.length() > 1 && input.charAt(0) == '0' && input.charAt(1) == 'x';
+        return !Strings.isEmpty(input) && input.length() > 1
+                && input.charAt(0) == '0' && input.charAt(1) == 'x';
     }
 
     public static BigInteger toBigInt(byte[] value, int offset, int length) {
@@ -94,7 +91,11 @@ public final class Numeric {
 
     public static BigInteger toBigInt(String hexValue) {
         String cleanValue = cleanHexPrefix(hexValue);
-        return new BigInteger(cleanValue, 16);
+        return toBigIntNoPrefix(cleanValue);
+    }
+
+    public static BigInteger toBigIntNoPrefix(String hexValue) {
+        return new BigInteger(hexValue, 16);
     }
 
     public static String toHexStringWithPrefix(BigInteger value) {
@@ -111,6 +112,14 @@ public final class Numeric {
 
     public static String toHexStringWithPrefixZeroPadded(BigInteger value, int size) {
         return toHexStringZeroPadded(value, size, true);
+    }
+
+    public static String toHexStringWithPrefixSafe(BigInteger value) {
+        String result = toHexStringNoPrefix(value);
+        if (result.length() < 2) {
+            result = Strings.zeros(1) + result;
+        }
+        return HEX_PREFIX + result;
     }
 
     public static String toHexStringNoPrefixZeroPadded(BigInteger value, int size) {

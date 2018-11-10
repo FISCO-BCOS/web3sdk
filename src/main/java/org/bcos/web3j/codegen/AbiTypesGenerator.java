@@ -1,33 +1,22 @@
 package org.bcos.web3j.codegen;
 
+import com.squareup.javapoet.*;
+import org.bcos.web3j.abi.datatypes.*;
+
+import javax.lang.model.element.Modifier;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
-import javax.lang.model.element.Modifier;
+import java.util.List;
 
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.FieldSpec;
-import com.squareup.javapoet.JavaFile;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.TypeSpec;
-
-import org.bcos.web3j.abi.datatypes.Bytes;
-import org.bcos.web3j.abi.datatypes.Fixed;
-import org.bcos.web3j.abi.datatypes.Int;
-import org.bcos.web3j.abi.datatypes.Type;
-import org.bcos.web3j.abi.datatypes.Ufixed;
-import org.bcos.web3j.abi.datatypes.Uint;
+import static org.bcos.web3j.codegen.Generator.buildWarning;
 
 /**
  * Generator class for creating all the different numeric type variants.
  */
-public class AbiTypesGenerator {
+public class AbiTypesGenerator extends Generator {
 
-    private static final String CODEGEN_WARNING = "<p>Auto generated code.<br>\n"
-            + "<strong>Do not modifiy!</strong><br>\n"
-            + "Please use {@link " + AbiTypesGenerator.class.getName() + "} to update.</p>\n";
+    private static final String CODEGEN_WARNING = buildWarning(AbiTypesGenerator.class);
 
     private static final String DEFAULT = "DEFAULT";
 
@@ -36,22 +25,25 @@ public class AbiTypesGenerator {
         if (args.length == 1) {
             abiTypesGenerator.generate(args[0]);
         } else {
-            abiTypesGenerator.generate(System.getProperty("user.dir") + "/src/main/java/");
+            abiTypesGenerator.generate(System.getProperty("user.dir") + "/abi/src/main/java/");
         }
     }
 
     private void generate(String destinationDir) throws IOException {
-        Path path = Paths.get(destinationDir);
+        generateIntTypes(Int.class, destinationDir);
+        generateIntTypes(Uint.class, destinationDir);
 
-        generateIntTypes(Int.class, path);
-        generateIntTypes(Uint.class, path);
-        generateFixedTypes(Fixed.class, path);
-        generateFixedTypes(Ufixed.class, path);
-        generateBytesTypes(Bytes.class, path);
+        // TODO: Enable once Solidity supports fixed types - see
+        // https://github.com/ethereum/solidity/issues/409
+        // generateFixedTypes(Fixed.class, destinationDir);
+        // generateFixedTypes(Ufixed.class, destinationDir);
+
+        generateBytesTypes(Bytes.class, destinationDir);
+        generateStaticArrayTypes(StaticArray.class, destinationDir);
     }
 
     private <T extends Type> void generateIntTypes(
-            Class<T> superclass, Path path) throws IOException {
+            Class<T> superclass, String path) throws IOException {
         String packageName = createPackageName(superclass);
         ClassName className;
 
@@ -88,7 +80,7 @@ public class AbiTypesGenerator {
     }
 
     private <T extends Type> void generateFixedTypes(
-            Class<T> superclass, Path path) throws IOException {
+            Class<T> superclass, String path) throws IOException {
         String packageName = createPackageName(superclass);
         ClassName className;
 
@@ -116,14 +108,14 @@ public class AbiTypesGenerator {
                         .build();
 
                 className = ClassName.get(packageName,
-                                          superclass.getSimpleName() + mBitSize + "x" + nBitSize);
+                        superclass.getSimpleName() + mBitSize + "x" + nBitSize);
 
                 FieldSpec defaultFieldSpec = FieldSpec
                         .builder(className,
-                                 DEFAULT,
-                                 Modifier.PUBLIC,
-                                 Modifier.STATIC,
-                                 Modifier.FINAL)
+                                DEFAULT,
+                                Modifier.PUBLIC,
+                                Modifier.STATIC,
+                                Modifier.FINAL)
                         .initializer("new $T(BigInteger.ZERO)", className)
                         .build();
 
@@ -143,7 +135,7 @@ public class AbiTypesGenerator {
     }
 
     private <T extends Type> void generateBytesTypes(
-            Class<T> superclass, Path path) throws IOException {
+            Class<T> superclass, String path) throws IOException {
         String packageName = createPackageName(superclass);
         ClassName className;
 
@@ -175,13 +167,44 @@ public class AbiTypesGenerator {
         }
     }
 
-    private void write(String packageName, TypeSpec typeSpec, Path destination) throws IOException {
-        JavaFile javaFile = JavaFile.builder(packageName, typeSpec)
-                .indent("    ")
-                .skipJavaLangImports(true)
-                .build();
+    private <T extends Type> void generateStaticArrayTypes(
+            Class<T> superclass, String path) throws IOException {
+        String packageName = createPackageName(superclass);
+        ClassName className;
 
-        javaFile.writeTo(destination);
+        for (int length = 1; length <= StaticArray.MAX_SIZE_OF_STATIC_ARRAY; length++) {
+
+            TypeVariableName typeVariableName = TypeVariableName.get("T").withBounds(Type.class);
+
+            MethodSpec constructorSpec = MethodSpec.constructorBuilder()
+                    .addModifiers(Modifier.PUBLIC)
+                    .addParameter(ParameterizedTypeName.get(ClassName.get(List.class),
+                            typeVariableName), "values")
+                    .addStatement("super($L, $N)", length, "values")
+                    .build();
+
+            MethodSpec arrayOverloadConstructorSpec = MethodSpec.constructorBuilder()
+                    .addAnnotation(SafeVarargs.class)
+                    .addModifiers(Modifier.PUBLIC)
+                    .addParameter(ArrayTypeName.of(typeVariableName), "values")
+                    .varargs()
+                    .addStatement("super($L, $N)", length, "values")
+                    .build();
+
+            className = ClassName.get(packageName, superclass.getSimpleName() + length);
+
+            TypeSpec bytesType = TypeSpec
+                    .classBuilder(className.simpleName())
+                    .addTypeVariable(typeVariableName)
+                    .addJavadoc(CODEGEN_WARNING)
+                    .superclass(ParameterizedTypeName.get(ClassName.get(superclass),
+                            typeVariableName))
+                    .addModifiers(Modifier.PUBLIC)
+                    .addMethods(Arrays.asList(constructorSpec, arrayOverloadConstructorSpec))
+                    .build();
+
+            write(packageName, bytesType, path);
+        }
     }
 
     static String createPackageName(Class<?> cls) {

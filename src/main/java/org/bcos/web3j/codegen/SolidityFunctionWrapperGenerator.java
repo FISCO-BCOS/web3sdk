@@ -7,166 +7,149 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
+
 import org.bcos.web3j.protocol.ObjectMapperFactory;
 import org.bcos.web3j.protocol.core.methods.response.AbiDefinition;
+import org.bcos.web3j.tx.Contract;
 import org.bcos.web3j.utils.Files;
 import org.bcos.web3j.utils.Strings;
 
+import static org.bcos.web3j.codegen.Console.exitError;
 import static org.bcos.web3j.utils.Collection.tail;
-import static org.bcos.web3j.utils.Console.exitError;
+import static picocli.CommandLine.Help.Visibility.ALWAYS;
 
 /**
  * Java wrapper source code generator for Solidity ABI format.
  */
-public class SolidityFunctionWrapperGenerator {
+public class SolidityFunctionWrapperGenerator extends FunctionWrapperGenerator {
+    public static final String COMMAND_SOLIDITY = "solidity";
+    public static final String COMMAND_GENERATE = "generate";
+    public static final String COMMAND_PREFIX = COMMAND_SOLIDITY + " " + COMMAND_GENERATE;
 
-    private static final String USAGE = "solidity generate "
-            + "<input binary file>.bin <input abi file>.abi "
-            + "-p|--package <base package name> "
-            + "-o|--output <destination base directory>";
+    /*
+     * Usage: solidity generate [-hV] [-jt] [-st] -a=<abiFile> [-b=<binFile>]
+     * -o=<destinationFileDir> -p=<packageName>
+     * -h, --help                 Show this help message and exit.
+     * -V, --version              Print version information and exit.
+     * -a, --abiFile=<abiFile>    abi file with contract definition.
+     * -b, --binFile=<binFile>    bin file with contract compiled code in order to
+     * generate deploy methods.
+     * -o, --outputDir=<destinationFileDir>
+     * destination base directory.
+     * -p, --package=<packageName>
+     * base package name.
+     * -jt, --javaTypes       use native java types.
+     * Default: true
+     * -st, --solidityTypes   use solidity types.
+     */
 
-    private String binaryFileLocation;
-    private String guomiBinaryFileLocation;
-    private String absFileLocation;
-    private File destinationDirLocation;
-    private String basePackageName;
-    
+    private final File binFile;
+    private final File abiFile;
+
     private SolidityFunctionWrapperGenerator(
-            String binaryFileLocation,
-            String absFileLocation,
-            String destinationDirLocation,
-            String basePackageName) {
-    	this.binaryFileLocation = binaryFileLocation;
-        this.absFileLocation = absFileLocation;
-        this.destinationDirLocation = new File(destinationDirLocation);
-        this.basePackageName = basePackageName;
-        this.guomiBinaryFileLocation = "";
-    }
-   
-    public void setGuomiBinaryFileLocation(String guomiBinaryFileLocation)
-    {
-    	this.guomiBinaryFileLocation = guomiBinaryFileLocation;
-    }
-    
-    public static void run(String[] args) throws Exception {
-        if (args.length < 1 || !args[0].equals("generate")) {
-            exitError(USAGE);
-        } else {
-            main(tail(args));
-        }
+            File binFile,
+            File abiFile,
+            File destinationDir,
+            String basePackageName,
+            boolean useJavaNativeTypes) {
+
+        super(destinationDir, basePackageName, useJavaNativeTypes);
+        this.binFile = binFile;
+        this.abiFile = abiFile;
     }
 
-    public static void main(String[] args) throws Exception {
-
-        if (args.length < 6) {
-            exitError(USAGE);
-        }
-
-        String binaryFileLocation = parsePositionalArg(args, 0);
-        String absFileLocation = parsePositionalArg(args, 1);
-        String destinationDirLocation = parseParameterArgument(args, "-o", "--outputDir");
-        String basePackageName = parseParameterArgument(args, "-p", "--package");
-        
-        String guomiBinaryFileLocation = parseParameterArgument(args, "-g", "--guomi-binary");
-
-        if (binaryFileLocation.equals("")
-                || absFileLocation.equals("")
-                || destinationDirLocation.equals("")
-                || basePackageName.equals("")) {
-            exitError(USAGE);
-        }
-
-        SolidityFunctionWrapperGenerator solidityFunctionGenerator = 
-        		new SolidityFunctionWrapperGenerator(
-                binaryFileLocation,
-                absFileLocation,
-                destinationDirLocation,
-                basePackageName);
-        if(guomiBinaryFileLocation.equals("") == false)
-        	solidityFunctionGenerator.setGuomiBinaryFileLocation(guomiBinaryFileLocation);
-        
-        //generate java code of solidity function
-        solidityFunctionGenerator.generate();
-    }
-
-    private static String parsePositionalArg(String[] args, int idx) {
-        if (args != null && args.length > idx) {
-            return args[idx];
-        } else {
-            return "";
-        }
-    }
-
-    private static String parseParameterArgument(String[] args, String... parameters) {
-        for (String parameter : parameters) {
-            for (int i = 0; i < args.length; i++) {
-                if (args[i].equals(parameter)
-                        && i + 1 < args.length) {
-                    String parameterValue = args[i + 1];
-                    if (!parameterValue.startsWith("-")) {
-                        return parameterValue;
-                    }
-                }
-            }
-        }
-        return "";
-    }
-    
-    private String readBinFile(String binaryFileLocation) throws IOException, ClassNotFoundException{
-    	File binaryFile = new File(binaryFileLocation);
-        if (!binaryFile.exists()) {
-            exitError("Invalid input binary file specified: " + binaryFileLocation);
-        }
-        byte[] bytes = Files.readBytes(new File(binaryFile.toURI()));
-        String binary = new String(bytes);
-        return binary;
-    }
-
-    private void generate() throws IOException, ClassNotFoundException {
-    	String binary = readBinFile(binaryFileLocation);
-        File absFile = new File(absFileLocation);
-        if (!absFile.exists() || !absFile.canRead()) {
-            exitError("Invalid input ABI file specified: " + absFileLocation);
-        }
-        String fileName = absFile.getName();
-        String contractName = getFileNameNoExtension(fileName);
-        byte[] bytes = Files.readBytes(new File(absFile.toURI()));
-        String abi = new String(bytes);
-
-        List<AbiDefinition> functionDefinitions = loadContractDefinition(absFile);
-
-        if (functionDefinitions.isEmpty()) {
-            exitError("Unable to parse input ABI file");
-        } else {
-            String className = Strings.capitaliseFirstLetter(contractName);
-            System.out.printf("Generating " + basePackageName + "." + className + " ... ");
-            SolidityFunctionWrapper solidityFunctionWrapper = new SolidityFunctionWrapper();
-			if (guomiBinaryFileLocation.equals("") == true)
-			{	
-				solidityFunctionWrapper.setEncryptType(0);
-				solidityFunctionWrapper.generateJavaFiles(contractName, binary, abi,
-						destinationDirLocation.toString(), basePackageName);
-			}
-			else
-			{
-				String guomiBinary = readBinFile(guomiBinaryFileLocation);
-				solidityFunctionWrapper.setEncryptType(1);
-				solidityFunctionWrapper.generateJavaFiles(contractName, binary, abi,
-						destinationDirLocation.toString(), basePackageName, guomiBinary);
-			}
-            System.out.println("File written to " + destinationDirLocation.toString() + "\n");
-        }
-    }
-
-    private static List<AbiDefinition> loadContractDefinition(File absFile)
+    static List<AbiDefinition> loadContractDefinition(File absFile)
             throws IOException {
         ObjectMapper objectMapper = ObjectMapperFactory.getObjectMapper();
         AbiDefinition[] abiDefinition = objectMapper.readValue(absFile, AbiDefinition[].class);
         return Arrays.asList(abiDefinition);
     }
 
-    static String getFileNameNoExtension(String fileName) {
-        String[] splitName = fileName.split("\\.(?=[^.]*$)");
-        return splitName[0];
+    private void generate() throws IOException, ClassNotFoundException {
+        String binary = Contract.BIN_NOT_PROVIDED;
+        if (binFile != null) {
+            byte[] bytes = Files.readBytes(binFile);
+            binary = new String(bytes);
+        }
+
+        byte[] bytes = Files.readBytes(abiFile);
+        String abi = new String(bytes);
+
+        List<AbiDefinition> functionDefinitions = loadContractDefinition(abiFile);
+
+        if (functionDefinitions.isEmpty()) {
+            exitError("Unable to parse input ABI file");
+        } else {
+            String contractName = getFileNameNoExtension(abiFile.getName());
+            String className = Strings.capitaliseFirstLetter(contractName);
+            System.out.printf("Generating " + basePackageName + "." + className + " ... ");
+            new SolidityFunctionWrapper(useJavaNativeTypes).generateJavaFiles(
+                    contractName, binary, abi, destinationDirLocation.toString(), basePackageName);
+            System.out.println("File written to " + destinationDirLocation.toString() + "\n");
+        }
+    }
+
+    public static void main(String[] args) {
+        if (args.length > 0 && args[0].equals(COMMAND_SOLIDITY)) {
+            args = tail(args);
+        }
+
+        if (args.length > 0 && args[0].equals(COMMAND_GENERATE)) {
+            args = tail(args);
+        }
+
+        CommandLine.run(new PicocliRunner(), args);
+    }
+
+    @Command(name = COMMAND_PREFIX, mixinStandardHelpOptions = true, version = "4.0",
+            sortOptions = false)
+    static class PicocliRunner implements Runnable {
+        @Option(names = { "-a", "--abiFile" },
+                description = "abi file with contract definition.",
+                required = true)
+        private File abiFile;
+
+        @Option(names = { "-b", "--binFile" },
+                description = "bin file with contract compiled code "
+                        + "in order to generate deploy methods.",
+                required = false)
+        private File binFile;
+
+        @Option(names = { "-o", "--outputDir" },
+                description = "destination base directory.",
+                required = true)
+        private File destinationFileDir;
+
+        @Option(names = { "-p", "--package" },
+                description = "base package name.",
+                required = true)
+        private String packageName;
+
+        @Option(names = { "-jt", JAVA_TYPES_ARG },
+                description = "use native java types.",
+                required = false,
+                showDefaultValue = ALWAYS)
+        private boolean javaTypes = true;
+
+        @Option(names = { "-st", SOLIDITY_TYPES_ARG },
+                description = "use solidity types.",
+                required = false)
+        private boolean solidityTypes;
+
+        @Override
+        public void run() {
+            try {
+                //grouping is not implemented in picocli yet(planned for 3.1), therefore
+                //simply check if solidityTypes were requested
+                boolean useJavaTypes = !(solidityTypes);
+                new SolidityFunctionWrapperGenerator(binFile, abiFile, destinationFileDir,
+                        packageName, useJavaTypes).generate();
+            } catch (Exception e) {
+                exitError(e);
+            }
+        }
     }
 }

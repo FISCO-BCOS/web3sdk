@@ -1,15 +1,16 @@
 package org.bcos.web3j.tx;
 
-import java.io.IOException;
-import java.math.BigInteger;
-import java.util.Optional;
-import java.util.concurrent.ExecutionException;
-import org.bcos.channel.client.TransactionSucCallback;
 import org.bcos.web3j.protocol.Web3j;
-import org.bcos.web3j.protocol.core.methods.response.EthGetTransactionReceipt;
 import org.bcos.web3j.protocol.core.methods.response.EthSendTransaction;
 import org.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
-import org.bcos.web3j.protocol.exceptions.TransactionTimeoutException;
+import org.bcos.web3j.protocol.exceptions.TransactionException;
+import org.bcos.web3j.tx.response.PollingTransactionReceiptProcessor;
+import org.bcos.web3j.tx.response.TransactionReceiptProcessor;
+
+import java.io.IOException;
+import java.math.BigInteger;
+
+import static org.bcos.web3j.protocol.core.JsonRpc2_0Web3j.BLOCK_TIME;
 
 /**
  * Transaction manager abstraction for executing transactions with Ethereum client via
@@ -17,58 +18,50 @@ import org.bcos.web3j.protocol.exceptions.TransactionTimeoutException;
  */
 public abstract class TransactionManager {
 
-    private static final int SLEEP_DURATION = 1500;
-    private static final int ATTEMPTS = 10;
+    public static final int DEFAULT_POLLING_ATTEMPTS_PER_TX_HASH = 40;
+    public static final long DEFAULT_POLLING_FREQUENCY = BLOCK_TIME;
 
-    private final int sleepDuration;
-    private final int attempts;
+    private final TransactionReceiptProcessor transactionReceiptProcessor;
+    private final String fromAddress;
 
-    private final Web3j web3j;
-
-    protected TransactionManager(Web3j web3j) {
-        this.web3j = web3j;
-        this.attempts = ATTEMPTS;
-        this.sleepDuration = SLEEP_DURATION;
+    protected TransactionManager(
+            TransactionReceiptProcessor transactionReceiptProcessor, String fromAddress) {
+        this.transactionReceiptProcessor = transactionReceiptProcessor;
+        this.fromAddress = fromAddress;
     }
 
-    protected TransactionManager(Web3j web3j, int attempts, int sleepDuration) {
-        this.web3j = web3j;
-        this.attempts = attempts;
-        this.sleepDuration = sleepDuration;
+    protected TransactionManager(Web3j web3j, String fromAddress) {
+        this(new PollingTransactionReceiptProcessor(
+                        web3j, DEFAULT_POLLING_FREQUENCY, DEFAULT_POLLING_ATTEMPTS_PER_TX_HASH),
+                fromAddress);
     }
 
-    public TransactionReceipt executeTransaction(
+    protected TransactionManager(
+            Web3j web3j, int attempts, long sleepDuration, String fromAddress) {
+        this(new PollingTransactionReceiptProcessor(web3j, sleepDuration, attempts), fromAddress);
+    }
+
+    protected TransactionReceipt executeTransaction(
             BigInteger gasPrice, BigInteger gasLimit, String to,
-            String data, BigInteger value, BigInteger type, boolean isInitByName)
-            throws InterruptedException, IOException, TransactionTimeoutException {
+            String data, BigInteger value)
+            throws IOException, TransactionException {
 
         EthSendTransaction ethSendTransaction = sendTransaction(
-                gasPrice, gasLimit, to, data, value, type, isInitByName);
+                gasPrice, gasLimit, to, data, value);
         return processResponse(ethSendTransaction);
     }
 
-    void executeTransaction(
+    public abstract EthSendTransaction sendTransaction(
             BigInteger gasPrice, BigInteger gasLimit, String to,
-            String data, BigInteger value, BigInteger type, boolean isInitByName, TransactionSucCallback callback)
-            throws InterruptedException, IOException, TransactionTimeoutException {
+            String data, BigInteger value)
+            throws IOException;
 
-        sendTransaction(gasPrice, gasLimit, to, data, value,type,isInitByName, callback);
+    public String getFromAddress() {
+        return fromAddress;
     }
 
-    public abstract EthSendTransaction sendTransaction(
-            BigInteger gasPrice, BigInteger gasLimit, String to,
-            String data, BigInteger value, BigInteger type, boolean isInitByName)
-            throws IOException;
-
-    public abstract EthSendTransaction sendTransaction(
-            BigInteger gasPrice, BigInteger gasLimit, String to,
-            String data, BigInteger value, BigInteger type, boolean isInitByName,TransactionSucCallback callback)
-            throws IOException;
-            
-    public abstract String getFromAddress();
-
     private TransactionReceipt processResponse(EthSendTransaction transactionResponse)
-            throws InterruptedException, IOException, TransactionTimeoutException {
+            throws IOException, TransactionException {
         if (transactionResponse.hasError()) {
             throw new RuntimeException("Error processing transaction request: "
                     + transactionResponse.getError().getMessage());
@@ -76,48 +69,7 @@ public abstract class TransactionManager {
 
         String transactionHash = transactionResponse.getTransactionHash();
 
-        return waitForTransactionReceipt(transactionHash);
+        return transactionReceiptProcessor.waitForTransactionReceipt(transactionHash);
     }
 
-    private TransactionReceipt waitForTransactionReceipt(
-            String transactionHash)
-            throws InterruptedException, IOException, TransactionTimeoutException {
-
-        return getTransactionReceipt(transactionHash, sleepDuration, attempts);
-    }
-
-    private TransactionReceipt getTransactionReceipt(
-            String transactionHash, int sleepDuration, int attempts)
-            throws IOException, InterruptedException, TransactionTimeoutException {
-
-        Optional<TransactionReceipt> receiptOptional =
-                sendTransactionReceiptRequest(transactionHash);
-        int sumTime = 0;
-        for (int i = 0; i < attempts; i++) {
-
-            if (!receiptOptional.isPresent()) {
-                Thread.sleep(((long)sleepDuration*(i*i)+sleepDuration));
-                sumTime += (sleepDuration*(i*i)+sleepDuration);
-                receiptOptional = sendTransactionReceiptRequest(transactionHash);
-            } else {
-                return receiptOptional.get();
-            }
-        }
-
-        throw new TransactionTimeoutException("Transaction receipt was not generated after "
-                + ((sumTime) / 1000
-                + " seconds for transaction: " + transactionHash));
-    }
-
-    private Optional<TransactionReceipt> sendTransactionReceiptRequest(
-            String transactionHash) throws IOException {
-        EthGetTransactionReceipt transactionReceipt =
-                web3j.ethGetTransactionReceipt(transactionHash).send();
-        if (transactionReceipt.hasError()) {
-            throw new RuntimeException("Error processing request: "
-                    + transactionReceipt.getError().getMessage());
-        }
-
-        return transactionReceipt.getTransactionReceipt();
-    }
 }
