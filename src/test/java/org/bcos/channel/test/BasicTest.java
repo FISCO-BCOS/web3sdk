@@ -32,7 +32,7 @@ public class BasicTest {
             Web3j web3j = Web3j.build(channelEthereumService);
             Thread.sleep(2000);
           //  ToolConf toolConf = context.getBean(ToolConf.class);
-            Credentials credentials = Credentials.create("");
+            Credentials credentials = Credentials.create("b83261efa42895c38c6c2364ca878f43e77f3cddbc922bf57d0d48070f79feb6");
             if (credentials == null) {
                 System.out.println("create Credentials failed");
                 throw new Exception("create Credentials failed");

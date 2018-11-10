@@ -267,7 +267,7 @@ public class JsonRpc2_0Web3j implements Web3j {
     public Request<?, EthBlockNumber> ethBlockNumber() {
         return new Request<>(
                 "eth_blockNumber",
-               Arrays.asList("0"),
+               Arrays.asList(),
                 web3jService,
                 EthBlockNumber.class);
     }
@@ -379,7 +379,7 @@ public class JsonRpc2_0Web3j implements Web3j {
             Transaction transaction) {
         return new Request<>(
                 "eth_sendTransaction",
-                Arrays.asList("0",transaction),
+                Arrays.asList(transaction),
                 web3jService,
                 org.bcos.web3j.protocol.core.methods.response.EthSendTransaction.class);
     }
@@ -390,7 +390,7 @@ public class JsonRpc2_0Web3j implements Web3j {
             String signedTransactionData) {
         return new Request<>(
                 "eth_sendRawTransaction",
-                Arrays.asList("0",signedTransactionData),
+                Arrays.asList(signedTransactionData),
                 web3jService,
                 org.bcos.web3j.protocol.core.methods.response.EthSendTransaction.class);
     }
@@ -432,7 +432,7 @@ public class JsonRpc2_0Web3j implements Web3j {
             boolean returnFullTransactionObjects) {
         return new Request<>(
                 "eth_getBlockByNumber",
-                Arrays.asList("0",
+                Arrays.asList(
                         defaultBlockParameter.getValue(),
                         returnFullTransactionObjects),
                 web3jService,
@@ -476,7 +476,7 @@ public class JsonRpc2_0Web3j implements Web3j {
     public Request<?, EthGetTransactionReceipt> ethGetTransactionReceipt(String transactionHash) {
         return new Request<>(
                 "eth_getTransactionReceipt",
-                Arrays.asList("0",transactionHash),
+                Arrays.asList(transactionHash),
                 web3jService,
                 EthGetTransactionReceipt.class);
     }
