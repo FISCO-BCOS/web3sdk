@@ -32,7 +32,7 @@ public class Ethereum {
 		EthBlockNumber ethBlockNumber = web3.ethBlockNumber().send();
 
 		//初始化交易签名私钥
-		Credentials credentials = Credentials.create("bcec428d5205abe0f0cc8a734083908d9eb8563e31f943d760786edf42ad67dd");
+		Credentials credentials = Credentials.create("b83261efa42895c38c6c2364ca878f43e77f3cddbc922bf57d0d48070f79feb6");
 
 		//初始化交易参数
 		java.math.BigInteger gasPrice = new BigInteger("30000000");
