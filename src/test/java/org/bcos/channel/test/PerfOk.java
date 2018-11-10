@@ -28,7 +28,7 @@ public class PerfOk {
 			Web3j web3 = Web3j.build(channelEthereumService);
 			Thread.sleep(2000);
 		//	ToolConf toolConf=context.getBean(ToolConf.class);
-			Credentials credentials = Credentials.create("");
+			Credentials credentials = Credentials.create("bcec428d5205abe0f0cc8a734083908d9eb8563e31f943d760786edf42ad67dd");
             int threadNum = 500;
             if( args.length >= 1 ) {
                 threadNum = Integer.parseInt(args[0]);

@@ -26,7 +26,7 @@ public class TestOk {
 			Web3j web3 = Web3j.build(channelEthereumService);
 			Thread.sleep(2000);
 			//ToolConf toolConf=context.getBean(ToolConf.class);
-			Credentials credentials = Credentials.create("");
+			Credentials credentials = Credentials.create("bcec428d5205abe0f0cc8a734083908d9eb8563e31f943d760786edf42ad67dd");
 			if (credentials != null) {
 				System.out.println("####create credential succ, begin deploy contract");
 				java.math.BigInteger gasPrice = new BigInteger("300000000");
