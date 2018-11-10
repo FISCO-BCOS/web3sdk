@@ -88,4 +88,8 @@ public class ChannelEthereumService extends Service {
 	}
 
 	private Integer timeout = 0;
+
+    @Override
+    public void close() throws IOException {
+    }
 }

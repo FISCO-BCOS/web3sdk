@@ -14,6 +14,7 @@ import org.bcos.web3j.abi.datatypes.Type;
 import org.bcos.web3j.abi.datatypes.Utf8String;
 import org.bcos.web3j.abi.datatypes.generated.Bytes32;
 import org.bcos.web3j.utils.Numeric;
+import org.bcos.web3j.utils.Strings;
 
 import static org.bcos.web3j.abi.TypeDecoder.MAX_BYTE_LENGTH_FOR_HEX_STRING;
 
@@ -36,7 +37,7 @@ public class FunctionReturnDecoder {
             String rawInput, List<TypeReference<Type>> outputParameters) {
         String input = Numeric.cleanHexPrefix(rawInput);
 
-        if (input.isEmpty()) {
+        if (Strings.isEmpty(input)) {
             return Collections.emptyList();
         } else {
             return build(input, outputParameters);
@@ -66,6 +67,7 @@ public class FunctionReturnDecoder {
      * @param <T> type of TypeReference
      * @return the decode value
      */
+    @SuppressWarnings("unchecked")
     public static <T extends Type> Type decodeIndexedValue(
             String rawInput, TypeReference<T> typeReference) {
         String input = Numeric.cleanHexPrefix(rawInput);
@@ -94,6 +96,7 @@ public class FunctionReturnDecoder {
         int offset = 0;
         for (TypeReference<?> typeReference:outputParameters) {
             try {
+                @SuppressWarnings("unchecked")
                 Class<Type> type = (Class<Type>) typeReference.getClassType();
 
                 int hexStringDataOffset = getDataOffset(input, offset, type);
@@ -103,8 +106,14 @@ public class FunctionReturnDecoder {
                     result = TypeDecoder.decodeDynamicArray(
                             input, hexStringDataOffset, typeReference);
                     offset += MAX_BYTE_LENGTH_FOR_HEX_STRING;
-                } else if (StaticArray.class.isAssignableFrom(type)) {
+                } else if (typeReference instanceof TypeReference.StaticArrayTypeReference) {
                     int length = ((TypeReference.StaticArrayTypeReference) typeReference).getSize();
+                    result = TypeDecoder.decodeStaticArray(
+                            input, hexStringDataOffset, typeReference, length);
+                    offset += length * MAX_BYTE_LENGTH_FOR_HEX_STRING;
+                } else if (StaticArray.class.isAssignableFrom(type)) {
+                    int length = Integer.parseInt(type.getSimpleName()
+                            .substring(StaticArray.class.getSimpleName().length()));
                     result = TypeDecoder.decodeStaticArray(
                             input, hexStringDataOffset, typeReference, length);
                     offset += length * MAX_BYTE_LENGTH_FOR_HEX_STRING;

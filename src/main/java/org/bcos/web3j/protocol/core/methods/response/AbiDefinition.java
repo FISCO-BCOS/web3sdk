@@ -16,18 +16,28 @@ public class AbiDefinition {
     private String type;
     private boolean payable;
 
+    private String stateMutability;
+
     public AbiDefinition() {
     }
 
     public AbiDefinition(boolean constant, List<NamedType> inputs, String name,
                          List<NamedType> outputs, String type, boolean payable) {
+        this(constant, inputs, name, outputs, type, payable, null);
+    }
+
+    public AbiDefinition(boolean constant, List<NamedType> inputs, String name,
+                         List<NamedType> outputs, String type, boolean payable,
+                         String stateMutability) {
         this.constant = constant;
         this.inputs = inputs;
         this.name = name;
         this.outputs = outputs;
         this.type = type;
         this.payable = payable;
+        this.stateMutability = stateMutability;
     }
+
 
     public boolean isConstant() {
         return constant;
@@ -57,6 +67,10 @@ public class AbiDefinition {
         return outputs;
     }
 
+    public boolean hasOutputs() {
+        return !outputs.isEmpty();
+    }
+
     public void setOutputs(List<NamedType> outputs) {
         this.outputs = outputs;
     }
@@ -75,6 +89,14 @@ public class AbiDefinition {
 
     public void setPayable(boolean payable) {
         this.payable = payable;
+    }
+
+    public String getStateMutability() {
+        return stateMutability;
+    }
+
+    public void setStateMutability(String stateMutability) {
+        this.stateMutability = stateMutability;
     }
 
     @Override
@@ -106,6 +128,11 @@ public class AbiDefinition {
                 ? !getOutputs().equals(that.getOutputs()) : that.getOutputs() != null) {
             return false;
         }
+        if (getStateMutability() != null
+                ? !getStateMutability().equals(that.getStateMutability())
+                : that.getStateMutability() != null) {
+            return false;
+        }
         return getType() != null
                 ? getType().equals(that.getType()) : that.getType() == null;
     }
@@ -118,6 +145,7 @@ public class AbiDefinition {
         result = 31 * result + (getOutputs() != null ? getOutputs().hashCode() : 0);
         result = 31 * result + (getType() != null ? getType().hashCode() : 0);
         result = 31 * result + (isPayable() ? 1 : 0);
+        result = 31 * result + (getStateMutability() != null ? getStateMutability().hashCode() : 0);
         return result;
     }
 
@@ -132,6 +160,12 @@ public class AbiDefinition {
         public NamedType(String name, String type) {
             this.name = name;
             this.type = type;
+        }
+
+        public NamedType(String name, String type, boolean indexed) {
+            this.name = name;
+            this.type = type;
+            this.indexed = indexed;
         }
 
         public String getName() {
@@ -172,6 +206,7 @@ public class AbiDefinition {
             if (isIndexed() != namedType.isIndexed()) {
                 return false;
             }
+
             if (getName() != null
                     ? !getName().equals(namedType.getName()) : namedType.getName() != null) {
                 return false;

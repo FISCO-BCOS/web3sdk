@@ -3,18 +3,7 @@ package org.bcos.web3j.abi;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 
-import org.bcos.web3j.abi.datatypes.Array;
-import org.bcos.web3j.abi.datatypes.Bool;
-import org.bcos.web3j.abi.datatypes.Bytes;
-import org.bcos.web3j.abi.datatypes.BytesType;
-import org.bcos.web3j.abi.datatypes.DynamicArray;
-import org.bcos.web3j.abi.datatypes.DynamicBytes;
-import org.bcos.web3j.abi.datatypes.NumericType;
-import org.bcos.web3j.abi.datatypes.StaticArray;
-import org.bcos.web3j.abi.datatypes.Type;
-import org.bcos.web3j.abi.datatypes.Ufixed;
-import org.bcos.web3j.abi.datatypes.Uint;
-import org.bcos.web3j.abi.datatypes.Utf8String;
+import org.bcos.web3j.abi.datatypes.*;
 import org.bcos.web3j.utils.Numeric;
 
 import static org.bcos.web3j.abi.datatypes.Type.MAX_BIT_LENGTH;
@@ -36,9 +25,12 @@ public class TypeEncoder {
                 || parameter instanceof DynamicArray;
     }
 
+    @SuppressWarnings("unchecked")
     public static String encode(Type parameter) {
         if (parameter instanceof NumericType) {
             return encodeNumeric(((NumericType) parameter));
+        } else if (parameter instanceof Address) {
+            return encodeAddress((Address) parameter);
         } else if (parameter instanceof Bool) {
             return encodeBool((Bool) parameter);
         } else if (parameter instanceof Bytes) {
@@ -55,6 +47,10 @@ public class TypeEncoder {
             throw new UnsupportedOperationException(
                     "Type cannot be encoded: " + parameter.getClass());
         }
+    }
+
+    static String encodeAddress(Address address) {
+        return encodeNumeric(address.toUint160());
     }
 
     static String encodeNumeric(NumericType numericType) {

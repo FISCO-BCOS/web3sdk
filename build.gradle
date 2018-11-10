@@ -53,7 +53,11 @@ dependencies {
             'com.lambdaworks:scrypt:1.4.0',
             'com.squareup:javapoet:1.7.0',
             'io.reactivex:rxjava:1.2.4',
-			'com.github.jnr:jnr-unixsocket:0.15'
+			'com.github.jnr:jnr-unixsocket:0.15',
+	         'info.picocli:picocli:3.6.0',
+			"io.reactivex.rxjava2:rxjava:2.2.2",
+			"org.java-websocket:Java-WebSocket:1.3.8"
+	testCompile 'junit:junit:4.12'
 
 }
 

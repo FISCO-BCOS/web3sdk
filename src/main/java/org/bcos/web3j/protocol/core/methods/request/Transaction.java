@@ -31,15 +31,9 @@ public class Transaction {
     private String contractName;
 
     public Transaction(String from, BigInteger nonce, BigInteger gasPrice, BigInteger gasLimit,
-                       String to, BigInteger value, String data, BigInteger type, boolean isInitByName) {
+                       String to, BigInteger value, String data) {
         this.from = from;
-        if (isInitByName) {
-            this.contractName = to;
-        }
-        else
-        {
-            this.to = to;
-        }
+         this.to = to;
         this.gas = gasLimit;
         this.gasPrice = gasPrice;
         this.value = value;
@@ -56,46 +50,46 @@ public class Transaction {
         }
 
         this.nonce = nonce;
-        this.type = type;
+
     }
 
     public static Transaction createContractTransaction(
             String from, BigInteger nonce, BigInteger gasPrice, BigInteger gasLimit,
-            BigInteger value, String init, BigInteger type, boolean isInitByName) {
+            BigInteger value, String init) {
 
-        return new Transaction(from, nonce, gasPrice, gasLimit, null, value, init,type,isInitByName);
+        return new Transaction(from, nonce, gasPrice, gasLimit, null, value, init);
     }
 
     public static Transaction createContractTransaction(
-            String from, BigInteger nonce, BigInteger gasPrice, String init, BigInteger type, boolean isInitByName) {
+            String from, BigInteger nonce, BigInteger gasPrice, String init) {
 
-        return createContractTransaction(from, nonce, gasPrice, null, null, init, type, isInitByName);
+        return createContractTransaction(from, nonce, gasPrice, null, null, init);
     }
 
     public static Transaction createEtherTransaction(
             String from, BigInteger nonce, BigInteger gasPrice, BigInteger gasLimit, String to,
-            BigInteger value,BigInteger type, boolean isInitByName) {
+            BigInteger value) {
 
-        return new Transaction(from, nonce, gasPrice, gasLimit, to, value, null, type, isInitByName);
+        return new Transaction(from, nonce, gasPrice, gasLimit, to, value, null);
     }
 
     public static Transaction createFunctionCallTransaction(
             String from, BigInteger nonce, BigInteger gasPrice, BigInteger gasLimit, String to,
-            BigInteger value, String data,BigInteger type, boolean isInitByName) {
+            BigInteger value, String data) {
 
-        return new Transaction(from, nonce, gasPrice, gasLimit, to, value, data, type, isInitByName);
+        return new Transaction(from, nonce, gasPrice, gasLimit, to, value, data);
     }
 
     public static Transaction createFunctionCallTransaction(
             String from, BigInteger nonce, BigInteger gasPrice, BigInteger gasLimit, String to,
-            String data, BigInteger type, boolean isInitByName) {
+            String data) {
 
-        return new Transaction(from, nonce, gasPrice, gasLimit, to, null, data, type, isInitByName);
+        return new Transaction(from, nonce, gasPrice, gasLimit, to, null, data);
     }
 
-    public static Transaction createEthCallTransaction(String from, String to, String data,BigInteger type, boolean isInitByName) {
+    public static Transaction createEthCallTransaction(String from, String to, String data ) {
 
-        return new Transaction(from, null, null, null, to, null, data, type, isInitByName);
+        return new Transaction(from, null, null, null, to, null, data);
     }
 
     public String getFrom() {
