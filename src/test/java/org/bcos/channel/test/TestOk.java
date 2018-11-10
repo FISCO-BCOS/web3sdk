@@ -1,18 +1,14 @@
 package org.bcos.channel.test;
 
 import org.bcos.channel.client.Service;
-import org.bcos.solidity.Ok;
-import org.bcos.web3j.abi.datatypes.generated.Uint256;
 import org.bcos.web3j.crypto.Credentials;
 import org.bcos.web3j.protocol.Web3j;
 import org.bcos.web3j.protocol.channel.ChannelEthereumService;
-import org.bcos.web3j.protocol.core.RemoteCall;
 import org.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.math.BigInteger;
-import java.util.concurrent.TimeUnit;
 
 import static java.lang.System.exit;
 
