@@ -65,7 +65,7 @@ public abstract class Contract extends ManagedTransaction {
                        Web3j web3j, TransactionManager transactionManager,
                        ContractGasProvider gasProvider) {
         super(web3j, transactionManager);
-
+        this.contractAddress = contractAddress;
         this.contractBinary = contractBinary;
         this.gasProvider = gasProvider;
     }
