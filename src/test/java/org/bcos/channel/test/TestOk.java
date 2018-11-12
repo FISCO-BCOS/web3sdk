@@ -4,11 +4,14 @@ import org.bcos.channel.client.Service;
 import org.bcos.web3j.crypto.Credentials;
 import org.bcos.web3j.protocol.Web3j;
 import org.bcos.web3j.protocol.channel.ChannelEthereumService;
+import org.bcos.web3j.protocol.core.DefaultBlockParameter;
+import org.bcos.web3j.protocol.core.methods.request.Transaction;
 import org.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 
 import static java.lang.System.exit;
 
