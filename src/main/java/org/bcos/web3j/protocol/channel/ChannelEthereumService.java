@@ -11,6 +11,7 @@ import org.bcos.web3j.protocol.core.Request;
 import org.bcos.web3j.protocol.core.Response;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Channel implementation of our services API.

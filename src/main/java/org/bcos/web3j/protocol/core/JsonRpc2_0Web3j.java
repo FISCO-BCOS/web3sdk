@@ -406,7 +406,7 @@ public class JsonRpc2_0Web3j implements Web3j {
             Transaction transaction, DefaultBlockParameter defaultBlockParameter) {
         return new Request<>(
                 "call",
-                Arrays.asList(groupId,transaction, defaultBlockParameter),
+                Arrays.asList(groupId,transaction),
                 web3jService,
                 org.bcos.web3j.protocol.core.methods.response.EthCall.class);
     }

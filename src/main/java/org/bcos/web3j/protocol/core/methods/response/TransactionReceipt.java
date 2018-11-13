@@ -140,7 +140,7 @@ public class TransactionReceipt {
             return true;
         }
         BigInteger statusQuantity = Numeric.decodeQuantity(status);
-        return BigInteger.ONE.equals(statusQuantity);
+        return BigInteger.ZERO.equals(statusQuantity);
     }
 
     public String getFrom() {
