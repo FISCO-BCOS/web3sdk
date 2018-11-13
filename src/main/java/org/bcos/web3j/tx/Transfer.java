@@ -10,6 +10,7 @@ import java.util.concurrent.Future;
 import org.bcos.web3j.crypto.Credentials;
 import org.bcos.web3j.protocol.Web3j;
 import org.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.bcos.web3j.protocol.exceptions.TransactionException;
 import org.bcos.web3j.protocol.exceptions.TransactionTimeoutException;
 import org.bcos.web3j.utils.Async;
 import org.bcos.web3j.utils.Convert;
@@ -43,17 +44,15 @@ public class Transfer extends ManagedTransaction {
      * @throws TransactionTimeoutException if the transaction was not mined while waiting
      */
     private TransactionReceipt send(String toAddress, BigDecimal value, Convert.Unit unit)
-            throws IOException, InterruptedException,
-            TransactionTimeoutException {
+            throws IOException, TransactionException {
 
-        BigInteger gasPrice = getGasPrice();
+        BigInteger gasPrice = requestCurrentGasPrice();
         return send(toAddress, value, unit, gasPrice, GAS_LIMIT);
     }
 
     private TransactionReceipt send(
             String toAddress, BigDecimal value, Convert.Unit unit, BigInteger gasPrice,
-            BigInteger gasLimit) throws IOException, InterruptedException,
-            TransactionTimeoutException {
+            BigInteger gasLimit) throws IOException, TransactionException {
 
         BigDecimal weiValue = Convert.toWei(value, unit);
         if (!Numeric.isIntegerValue(weiValue)) {
@@ -62,13 +61,13 @@ public class Transfer extends ManagedTransaction {
                             + " = " + weiValue + " Wei");
         }
 
-        return send(toAddress, "", weiValue.toBigIntegerExact(), gasPrice, gasLimit,TransactionConstant.callType,false);
+        return send(toAddress, "", weiValue.toBigIntegerExact(), gasPrice, gasLimit);
     }
 
     public static TransactionReceipt sendFunds(
             Web3j web3j, Credentials credentials,
-            String toAddress, BigDecimal value, Convert.Unit unit) throws InterruptedException,
-            IOException, TransactionTimeoutException {
+            String toAddress, BigDecimal value, Convert.Unit unit) throws
+            IOException, TransactionException {
 
         TransactionManager transactionManager = new RawTransactionManager(web3j, credentials);
 

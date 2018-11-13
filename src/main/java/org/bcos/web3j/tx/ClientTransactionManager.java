@@ -9,6 +9,7 @@ import org.bcos.web3j.protocol.core.Request;
 import org.bcos.web3j.protocol.core.methods.request.Transaction;
 import org.bcos.web3j.protocol.core.methods.response.EthSendTransaction;
 import org.bcos.web3j.protocol.exceptions.TransactionTimeoutException;
+import org.bcos.web3j.tx.response.TransactionReceiptProcessor;
 
 /**
  * TransactionManager implementation for using an Ethereum node to transact.
@@ -18,39 +19,44 @@ import org.bcos.web3j.protocol.exceptions.TransactionTimeoutException;
 public class ClientTransactionManager extends TransactionManager {
 
     private final Web3j web3j;
-    private final String fromAddress;
 
     public ClientTransactionManager(
             Web3j web3j, String fromAddress) {
-        super(web3j);
+        super(web3j,fromAddress);
         this.web3j = web3j;
-        this.fromAddress = fromAddress;
+
     }
 
     public ClientTransactionManager(
             Web3j web3j, String fromAddress, int attempts, int sleepDuration) {
-        super(web3j, attempts, sleepDuration);
+        super(web3j, attempts, sleepDuration,fromAddress);
         this.web3j = web3j;
-        this.fromAddress = fromAddress;
+    }
+
+    public ClientTransactionManager(
+            Web3j web3j, String fromAddress,
+            TransactionReceiptProcessor transactionReceiptProcessor) {
+        super(transactionReceiptProcessor, fromAddress);
+        this.web3j = web3j;
     }
 
     @Override
     public EthSendTransaction sendTransaction(
             BigInteger gasPrice, BigInteger gasLimit, String to,
-            String data, BigInteger value,  BigInteger type, boolean isInitByName)
+            String data, BigInteger value)
             throws IOException {
 
         Transaction transaction = new Transaction(
-                fromAddress, null, gasPrice, gasLimit, to, value, data, type, isInitByName);
+                getFromAddress(), null, gasPrice, gasLimit, to, value, data);
 
         return web3j.ethSendTransaction(transaction)
                 .send();
     }
 
-    @Override
-    public EthSendTransaction sendTransaction(BigInteger gasPrice, BigInteger gasLimit, String to, String data, BigInteger value,  BigInteger type, boolean isInitByName, TransactionSucCallback callback) throws IOException {
+
+    public EthSendTransaction sendTransaction(BigInteger gasPrice, BigInteger gasLimit, String to, String data, BigInteger value, TransactionSucCallback callback) throws IOException {
         Transaction transaction = new Transaction(
-                fromAddress, null, gasPrice, gasLimit, to, value, data,type,isInitByName);
+                getFromAddress(), null, gasPrice, gasLimit, to, value, data);
 
         Request<?, EthSendTransaction> request = web3j.ethSendTransaction(transaction);
         request.setNeedTransCallback(true);
@@ -58,8 +64,4 @@ public class ClientTransactionManager extends TransactionManager {
         return request.send();
     }
 
-    @Override
-    public String getFromAddress() {
-        return fromAddress;
-    }
 }

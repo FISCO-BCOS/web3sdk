@@ -59,7 +59,7 @@ public class EthBlock extends Response<EthBlock.Block> {
         private String mixHash;
         private String difficulty;
         private String totalDifficulty;
-        private String extraData;
+        private List<String> extraData;
         private String size;
         private String gasLimit;
         private String gasUsed;
@@ -74,7 +74,7 @@ public class EthBlock extends Response<EthBlock.Block> {
         public Block(String number, String hash, String parentHash, String nonce,
                      String sha3Uncles, String logsBloom, String transactionsRoot,
                      String stateRoot, String receiptsRoot, String author, String miner, 
-                     String mixHash, String difficulty, String totalDifficulty, String extraData, 
+                     String mixHash, String difficulty, String totalDifficulty, List<String> extraData,
                      String size, String gasLimit, String gasUsed, String timestamp,
                      List<TransactionResult> transactions, List<String> uncles,
                      List<String> sealFields) {
@@ -231,11 +231,11 @@ public class EthBlock extends Response<EthBlock.Block> {
             this.totalDifficulty = totalDifficulty;
         }
 
-        public String getExtraData() {
+        public List<String> getExtraData() {
             return extraData;
         }
 
-        public void setExtraData(String extraData) {
+        public void setExtraData(List<String> extraData) {
             this.extraData = extraData;
         }
 

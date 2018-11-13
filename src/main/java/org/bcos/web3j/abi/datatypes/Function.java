@@ -1,8 +1,8 @@
 package org.bcos.web3j.abi.datatypes;
 
-import java.util.List;
-
 import org.bcos.web3j.abi.TypeReference;
+
+import java.util.List;
 
 import static org.bcos.web3j.abi.Utils.convert;
 

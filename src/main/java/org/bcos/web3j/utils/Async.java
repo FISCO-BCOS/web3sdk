@@ -4,38 +4,32 @@ package org.bcos.web3j.utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.stereotype.Component;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.*;
+
+import static org.bcos.web3j.utils.Web3AsyncThreadPoolSize.web3AsyncPoolSize;
 
 /**
  * Async task facilitation.
  */
 public class Async {
-    static Logger logger = LoggerFactory.getLogger(Async.class);
-    private static Executor executor = Executors.newFixedThreadPool(Web3AsyncThreadPoolSize.web3AsyncPoolSize);
-    ;
-    public Async(ThreadPoolTaskExecutor pool){
-            logger.info("Async:ThreadPoolTaskExecutor getCorePoolSize " + pool.getCorePoolSize() + " getMaxPoolSize " + pool.getMaxPoolSize());
-            Async.executor = pool;
+    private static final ExecutorService executor = Executors.newFixedThreadPool(web3AsyncPoolSize);
+
+    static {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> shutdown(executor)));
     }
-     public Async( ){
-     }
+
     public static <T> CompletableFuture<T> run(Callable<T> callable) {
         CompletableFuture<T> result = new CompletableFuture<>();
         CompletableFuture.runAsync(() -> {
-            // we need to explicityly catch any exceptions,
+            // we need to explicitly catch any exceptions,
             // otherwise they will be silently discarded
             try {
                 result.complete(callable.call());
             } catch (Throwable e) {
                 result.completeExceptionally(e);
             }
-        }, Async.executor);
+        }, executor);
         return result;
     }
 
@@ -43,7 +37,39 @@ public class Async {
         return Runtime.getRuntime().availableProcessors();
     }
 
+    /**
+     * Provide a new ScheduledExecutorService instance.
+     *
+     * <p>A shutdown hook is created to terminate the thread pool on application termination.
+     *
+     * @return new ScheduledExecutorService
+     */
     public static ScheduledExecutorService defaultExecutorService() {
-        return Executors.newScheduledThreadPool(getCpuCount());
+        ScheduledExecutorService scheduledExecutorService =
+                Executors.newScheduledThreadPool(getCpuCount());
+
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> shutdown(scheduledExecutorService)));
+
+        return scheduledExecutorService;
+    }
+
+    /**
+     * Shutdown as per {@link ExecutorService} Javadoc recommendation.
+     *
+     * @param executorService executor service we wish to shut down.
+     */
+    private static void shutdown(ExecutorService executorService) {
+        executorService.shutdown();
+        try {
+            if (!executorService.awaitTermination(60, TimeUnit.SECONDS)) {
+                executorService.shutdownNow();
+                if (!executorService.awaitTermination(60, TimeUnit.SECONDS)) {
+                    System.err.println("Thread pool did not terminate");
+                }
+            }
+        } catch (InterruptedException ie) {
+            executorService.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
     }
 }

@@ -1,10 +1,13 @@
 package org.bcos.web3j.protocol.core;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicLong;
 
+import io.reactivex.Flowable;
 import rx.Observable;
 
 import org.bcos.web3j.protocol.Web3jService;
@@ -12,6 +15,7 @@ import org.bcos.channel.client.TransactionSucCallback;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class Request<S, T extends Response> {
+    private static AtomicLong nextId = new AtomicLong(0);
     private String jsonrpc = "2.0";
     private String method;
     private List<S> params;
@@ -48,11 +52,11 @@ public class Request<S, T extends Response> {
     public Request() {
     }
 
-    public Request(String method, List<S> params, long id,
+    public Request(String method, List<S> params,
                    Web3jService web3jService, Class<T> type) {
         this.method = method;
         this.params = params;
-        this.id = id;
+        this.id = nextId.getAndIncrement();
         this.web3jService = web3jService;
         this.responseType = type;
     }
@@ -97,16 +101,7 @@ public class Request<S, T extends Response> {
         return  web3jService.sendAsync(this, responseType);
     }
 
-    public Observable<T> observable() {
-        return Observable.create(
-                subscriber -> {
-                    try {
-                        subscriber.onNext(send());
-                        subscriber.onCompleted();
-                    } catch (IOException e) {
-                        subscriber.onError(e);
-                    }
-                }
-        );
+    public Flowable<T> flowable() {
+        return new RemoteCall<>(this::send).flowable();
     }
 }

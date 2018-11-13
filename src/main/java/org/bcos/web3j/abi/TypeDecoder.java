@@ -24,6 +24,7 @@ import org.bcos.web3j.abi.datatypes.Type;
 import org.bcos.web3j.abi.datatypes.Ufixed;
 import org.bcos.web3j.abi.datatypes.Uint;
 import org.bcos.web3j.abi.datatypes.Utf8String;
+import org.bcos.web3j.abi.datatypes.generated.Uint160;
 import org.bcos.web3j.utils.Numeric;
 
 /**
@@ -52,6 +53,8 @@ public class TypeDecoder {
     static <T extends Type> T decode(String input, int offset, Class<T> type) {
         if (NumericType.class.isAssignableFrom(type)) {
             return (T) decodeNumeric(input.substring(offset), (Class<NumericType>) type);
+        } else if (Address.class.isAssignableFrom(type)) {
+            return (T) decodeAddress(input.substring(offset));
         } else if (Bool.class.isAssignableFrom(type)) {
             return (T) decodeBool(input, offset);
         } else if (Bytes.class.isAssignableFrom(type)) {
@@ -84,6 +87,10 @@ public class TypeDecoder {
 
     static <T extends Type> T decode(String input, Class<T> type) {
         return decode(input, 0, type);
+    }
+
+    static Address decodeAddress(String input) {
+        return new Address(decodeNumeric(input, Uint160.class));
     }
 
     static <T extends NumericType> T decodeNumeric(String input, Class<T> type) {
@@ -130,8 +137,6 @@ public class TypeDecoder {
                 String[] bitsCounts = splitName[1].split("x");
                 return Integer.parseInt(bitsCounts[0]) + Integer.parseInt(bitsCounts[1]);
             }
-        } else if (Address.class.isAssignableFrom(type)) {
-            return Address.LENGTH;
         }
         return Type.MAX_BIT_LENGTH;
     }
@@ -151,7 +156,7 @@ public class TypeDecoder {
     static <T extends Bytes> T decodeBytes(String input, Class<T> type) {
         return decodeBytes(input, 0, type);
     }
-    
+
     static <T extends Bytes> T decodeBytes(String input, int offset, Class<T> type) {
         try {
             String simpleName = type.getSimpleName();
@@ -201,11 +206,23 @@ public class TypeDecoder {
             if (elements.isEmpty()) {
                 throw new UnsupportedOperationException("Zero length fixed array is invalid type");
             } else {
-                return (T) new StaticArray<>(elements);
+                return instantiateStaticArray(typeReference, elements);
             }
         };
 
         return decodeArrayElements(input, offset, typeReference, length, function);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T extends Type> T instantiateStaticArray(
+            TypeReference<T> typeReference, List<T> elements) {
+        try {
+            Class<List> listClass = List.class;
+            return typeReference.getClassType().getConstructor(listClass).newInstance(elements);
+        } catch (ReflectiveOperationException e) {
+            //noinspection unchecked
+            return (T) new StaticArray<>(elements);
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -241,8 +258,8 @@ public class TypeDecoder {
                 List<T> elements = new ArrayList<>(length);
 
                 for (int i = 0, currOffset = offset;
-                        i < length;
-                        i++, currOffset += getSingleElementLength(input, currOffset, cls)
+                     i < length;
+                     i++, currOffset += getSingleElementLength(input, currOffset, cls)
                              * MAX_BYTE_LENGTH_FOR_HEX_STRING) {
                     T value = decode(input, currOffset, cls);
                     elements.add(value);
