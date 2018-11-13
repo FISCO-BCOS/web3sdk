@@ -91,22 +91,22 @@ public interface Ethereum {
     Request<?, EthGetBalance> ethGetBalance(
             String address, DefaultBlockParameter defaultBlockParameter);
 
-    Request<?, EthGetBalance> ethGetBalanceCNS(
-            String contractName, DefaultBlockParameter defaultBlockParameter);
+//    Request<?, EthGetBalance> ethGetBalanceCNS(
+//            String contractName, DefaultBlockParameter defaultBlockParameter);
 
     Request<?, EthGetStorageAt> ethGetStorageAt(
             String address, BigInteger position,
             DefaultBlockParameter defaultBlockParameter);
 
-    Request<?, EthGetStorageAt> ethGetStorageAtCNS(
-            String contractName, BigInteger position,
-            DefaultBlockParameter defaultBlockParameter);
+//    Request<?, EthGetStorageAt> ethGetStorageAtCNS(
+//            String contractName, BigInteger position,
+//            DefaultBlockParameter defaultBlockParameter);
 
     Request<?, EthGetTransactionCount> ethGetTransactionCount(
             String address, DefaultBlockParameter defaultBlockParameter);
 
-    Request<?, EthGetTransactionCount> ethGetTransactionCountCNS(
-            String contractName, DefaultBlockParameter defaultBlockParameter);
+//    Request<?, EthGetTransactionCount> ethGetTransactionCountCNS(
+//            String contractName, DefaultBlockParameter defaultBlockParameter);
 
     Request<?, EthGetBlockTransactionCountByHash> ethGetBlockTransactionCountByHash(
             String blockHash);
@@ -121,16 +121,16 @@ public interface Ethereum {
 
     Request<?, EthGetCode> ethGetCode(String address, DefaultBlockParameter defaultBlockParameter);
 
-    Request<?, EthGetCode> ethGetCodeCNS(String contractName, DefaultBlockParameter defaultBlockParameter);
+  //  Request<?, EthGetCode> ethGetCodeCNS(String contractName, DefaultBlockParameter defaultBlockParameter);
 
     Request<?, EthSign> ethSign(String address, String sha3HashOfDataToSign);
 
     Request<?, org.bcos.web3j.protocol.core.methods.response.EthSendTransaction> ethSendTransaction(
             org.bcos.web3j.protocol.core.methods.request.Transaction transaction);
 
-    Request<?, org.bcos.web3j.protocol.core.methods.response.EthSendTransaction> ethSendTransactionCNS(
-            String contractName,
-            org.bcos.web3j.protocol.core.methods.request.Transaction transaction);
+//    Request<?, org.bcos.web3j.protocol.core.methods.response.EthSendTransaction> ethSendTransactionCNS(
+//            String contractName,
+//            org.bcos.web3j.protocol.core.methods.request.Transaction transaction);
 
     Request<?, org.bcos.web3j.protocol.core.methods.response.EthSendTransaction> ethSendRawTransaction(
             String signedTransactionData);
@@ -139,10 +139,10 @@ public interface Ethereum {
             org.bcos.web3j.protocol.core.methods.request.Transaction transaction,
             DefaultBlockParameter defaultBlockParameter);
 
-    Request<?, org.bcos.web3j.protocol.core.methods.response.EthCall> ethCallCNS(
-            String contractName,
-            org.bcos.web3j.protocol.core.methods.request.Transaction transaction,
-            DefaultBlockParameter defaultBlockParameter);
+//    Request<?, org.bcos.web3j.protocol.core.methods.response.EthCall> ethCallCNS(
+//            String contractName,
+//            org.bcos.web3j.protocol.core.methods.request.Transaction transaction,
+//            DefaultBlockParameter defaultBlockParameter);
 
     Request<?, EthEstimateGas> ethEstimateGas(
             org.bcos.web3j.protocol.core.methods.request.Transaction transaction);

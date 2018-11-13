@@ -1,12 +1,9 @@
 package org.bcos.channel.test;
-import org.bcos.contract.tools.ToolConf;
-import org.bcos.web3j.abi.datatypes.generated.Uint256;
-import org.bcos.web3j.crypto.Credentials;
-import org.bcos.web3j.crypto.ECKeyPair;
-import org.bcos.web3j.crypto.GenCredential;
-import org.bcos.web3j.crypto.EncryptType;
 
-import org.bcos.web3j.crypto.Keys;
+import org.bcos.channel.client.Service;
+import org.bcos.web3j.crypto.Credentials;
+import org.bcos.web3j.protocol.Web3j;
+import org.bcos.web3j.protocol.channel.ChannelEthereumService;
 import org.bcos.web3j.protocol.core.methods.response.EthBlockNumber;
 import org.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.slf4j.Logger;
@@ -14,16 +11,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-
-import org.bcos.channel.client.Service;
-import org.bcos.web3j.protocol.Web3j;
-import org.bcos.web3j.protocol.channel.ChannelEthereumService;
-
 import java.math.BigInteger;
 
 public class Ethereum {
 	static Logger logger = LoggerFactory.getLogger(Ethereum.class);
-	
+
 	public static void main(String[] args) throws Exception {
 
 		ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
@@ -37,11 +29,10 @@ public class Ethereum {
 		channelEthereumService.setChannelService(service);
 
 		Web3j web3 = Web3j.build(channelEthereumService);
-		EthBlockNumber ethBlockNumber = web3.ethBlockNumber().sendAsync().get();
+		EthBlockNumber ethBlockNumber = web3.ethBlockNumber().send();
 
-		ToolConf toolConf=context.getBean(ToolConf.class);
 		//初始化交易签名私钥
-		Credentials credentials = GenCredential.create(toolConf.getPrivKey());
+		Credentials credentials = Credentials.create("b83261efa42895c38c6c2364ca878f43e77f3cddbc922bf57d0d48070f79feb6");
 
 		//初始化交易参数
 		java.math.BigInteger gasPrice = new BigInteger("30000000");
@@ -49,17 +40,17 @@ public class Ethereum {
 		java.math.BigInteger initialWeiValue = new BigInteger("0");
 
 		//部署合约
-		Ok ok = Ok.deploy(web3,credentials,gasPrice,gasLimit,initialWeiValue).get();
-		System.out.println("Ok getContractAddress " + ok.getContractAddress());
-		
+		Ok ok = Ok.deploy(web3,credentials,gasPrice,gasLimit,initialWeiValue).send();
+		System.out.println("Ok getContractAddress " + ok);
+
 		//调用合约接口
-		java.math.BigInteger Num = new BigInteger("999");
-		Uint256 num = new Uint256(Num);
-		TransactionReceipt receipt = ok.trans(num).get();
+		java.math.BigInteger num = new BigInteger("999");
+
+		TransactionReceipt receipt = ok.trans(num).send();
 		System.out.println("receipt transactionHash" + receipt.getTransactionHash());
 
 		//查询合约数据
-		num = ok.get().get();
-		System.out.println("ok.get() " + num.getValue());
+		num = ok.get().send();
+		System.out.println("ok.get() " + num.intValue());
 	}
 }

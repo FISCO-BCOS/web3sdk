@@ -1,5 +1,7 @@
 package org.bcos.web3j.abi;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.List;
@@ -76,6 +78,7 @@ public class Utils {
         }
     }
 
+    @SuppressWarnings("unchecked")
     static <T extends Type> Class<T> getParameterizedTypeFromArray(
             TypeReference typeReference) throws ClassNotFoundException {
 
@@ -93,6 +96,48 @@ public class Utils {
         result.addAll(input.stream()
                 .map(typeReference -> (TypeReference<Type>) typeReference)
                 .collect(Collectors.toList()));
+        return result;
+    }
+
+    public static <T, R extends Type<T>, E extends Type<T>> List<E> typeMap(
+            List<List<T>> input,
+            Class<E> outerDestType,
+            Class<R> innerType) {
+        List<E> result = new ArrayList<>();
+        try {
+            Constructor<E> constructor = outerDestType.getDeclaredConstructor(List.class);
+            for (List<T> ts : input) {
+                E e = constructor.newInstance(typeMap(ts, innerType));
+                result.add(e);
+            }
+        } catch (NoSuchMethodException
+                | IllegalAccessException
+                | InstantiationException
+                | InvocationTargetException e) {
+            throw new org.bcos.web3j.abi.TypeMappingException(e);
+        }
+        return result;
+    }
+
+    public static <T, R extends Type<T>> List<R> typeMap(List<T> input, Class<R> destType)
+            throws org.bcos.web3j.abi.TypeMappingException {
+
+        List<R> result = new ArrayList<R>(input.size());
+
+        if (!input.isEmpty()) {
+            try {
+                Constructor<R> constructor = destType.getDeclaredConstructor(
+                        input.get(0).getClass());
+                for (T value : input) {
+                    result.add(constructor.newInstance(value));
+                }
+            } catch (NoSuchMethodException
+                    | IllegalAccessException
+                    | InvocationTargetException
+                    | InstantiationException e) {
+                throw new org.bcos.web3j.abi.TypeMappingException(e);
+            }
+        }
         return result;
     }
 }

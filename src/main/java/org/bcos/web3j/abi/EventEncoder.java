@@ -19,22 +19,17 @@ public class EventEncoder {
 
     private EventEncoder() { }
 
-    public static String encode(Event function) {
-        List<TypeReference<Type>> indexedParameters = function.getIndexedParameters();
-        List<TypeReference<Type>> nonIndexedParameters = function.getNonIndexedParameters();
+    public static String encode(Event event) {
 
-        String methodSignature = buildMethodSignature(function.getName(),
-                indexedParameters, nonIndexedParameters);
+        String methodSignature = buildMethodSignature(
+                event.getName(),
+                event.getParameters());
 
         return buildEventSignature(methodSignature);
     }
 
     static <T extends Type> String buildMethodSignature(
-            String methodName, List<TypeReference<T>> indexParameters,
-            List<TypeReference<T>> nonIndexedParameters) {
-
-        List<TypeReference<T>> parameters = new ArrayList<>(indexParameters);
-        parameters.addAll(nonIndexedParameters);
+            String methodName, List<TypeReference<T>> parameters) {
 
         StringBuilder result = new StringBuilder();
         result.append(methodName);
@@ -47,7 +42,7 @@ public class EventEncoder {
         return result.toString();
     }
 
-    static String buildEventSignature(String methodSignature) {
+    public static String buildEventSignature(String methodSignature) {
         byte[] input = methodSignature.getBytes();
         byte[] hash = Hash.sha3(input);
         return Numeric.toHexString(hash);

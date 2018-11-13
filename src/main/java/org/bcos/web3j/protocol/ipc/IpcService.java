@@ -39,4 +39,8 @@ public class IpcService extends Service {
 
         return objectMapper.readValue(result, responseType);
     }
+
+    @Override
+    public void close() throws IOException {
+    }
 }

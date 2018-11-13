@@ -1,24 +1,18 @@
 package org.bcos.web3j.crypto;
 
-import java.math.BigInteger;
-import java.security.SignatureException;
-import java.util.Arrays;
-
-import org.bcos.web3j.crypto.sm2.SM2Sign;
+import org.bcos.web3j.utils.Numeric;
 import org.bouncycastle.asn1.x9.X9ECParameters;
 import org.bouncycastle.asn1.x9.X9IntegerConverter;
-import org.bouncycastle.crypto.digests.SHA256Digest;
 import org.bouncycastle.crypto.ec.CustomNamedCurves;
 import org.bouncycastle.crypto.params.ECDomainParameters;
-import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
-import org.bouncycastle.crypto.signers.ECDSASigner;
-import org.bouncycastle.crypto.signers.HMacDSAKCalculator;
 import org.bouncycastle.math.ec.ECAlgorithms;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.math.ec.FixedPointCombMultiplier;
 import org.bouncycastle.math.ec.custom.sec.SecP256K1Curve;
 
-import org.bcos.web3j.utils.Numeric;
+import java.math.BigInteger;
+import java.security.SignatureException;
+import java.util.Arrays;
 
 import static org.bcos.web3j.utils.Assertions.verifyPrecondition;
 
@@ -30,32 +24,67 @@ import static org.bcos.web3j.utils.Assertions.verifyPrecondition;
  * BitcoinJ ECKey</a> implementation.
  */
 public class Sign {
-    private static SignInterface signInterface = new ECDSASign();
-
-    public static SignInterface getSignInterface() {
-        return signInterface;
-    }
-
-    public static void setSignInterface(SignInterface signInterface) {
-        Sign.signInterface = signInterface;
-    }
     private static final X9ECParameters CURVE_PARAMS = CustomNamedCurves.getByName("secp256k1");
-    private static final ECDomainParameters CURVE = new ECDomainParameters(
+    static final ECDomainParameters CURVE = new ECDomainParameters(
             CURVE_PARAMS.getCurve(), CURVE_PARAMS.getG(), CURVE_PARAMS.getN(), CURVE_PARAMS.getH());
-    private static final BigInteger HALF_CURVE_ORDER = CURVE_PARAMS.getN().shiftRight(1);
+    static final BigInteger HALF_CURVE_ORDER = CURVE_PARAMS.getN().shiftRight(1);
+
+    static final String MESSAGE_PREFIX = "\u0019Ethereum Signed Message:\n";
+
+    static byte[] getEthereumMessagePrefix(int messageLength) {
+        return MESSAGE_PREFIX.concat(String.valueOf(messageLength)).getBytes();
+    }
+
+    static byte[] getEthereumMessageHash(byte[] message) {
+        byte[] prefix = getEthereumMessagePrefix(message.length);
+
+        byte[] result = new byte[prefix.length + message.length];
+        System.arraycopy(prefix, 0, result, 0, prefix.length);
+        System.arraycopy(message, 0, result, prefix.length, message.length);
+
+        return Hash.sha3(result);
+    }
+
+    public static SignatureData signPrefixedMessage(byte[] message, ECKeyPair keyPair) {
+        return signMessage(getEthereumMessageHash(message), keyPair, false);
+    }
 
     public static SignatureData signMessage(byte[] message, ECKeyPair keyPair) {
-        return signInterface.signMessage(message,keyPair);
+        return signMessage(message, keyPair, true);
     }
 
-    public static ECDSASignature sign(byte[] transactionHash, BigInteger privateKey) {
-        ECDSASigner signer = new ECDSASigner(new HMacDSAKCalculator(new SHA256Digest()));
+    public static SignatureData signMessage(byte[] message, ECKeyPair keyPair, boolean needToHash) {
+        BigInteger publicKey = keyPair.getPublicKey();
+        byte[] messageHash;
+        if (needToHash) {
+            messageHash = Hash.sha3(message);
+        } else {
+            messageHash = message;
+        }
 
-        ECPrivateKeyParameters privKey = new ECPrivateKeyParameters(privateKey, CURVE);
-        signer.init(true, privKey);
-        BigInteger[] components = signer.generateSignature(transactionHash);
+        ECDSASignature sig = keyPair.sign(messageHash);
+        // Now we have to work backwards to figure out the recId needed to recover the signature.
+        int recId = -1;
+        for (int i = 0; i < 4; i++) {
+            BigInteger k = recoverFromSignature(i, sig, messageHash);
+            if (k != null && k.equals(publicKey)) {
+                recId = i;
+                break;
+            }
+        }
+        if (recId == -1) {
+            throw new RuntimeException(
+                    "Could not construct a recoverable key. Are your credentials valid?");
+        }
 
-        return new ECDSASignature(components[0], components[1]).toCanonicalised();
+        int headerByte = recId + 27;
+
+        // 1 header + 32 bytes for R + 32 bytes for S
+        byte v = (byte) headerByte;
+        byte[] r = Numeric.toBytesPadded(sig.r, 32);
+        byte[] s = Numeric.toBytesPadded(sig.s, 32);
+
+        return new SignatureData(v, r, s);
     }
 
     /**
@@ -95,7 +124,7 @@ public class Sign {
         //        routine specified in Section 2.3.7, where mlen = ⌈(log2 p)/8⌉ or mlen = ⌈m/8⌉.
         //   1.3. Convert the octet string (16 set binary digits)||X to an elliptic curve point R
         //        using the conversion routine specified in Section 2.3.4. If this conversion
-        //        routine outputs “invalid”, then do another iteration of Step 1.
+        //        routine outputs "invalid", then do another iteration of Step 1.
         //
         // More concisely, what these points mean is to use X as a compressed public key.
         BigInteger prime = SecP256K1Curve.q;
@@ -159,6 +188,27 @@ public class Sign {
      */
     public static BigInteger signedMessageToKey(
             byte[] message, SignatureData signatureData) throws SignatureException {
+        return signedMessageHashToKey(Hash.sha3(message), signatureData);
+    }
+
+    /**
+     * Given an arbitrary message and an Ethereum message signature encoded in bytes,
+     * returns the public key that was used to sign it. This can then be compared to the
+     * expected public key to determine if the signature was correct.
+     *
+     * @param message The message.
+     * @param signatureData The message signature components
+     * @return the public key used to sign the message
+     * @throws SignatureException If the public key could not be recovered or if there was a
+     *     signature format error.
+     */
+    public static BigInteger signedPrefixedMessageToKey(
+            byte[] message, SignatureData signatureData) throws SignatureException {
+        return signedMessageHashToKey(getEthereumMessageHash(message), signatureData);
+    }
+
+    static BigInteger signedMessageHashToKey(
+            byte[] messageHash, SignatureData signatureData) throws SignatureException {
 
         byte[] r = signatureData.getR();
         byte[] s = signatureData.getS();
@@ -176,7 +226,6 @@ public class Sign {
                 new BigInteger(1, signatureData.getR()),
                 new BigInteger(1, signatureData.getS()));
 
-        byte[] messageHash = Hash.sha3(message);
         int recId = header - 27;
         BigInteger key = recoverFromSignature(recId, sig, messageHash);
         if (key == null) {
@@ -200,8 +249,11 @@ public class Sign {
 
     /**
      * Returns public key point from the given private key.
+     *
+     * @param privKey the private key to derive the public key from
+     * @return ECPoint public key
      */
-    private static ECPoint publicPointFromPrivate(BigInteger privKey) {
+    public static ECPoint publicPointFromPrivate(BigInteger privKey) {
         /*
          * TODO: FixedPointCombMultiplier currently doesn't support scalars longer than the group
          * order, but that could change in future versions.
@@ -212,66 +264,25 @@ public class Sign {
         return new FixedPointCombMultiplier().multiply(CURVE.getG(), privKey);
     }
 
-    public static class ECDSASignature {
-        public final BigInteger r;
-        public final BigInteger s;
-
-        ECDSASignature(BigInteger r, BigInteger s) {
-            this.r = r;
-            this.s = s;
-        }
-
-        /**
-         * Returns true if the S component is "low", that means it is below
-         * {@link Sign#HALF_CURVE_ORDER}. See
-         * <a href="https://github.com/bitcoin/bips/blob/master/bip-0062.mediawiki#Low_S_values_in_signatures">
-         * BIP62</a>.
-         */
-        public boolean isCanonical() {
-            return s.compareTo(HALF_CURVE_ORDER) <= 0;
-        }
-
-        /**
-         * Will automatically adjust the S component to be less than or equal to half the curve
-         * order, if necessary. This is required because for every signature (r,s) the signature
-         * (r, -s (mod N)) is a valid signature of the same message. However, we dislike the
-         * ability to modify the bits of a Bitcoin transaction after it's been signed, as that
-         * violates various assumed invariants. Thus in future only one of those forms will be
-         * considered legal and the other will be banned.
-         */
-        public ECDSASignature toCanonicalised() {
-            if (!isCanonical()) {
-                // The order of the curve is the number of valid points that exist on that curve.
-                // If S is in the upper half of the number of valid points, then bring it back to
-                // the lower half. Otherwise, imagine that
-                //    N = 10
-                //    s = 8, so (-8 % 10 == 2) thus both (r, 8) and (r, 2) are valid solutions.
-                //    10 - 8 == 2, giving us always the latter solution, which is canonical.
-                return new ECDSASignature(r, CURVE.getN().subtract(s));
-            } else {
-                return this;
-            }
-        }
+    /**
+     * Returns public key point from the given curve.
+     *
+     * @param bits representing the point on the curve
+     * @return BigInteger encoded public key
+     */
+    public static BigInteger publicFromPoint(byte[] bits) {
+        return new BigInteger(1, Arrays.copyOfRange(bits, 1, bits.length));  // remove prefix
     }
 
     public static class SignatureData {
         private final byte v;
         private final byte[] r;
         private final byte[] s;
-        private final byte[] pub;
 
         public SignatureData(byte v, byte[] r, byte[] s) {
             this.v = v;
             this.r = r;
             this.s = s;
-            pub = null;
-        }
-
-        public SignatureData(byte v, byte[] r, byte[] s,byte[] pub) {
-            this.v = v;
-            this.r = r;
-            this.s = s;
-            this.pub = pub;
         }
 
         public byte getV() {
@@ -284,10 +295,6 @@ public class Sign {
 
         public byte[] getS() {
             return s;
-        }
-
-        public byte[] getPub() {
-            return pub;
         }
 
         @Override
@@ -315,7 +322,6 @@ public class Sign {
             int result = (int) v;
             result = 31 * result + Arrays.hashCode(r);
             result = 31 * result + Arrays.hashCode(s);
-            result = 63 * result + Arrays.hashCode(pub);
             return result;
         }
     }

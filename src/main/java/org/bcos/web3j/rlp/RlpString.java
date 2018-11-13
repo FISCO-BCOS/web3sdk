@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.util.Arrays;
 
 import org.bcos.web3j.utils.Bytes;
+import org.bcos.web3j.utils.Numeric;
 
 /**
  * RLP string type.
@@ -19,6 +20,17 @@ public class RlpString implements RlpType {
 
     public byte[] getBytes() {
         return value;
+    }
+
+    public BigInteger asPositiveBigInteger() {
+        if (value.length == 0) {
+            return BigInteger.ZERO;
+        }
+        return new BigInteger(1, value);
+    }
+
+    public String asString() {
+        return Numeric.toHexString(value);
     }
 
     public static RlpString create(byte[] value) {

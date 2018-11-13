@@ -1,12 +1,14 @@
 package org.bcos.web3j.abi.datatypes.generated;
 
-import java.math.BigInteger;
 import org.bcos.web3j.abi.datatypes.Int;
 
+import java.math.BigInteger;
+
 /**
- * <p>Auto generated code.<br>
- * <strong>Do not modifiy!</strong><br>
- * Please use {@link org.bcos.web3j.codegen.AbiTypesGenerator} to update.</p>
+ * Auto generated code.
+ * <p><strong>Do not modifiy!</strong>
+ * <p>Please use org.bcos.web3j.codegen.AbiTypesGenerator in the
+ * <a href="https://github.com/web3j/web3j/tree/master/codegen">codegen module</a> to update.
  */
 public class Int48 extends Int {
     public static final Int48 DEFAULT = new Int48(BigInteger.ZERO);
