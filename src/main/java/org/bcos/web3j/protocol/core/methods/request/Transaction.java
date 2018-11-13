@@ -27,7 +27,7 @@ public class Transaction {
     private String data;
     private BigInteger nonce;  // nonce field is not present on eth_call/eth_estimateGas
     private BigInteger type;//0 new合约,1 call
-    private BigInteger version = TransactionConstant.version;
+    //private BigInteger version = TransactionConstant.version;
     private String contractName;
 
     public Transaction(String from, BigInteger nonce, BigInteger gasPrice, BigInteger gasLimit,
@@ -124,7 +124,7 @@ public class Transaction {
 
     public  String getType() {return  convert(type); }
 
-    public  String getVersion() {return convert(version); }
+ //   public  String getVersion() {return convert(version); }
 
     private static String convert(BigInteger value) {
         if (value != null) {
