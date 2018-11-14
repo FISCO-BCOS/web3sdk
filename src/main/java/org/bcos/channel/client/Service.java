@@ -1,34 +1,5 @@
 package org.bcos.channel.client;
 
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import org.bcos.channel.dto.ChannelMessage;
-import org.bcos.channel.dto.ChannelMessage2;
-import org.bcos.channel.dto.ChannelPush;
-import org.bcos.channel.dto.ChannelPush2;
-import org.bcos.channel.dto.ChannelRequest;
-import org.bcos.channel.dto.ChannelResponse;
-import org.bcos.channel.dto.EthereumMessage;
-import org.bcos.channel.dto.EthereumRequest;
-import org.bcos.channel.dto.EthereumResponse;
-import org.bcos.channel.handler.ChannelConnections;
-import org.bcos.channel.handler.ConnectionInfo;
-import org.bcos.channel.handler.Message;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.SocketChannel;
@@ -36,8 +7,46 @@ import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import io.netty.util.Timer;
 import io.netty.util.TimerTask;
+import org.bcos.channel.dto.*;
+import org.bcos.channel.handler.ChannelConnections;
+import org.bcos.channel.handler.ConnectionCallback;
+import org.bcos.channel.handler.ConnectionInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 public class Service {
+	private static Logger logger = LoggerFactory.getLogger(Service.class);
+	private Integer connectSeconds = 30;
+	private Integer connectSleepPerMillis = 1;
+	private String orgID;
+	private ConcurrentHashMap<String, ChannelConnections> allChannelConnections;
+	private ChannelPushCallback pushCallback;
+	private Map<String, Object> seq2Callback = new ConcurrentHashMap<String, Object>();
+	/**
+	 * add transaction seq callback
+	 */
+	private Map<String, Object> seq2TransactionCallback = new ConcurrentHashMap<String, Object>();
+	private Timer timeoutHandler = new HashedWheelTimer();
+	private ThreadPoolTaskExecutor threadPool;
+
+	private List<String> topics = new ArrayList<String>();
+	public void setTopics(List<String> topics) {
+		try {
+			this.topics = topics;
+		}
+		catch (Exception e) {
+			logger.error("system error", e);
+		}
+	}
 	public Integer getConnectSeconds() {
 		return connectSeconds;
 	}
@@ -53,126 +62,6 @@ public class Service {
 	public void setConnectSleepPerMillis(Integer connectSleepPerMillis) {
 		this.connectSleepPerMillis = connectSleepPerMillis;
 	}
-
-	class ConnectionCallback implements ChannelConnections.Callback {
-		public Service getChannelService() {
-			return channelService;
-		}
-
-		public void setChannelService(Service channelService) {
-			this.channelService = channelService;
-		}
-
-		@Override
-		public void onConnect(ChannelHandlerContext ctx) {
-			try {
-				Message message = new Message();
-				message.setResult(0);
-				message.setType((short)0x32); //topic设置topic消息0x32
-				message.setSeq(UUID.randomUUID().toString().replaceAll("-", ""));
-
-				logger.debug("connection established，send topic to the connection:{}", message.getSeq());
-
-				message.setData(objectMapper.writeValueAsBytes(topics.toArray()));
-
-				logger.debug("topics: {}", new String(message.getData()));
-
-				ByteBuf out = ctx.alloc().buffer();
-				message.writeHeader(out);
-				message.writeExtra(out);
-
-				ctx.writeAndFlush(out);
-			} catch (Exception e) {
-				logger.error("error:", e);
-			}
-		}
-
-		@Override
-		public void onDisconnect(ChannelHandlerContext ctx) {
-		}
-
-		@Override
-		public void onMessage(ChannelHandlerContext ctx, ByteBuf message) {
-			try {
-				Message msg = new Message();
-				msg.readHeader(message);
-
-				logger.trace("receive Message type: {}", msg.getType());
-
-				if(msg.getType() == 0x20 || msg.getType() == 0x21) {
-					logger.debug("channel message");
-
-					ChannelMessage channelMessage = new ChannelMessage(msg);
-					channelMessage.readExtra(message);
-
-					channelService.onReceiveChannelMessage(ctx, channelMessage);
-				}
-				else if(msg.getType() == 0x30 || msg.getType() == 0x31) {
-					logger.debug("channel2 message");
-
-					ChannelMessage2 channelMessage = new ChannelMessage2(msg);
-					channelMessage.readExtra(message);
-
-					channelService.onReceiveChannelMessage2(ctx, channelMessage);
-				}
-				else if(msg.getType() == 0x12) {
-					logger.debug("Ethereum message");
-
-					EthereumMessage ethereumMessage = new EthereumMessage(msg);
-					ethereumMessage.readExtra(message);
-
-					channelService.onReceiveEthereumMessage(ctx, ethereumMessage);
-				}
-                else if(msg.getType() == 0x13) {
-                    msg.readExtra(message);
-
-                    String content = "1";
-                    try {
-                        content = new String(msg.getData(), "utf-8");
-                    } catch (UnsupportedEncodingException e) {
-                        logger.error("heartbeat packet cannot be parsed");
-                    } catch (Exception e) {
-                        logger.error("heartbeat packet Exception");
-                    }
-
-                    if(content.equals("0")) {
-                        logger.trace("heartbeat packet，send heartbeat packet back");
-                        Message response = new Message();
-
-                        response.setSeq(msg.getSeq());
-                        response.setResult(0);
-                        response.setType((short) 0x13);
-                        response.setData("1".getBytes());
-
-                        ByteBuf out = ctx.alloc().buffer();
-                        response.writeHeader(out);
-                        response.writeExtra(out);
-
-                        ctx.writeAndFlush(out);
-                    }
-                    else if(content.equals("1")) {
-                        logger.trace("heartbeat response");
-                    }
-                }
-                else if (msg.getType() == 0x1000) {
-                    //交易上链成功回调的消息
-                    logger.debug("EthereumMessage response");
-                    EthereumMessage ethereumMessage = new EthereumMessage(msg);
-                    ethereumMessage.readExtra(message);
-                    channelService.onReceiveTransactionMessage(ctx, ethereumMessage);
-                }
-                else {
-                    logger.error("unknown message type:{}", msg.getType());
-                }
-			}finally {
-				message.release();
-			}
-		}
-
-		private Service channelService;
-	}
-
-	private static Logger logger = LoggerFactory.getLogger(Service.class);
 
 	public String getOrgID() {
 		return orgID;
@@ -203,7 +92,7 @@ public class Service {
 		logger.debug("init ChannelService");
 
 		try {
-			ConnectionCallback connectionCallback = new ConnectionCallback();
+			ConnectionCallback connectionCallback = new ConnectionCallback(topics);
 			connectionCallback.setChannelService(this);
 
 			for(Map.Entry<String, ChannelConnections> entry: allChannelConnections.entrySet()) {
@@ -300,6 +189,10 @@ public class Service {
 
 	public ChannelResponse sendChannelMessage(ChannelRequest request) {
 		class Callback extends ChannelResponseCallback  {
+
+			public ChannelResponse channelResponse;
+			public Semaphore semaphore = new Semaphore(1, true);
+
 			Callback() {
 				try {
 					semaphore.acquire(1);
@@ -314,14 +207,10 @@ public class Service {
 			public void onResponseMessage(ChannelResponse response) {
 				channelResponse = response;
 
-
 				logger.debug("response: {}", response.getContent());
 
 				semaphore.release();
 			}
-
-			public ChannelResponse channelResponse;
-			public Semaphore semaphore = new Semaphore(1, true);
 
 		};
 
@@ -340,10 +229,12 @@ public class Service {
 
 	public EthereumResponse sendEthereumMessage(EthereumRequest request, TransactionSucCallback transactionSucCallback) {
         class Callback extends EthereumResponseCallback  {
+			public EthereumResponse ethereumResponse;
+			public Semaphore semaphore = new Semaphore(1, true);
+
             Callback() {
                 try {
                     semaphore.acquire(1);
-
                 } catch (InterruptedException e) {
                     logger.error("error:", e);
                     Thread.currentThread().interrupt();
@@ -359,8 +250,6 @@ public class Service {
                 semaphore.release();
             }
 
-            public EthereumResponse ethereumResponse;
-            public Semaphore semaphore = new Semaphore(1, true);
         }
 
         Callback callback = new Callback();
@@ -647,14 +536,6 @@ public class Service {
 		}
 	}
 
-	public void setTopics(List<String> topics) {
-		try {
-			this.topics = topics;
-		}
-		catch (Exception e) {
-			logger.error("system error", e);
-		}
-	}
 
 	public void sendResponseMessage(ChannelResponse response, ConnectionInfo info, ChannelHandlerContext ctx, String fromNode, String toNode, String seq) {
 		try {
@@ -905,18 +786,4 @@ public class Service {
 		this.threadPool = threadPool;
 	}
 
-	private Integer connectSeconds = 30;
-	private Integer connectSleepPerMillis = 1;
-	private String orgID;
-	private ConcurrentHashMap<String, ChannelConnections> allChannelConnections;
-	private ChannelPushCallback pushCallback;
-	private Map<String, Object> seq2Callback = new ConcurrentHashMap<String, Object>();
-	/**
-     * add transaction seq callback
-     */
-    private Map<String, Object> seq2TransactionCallback = new ConcurrentHashMap<String, Object>();
-	private Timer timeoutHandler = new HashedWheelTimer();
-	private ThreadPoolTaskExecutor threadPool;
-	private List<String> topics = new ArrayList<String>();
-	private ObjectMapper objectMapper = new ObjectMapper();
 }
