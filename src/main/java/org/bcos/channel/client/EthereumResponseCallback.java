@@ -8,7 +8,8 @@ import io.netty.util.Timeout;
 
 public abstract class EthereumResponseCallback {
 	private static Logger logger = LoggerFactory.getLogger(EthereumResponseCallback.class);
-	
+
+	private Timeout timeout;
 	public abstract void onResponse(EthereumResponse response);
 	
 	public void onTimeout() {
@@ -31,5 +32,4 @@ public abstract class EthereumResponseCallback {
 		this.timeout = timeout;
 	}
 
-	private Timeout timeout;
 }
