@@ -45,11 +45,11 @@ public class ChannelEthereumService extends Service {
         }
 
         EthereumResponse response;
-//        if (!request.isNeedTransCallback()) {
-//            response = channelService.sendEthereumMessage(ethereumRequest);
-//        } else {
+        if (!request.isNeedTransCallback()) {
+            response = channelService.sendEthereumMessage(ethereumRequest);
+       } else {
             response = channelService.sendEthereumMessage(ethereumRequest, request.getTransactionSucCallback());
-     //   }
+        }
         logger.debug("!!!!!Ethereum Request:{}", request.isNeedTransCallback());
 
         logger.debug("Ethereum Request:{} {}", ethereumRequest.getMessageID(), objectMapper.writeValueAsString(request));
