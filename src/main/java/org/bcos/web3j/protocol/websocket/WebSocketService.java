@@ -67,7 +67,7 @@ public class WebSocketService implements Web3jService {
         this(webSocketClient, Executors.newScheduledThreadPool(1), includeRawResponses);
     }
 
-    WebSocketService(WebSocketClient webSocketClient,
+    public  WebSocketService(WebSocketClient webSocketClient,
                      ScheduledExecutorService executor,
                      boolean includeRawResponses) {
         this.webSocketClient = webSocketClient;
