@@ -207,7 +207,7 @@ public class WebSocketServiceTest {
         doAnswer(invocation -> {
             requestSent.countDown();
             return null;
-        }).when(webSocketClient).send(anyString());
+        }).when(webSocketClient).send(org.mockito.Matchers.anyString());
 
         // Send reply asynchronously
         runAsync(() -> {
@@ -445,7 +445,7 @@ public class WebSocketServiceTest {
     }
 
     private void verifyUnsubscribed() {
-        verify(webSocketClient).send(startsWith(
+        verify(webSocketClient).send(org.mockito.Matchers.startsWith(
                 "{\"jsonrpc\":\"2.0\",\"method\":\"eth_unsubscribe\","
                         + "\"params\":[\"0xcd0c3e8af590364c09d0fa6a1210faf5\"]"));
     }
