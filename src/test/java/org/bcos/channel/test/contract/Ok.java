@@ -1,4 +1,4 @@
-package org.bcos.channel.test;
+package org.bcos.channel.test.contract;
 
 import java.math.BigInteger;
 import java.util.Arrays;
