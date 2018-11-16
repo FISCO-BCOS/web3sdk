@@ -14,8 +14,7 @@ import org.bcos.channel.client.Service;
 import org.bcos.channel.dto.ChannelRequest;
 
 public class Perfomance {
-	static Logger logger = LoggerFactory.getLogger(Perfomance.class);
-	
+
 	public static void main(String[] args) throws Exception {
 		if(args.length < 6) {
 			System.out.println("Param: request         receive         total;          TPS     package size          timeout");
