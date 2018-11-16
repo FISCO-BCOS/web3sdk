@@ -10,8 +10,8 @@ import java.util.Arrays;
 
 public class SolidityFunctionWrapperGeneratorTest {
 
-    private String binFile =  new File("src/test/resources/solidity/Ok.bin").getAbsolutePath();
-    private String abiFile =  new File("src/test/resources/solidity/Ok.abi").getAbsolutePath();
+     private String binFile =  new ClassPathResource("solidity/Ok.bin").getPath();
+     private String abiFile =  new ClassPathResource("solidity/Ok.abi").getPath();
     protected String tempDirPath =  new File("src/test/java/").getAbsolutePath();
     protected String packageName =  "org.bcos.solidity";
 
