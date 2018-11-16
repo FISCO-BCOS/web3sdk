@@ -15,13 +15,10 @@ import static org.bcos.web3j.crypto.Sign.signedMessageToKey;
  * Created by mingzhenliu on 2017/7/12.
  */
 public class ECKey {
-    static Logger logger = LoggerFactory.getLogger(ECKey.class);
 
-    public static void main(String[] args) throws Exception {
+    public void  eckeyTest() throws Exception {
 
         ECKeyPair keyPair = Keys.createEcKeyPair();
-        logger.debug("public key",keyPair.getPublicKey());
-        logger.debug("private key",keyPair.getPrivateKey());
         System.out.println("public key "+keyPair.getPublicKey());
         System.out.println("private key "+keyPair.getPrivateKey());
         System.out.println("serialize key "+ Hex.toHexString(Keys.serialize(keyPair)));
