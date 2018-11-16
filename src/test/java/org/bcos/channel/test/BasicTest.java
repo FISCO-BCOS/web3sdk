@@ -1,9 +1,7 @@
 package org.bcos.channel.test;
 
-import org.bcos.channel.client.Service;
 import org.bcos.web3j.crypto.Credentials;
 import org.bcos.web3j.protocol.Web3j;
-import org.bcos.web3j.protocol.channel.ChannelEthereumService;
 import org.bcos.web3j.protocol.core.DefaultBlockParameter;
 import org.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.junit.Test;
