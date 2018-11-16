@@ -21,6 +21,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 
+@Ignore
 public class WebSocketRpcTest {
 
     private WebSocketClient webSocketClient  = new WebSocketClient(new URI("ws://127.0.0.1:8888/"));
@@ -46,7 +47,7 @@ public class WebSocketRpcTest {
 
         //  verify(webSocketClient).connectBlocking();
     }
-
+@Ignore
     @Test
     public void testSSL() throws NoSuchAlgorithmException, KeyManagementException {
 
