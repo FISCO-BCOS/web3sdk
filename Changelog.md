@@ -36,7 +36,7 @@
 3. TestOk中的Future设置超时时间。
 4. 交易轮询线程池可以配置
 ```
- <bean id="async" class="org.bcos.web3j.utils.Async">
+ <bean id="async" class="Async">
    <constructor-arg type="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor" ref="pool" />
  </bean>
 

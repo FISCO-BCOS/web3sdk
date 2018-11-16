@@ -229,12 +229,12 @@ mv ca-agency.crt ca.crt
 		</property>
 	</bean> 
 	    
-	    <bean id="encryptType" class="org.bcos.web3j.crypto.EncryptType">
+	    <bean id="encryptType" class="org.fisco.bcos.web3j.crypto.EncryptType">
                 <constructor-arg value="0"/>
         </bean>
 	
 	<!-- 系统合约地址配置，在使用./web3sdk SystemProxy|AuthorityFilter等系统合约工具时需要配置 -->
-	<bean id="toolConf" class="org.bcos.contract.tools.ToolConf">
+	<bean id="toolConf" class="org.fisco.bcos.web3j.contract.tools.ToolConf">
 		<property name="systemProxyAddress" value="0x919868496524eedc26dbb81915fa1547a20f8998" />
 		<!--GOD账户的私钥-->（注意去掉“0x”）
 		<property name="privKey" value="bcec428d5205abe0f0cc8a734083908d9eb8563e31f943d760786edf42ad67dd" />
@@ -244,12 +244,12 @@ mv ca-agency.crt ca.crt
 	</bean>
 
 	<!-- 区块链节点信息配置 -->
-	<bean id="channelService" class="org.bcos.channel.client.Service">
+	<bean id="channelService" class="Service">
 		<property name="orgID" value="WB" /> <!-- 配置本机构名称 -->
 			<property name="allChannelConnections">
 				<map>
 					<entry key="WB"> <!-- 配置本机构的区块链节点列表（如有DMZ，则为区块链前置）-->
-						<bean class="org.bcos.channel.handler.ChannelConnections">
+						<bean class="ChannelConnections">
 						    <property name="caCertPath" value="classpath:ca.crt" />
 						    <property name="clientKeystorePath" value="classpath:client.keystore" />
 						    <property name="keystorePassWord" value="123456" />
@@ -451,7 +451,7 @@ id=28f815c7222118adaca6dfdefdda76906a491ae4ef9de4d311f3f23bd2371ee9d15e2f26646d1
 nodeA
 agencyA
 E2746FDF0B29F8A8
-org.bcos.web3j.abi.datatypes.generated.Uint256@ee871267
+Uint256@ee871267
 ```
 
 <br>
@@ -613,7 +613,7 @@ web3sdk提供了一些测试工具，方便确定web3sdk与[FISCO BCOS](https://
 
 **(1) Ok合约测试工具**
 
-**调用方法:** java -cp 'conf/:apps/\*:lib/\*' org.bcos.channel.test.contract.TestOk
+**调用方法:** java -cp 'conf/:apps/\*:lib/\*' OkTest
 **说明:** 向链上部署Ok合约，并调用Ok合约的trans接口(Ok合约可参考[Ok.sol](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/master/tool/Ok.sol))
 
 Ok合约调用示例如下:
@@ -622,7 +622,7 @@ Ok合约调用示例如下:
 #进入dist目录
 $ cd /mydata/web3sdk/dist
 #调用测试合约TestOk
-$ java -cp 'conf/:apps/*:lib/*' org.bcos.channel.test.contract.TestOk
+$ java -cp 'conf/:apps/*:lib/*' OkTest
 ===================================================================
 =====INIT ECDSA KEYPAIR From private key===
 contract address is: 0xecf79838dc5e0b4c2834f27b3dd2706d77d5f548
@@ -636,7 +636,7 @@ callback trans success
 
 **(2) Ethereum测试工具**
 
-**调用方法:** java -cp 'conf/:apps/\*:lib/\*' org.bcos.channel.test.Ethereum
+**调用方法:** java -cp 'conf/:apps/\*:lib/\*' org.fisco.bcos.web3j.channel.test.Ethereum
 **说明:** Ethereum功能与Ok合约测试工具类似，也是向链上部署Ok合约，并调用相关接口(Ok合约可参考[Ok.sol](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/master/tool/Ok.sol))
 
 Ethereum测试工具调用示例如下：
@@ -645,7 +645,7 @@ Ethereum测试工具调用示例如下：
 #进入dist目录
 $ cd /mydata/web3sdk/dist
 #调用测试合约Ethereum
-$ java -cp 'conf/:apps/*:lib/*' org.bcos.channel.test.Ethereum
+$ java -cp 'conf/:apps/*:lib/*' org.fisco.bcos.web3j.channel.test.Ethereum
 start...
 ===================================================================
 =====INIT ECDSA KEYPAIR From private key===
@@ -682,7 +682,7 @@ ok.get() 999
 
 web3j API接口代码参照：
 
-org.bcos.web3j.console.Web3RpcApi
+Web3RpcApi
 
 <br>
 
@@ -695,15 +695,15 @@ org.bcos.web3j.console.Web3RpcApi
 在SDK工具包/dist/bin目录下，compile.sh为合约编译脚本，web3sdk为SDK的的执行脚本。web3sdk脚本中将权限相关的接口进行暴露，使用相关命令执行即可。权限控制介绍文档请参看[FISCO BCOS权限模型（ARPI）介绍](https://github.com/FISCO-BCOS/Wiki/tree/master/FISCO%20BCOS%E6%9D%83%E9%99%90%E6%A8%A1%E5%9E%8B) 、[联盟链的权限体系](https://github.com/FISCO-BCOS/Wiki/tree/master/%E5%8C%BA%E5%9D%97%E9%93%BE%E7%9A%84%E6%9D%83%E9%99%90%E4%BD%93%E7%B3%BB) 。
 
 ```java
-org.bcos.contract.tools.ARPI_Model    #一键执行类
-org.bcos.contract.tools.AuthorityManagerTools
+org.fisco.bcos.web3j.contract.tools.ARPI_Model    #一键执行类
+org.fisco.bcos.web3j.contract.tools.AuthorityManagerTools
 ```
 
 在使用时，需要在applicationContext.xml文件中配置相关参数：
 
 ```xml
 	<!-- 系统合约地址配置置-->
-	<bean id="toolConf" class="org.bcos.contract.tools.ToolConf">
+	<bean id="toolConf" class="org.fisco.bcos.web3j.contract.tools.ToolConf">
 		<!--系统合约-->
 		<property name="systemProxyAddress" value="0x919868496524eedc26dbb81915fa1547a20f8998" />
 		<!--GOD账户的私钥-->（注意去掉“0x”）
@@ -778,20 +778,20 @@ org.bcos.contract.tools.AuthorityManagerTools
 下面代码演示了通过web3sdk调用合约向FISCO-BCOS发交易的主要流程：
 
 ```java
-	package org.bcos.channel.test;
-	import org.bcos.web3j.abi.datatypes.generated.Uint256;
-	import org.bcos.web3j.crypto.Credentials;
-	import org.bcos.web3j.crypto.ECKeyPair;
-	import org.bcos.web3j.crypto.Keys;
-	import org.bcos.web3j.protocol.core.methods.response.EthBlockNumber;
-	import org.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
+	package org.fisco.bcos.web3j.channel.test;
+	import Uint256;
+	import Credentials;
+	import ECKeyPair;
+	import Keys;
+	import EthBlockNumber;
+	import TransactionReceipt;
 	import org.slf4j.Logger;
 	import org.slf4j.LoggerFactory;
 	import org.springframework.context.ApplicationContext;
 	import org.springframework.context.support.ClassPathXmlApplicationContext;
-	import org.bcos.channel.client.Service;
-	import org.bcos.web3j.protocol.Web3j;
-	import org.bcos.web3j.protocol.channel.ChannelEthereumService;
+	import Service;
+	import Web3j;
+	import ChannelEthereumService;
 
 	import java.math.BigInteger;
 
@@ -851,7 +851,7 @@ org.bcos.contract.tools.AuthorityManagerTools
 web3sdk使用AMOP（链上链下）连接fisco-bcos节点：
 
 ```java
-	//初始化AMOP的service，初始化函数详见配置文件，sleep(3000)是确保AMOP网络连接初始化完成。注意：org.bcos.channel.client.Service在Java Client端须为单实例，否则与链上节点连接会有问题
+	//初始化AMOP的service，初始化函数详见配置文件，sleep(3000)是确保AMOP网络连接初始化完成。注意：org.fisco.bcos.web3j.channel.client.Service在Java Client端须为单实例，否则与链上节点连接会有问题
     Service service = context.getBean(Service.class);
     service.run();
     Thread.sleep(3000);
@@ -886,7 +886,7 @@ ChannelEthereumService通过AMOP的网络连接支持web3j的Ethereum JSON RPC�
 > 样例给出的是新构建一个私钥文件。web3sdk也可以用证书来初始化交易签名私钥，对交易进行签可参考[存证sample](https://github.com/FISCO-BCOS/evidenceSample)。
 
 ```java
-import org.bcos.web3j.crypto.GenCredential;
+import org.fisco.bcos.web3j.crypto.GenCredential;
 
 //...省略若干行...
 

@@ -194,25 +194,25 @@ $ gradle build
                 </property>
     </bean>
 
-        <bean id="encryptType" class="org.bcos.web3j.crypto.EncryptType">
+        <bean id="encryptType" class="org.fisco.bcos.web3j.crypto.EncryptType">
                 <constructor-arg value="1"/> <!--### encyptType设置为1，web3sdk端开启国密验证，使用国密签名算法和hash算法向FISCO BCOS发交易-->
         </bean>
 
-        <bean id="toolConf" class="org.bcos.contract.tools.ToolConf"> <!--===系统合约部署成功后，将systemProxyAddress设置为系统合约地址====-->
+        <bean id="toolConf" class="org.fisco.bcos.web3j.contract.tools.ToolConf"> <!--===系统合约部署成功后，将systemProxyAddress设置为系统合约地址====-->
                 <property name="systemProxyAddress" value="0x919868496524eedc26dbb81915fa1547a20f8998" />
                 <property name="privKey" value="204851937051ba3192100417a79fe3b2fe88d99aff8c861b86a5fbd6fa8a108d" /> <!--====向FISCO BCOS节点发消息或交易的账户私钥===-->
                 <property name="account" value="0xe519346a02b88cac6f91b52acf7c3951ed6cdb1e" /> <!--权限控制部分配置-->
                 <property name="outPutpath" value="./output/" />
         </bean>
 
-        <bean id="channelService" class="org.bcos.channel.client.Service">
+        <bean id="channelService" class="Service">
                 <property name="orgID" value="WB" /> <!--机构名称-->
                 <property name="connectSeconds" value="10" />
                 <property name="connectSleepPerMillis" value="10" />
                 <property name="allChannelConnections">
                         <map>
                                 <entry key="WB"> <!--机构节点配置，key与"orgID"配置值一致-->
-                                        <bean class="org.bcos.channel.handler.ChannelConnections">
+                                        <bean class="ChannelConnections">
                                                 <property name="caCertPath" value="classpath:ca.crt" />  <!--###CA证书路径, 默认是dist/conf/ca.crt, 必须与连接节点CA证书保持一致-->
                                                 <property name="clientKeystorePath" value="classpath:client.keystore" /> <!--客户端证书路径, 默认是dist/conf/client.keystore-->
                                                 <property name="keystorePassWord" value="123456" /> <!--访问客户端keystore证书的口令,默认是123456-->
@@ -295,14 +295,14 @@ web3sdk提供了国密版秘钥对和账户生成工具GenGmAccount, 该工具�
 
 **(1) 生成国密版秘钥对和账户**
 
-**调用方法**: java -cp 'conf/:apps/\*:lib/\*' org.bcos.contract.tools.GenGmAccount genkey ${keyFile}
+**调用方法**: java -cp 'conf/:apps/\*:lib/\*' org.fisco.bcos.web3j.contract.tools.GenGmAccount genkey ${keyFile}
 
 **功能和参数说明**: 调用国密算法，生成国密版秘钥对和账户，并将结果存于${keyFile}指定的文件中，**其中${keyFile}参数可选**，当没有传入该参数时，默认将结果存储于文件key.info中
 
 GenGmAccount genkey工具一个调用示例如下：
 
 ```bash
-[app@VM_105_81_centos dist]$ java -cp 'conf/:apps/*:lib/*' org.bcos.contract.tools.GenGmAccount genkey
+[app@VM_105_81_centos dist]$ java -cp 'conf/:apps/*:lib/*' org.fisco.bcos.web3j.contract.tools.GenGmAccount genkey
 -------------------------------------------------------------------------------
 ==========Generate (private key, public key, account) For Guomi randomly =======
 =====INIT GUOMI KEYPAIR ====
@@ -323,14 +323,14 @@ DeduceAccountFromPublic failed, error message:exception decoding Hex string: Str
 
 **(2) 加载国密版秘钥对和账户**
 
-**调用方法**: java -cp 'conf/:apps/\*:lib/\*' org.bcos.contract.tools.GenGmAccount load ${keyFile}
+**调用方法**: java -cp 'conf/:apps/\*:lib/\*' org.fisco.bcos.web3j.contract.tools.GenGmAccount load ${keyFile}
 
 **功能和参数说明**: 从${keyFile}指定的文件加载国密版秘钥对和账户到内存，**其中${keyFile}参数必选**
 
 GenGmAccount load工具一个调用示例如下：
 
 ```bash
-[app@VM_105_81_centos dist]$ java -cp 'conf/:apps/*:lib/*' org.bcos.contract.tools.GenGmAccount load key.info 
+[app@VM_105_81_centos dist]$ java -cp 'conf/:apps/*:lib/*' org.fisco.bcos.web3j.contract.tools.GenGmAccount load key.info
 read file key.info, result:{"privateKey":"d8d4e29b18252d7415ab0dfcf3fa1f0abc11bac1de254bf1d91c4a8866e1282a","publicKey":"6de57330ec3d4360834af935fef512bc4b785b66772c02afe2148b68da9c7d900b3ddd773f28595481f83cd69ec9de6ebb287762727cb5db9f08a031d89af1c9","account":"0xc874bcb663c2fbbe9aa66f12d10953e60d9d3cd9"}
 
 ===key info:{"privateKey":"d8d4e29b18252d7415ab0dfcf3fa1f0abc11bac1de254bf1d91c4a8866e1282a","publicKey":"6de57330ec3d4360834af935fef512bc4b785b66772c02afe2148b68da9c7d900b3ddd773f28595481f83cd69ec9de6ebb287762727cb5db9f08a031d89af1c9","account":"0xc874bcb663c2fbbe9aa66f12d10953e60d9d3cd9"}
@@ -512,7 +512,7 @@ id=28f815c7222118adaca6dfdefdda76906a491ae4ef9de4d311f3f23bd2371ee9d15e2f26646d1
 nodeA
 agencyA
 E2746FDF0B29F8A8
-org.bcos.web3j.abi.datatypes.generated.Uint256@ee871267
+Uint256@ee871267
 ```
 
 <br>
@@ -677,13 +677,13 @@ web3sdk提供了一些测试工具，方便确定web3sdk与[FISCO BCOS](https://
 
 **(1) Ok合约测试工具**
 
-**调用方法:** java -cp 'conf/:apps/\*:lib/\*' org.bcos.channel.test.contract.TestOk
+**调用方法:** java -cp 'conf/:apps/\*:lib/\*' OkTest
 **说明:** 向链上部署Ok合约，并调用Ok合约的trans接口(Ok合约可参考[Ok.sol](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/master/tool/Ok.sol))
 
 Ok合约调用示例如下:
 
 ```bash
-[app@VM_105_81_centos dist]$ java -cp 'conf/:apps/*:lib/*' org.bcos.channel.test.contract.TestOk
+[app@VM_105_81_centos dist]$ java -cp 'conf/:apps/*:lib/*' OkTest
 ===================================================================
 =====INIT GUOMI KEYPAIR from Private Key
 ====generate kepair from priv key:204851937051ba3192100417a79fe3b2fe88d99aff8c861b86a5fbd6fa8a108d
@@ -691,7 +691,7 @@ generate keypair data succeed
 ####create credential succ, begin deploy contract
 ####contract address is: 0xecf79838dc5e0b4c2834f27b3dd2706d77d5f548
 ###callback trans success
-============to balance:org.bcos.web3j.abi.datatypes.generated.Uint256@ee87126b
+============to balance:Uint256@ee87126b
 ```
 
 <br>
@@ -699,13 +699,13 @@ generate keypair data succeed
 
 **(2) Ethereum测试工具**
 
-**调用方法:** java -cp 'conf/:apps/\*:lib/\*' org.bcos.channel.test.Ethereum
+**调用方法:** java -cp 'conf/:apps/\*:lib/\*' org.fisco.bcos.web3j.channel.test.Ethereum
 **说明:** Ethereum功能与Ok合约测试工具类似，也是向链上部署Ok合约，并调用相关接口(Ok合约可参考[Ok.sol](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/master/tool/Ok.sol))
 
 Ethereum测试工具调用示例如下：
 
 ```bash
-[app@VM_105_81_centos dist]$ java -cp 'conf/:apps/*:lib/*' org.bcos.channel.test.Ethereum
+[app@VM_105_81_centos dist]$ java -cp 'conf/:apps/*:lib/*' org.fisco.bcos.web3j.channel.test.Ethereum
 start...
 ===================================================================
 =====INIT GUOMI KEYPAIR from Private Key
@@ -768,14 +768,14 @@ compile.sh脚本将放置于`dist/contracts`目录下的sol合约转换成java�
 
 # 7. 注意事项（关于Credentials对象初始化）
 
-web3sdk向链上发交易时，必须初始化Crendentials对象，为了便于用户调用，web3sdk在`package org.bcos.web3j.crypto`内抽象了`GenCredential`对象，用户可调用`public static Credentials create(String privKey)`接口初始化Credential对象：
+web3sdk向链上发交易时，必须初始化Crendentials对象，为了便于用户调用，web3sdk在`package org.fisco.bcos.web3j.crypto`内抽象了`GenCredential`对象，用户可调用`public static Credentials create(String privKey)`接口初始化Credential对象：
 
 使用示例如下（摘选自src/test/java/org/bcos/channel/test/TestOk.java）：
 
 <br>
 
 ```java
-import org.bcos.web3j.crypto.GenCredential;
+import org.fisco.bcos.web3j.crypto.GenCredential;
 
 //...省略若干行...
 

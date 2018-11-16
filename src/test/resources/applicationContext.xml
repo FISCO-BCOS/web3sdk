@@ -22,12 +22,12 @@
 
 
 	<!--&lt;!&ndash; 国密开关 &ndash;&gt;-->
-	<!--<bean id="encryptType" class="org.bcos.web3j.crypto.EncryptType">-->
+	<!--<bean id="encryptType" class="org.fisco.bcos.web3j.crypto.EncryptType">-->
 		<!--<constructor-arg value="0"/>-->
 	<!--</bean>-->
 
 	<!--&lt;!&ndash; 系统合约地址配置，使用系统合约工具时需配置&ndash;&gt;-->
-	<!--<bean id="toolConf" class="org.bcos.contract.tools.ToolConf">-->
+	<!--<bean id="toolConf" class="org.fisco.bcos.web3j.contract.tools.ToolConf">-->
 		<!--&lt;!&ndash;系统合约地址: 【系统合约代理地址,对应节点config.json里的systemproxyaddress】&ndash;&gt;-->
 		<!--<property name="systemProxyAddress" value="0x0" />-->
 		<!--&lt;!&ndash;GOD账户的私钥: &ndash;&gt;-->
@@ -40,14 +40,14 @@
 	<!--</bean>-->
 	
 	<!-- 区块链节点信息配置 -->
-	<bean id="channelService" class="org.bcos.channel.client.Service">
+	<bean id="channelService" class="org.fisco.bcos.channel.client.Service">
 		<property name="orgID" value="fisco" /> <!-- 配置本机构名称 -->
 		<property name="connectSeconds" value="10" />
 		<property name="connectSleepPerMillis" value="10" />
 		<property name="allChannelConnections">
 			<map>
 				<entry key="fisco"> <!-- 配置本机构的区块链节点列表（如有DMZ，则为区块链前置）-->
-					<bean class="org.bcos.channel.handler.ChannelConnections">
+					<bean class="org.fisco.bcos.channel.handler.ChannelConnections">
  						<!--【生成client.keystore时对应的keystore密码】-->
 						<property name="keystorePassWord" value="123456" />
 						<!--【生成client.keystore时对应的证书密码】-->
