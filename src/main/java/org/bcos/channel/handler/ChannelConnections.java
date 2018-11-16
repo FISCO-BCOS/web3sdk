@@ -17,6 +17,7 @@ import java.security.cert.X509Certificate;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -45,22 +46,6 @@ import io.netty.handler.timeout.IdleStateHandler;
 public class ChannelConnections {
 	private static Logger logger = LoggerFactory.getLogger(ChannelConnections.class);
 
-	public String getCaCertPath() {
-		return caCertPath;
-	}
-
-	public void setCaCertPath(String caCertPath) {
-		this.caCertPath = caCertPath;
-	}
-
-	public String getClientKeystorePath() {
-		return clientKeystorePath;
-	}
-
-	public void setClientKeystorePath(String clientKeystorePath) {
-		this.clientKeystorePath = clientKeystorePath;
-	}
-
 	public String getKeystorePassWord() {
 		return keystorePassWord;
 	}
@@ -77,16 +62,8 @@ public class ChannelConnections {
 		this.clientCertPassWord = clientCertPassWord;
 	}
 
-	public interface Callback {
-		void onConnect(ChannelHandlerContext ctx);
-		void onDisconnect(ChannelHandlerContext ctx);
-		void onMessage(ChannelHandlerContext ctx, ByteBuf message);
-	}
-
 	private Callback callback;
 	private List<String> connectionsStr;
-	private String caCertPath = "classpath:ca.crt";
-	private String clientKeystorePath = "classpath:client.keystore";
 	private String keystorePassWord = "123456";
 	private String clientCertPassWord = "123456";
 	private List<ConnectionInfo> connections = new ArrayList<ConnectionInfo>();
@@ -94,7 +71,13 @@ public class ChannelConnections {
 	private ThreadPoolTaskExecutor threadPool;
 	private long idleTimeout = (long)10000;
 	private long heartBeatDelay = (long)2000;
-	
+
+	public interface Callback {
+		void onConnect(ChannelHandlerContext ctx);
+		void onDisconnect(ChannelHandlerContext ctx);
+		void onMessage(ChannelHandlerContext ctx, ByteBuf message);
+	}
+
 	public Map<String, ChannelHandlerContext> networkConnections = new HashMap<String, ChannelHandlerContext>();
 	
 	public Callback getCallback() {
@@ -116,9 +99,7 @@ public class ChannelConnections {
 	public List<ConnectionInfo> getConnections() {
 		return connections;
 	}
-	
-	private Bootstrap bootstrap = new Bootstrap();
-	ServerBootstrap serverBootstrap = new ServerBootstrap();
+
 
 	public void setConnections(List<ConnectionInfo> connections) {
 		this.connections = connections;
@@ -147,6 +128,9 @@ public class ChannelConnections {
 	public void setHeartBeatDelay(long heartBeatDelay) {
 		this.heartBeatDelay = heartBeatDelay;
 	}
+
+	private Bootstrap bootstrap = new Bootstrap();
+	ServerBootstrap serverBootstrap = new ServerBootstrap();
 
 	public ChannelHandlerContext randomNetworkConnection() throws Exception {
 		List<ChannelHandlerContext> activeConnections = new ArrayList<ChannelHandlerContext>();
@@ -225,11 +209,9 @@ public class ChannelConnections {
                 @Override
                 public void initChannel(SocketChannel ch) throws Exception {
                     KeyStore ks = KeyStore.getInstance("JKS");
-                    
-                    ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-                    
-                    Resource keystoreResource = resolver.getResource(getClientKeystorePath());
-                    Resource caResource = resolver.getResource(getCaCertPath());
+
+					final Resource keystoreResource =  new ClassPathResource("client.keystore");
+					final Resource caResource = new ClassPathResource("ca.crt");
 
 					ks.load(keystoreResource.getInputStream(), getKeystorePassWord().toCharArray());
                 	
@@ -314,9 +296,8 @@ public class ChannelConnections {
 		final ChannelConnections selfService = this;
 		final ThreadPoolTaskExecutor selfThreadPool = threadPool;
 		
-		ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-		final Resource keystoreResource = resolver.getResource(getClientKeystorePath());
-        final Resource caResource = resolver.getResource(getCaCertPath());
+		final Resource keystoreResource =  new ClassPathResource("client.keystore");
+        final Resource caResource = new ClassPathResource("ca.crt");
         
 		bootstrap.handler(new ChannelInitializer<SocketChannel>() {
             @Override

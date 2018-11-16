@@ -1,6 +1,7 @@
 apply plugin: 'maven'
 apply plugin: 'java'
 apply plugin: 'eclipse'
+apply plugin: 'signing'
 
 //指定JDK版本,改成系统中版本
 sourceCompatibility = 1.8
@@ -63,36 +64,61 @@ dependencies {
 
 }
 
-sourceSets {
-	main {
-		java {
-	        srcDir 'src/main/java'
-	        srcDir 'src/test/java'
+task sourcesJar(type: Jar) {
+	classifier = 'sources'
+	from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+	classifier = 'javadoc'
+	from 'build/docs/javadoc'
+}
+
+artifacts {
+	archives jar
+	archives sourcesJar
+	archives javadocJar
+}
+
+
+
+signing {
+	required { gradle.taskGraph.hasTask("uploadArchives") }
+	sign configurations.archives
+}
+
+uploadArchives {
+	repositories {
+		mavenDeployer {
+			beforeDeployment { deployment -> signing.signPom(deployment) }
+
+			repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+				authentication(userName: ossrhUsername, password: ossrhPassword)
+			}
+
+			snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots") {
+				authentication(userName: sonatypeUsername, password: sonatypePassword)
+			}
+
+			pom.project {
+				name 'fisco-bcos'
+				packaging 'jar'
+				description 'fisco-bcos web3jsdk'
+				url 'http://www.fisco-bcos.org'
+
+				scm {
+					url 'https://github.com/FISCO-BCOS/web3sdk.git'
+					connection 'https://github.com/FISCO-BCOS/web3sdk.git'
+				}
+
+				licenses {
+					license {
+						name 'The Apache License, Version 2.0'
+						url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+					}
+				}
+			}
 		}
-        resources  {
-            srcDir 'src/main/resources'
-        }
 	}
 }
 
-jar {
-	destinationDir file('dist/apps')
-	archiveName project.name + '.jar'
-	exclude '**/*.xml'
-	exclude '**/*.properties'
-
-    doLast {
-        copy {
-            from file('tools/')
-            into 'dist/'
-        }
-		copy {
-			from configurations.runtime
-			into 'dist/lib'
-		}
-		copy {
-            from file('src/test/resources/')
-            into 'dist/conf'
-        }
-	}
-}
