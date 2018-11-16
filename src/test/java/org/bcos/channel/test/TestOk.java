@@ -5,6 +5,8 @@ import org.junit.Test;
 
 import java.math.BigInteger;
 
+import static org.junit.Assert.assertTrue;
+
 
 public class TestOk extends TestBase {
 
@@ -22,8 +24,7 @@ public class TestOk extends TestBase {
                 TransactionReceipt receipt = okDemo.trans(new BigInteger("4")).send();
                 System.out.println("###callback trans success");
                 BigInteger toBalance = okDemo.get().send();
-                System.out.println("============to balance:" + toBalance.intValue());
-                Thread.sleep(1000);
+                assertTrue( toBalance.intValue()==4);
             }
         }
 }
