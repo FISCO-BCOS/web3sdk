@@ -677,13 +677,13 @@ web3sdk提供了一些测试工具，方便确定web3sdk与[FISCO BCOS](https://
 
 **(1) Ok合约测试工具**
 
-**调用方法:** java -cp 'conf/:apps/\*:lib/\*' org.bcos.channel.test.TestOk
+**调用方法:** java -cp 'conf/:apps/\*:lib/\*' org.bcos.channel.test.contract.TestOk
 **说明:** 向链上部署Ok合约，并调用Ok合约的trans接口(Ok合约可参考[Ok.sol](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/master/tool/Ok.sol))
 
 Ok合约调用示例如下:
 
 ```bash
-[app@VM_105_81_centos dist]$ java -cp 'conf/:apps/*:lib/*' org.bcos.channel.test.TestOk
+[app@VM_105_81_centos dist]$ java -cp 'conf/:apps/*:lib/*' org.bcos.channel.test.contract.TestOk
 ===================================================================
 =====INIT GUOMI KEYPAIR from Private Key
 ====generate kepair from priv key:204851937051ba3192100417a79fe3b2fe88d99aff8c861b86a5fbd6fa8a108d

@@ -1,5 +1,6 @@
 package org.bcos.channel.test;
 
+import org.bcos.channel.test.contract.Ok;
 import org.bcos.web3j.crypto.Credentials;
 import org.bcos.web3j.protocol.Web3j;
 import org.bcos.web3j.protocol.core.DefaultBlockParameter;
