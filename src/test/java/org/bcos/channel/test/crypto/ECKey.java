@@ -1,4 +1,4 @@
-package org.bcos.channel.test;
+package org.bcos.channel.test.crypto;
 
 import org.bcos.web3j.crypto.ECKeyPair;
 import org.bcos.web3j.crypto.Keys;

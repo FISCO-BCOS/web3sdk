@@ -613,7 +613,7 @@ web3sdk提供了一些测试工具，方便确定web3sdk与[FISCO BCOS](https://
 
 **(1) Ok合约测试工具**
 
-**调用方法:** java -cp 'conf/:apps/\*:lib/\*' org.bcos.channel.test.TestOk
+**调用方法:** java -cp 'conf/:apps/\*:lib/\*' org.bcos.channel.test.contract.TestOk
 **说明:** 向链上部署Ok合约，并调用Ok合约的trans接口(Ok合约可参考[Ok.sol](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/master/tool/Ok.sol))
 
 Ok合约调用示例如下:
@@ -622,7 +622,7 @@ Ok合约调用示例如下:
 #进入dist目录
 $ cd /mydata/web3sdk/dist
 #调用测试合约TestOk
-$ java -cp 'conf/:apps/*:lib/*' org.bcos.channel.test.TestOk
+$ java -cp 'conf/:apps/*:lib/*' org.bcos.channel.test.contract.TestOk
 ===================================================================
 =====INIT ECDSA KEYPAIR From private key===
 contract address is: 0xecf79838dc5e0b4c2834f27b3dd2706d77d5f548
