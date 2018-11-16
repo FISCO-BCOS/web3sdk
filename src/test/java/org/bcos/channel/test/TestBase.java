@@ -11,9 +11,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class TestBase {
-    protected static ApplicationContext context = null;
+    public static ApplicationContext context = null;
     //初始化交易签名私钥
-    Credentials credentials = Credentials.create("b83261efa42895c38c6c2364ca878f43e77f3cddbc922bf57d0d48070f79feb6");
+    public  Credentials credentials = Credentials.create("b83261efa42895c38c6c2364ca878f43e77f3cddbc922bf57d0d48070f79feb6");
     protected static Web3j web3j;
 
     @BeforeClass
