@@ -242,7 +242,7 @@ public class ChannelConnections {
                 	handler.setIsServer(true);
                 	handler.setThreadPool(selfThreadPool);
                 	
-                	SslContext sslCtx = SslContextBuilder.forServer((PrivateKey)ks.getKey("client", getClientCertPassWord().toCharArray()), (X509Certificate)ks.getCertificate("client"))
+                	SslContext sslCtx = SslContextBuilder.forServer((PrivateKey)ks.getKey("client", getClientCertPassWord().toCharArray()), (X509Certificate[])ks.getCertificateChain("client"))
                 			.trustManager(caResource.getFile())
                 			.build();
                 	
@@ -332,10 +332,7 @@ public class ChannelConnections {
 				handler.setIsServer(false);
 				handler.setThreadPool(selfThreadPool);
 
-				SslContext sslCtx = SslContextBuilder.forClient().trustManager(caResource.getFile())
-						.keyManager((PrivateKey) ks.getKey("client", getClientCertPassWord().toCharArray()),
-								(X509Certificate) ks.getCertificate("client"))
-						.build();
+				SslContext sslCtx = SslContextBuilder.forClient().trustManager(caResource.getFile()).build();
 
 				ch.pipeline().addLast(sslCtx.newHandler(ch.alloc()),
 						new LengthFieldBasedFrameDecoder(1024 * 1024 * 4, 0, 4, -4, 0),
