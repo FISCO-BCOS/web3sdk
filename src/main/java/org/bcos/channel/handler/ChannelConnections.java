@@ -315,15 +315,11 @@ public class ChannelConnections {
 		final ThreadPoolTaskExecutor selfThreadPool = threadPool;
 		
 		ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-		final Resource keystoreResource = resolver.getResource(getClientKeystorePath());
         final Resource caResource = resolver.getResource(getCaCertPath());
         
 		bootstrap.handler(new ChannelInitializer<SocketChannel>() {
             @Override
             public void initChannel(SocketChannel ch) throws Exception {
-            	KeyStore ks = KeyStore.getInstance("JKS");
-            	InputStream ksInputStream = keystoreResource.getInputStream();
-            	ks.load(ksInputStream, 	getKeystorePassWord().toCharArray());
 				/*
 				 * 每次连接使用新的handler 连接信息从socketChannel中获取
 				 */
