@@ -4,11 +4,17 @@ import org.fisco.bcos.channel.test.contract.Ok;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
-import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.fisco.bcos.web3j.protocol.core.JsonRpc2_0Web3j;
+import org.fisco.bcos.web3j.protocol.core.methods.response.*;
+import org.junit.Ignore;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.concurrent.TimeUnit;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class BasicTest extends TestBase {
     private static BigInteger gasPrice = new BigInteger("300000000");
@@ -16,16 +22,73 @@ public class BasicTest extends TestBase {
     private static BigInteger initialWeiValue = new BigInteger("0");
 
     @Test
+    public void  pbftViewTest() throws Exception {
+        System.out.println("!!!!!!!!" +web3j.ethPbftView().send().getEthPbftView());
+        assertNotNull(web3j.ethPbftView().send().getEthPbftView().intValue()>0);
+    }
+
+    @Ignore
+    @Test //todo
+    public void  consensusStatusTest() throws Exception {
+        assertNotNull(web3j.consensusStatus().send());
+    }
+
+    @Test
+    public void  syncTest() throws Exception {
+        assertNotNull(web3j.ethSyncing().send().isSyncing());
+    }
+
+    @Test
+    public void  versionTest() throws Exception {
+        assertNotNull(web3j.netVersion().send().getNetVersion());
+    }
+
+    @Test
+    public void  peerTest() throws Exception {
+        NetPeerCount peerCount = web3j.netPeerCount().send();
+        assertNotNull(web3j.netPeerCount().send().getResult());
+    }
+
+    @Test
+    public void  groupPeersTest() throws Exception {
+         EthPeerList ethPeerList = web3j.ethGroupPeers().send();
+         ethPeerList.getPeerList().stream().forEach(System.out::println);
+        assertNotNull(ethPeerList.getResult());
+    }
+
+    @Test
+    public void  groupPeerListTest() throws Exception {
+        NetPeerCount peerCount = web3j.netPeerCount().send();
+        assertNotNull(peerCount.getResult());
+    }
+
+    @Test
+    public void  groupListTest() throws Exception {
+        GroupList groupList = web3j.ethGroupList().send();
+        groupList.getGroupList().stream().forEach(System.out::println);
+        assertTrue((groupList.getGroupList().size()>0));
+    }
+
+    @Test
+    public void  pendingTransactionsTest() throws Exception {
+        assertTrue(web3j.ethPendingTransaction().send().getPendingTransactions().size()>=0);
+    }
+
+    @Test
+    public void getTransactionByBlockNumberAndIndexTest() throws IOException {
+       Transaction transaction =  web3j.ethGetTransactionByBlockNumberAndIndex(DefaultBlockParameter.valueOf(new BigInteger("1")),new BigInteger("0")).send().getTransaction().get();
+        assertTrue(transaction.getBlockNumber().intValue()==1);
+    }
+
+    @Test
     public void  basicTest() throws Exception {
         try {
-
             testDeployContract(web3j, credentials);
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception("Execute basic test failed");
         }
     }
-
 
     private void testDeployContract(Web3j web3j, Credentials credentials) throws Exception {
         Ok okDemo = Ok.deploy(web3j, credentials, gasPrice, gasLimit, initialWeiValue).send();
