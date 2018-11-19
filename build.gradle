@@ -1,4 +1,5 @@
 apply plugin: 'maven'
+apply plugin: 'idea'
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'signing'
@@ -12,9 +13,8 @@ targetCompatibility = 1.8
 // In this section you declare where to find the dependencies of your project
 repositories {
     maven {
-        url "http://maven.aliyun.com/nexus/content/groups/public/"		
+        url "http://oss.sonatype.org/content/groups/public/"
     }
-
     mavenCentral()
 }
 

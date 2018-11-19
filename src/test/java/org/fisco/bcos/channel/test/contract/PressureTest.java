@@ -13,7 +13,6 @@ public class PressureTest extends TestBase {
 	@Test
 	public  void pressureTest() throws InterruptedException, ExecutionException {
             int threadNum = 500;
-
 				System.out.println("####create credential succ, begin deploy contract");
 				java.math.BigInteger gasPrice = new BigInteger("300000000");
 				java.math.BigInteger gasLimit = new BigInteger("300000000");
