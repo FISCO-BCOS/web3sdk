@@ -312,8 +312,6 @@ public class ChannelConnections {
 				handler.setThreadPool(selfThreadPool);
 
 				SslContext sslCtx = SslContextBuilder.forClient().trustManager(caResource.getFile())
-						.keyManager((PrivateKey) ks.getKey("client", getClientCertPassWord().toCharArray()),
-								(X509Certificate) ks.getCertificate("client"))
 						.build();
 
 				ch.pipeline().addLast(sslCtx.newHandler(ch.alloc()),
