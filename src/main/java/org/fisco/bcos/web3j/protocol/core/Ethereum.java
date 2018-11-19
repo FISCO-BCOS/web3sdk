@@ -1,6 +1,7 @@
 package org.fisco.bcos.web3j.protocol.core;
 
 import java.math.BigInteger;
+import java.util.List;
 
 import org.fisco.bcos.web3j.protocol.core.methods.request.ShhFilter;
 import org.fisco.bcos.web3j.protocol.core.methods.response.DbGetHex;
@@ -89,6 +90,15 @@ public interface Ethereum {
     
     //增加eth_pbftView接口
     Request<?, EthPbftView> ethPbftView();
+
+    //增加consensusStatus接口
+    Request<?,NetVersion> consensusStatus();
+
+    //增加groupList接口
+    Request<?, GroupList> ethGroupList();
+
+    //增加peerList接口
+    Request<?, EthPeerList> ethGroupPeers();
 
     Request<?, EthGetBalance> ethGetBalance(
             String address, DefaultBlockParameter defaultBlockParameter);
@@ -184,6 +194,8 @@ public interface Ethereum {
     Request<?, EthFilter> ethNewBlockFilter();
 
     Request<?, EthFilter> ethNewPendingTransactionFilter();
+
+    Request<?,EthPendingTransactions> ethPendingTransaction();
 
     Request<?, EthUninstallFilter> ethUninstallFilter(BigInteger filterId);
 
