@@ -79,6 +79,8 @@ artifacts {
 	archives javadocJar
 }
 
+archivesBaseName = 'web3sdk'
+group = 'org.fisco-bcos'
 
 
 //signing {
