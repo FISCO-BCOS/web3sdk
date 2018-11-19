@@ -306,7 +306,6 @@ public class JsonRpc2_0Web3j implements Web3j {
     }
 
 
-
     @Override
     public Request<?, EthGetBalance> ethGetBalance(
             String address, DefaultBlockParameter defaultBlockParameter) {
