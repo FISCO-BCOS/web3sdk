@@ -187,6 +187,15 @@ public class JsonRpc2_0Web3j implements Web3j {
     }
 
     @Override
+    public Request<?, GroupList> ethGroupList() {
+        return new Request<>(
+                "groupList",
+               Arrays.asList(groupId),
+                web3jService,
+                GroupList.class);
+    }
+
+    @Override
     public Request<?, NetListening> netListening() {
         return new Request<>(
                 "net_listening",
@@ -198,7 +207,7 @@ public class JsonRpc2_0Web3j implements Web3j {
     @Override
     public Request<?, NetPeerCount> netPeerCount() {
         return new Request<>(
-                "net_peerCount",
+                "peers",
                Arrays.asList(groupId),
                 web3jService,
                 NetPeerCount.class);
@@ -225,7 +234,7 @@ public class JsonRpc2_0Web3j implements Web3j {
     @Override
     public Request<?, EthSyncing> ethSyncing() {
         return new Request<>(
-                "syncing",
+                "syncStatus",
                Arrays.asList(groupId),
                 web3jService,
                 EthSyncing.class);
@@ -285,6 +294,18 @@ public class JsonRpc2_0Web3j implements Web3j {
                 web3jService,
                 EthPbftView.class);
     }
+
+    //增加consensusStatus接口
+    @Override
+    public Request<?, NetVersion> consensusStatus() {
+        return new Request<>(
+                "consensusStatus",
+               Arrays.asList(groupId),
+                web3jService,
+                NetVersion.class);
+    }
+
+
 
     @Override
     public Request<?, EthGetBalance> ethGetBalance(
@@ -571,6 +592,24 @@ public class JsonRpc2_0Web3j implements Web3j {
                Arrays.asList(groupId),
                 web3jService,
                 EthFilter.class);
+    }
+
+    @Override
+    public Request<?, EthPendingTransactions> ethPendingTransaction() {
+        return new Request<>(
+                "pendingTransactions",
+               Arrays.asList(groupId),
+                web3jService,
+                EthPendingTransactions.class);
+    }
+
+    @Override
+    public Request<?, EthPeerList> ethGroupPeers() {
+        return new Request<>(
+                "groupPeers",
+               Arrays.asList(groupId),
+                web3jService,
+                EthPeerList.class);
     }
 
     @Override
