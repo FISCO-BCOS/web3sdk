@@ -2,8 +2,7 @@
 * Updates
 
 1. 同步以太坊的最新web3j代码，更新至Web3j 4.0.0。
-2. 增加websocket功能。
-3. 增加junit测试框架 ，使用 gradle test --tests BasicTest 跑测试案例。
+2. 增加junit测试框架 ，使用 gradle test --tests testname 跑测试案例,例如org.fisco.bcos.channel.test.BasicTest。
 
 ### V1.2.4 (2018-10-17)
 * Updates
