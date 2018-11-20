@@ -70,7 +70,7 @@ task sourcesJar(type: Jar) {
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
 	classifier = 'javadoc'
-	from 'build/docs/javadoc'
+	from javadoc.destinationDir
 }
 
 artifacts {
