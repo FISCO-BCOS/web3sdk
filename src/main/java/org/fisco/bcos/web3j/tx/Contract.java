@@ -216,7 +216,7 @@ public abstract class Contract extends ManagedTransaction {
                 defaultBlockParameter)
                 .send();
 
-        String value = ethCall.getValue();
+        String value = ethCall.getValue().getOutput();
         return FunctionReturnDecoder.decode(value, function.getOutputParameters());
     }
 
