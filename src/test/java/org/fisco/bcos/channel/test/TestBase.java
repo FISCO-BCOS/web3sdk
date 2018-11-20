@@ -30,7 +30,7 @@ public class TestBase {
         ChannelEthereumService channelEthereumService = new ChannelEthereumService();
         channelEthereumService.setChannelService(service);
 
-        web3j = Web3j.build(channelEthereumService);
+        web3j = Web3j.build(channelEthereumService,service.getGroupId());
         // EthBlockNumber ethBlockNumber = web3.ethBlockNumber().send();
     }
 
