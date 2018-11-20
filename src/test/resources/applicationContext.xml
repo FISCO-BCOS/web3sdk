@@ -41,7 +41,7 @@
 	
 	<!-- 区块链节点信息配置 -->
 	<bean id="channelService" class="org.fisco.bcos.channel.client.Service">
-		<property name="groupId" value="0" />
+		<property name="groupId" value="1" />
 		<property name="orgID" value="fisco" /> <!-- 配置本机构名称 -->
 		<property name="connectSeconds" value="10" />
 		<property name="connectSleepPerMillis" value="10" />
