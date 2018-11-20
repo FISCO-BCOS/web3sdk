@@ -40,7 +40,7 @@ public class BasicTest extends TestBase {
 
     @Test
     public void  versionTest() throws Exception {
-        assertNotNull(web3j.netVersion().send().getNetVersion());
+        assertNotNull(web3j.web3ClientVersion().send().getWeb3ClientVersion());
     }
 
     @Test

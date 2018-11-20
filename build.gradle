@@ -81,13 +81,14 @@ artifacts {
 
 archivesBaseName = 'web3sdk'
 group = 'org.fisco-bcos'
+version = '2.0.0'
 
 
-//signing {
-//	required { gradle.taskGraph.hasTask("uploadArchives") }
-//	sign configurations.archives
-//}
-//
+signing {
+	required { gradle.taskGraph.hasTask("uploadArchives") }
+	sign configurations.archives
+}
+
 //uploadArchives {
 //	repositories {
 //		mavenDeployer {
