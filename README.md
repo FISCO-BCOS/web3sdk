@@ -2,28 +2,45 @@
 
 ## 技术文档
 
-访问[web3sdk的文档](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/web3sdk/index.html)，内容包括：
+1 #配置
+# SDK编译
 
-- SDK环境要求
-- SDK编译
-- SDK配置
-- SDK应用开发指南
-- SDK功能列表
-- FAQ
+```eval_rst
+.. admonition:: 安装依赖软件
 
+   部署web3sdk之前需要安装git, dos2unix依赖软件:
 
-## 联系我们
+   -  **git**：用于拉取最新代码
+   -  **dos2unix**: 用于处理windows文件上传到linux服务器时，文件格式无法被linux正确解析的问题；
 
-邮箱：service@fisco.com.cn
+   **centos**:
+    .. code-block:: bash
 
-微信群：添加群管理员微信号fiscobcosfan，拉您入FISCO BCOS官方技术交流群。
+       $ sudo yum -y install git dos2unix
 
-群管理员微信二维码：
+   **ubuntu**:
+    .. code-block:: bash
 
-![](./doc/FISCO-BCOS.jpeg)
+       $ sudo apt install git tofrodos
+       $ ln -s /usr/bin/todos /usr/bin/unxi2dos && ln -s /usr/bin/fromdos /usr/
 
-诚邀广大安全专家共同关注区块链安全。如果有安全风险，欢迎各位踊跃提交漏洞至[微众SRC](https://security.webank.com)。
+.. admonition:: 编译源码
 
-## 其它
+   执行如下命令拉取并编译源码：
 
-[老版本web3sdk使用指南](./doc/OLD_README.md)
+    .. code-block:: bash
+
+       #=== 创建并进入web3sdk源码放置目录（假设为~/mydata/）=====
+       $ mkdir -p ~/mydata
+       $ cd ~/mydata
+
+       #==== 拉取git代码 ====
+       $ git clone https://github.com/FISCO-BCOS/web3sdk
+
+       #===编译we3bsdk源码，生成dist目录 ===
+       $ cd web3sdk
+       $ dos2unix *.sh
+
+       拷贝证书文件ca.crt和client.keystore到web3sdk/src/test/resources目录下；
+       找到 web3sdk/src/test/resources/applicationContext.xml文件的channelService, 增加<property name="groupId" value="1" /> groupId配置。
+

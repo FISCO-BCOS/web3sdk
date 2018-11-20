@@ -4,7 +4,6 @@ import org.fisco.bcos.channel.test.contract.Ok;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
-import org.fisco.bcos.web3j.protocol.core.JsonRpc2_0Web3j;
 import org.fisco.bcos.web3j.protocol.core.methods.response.*;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -23,8 +22,9 @@ public class BasicTest extends TestBase {
 
     @Test
     public void  pbftViewTest() throws Exception {
-        System.out.println("!!!!!!!!" +web3j.ethPbftView().send().getEthPbftView());
-        assertNotNull(web3j.ethPbftView().send().getEthPbftView().intValue()>0);
+       int i =  web3j.ethPbftView().send().getEthPbftView().intValue();
+        System.out.println(i);
+       assertNotNull(i>0);
     }
 
     @Ignore
