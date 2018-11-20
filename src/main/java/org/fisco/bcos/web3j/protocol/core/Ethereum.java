@@ -100,6 +100,9 @@ public interface Ethereum {
     //增加peerList接口
     Request<?, EthPeerList> ethGroupPeers();
 
+    //增加peers接口
+   // Request<?, EthPeers> ethPeersInfo();
+
     Request<?, EthGetBalance> ethGetBalance(
             String address, DefaultBlockParameter defaultBlockParameter);
 

@@ -43,8 +43,10 @@ public class BasicTest extends TestBase {
         assertNotNull(web3j.web3ClientVersion().send().getWeb3ClientVersion());
     }
 
+    //getPeers
+    @Ignore
     @Test
-    public void  peerTest() throws Exception {
+    public void  peersTest() throws Exception {
         NetPeerCount peerCount = web3j.netPeerCount().send();
         assertNotNull(web3j.netPeerCount().send().getResult());
     }
@@ -56,11 +58,6 @@ public class BasicTest extends TestBase {
         assertNotNull(ethPeerList.getResult());
     }
 
-    @Test
-    public void  groupPeerListTest() throws Exception {
-        NetPeerCount peerCount = web3j.netPeerCount().send();
-        assertNotNull(peerCount.getResult());
-    }
 
     @Test
     public void  groupListTest() throws Exception {
