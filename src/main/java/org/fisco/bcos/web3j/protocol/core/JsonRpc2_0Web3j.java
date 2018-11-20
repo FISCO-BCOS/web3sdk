@@ -162,7 +162,7 @@ public class JsonRpc2_0Web3j implements Web3j {
     @Override
     public Request<?, Web3ClientVersion> web3ClientVersion() {
         return new Request<>(
-                "web3_clientVersion",
+                "getClientVersion",
                 Arrays.asList(groupId),
                 web3jService,
                 Web3ClientVersion.class);
@@ -189,7 +189,7 @@ public class JsonRpc2_0Web3j implements Web3j {
     @Override
     public Request<?, GroupList> ethGroupList() {
         return new Request<>(
-                "groupList",
+                "getGroupList",
                Arrays.asList(groupId),
                 web3jService,
                 GroupList.class);
@@ -207,7 +207,7 @@ public class JsonRpc2_0Web3j implements Web3j {
     @Override
     public Request<?, NetPeerCount> netPeerCount() {
         return new Request<>(
-                "peers",
+                "getPeers",
                Arrays.asList(groupId),
                 web3jService,
                 NetPeerCount.class);
@@ -234,7 +234,7 @@ public class JsonRpc2_0Web3j implements Web3j {
     @Override
     public Request<?, EthSyncing> ethSyncing() {
         return new Request<>(
-                "syncStatus",
+                "getSyncStatus",
                Arrays.asList(groupId),
                 web3jService,
                 EthSyncing.class);
@@ -279,7 +279,7 @@ public class JsonRpc2_0Web3j implements Web3j {
     @Override
     public Request<?, EthBlockNumber> ethBlockNumber() {
         return new Request<>(
-                "blockNumber",
+                "getBlockNumber",
                Arrays.asList(groupId),
                 web3jService,
                 EthBlockNumber.class);
@@ -289,7 +289,7 @@ public class JsonRpc2_0Web3j implements Web3j {
     @Override
     public Request<?, EthPbftView> ethPbftView() {
         return new Request<>(
-                "pbftView",
+                "getPbftView",
                Arrays.asList(groupId),
                 web3jService,
                 EthPbftView.class);
@@ -299,7 +299,7 @@ public class JsonRpc2_0Web3j implements Web3j {
     @Override
     public Request<?, NetVersion> consensusStatus() {
         return new Request<>(
-                "consensusStatus",
+                "getConsensusStatus",
                Arrays.asList(groupId),
                 web3jService,
                 NetVersion.class);
@@ -596,7 +596,7 @@ public class JsonRpc2_0Web3j implements Web3j {
     @Override
     public Request<?, EthPendingTransactions> ethPendingTransaction() {
         return new Request<>(
-                "pendingTransactions",
+                "getPendingTransactions",
                Arrays.asList(groupId),
                 web3jService,
                 EthPendingTransactions.class);
@@ -605,7 +605,7 @@ public class JsonRpc2_0Web3j implements Web3j {
     @Override
     public Request<?, EthPeerList> ethGroupPeers() {
         return new Request<>(
-                "groupPeers",
+                "getGroupPeers",
                Arrays.asList(groupId),
                 web3jService,
                 EthPeerList.class);
