@@ -31,6 +31,7 @@ public class Service {
 	private ConcurrentHashMap<String, ChannelConnections> allChannelConnections;
 	private ChannelPushCallback pushCallback;
 	private Map<String, Object> seq2Callback = new ConcurrentHashMap<String, Object>();
+	private int groupId;
 	/**
 	 * add transaction seq callback
 	 */
@@ -786,4 +787,11 @@ public class Service {
 		this.threadPool = threadPool;
 	}
 
+	public int getGroupId() {
+		return groupId;
+	}
+
+	public void setGroupId(int groupId) {
+		this.groupId = groupId;
+	}
 }
