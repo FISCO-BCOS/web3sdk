@@ -9,6 +9,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Flowable;
+import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
 import org.fisco.bcos.web3j.protocol.core.methods.request.ProofMerkle;
 import org.fisco.bcos.web3j.protocol.core.methods.response.*;
 import org.fisco.bcos.web3j.protocol.websocket.events.LogNotification;
@@ -205,12 +206,12 @@ public class JsonRpc2_0Web3j implements Web3j {
     }
 
     @Override
-    public Request<?, NetPeerCount> netPeerCount() {
+    public Request<?, EthPeers> ethPeersInfo() {
         return new Request<>(
                 "getPeers",
                Arrays.asList(groupId),
                 web3jService,
-                NetPeerCount.class);
+                EthPeers.class);
     }
 
     @Override
@@ -297,12 +298,12 @@ public class JsonRpc2_0Web3j implements Web3j {
 
     //增加consensusStatus接口
     @Override
-    public Request<?, NetVersion> consensusStatus() {
+    public Request<?, EthConsensusStatus> consensusStatus() {
         return new Request<>(
                 "getConsensusStatus",
                Arrays.asList(groupId),
-                web3jService,
-                NetVersion.class);
+                (ChannelEthereumService)web3jService,
+                EthConsensusStatus.class);
     }
 
 
