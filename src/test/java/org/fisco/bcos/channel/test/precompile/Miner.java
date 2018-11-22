@@ -25,9 +25,9 @@ import org.fisco.bcos.web3j.tx.gas.ContractGasProvider;
 public class Miner extends Contract {
     private static final String BINARY = "";
 
-    public static final String FUNC_REMOVE = "remove(string)";
+    public static final String FUNC_REMOVE = "remove";
 
-    public static final String FUNC_ADD = "add(string)";
+    public static final String FUNC_ADD = "add";
 
     @Deprecated
     protected Miner(String contractAddress, Web3j web3j, Credentials credentials, BigInteger gasPrice, BigInteger gasLimit) {
