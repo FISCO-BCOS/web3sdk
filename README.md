@@ -22,3 +22,9 @@
       压力测试  gradle test --tests  org.fisco.bcos.channel.test.contract.PressureTest
       基本测试  gradle test --tests org.fisco.bcos.channel.test.BasicTest
 
+      ## 通过SDK部署合约和发交易
+  1 把自己编写的sol文件文件放到tools/contracts下。。
+  2 确保本地安装了fisco-solc；
+  3 切换到tools/bin 执行 ./compile fisco-solc out;
+  4 生成的bin文件即在tools/contracts/out目录下。
+  5 abi转成java类，可以参考项目中SolidityFunctionWrapperGeneratorTest 测试类可以帮你生成把abi文件转换成相应Java类。
