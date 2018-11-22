@@ -71,7 +71,18 @@ public class EthBlock extends Response<EthBlock.Block> {
         public Block() {
         }
 
-        public Block(String number, String hash, String parentHash, String nonce,
+        @Override
+		public String toString() {
+			return "Block [number=" + number + ", hash=" + hash + ", parentHash=" + parentHash + ", nonce=" + nonce
+					+ ", sha3Uncles=" + sha3Uncles + ", logsBloom=" + logsBloom + ", transactionsRoot="
+					+ transactionsRoot + ", stateRoot=" + stateRoot + ", receiptsRoot=" + receiptsRoot + ", author="
+					+ author + ", miner=" + miner + ", mixHash=" + mixHash + ", difficulty=" + difficulty
+					+ ", totalDifficulty=" + totalDifficulty + ", extraData=" + extraData + ", size=" + size
+					+ ", gasLimit=" + gasLimit + ", gasUsed=" + gasUsed + ", timestamp=" + timestamp + ", transactions="
+					+ transactions + ", uncles=" + uncles + ", sealFields=" + sealFields + "]";
+		}
+
+		public Block(String number, String hash, String parentHash, String nonce,
                      String sha3Uncles, String logsBloom, String transactionsRoot,
                      String stateRoot, String receiptsRoot, String author, String miner, 
                      String mixHash, String difficulty, String totalDifficulty, List<String> extraData,
