@@ -119,21 +119,21 @@ public class JsonRpc2_0Web3j implements Web3j {
         this.web3jRx = new JsonRpc2_0Rx(this, scheduledExecutorService);
         this.blockTime = pollingInterval;
         this.scheduledExecutorService = scheduledExecutorService;
-        ExecutorService cachedThreadPool = Executors.newFixedThreadPool(Web3AsyncThreadPoolSize.web3AsyncPoolSize);
-
-        cachedThreadPool.execute(new Runnable() {
-            public void run() {
-                while (true) {
-                    try {
-                    	Thread.sleep(10000);
-                        EthBlockNumber ethBlockNumber = ethBlockNumber().sendAsync().get(10000, TimeUnit.MILLISECONDS);
-                        setBlockNumber(ethBlockNumber.getBlockNumber());
-                    } catch (Exception e) {
-                        logger.error("Exception: " + e);
-                    }
-                }
-            }
-        });
+//        ExecutorService cachedThreadPool = Executors.newFixedThreadPool(Web3AsyncThreadPoolSize.web3AsyncPoolSize);
+//
+//        cachedThreadPool.execute(new Runnable() {
+//            public void run() {
+//                while (true) {
+//                    try {
+//                    	Thread.sleep(10000);
+//                        EthBlockNumber ethBlockNumber = ethBlockNumber().sendAsync().get(10000, TimeUnit.MILLISECONDS);
+//                        setBlockNumber(ethBlockNumber.getBlockNumber());
+//                    } catch (Exception e) {
+//                        logger.error("Exception: " + e);
+//                    }
+//                }
+//            }
+//        });
     }
 
     @Override
