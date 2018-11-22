@@ -14,6 +14,7 @@ public class UpdatePBFTNode
     private static BigInteger gasPrice = new BigInteger("300000000");
     private static BigInteger gasLimit = new BigInteger("300000000");
     private static BigInteger initialWeiValue = new BigInteger("0");
+    private static String MinerPrecompileAddress = "0x000000000000000000000000000000000001003";
 
     public void call(String[] args, Web3j web3j, Credentials credentials, int groupId) throws Exception
     {
@@ -50,12 +51,12 @@ public class UpdatePBFTNode
 
     private void RemovePBFTNode(String nodeId, Web3j web3j, Credentials credentials) throws Exception
     {
-        RemoveNode("0x000000000000000000000000000000000001003", web3j, credentials, nodeId);
+        RemoveNode(MinerPrecompileAddress, web3j, credentials, nodeId);
     }
 
     private void AddPBFTNode(String nodeId, Web3j web3j, Credentials credentials) throws Exception
     {
-        AddNode("0x000000000000000000000000000000000001003", web3j, credentials, nodeId);
+        AddNode(MinerPrecompileAddress, web3j, credentials, nodeId);
     }
 
     /**
