@@ -22,3 +22,6 @@
       压力测试  gradle test --tests  org.fisco.bcos.channel.test.contract.PressureTest
       基本测试  gradle test --tests org.fisco.bcos.channel.test.BasicTest
 
+      ## 通过SDK部署合约和发交易
+  1 编写自己的 sol文件。 并转换成abi。
+  2 abi文件
