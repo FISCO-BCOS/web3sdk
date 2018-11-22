@@ -3,6 +3,7 @@ package org.fisco.bcos.web3j.console;
 import java.math.BigInteger;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
@@ -11,7 +12,6 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import com.alibaba.fastjson.JSONObject;
 import org.fisco.bcos.web3j.protocol.Web3j;
 
 public class Web3RpcApi {
@@ -36,6 +36,8 @@ public class Web3RpcApi {
         ChannelEthereumService channelEthereumService = new ChannelEthereumService();
         channelEthereumService.setChannelService(service);
         Web3j web3j = Web3j.build(channelEthereumService);
+		ObjectMapper mapper = new ObjectMapper();
+
         
         try {
         	switch (args[0]) {
@@ -130,8 +132,7 @@ public class Web3RpcApi {
         		}
 				transactionIndex = new BigInteger(args[2]);
 				transaction=web3j.ethGetTransactionByBlockHashAndIndex(args[1], transactionIndex).send().getResult();
-				
-				String transactionJson1=JSONObject.toJSONString(transaction);
+				String transactionJson1 = mapper.writeValueAsString(transaction);
 				System.out.println(transactionJson1);
 				break;
 				
@@ -143,14 +144,14 @@ public class Web3RpcApi {
 				bigBlockHeight = new BigInteger(args[1]);
 				transactionIndex = new BigInteger(args[2]);
 				transaction =web3j.ethGetTransactionByBlockNumberAndIndex(DefaultBlockParameter.valueOf(bigBlockHeight), transactionIndex).send().getResult();
-				String transactionJson=JSONObject.toJSONString(transaction);
+				String transactionJson = mapper.writeValueAsString(transaction);
 				System.out.println(transactionJson);
 				break;
 				
 			case "eth_getTransactionReceipt":	
 				
 				TransactionReceipt receipt = web3j.ethGetTransactionReceipt(args[1]).send().getResult();
-				String receiptJson=JSONObject.toJSONString(receipt);
+				String receiptJson = mapper.writeValueAsString(receipt);
 				System.out.println(receiptJson);
 				break;
 				
