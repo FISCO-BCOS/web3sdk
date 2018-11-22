@@ -70,7 +70,7 @@ public interface Ethereum {
 
     Request<?, NetListening> netListening();
 
-    Request<?, NetPeerCount> netPeerCount();
+    //Request<?, NetPeerCount> netPeerCount();
 
     Request<?, EthProtocolVersion> ethProtocolVersion();
 
@@ -92,7 +92,7 @@ public interface Ethereum {
     Request<?, EthPbftView> ethPbftView();
 
     //增加consensusStatus接口
-    Request<?,NetVersion> consensusStatus();
+    Request<?,EthConsensusStatus> consensusStatus();
 
     //增加groupList接口
     Request<?, GroupList> ethGroupList();
@@ -101,7 +101,7 @@ public interface Ethereum {
     Request<?, EthPeerList> ethGroupPeers();
 
     //增加peers接口
-   // Request<?, EthPeers> ethPeersInfo();
+    Request<?, EthPeers> ethPeersInfo();
 
     Request<?, EthGetBalance> ethGetBalance(
             String address, DefaultBlockParameter defaultBlockParameter);
