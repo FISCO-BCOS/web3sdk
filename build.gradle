@@ -74,6 +74,30 @@ group = 'org.fisco-bcos'
 version = '2.0.0'
 
 
+jar {
+	destinationDir file('dist/apps')
+	archiveName project.name + '.jar'
+	exclude '**/*.xml'
+	exclude '**/*.properties'
+
+	doLast {
+		copy {
+			from file('tools/')
+			into 'dist/'
+		}
+		copy {
+			from configurations.runtime
+			into 'dist/lib'
+		}
+		copy {
+			from file('src/test/resources/')
+			into 'dist/conf'
+		}
+	}
+}
+
+
+
 //signing {
 //	required { gradle.taskGraph.hasTask("uploadArchives") }
 //	sign configurations.archives
