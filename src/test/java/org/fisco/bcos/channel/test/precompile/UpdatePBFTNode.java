@@ -5,8 +5,6 @@ import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
 import org.fisco.bcos.web3j.protocol.core.methods.response.*;
-///import org.springframework.context.support.ClassPathXmlApplicationContext;
-///import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
 
 import java.math.BigInteger;
 import java.util.concurrent.TimeUnit;
@@ -19,16 +17,13 @@ public class UpdatePBFTNode
 
     public void call(String[] args, Web3j web3j, Credentials credentials, int groupId) throws Exception
     {
-        System.out.println("=== enter call ");
         /// get functions
         if(args.length < 1)
             Usage(args);
         String operation = args[1];
-        System.out.println("=== args[1]:" + args[1]);
         if(args.length < 3)
             Usage(args);
         String nodeId = args[2];
-        System.out.println("=== args[2]:" + args[2]);
         if(operation.equals("add"))
         {
             System.out.println("==== add " + nodeId + " to PBFT leaders of " + groupId);
@@ -48,19 +43,19 @@ public class UpdatePBFTNode
     private void Usage(String[] args)
     {
         System.out.println("Usage:");
-        System.out.println(args[0] + "pbft add ${nodeId} : add given nodeId to PBFT leaders by calling precompile");
-        System.out.println(args[0] + "pbft remove ${nodeId} : remove given nodeId from PBFT leaders by calling precompile");
+        System.out.println("java -cp 'conf/:apps/*:lib/*' org.fisco.bcos.channel.test.PrecompileManager pbft add ${nodeId} : add given nodeId to PBFT leaders by calling precompile");
+        System.out.println("java -cp 'conf/:apps/*:lib/*' org.fisco.bcos.channel.test.PrecompileManager pbft remove ${nodeId} : remove given nodeId from PBFT leaders by calling precompile");
         System.exit(0);
     }
 
     private void RemovePBFTNode(String nodeId, Web3j web3j, Credentials credentials) throws Exception
     {
-        RemoveNode("0x1003", web3j, credentials, nodeId);
+        RemoveNode("0x000000000000000000000000000000000001003", web3j, credentials, nodeId);
     }
 
     private void AddPBFTNode(String nodeId, Web3j web3j, Credentials credentials) throws Exception
     {
-        AddNode("0x1003", web3j, credentials, nodeId);
+        AddNode("0x000000000000000000000000000000000001003", web3j, credentials, nodeId);
     }
 
     /**
