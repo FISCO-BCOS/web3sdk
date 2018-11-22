@@ -72,6 +72,41 @@ public class ChannelEthereumService extends org.fisco.bcos.web3j.protocol.Servic
         }
     }
 
+    public String sendSpecial(
+            Request request) throws IOException {
+        byte[] payload = objectMapper.writeValueAsBytes(request);
+
+        EthereumRequest ethereumRequest = new EthereumRequest();
+        ethereumRequest.setKeyID(channelService.getOrgID());
+        ethereumRequest.setBankNO("");
+        ethereumRequest.setContent(new String(payload));
+        ethereumRequest.setMessageID(channelService.newSeq());
+
+        if(timeout != 0) {
+            ethereumRequest.setTimeout(timeout);
+        }
+
+        EthereumResponse response;
+        if (!request.isNeedTransCallback()) {
+            response = channelService.sendEthereumMessage(ethereumRequest);
+        } else {
+            response = channelService.sendEthereumMessage(ethereumRequest, request.getTransactionSucCallback());
+        }
+        logger.debug("!!!!!Ethereum Request:{}", request.isNeedTransCallback());
+
+        logger.debug("Ethereum Request:{} {}", ethereumRequest.getMessageID(), objectMapper.writeValueAsString(request));
+        logger.debug("Ethereum Response:{} {} {}", ethereumRequest.getMessageID(), response.getErrorCode(), response.getContent());
+        if(response.getErrorCode() == 0)
+        {
+            return response.getContent().split("result")[1].substring(2);
+        }
+
+        else {
+            throw new IOException(response.getErrorMessage());
+        }
+    }
+
+
 	public Service getChannelService() {
 		return channelService;
 	}
