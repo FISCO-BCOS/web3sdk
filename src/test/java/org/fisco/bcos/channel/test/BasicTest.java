@@ -27,10 +27,10 @@ public class BasicTest extends TestBase {
        assertNotNull(i>0);
     }
 
-    @Ignore
-    @Test //todo
+    @Test
     public void  consensusStatusTest() throws Exception {
-        assertNotNull(web3j.consensusStatus().send());
+        System.out.println(web3j.consensusStatus().sendForReturnString());
+        assertNotNull(web3j.consensusStatus().sendForReturnString());
     }
 
     @Test
@@ -44,11 +44,11 @@ public class BasicTest extends TestBase {
     }
 
     //getPeers
-    @Ignore
     @Test
     public void  peersTest() throws Exception {
-        NetPeerCount peerCount = web3j.netPeerCount().send();
-        assertNotNull(web3j.netPeerCount().send().getResult());
+        String ethPeers = web3j.ethPeersInfo().sendForReturnString();
+        System.out.println(ethPeers);
+        assertNotNull(ethPeers);
     }
 
     @Test
