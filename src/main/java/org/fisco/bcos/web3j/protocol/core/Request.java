@@ -10,6 +10,7 @@ import org.fisco.bcos.channel.client.TransactionSucCallback;
 
 import org.fisco.bcos.web3j.protocol.Web3jService;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
 
 public class Request<S, T extends Response> {
     private static AtomicLong nextId = new AtomicLong(0);
@@ -92,6 +93,11 @@ public class Request<S, T extends Response> {
 
     public T send() throws IOException {
         return web3jService.send(this, responseType);
+    }
+
+    public String sendForReturnString() throws IOException {
+        ChannelEthereumService channelEthereumService =  (ChannelEthereumService)web3jService;
+        return channelEthereumService.sendSpecial(this);
     }
 
     public CompletableFuture<T> sendAsync() {
