@@ -1,6 +1,6 @@
-package org.fisco.bcos.channel.test;
+package org.fisco.bcos.channel.test.precompile;
 
-import org.fisco.bcos.channel.test.UpdatePBFTNode;
+import org.fisco.bcos.channel.test.precompile.UpdatePBFTNode;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.web3j.protocol.Web3j;
