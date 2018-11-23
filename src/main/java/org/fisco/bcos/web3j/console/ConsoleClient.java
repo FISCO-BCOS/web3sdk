@@ -13,6 +13,7 @@ import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
 import org.fisco.bcos.web3j.protocol.core.methods.request.Transaction;
 import org.fisco.bcos.web3j.protocol.core.methods.response.EthBlock;
 import org.fisco.bcos.web3j.protocol.core.methods.response.EthBlock.Block;
+import org.fisco.bcos.web3j.protocol.core.methods.response.EthPeers.Peer;
 import org.fisco.bcos.web3j.protocol.core.methods.response.EthSyncing;
 import org.fisco.bcos.web3j.protocol.core.methods.response.EthSyncing.Result;
 import org.springframework.context.ApplicationContext;
@@ -124,7 +125,7 @@ public class ConsoleClient {
     }
 
     private static void getBlockNumber(String[] params) throws IOException {
-        String blockNumber = web3j.ethBlockNumber().send().getResult();
+    	BigInteger blockNumber = web3j.ethBlockNumber().send().getBlockNumber();
         System.out.println(blockNumber);
             
         System.out.println();
@@ -132,22 +133,23 @@ public class ConsoleClient {
     
 
     private static void getPbftView(String[] params) throws IOException {
-    	String pbftView = web3j.ethPbftView().send().getResult();
+    	BigInteger pbftView = web3j.ethPbftView().send().getEthPbftView();
     	System.out.println(pbftView);
     	
     	System.out.println();
     }
     
     private static void getConsensusStatus(String[] params) throws IOException {
-        String consensusStatus = web3j.consensusStatus().send().getNetVersion();
+        String consensusStatus = web3j.consensusStatus().sendForReturnString();
         System.out.println(consensusStatus);
             
         System.out.println();
     }
     
     private static void getSyncStatus(String[] params) throws IOException {
-    	Result result = web3j.ethSyncing().send().getResult();
-    	String syncStatus = mapper.writeValueAsString(result);
+//    	Result result = web3j.ethSyncing().send().getResult();
+    	String syncStatus = web3j.ethSyncing().sendForReturnString();
+//    	EthSyncing readValue = mapper.readValue(syncStatus,EthSyncing.class);
     	System.out.println(syncStatus);
     	
     	System.out.println();
@@ -161,7 +163,7 @@ public class ConsoleClient {
     }
     
     private static void getPeers(String[] params) throws IOException {
-    	String peers = web3j.netPeerCount().send().getResult();
+    	List<Peer> peers = web3j.ethPeersInfo().send().getResult();
     	System.out.println(peers);
     	
     	System.out.println();
@@ -187,8 +189,8 @@ public class ConsoleClient {
     		System.out.println("Please provide block hash and transaction flag.");
     		return;
     	}
-    	Block block = web3j.ethGetBlockByHash(params[1], false).send().getResult();
-    	System.out.println(block);
+    	Block block = web3j.ethGetBlockByHash(params[1], false).send().getBlock();
+    	System.out.println(mapper.writeValueAsString(block));
     	
     	System.out.println();
     }
@@ -208,8 +210,8 @@ public class ConsoleClient {
     	if(params.length == 3 && "true".equals(params[2]))
     		flag = true;
     	BigInteger blockNumber = new BigInteger(params[1]);
-    	Block block = web3j.ethGetBlockByNumber(DefaultBlockParameter.valueOf(blockNumber), flag).send().getResult();
-    	System.out.println(block);
+    	Block block = web3j.ethGetBlockByNumber(DefaultBlockParameter.valueOf(blockNumber), flag).send().getBlock();
+    	System.out.println(mapper.writeValueAsString(block));
     	
     	System.out.println();
     }
