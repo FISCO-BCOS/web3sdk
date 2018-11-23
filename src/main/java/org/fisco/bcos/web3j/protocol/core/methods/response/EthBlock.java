@@ -76,7 +76,7 @@ public class EthBlock extends Response<EthBlock.Block> {
 			return "Block [number=" + number + ", hash=" + hash + ", parentHash=" + parentHash + ", nonce=" + nonce
 					+ ", sha3Uncles=" + sha3Uncles + ", logsBloom=" + logsBloom + ", transactionsRoot="
 					+ transactionsRoot + ", stateRoot=" + stateRoot + ", receiptsRoot=" + receiptsRoot + ", author="
-					+ author + ", miner=" + miner + ", mixHash=" + mixHash + ", difficulty=" + difficulty
+					+ author + ", sealer=" + sealer + ", mixHash=" + mixHash + ", difficulty=" + difficulty
 					+ ", totalDifficulty=" + totalDifficulty + ", extraData=" + extraData + ", size=" + size
 					+ ", gasLimit=" + gasLimit + ", gasUsed=" + gasUsed + ", timestamp=" + timestamp + ", transactions="
 					+ transactions + ", uncles=" + uncles + ", sealFields=" + sealFields + "]";
