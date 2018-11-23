@@ -29,6 +29,7 @@ public class SolidityFunctionWrapperGeneratorTest {
                 "-p", packageName,
                 "-o", tempDirPath
         ).toArray(new String[0]));
+        System.out.println("generate successfully");
     }
 
     @Test
@@ -39,6 +40,7 @@ public class SolidityFunctionWrapperGeneratorTest {
                 "-p", packageName,
                 "-o", tempDirPath
         ).toArray(new String[0]));
+        System.out.println("generate successfully");
     }
 
     public SolidityFunctionWrapperGeneratorTest() throws IOException {
