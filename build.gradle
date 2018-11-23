@@ -1,6 +1,11 @@
 apply plugin: 'maven'
 apply plugin: 'java'
 apply plugin: 'eclipse'
+<<<<<<< HEAD
+=======
+apply plugin: 'signing'
+apply plugin:'application'
+>>>>>>> shuoyan/sdk-2.0
 
 //指定JDK版本,改成系统中版本
 sourceCompatibility = 1.8
@@ -57,9 +62,13 @@ dependencies {
 	         'info.picocli:picocli:3.6.0',
 			"io.reactivex.rxjava2:rxjava:2.2.2",
 			"org.java-websocket:Java-WebSocket:1.3.8",
-	      'junit:junit:4.12',
-	      'org.mockito:mockito-core:2.23.0'
+	        'junit:junit:4.12',
+	        'org.mockito:mockito-core:2.23.0'
 
+test {
+    testLogging {
+        showStandardStreams = true
+    }
 }
 
 sourceSets {
@@ -144,3 +153,4 @@ jar {
 //	}
 //}
 
+mainClassName  = System.getProperty("exec.mainClass")
