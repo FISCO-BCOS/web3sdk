@@ -55,7 +55,7 @@ public class EthBlock extends Response<EthBlock.Block> {
         private String stateRoot;
         private String receiptsRoot;  // geth has this wrong currently, see https://github.com/ethereum/go-ethereum/issues/3084
         private String author;
-        private String miner;
+        private String sealer;
         private String mixHash;
         private String difficulty;
         private String totalDifficulty;
@@ -84,7 +84,7 @@ public class EthBlock extends Response<EthBlock.Block> {
 
 		public Block(String number, String hash, String parentHash, String nonce,
                      String sha3Uncles, String logsBloom, String transactionsRoot,
-                     String stateRoot, String receiptsRoot, String author, String miner, 
+                     String stateRoot, String receiptsRoot, String author, String sealer,
                      String mixHash, String difficulty, String totalDifficulty, List<String> extraData,
                      String size, String gasLimit, String gasUsed, String timestamp,
                      List<TransactionResult> transactions, List<String> uncles,
@@ -99,7 +99,7 @@ public class EthBlock extends Response<EthBlock.Block> {
             this.stateRoot = stateRoot;
             this.receiptsRoot = receiptsRoot;
             this.author = author;
-            this.miner = miner;
+            this.sealer = sealer;
             this.mixHash = mixHash;
             this.difficulty = difficulty;
             this.totalDifficulty = totalDifficulty;
@@ -202,12 +202,12 @@ public class EthBlock extends Response<EthBlock.Block> {
             this.author = author;
         }
 
-        public String getMiner() {
-            return miner;
+        public String getSealer() {
+            return sealer;
         }
 
-        public void setMiner(String miner) {
-            this.miner = miner;
+        public void setSealer(String sealer) {
+            this.sealer = sealer;
         }
 
         public String getMixHash() {
@@ -379,8 +379,8 @@ public class EthBlock extends Response<EthBlock.Block> {
                     ? !getAuthor().equals(block.getAuthor()) : block.getAuthor() != null) {
                 return false;
             }
-            if (getMiner() != null
-                    ? !getMiner().equals(block.getMiner()) : block.getMiner() != null) {
+            if (getSealer() != null
+                    ? !getSealer().equals(block.getSealer()) : block.getSealer() != null) {
                 return false;
             }
             if (getMixHash() != null
@@ -448,7 +448,7 @@ public class EthBlock extends Response<EthBlock.Block> {
             result = 31 * result + (getStateRoot() != null ? getStateRoot().hashCode() : 0);
             result = 31 * result + (getReceiptsRoot() != null ? getReceiptsRoot().hashCode() : 0);
             result = 31 * result + (getAuthor() != null ? getAuthor().hashCode() : 0);
-            result = 31 * result + (getMiner() != null ? getMiner().hashCode() : 0);
+            result = 31 * result + (getSealer() != null ? getSealer().hashCode() : 0);
             result = 31 * result + (getMixHash() != null ? getMixHash().hashCode() : 0);
             result = 31 * result + (getDifficultyRaw() != null ? getDifficultyRaw().hashCode() : 0);
             result = 31 * result
