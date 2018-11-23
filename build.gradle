@@ -18,7 +18,17 @@ repositories {
     mavenCentral()
 }
 
-
+sourceSets {
+ main {
+  java {
+         srcDir 'src/main/java'
+         srcDir 'src/test/java'
+  }
+        resources  {
+            srcDir 'src/test/resources'
+        }
+ }
+}
 
 def spring_version="4.3.18.RELEASE"
 List spring =[ 
@@ -47,7 +57,6 @@ dependencies {
 			'com.github.jnr:jnr-unixsocket:0.15',
 			'com.alibaba:druid:1.0.29',
 			 spring,
-
 	    	'junit:junit:4.12',
 			'org.mockito:mockito-core:2.23.0'
 
