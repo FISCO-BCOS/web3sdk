@@ -99,9 +99,14 @@ public class ChannelEthereumService extends org.fisco.bcos.web3j.protocol.Servic
         if(response.getErrorCode() == 0 ) {
             if (response.getContent().contains("error")) {
                 Response t = objectMapper.readValue(response.getContent(), Response.class);
-                throw new IOException(t.getError().getMessage());
+                throw new ResponseExcepiton(t.getError().getCode(), t.getError().getMessage());
             } else {
-                return response.getContent().split("result")[1].substring(2);
+                String[] resultArray = response.getContent().split("result");
+                String resultStr = resultArray[1]; 
+                if("\"".equals(resultStr.substring(2, 3)))
+                	return resultStr.substring(3,resultStr.length()-3);
+                else
+                	return resultStr.substring(2,resultStr.length()-2);
             }
         }
         else {

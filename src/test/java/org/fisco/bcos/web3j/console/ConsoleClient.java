@@ -1,6 +1,5 @@
 package org.fisco.bcos.web3j.console;
 
-import java.io.Console;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.List;
@@ -9,13 +8,10 @@ import java.util.Scanner;
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
+import org.fisco.bcos.web3j.protocol.channel.ResponseExcepiton;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
-import org.fisco.bcos.web3j.protocol.core.methods.request.Transaction;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthBlock;
 import org.fisco.bcos.web3j.protocol.core.methods.response.EthBlock.Block;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthPeers.Peer;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthSyncing;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthSyncing.Result;
+import org.fisco.bcos.web3j.utils.Numeric;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -23,13 +19,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ConsoleClient {
     
-    private static BigInteger transactionCount = BigInteger.valueOf(0);
-    private static BigInteger bigBlockHeight = BigInteger.valueOf(0);
-    private static BigInteger bigPbftView = BigInteger.valueOf(0);
-    private static EthBlock.Block block = null;
-    private static BigInteger transactionIndex = BigInteger.valueOf(0);
-    private static Transaction transaction = null;
-    private static String transactionHash = null;
     private static  Service service = null;
     private static Web3j web3j = null;
     private static ObjectMapper mapper = new ObjectMapper();
@@ -44,7 +33,7 @@ public class ConsoleClient {
         }
         ChannelEthereumService channelEthereumService = new ChannelEthereumService();
         channelEthereumService.setChannelService(service);
-        web3j = Web3j.build(channelEthereumService, service.getGroupId());
+        web3j = Web3j.build(channelEthereumService, 2);
         
         Scanner sc = new Scanner(System.in);
         welcomeInfo();
@@ -59,12 +48,15 @@ public class ConsoleClient {
                 switch (params[0]) {
                 
                 case "help" :
+                case "h" :
                     help();
                     break;
                 case "getBlockNumber" :
+                case "gbn" :
                     getBlockNumber(params);
                     break;
                 case "getPbftView" :
+                case "gpv" :
                     getPbftView(params);
                     break;
                 case "getConsensusStatus" :
@@ -76,6 +68,7 @@ public class ConsoleClient {
                 	getSyncStatus(params);
                 	break;
                 case "getClientVersion" :
+                case "gcv" :
                 	getClientVersion(params);
                 	break;
                 case "getPeers" :
@@ -95,13 +88,15 @@ public class ConsoleClient {
                 	getBlockByHash(params);
                 	break;
                 case "getBlockByNumber" :
-                case "gbn" :
+                case "gbbn" :
                 	getBlockByNumber(params);
                 	break;
                 case "sendRawTransaction" :
+                case "srt" :
                     sendRawTransaction(params);
                     break;
                 case "quit" :
+                case "q" :
                     System.exit(0);
                 default:
                     System.out.println("Unknown command, enter 'help' for command list.\n");
@@ -109,8 +104,14 @@ public class ConsoleClient {
             
                 }
                 
-            } catch (Exception e) {
-                System.out.println(e);
+            } 
+            catch (ResponseExcepiton e) {
+                System.out.println("{\"error\":{\"code\":"+e.getCode()+", \"message:\""+"\""+e.getMessage()+"\"}}");
+                System.out.println();
+            }
+            catch (IOException e) {
+            	System.out.println(e.getMessage());
+            	System.out.println();
             }
             
         }
@@ -120,66 +121,67 @@ public class ConsoleClient {
         doubleLine();
         System.out.println("Welcome to the FISCO BCOS console!");
         System.out.println("Type 'help' for command list. Type 'quit' to quit the console.");
+        String logo = " ________  ______   ______    ______    ______         _______    ______    ______    ______  \n" + 
+        		"|        \\|      \\ /      \\  /      \\  /      \\       |       \\  /      \\  /      \\  /      \\ \n" + 
+        		"| $$$$$$$$ \\$$$$$$|  $$$$$$\\|  $$$$$$\\|  $$$$$$\\      | $$$$$$$\\|  $$$$$$\\|  $$$$$$\\|  $$$$$$\\\n" + 
+        		"| $$__      | $$  | $$___\\$$| $$   \\$$| $$  | $$      | $$__/ $$| $$   \\$$| $$  | $$| $$___\\$$\n" + 
+        		"| $$  \\     | $$   \\$$    \\ | $$      | $$  | $$      | $$    $$| $$      | $$  | $$ \\$$    \\ \n" + 
+        		"| $$$$$     | $$   _\\$$$$$$\\| $$   __ | $$  | $$      | $$$$$$$\\| $$   __ | $$  | $$ _\\$$$$$$\\\n" + 
+        		"| $$       _| $$_ |  \\__| $$| $$__/  \\| $$__/ $$      | $$__/ $$| $$__/  \\| $$__/ $$|  \\__| $$\n" + 
+        		"| $$      |   $$ \\ \\$$    $$ \\$$    $$ \\$$    $$      | $$    $$ \\$$    $$ \\$$    $$ \\$$    $$\n" + 
+        		" \\$$       \\$$$$$$  \\$$$$$$   \\$$$$$$   \\$$$$$$        \\$$$$$$$   \\$$$$$$   \\$$$$$$   \\$$$$$$";
+        System.out.println(logo);
         System.out.println();
         doubleLine();
     }
 
     private static void getBlockNumber(String[] params) throws IOException {
-    	BigInteger blockNumber = web3j.ethBlockNumber().send().getBlockNumber();
-        System.out.println(blockNumber);
-            
+    	String blockNumber = web3j.ethBlockNumber().sendForReturnString();
+        System.out.println(Numeric.decodeQuantity(blockNumber));
         System.out.println();
     }
     
 
     private static void getPbftView(String[] params) throws IOException {
-    	BigInteger pbftView = web3j.ethPbftView().send().getEthPbftView();
-    	System.out.println(pbftView);
-    	
+    	String pbftView = web3j.ethPbftView().sendForReturnString();
+    	System.out.println(Numeric.decodeQuantity(pbftView));
     	System.out.println();
     }
     
     private static void getConsensusStatus(String[] params) throws IOException {
         String consensusStatus = web3j.consensusStatus().sendForReturnString();
-        System.out.println(consensusStatus);
-            
-        System.out.println();
+        JsonFormatUtil.printJson(consensusStatus);
+        System.out.println();    
     }
     
     private static void getSyncStatus(String[] params) throws IOException {
-//    	Result result = web3j.ethSyncing().send().getResult();
     	String syncStatus = web3j.ethSyncing().sendForReturnString();
-//    	EthSyncing readValue = mapper.readValue(syncStatus,EthSyncing.class);
-    	System.out.println(syncStatus);
-    	
+    	JsonFormatUtil.printJson(syncStatus);
     	System.out.println();
     }
     
     private static void getClientVersion(String[] params) throws IOException {
-    	String clientVersion = web3j.web3ClientVersion().send().getResult();
+    	String clientVersion = web3j.web3ClientVersion().sendForReturnString();
     	System.out.println(clientVersion);
-    	
     	System.out.println();
     }
     
     private static void getPeers(String[] params) throws IOException {
-    	List<Peer> peers = web3j.ethPeersInfo().send().getResult();
+    	String peers = web3j.ethPeersInfo().sendForReturnString();
     	System.out.println(peers);
-    	
+    	JsonFormatUtil.printJson(peers);
     	System.out.println();
     }
     
     private static void getGroupPeers(String[] params) throws IOException {
     	List<String> groupPeers = web3j.ethGroupPeers().send().getResult();
     	System.out.println(groupPeers);
-    	
     	System.out.println();
     }
     
     private static void getGroupList(String[] params) throws IOException {
     	List<String> groupList = web3j.ethGroupList().send().getResult();
     	System.out.println(groupList);
-    	
     	System.out.println();
     }
     
@@ -191,7 +193,6 @@ public class ConsoleClient {
     	}
     	Block block = web3j.ethGetBlockByHash(params[1], false).send().getBlock();
     	System.out.println(mapper.writeValueAsString(block));
-    	
     	System.out.println();
     }
     
@@ -212,7 +213,6 @@ public class ConsoleClient {
     	BigInteger blockNumber = new BigInteger(params[1]);
     	Block block = web3j.ethGetBlockByNumber(DefaultBlockParameter.valueOf(blockNumber), flag).send().getBlock();
     	System.out.println(mapper.writeValueAsString(block));
-    	
     	System.out.println();
     }
     
@@ -249,10 +249,10 @@ public class ConsoleClient {
     }
     
     private static void singleLine() {
-        System.out.println("--------------------------------------------------------------------------");
+        System.out.println("----------------------------------------------------------------------------------------------");
     }
     private static void doubleLine() {
-        System.out.println("==========================================================================");
+        System.out.println("==============================================================================================");
     }
 
 }

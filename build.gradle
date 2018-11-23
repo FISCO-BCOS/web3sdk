@@ -68,9 +68,6 @@ sourceSets {
 			srcDir 'src/main/java'
 			srcDir 'src/test/java'
 		}
-		resources  {
-			srcDir 'src/test/resources'
-		}
         resources  {
             srcDir 'src/main/resources'
         }
