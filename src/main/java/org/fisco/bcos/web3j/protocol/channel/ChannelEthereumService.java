@@ -96,11 +96,14 @@ public class ChannelEthereumService extends org.fisco.bcos.web3j.protocol.Servic
 
         logger.debug("Ethereum Request:{} {}", ethereumRequest.getMessageID(), objectMapper.writeValueAsString(request));
         logger.debug("Ethereum Response:{} {} {}", ethereumRequest.getMessageID(), response.getErrorCode(), response.getContent());
-        if(response.getErrorCode() == 0)
-        {
-            return response.getContent().split("result")[1].substring(2);
+        if(response.getErrorCode() == 0 ) {
+            if (response.getContent().contains("error")) {
+                Response t = objectMapper.readValue(response.getContent(), Response.class);
+                throw new IOException(t.getError().getMessage());
+            } else {
+                return response.getContent().split("result")[1].substring(2);
+            }
         }
-
         else {
             throw new IOException(response.getErrorMessage());
         }
