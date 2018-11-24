@@ -96,6 +96,8 @@ jar {
 	archiveName project.name + '.jar'
 	exclude '**/*.xml'
 	exclude '**/*.properties'
+	exclude '**/*.crt'
+	exclude '**/*.keystore'
 
 	doLast {
 		copy {

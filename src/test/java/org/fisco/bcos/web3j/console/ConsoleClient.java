@@ -169,7 +169,7 @@ public class ConsoleClient {
     private static void welcomeInfo() {
         doubleLine();
         System.out.println("Welcome to FISCO BCOS 2.0!");
-        System.out.println("Type 'help' for command list. Type 'quit' to quit the console.");
+        System.out.println("Type 'help' or 'h' for help. Type 'quit' or 'q' to quit console.");
         String logo = " ________  ______   ______    ______    ______         _______    ______    ______    ______  \n" + 
         		"|        \\|      \\ /      \\  /      \\  /      \\       |       \\  /      \\  /      \\  /      \\ \n" + 
         		"| $$$$$$$$ \\$$$$$$|  $$$$$$\\|  $$$$$$\\|  $$$$$$\\      | $$$$$$$\\|  $$$$$$\\|  $$$$$$\\|  $$$$$$\\\n" + 
@@ -405,7 +405,7 @@ public class ConsoleClient {
     private static void help() {
         singleLine();
         StringBuilder sb = new StringBuilder();
-        sb.append("help                                          Provide help information for blockchain console.\n");
+        sb.append("help                                          Provide help information.\n");
         sb.append("getBlockNumber(gbn)                           Query the number of most recent block.\n");
         sb.append("getPbftView(gpv)                              Query the pbft view of node.\n");
         sb.append("getConsensusStatus(gcs)                       Query consensus status.\n");
@@ -425,9 +425,9 @@ public class ConsoleClient {
         sb.append("getPendingTransactions(gpt)                   Query pending transactions.\n");
         sb.append("getCode(gc)                                   Query code at a given address.\n");
         sb.append("getTotalTransactionCount(gtc)                 Query total transaction count.\n");
-        sb.append("call                                          Executes a new message call immediately without creating a transaction on the block chain.\n");
+        sb.append("call                                          Executes a new message call immediately without creating a transaction.\n");
         sb.append("sendRawTransaction(srt)                       Creates new message call transaction or a contract creation for signed transactions.\n");
-        sb.append("quit                                          Quit the blockchain console.");
+        sb.append("quit                                          Quit console.");
         System.out.println(sb.toString());
         singleLine();
     }
