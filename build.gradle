@@ -1,11 +1,8 @@
 apply plugin: 'maven'
+apply plugin: 'idea'
 apply plugin: 'java'
 apply plugin: 'eclipse'
-<<<<<<< HEAD
-=======
 apply plugin: 'signing'
-apply plugin:'application'
->>>>>>> shuoyan/sdk-2.0
 
 //指定JDK版本,改成系统中版本
 sourceCompatibility = 1.8
@@ -16,19 +13,29 @@ targetCompatibility = 1.8
 // In this section you declare where to find the dependencies of your project
 repositories {
     maven {
-        url "http://maven.aliyun.com/nexus/content/groups/public/"		
+        url "http://maven.aliyun.com/nexus/content/groups/public/"
     }
-
-    mavenLocal()
     mavenCentral()
 }
 
+sourceSets {
+ main {
+  java {
+         srcDir 'src/main/java'
+         srcDir 'src/test/java'
+  }
+        resources  {
+            srcDir 'src/test/resources'
+        }
+ }
+}
+
+def spring_version="4.3.18.RELEASE"
 
 List logger = [
 		 'org.slf4j:slf4j-log4j12:1.7.25'
 ]
 
-def spring_version="4.3.18.RELEASE"
 List spring =[ 
 	"org.springframework:spring-core:$spring_version", 
 	"org.springframework:spring-beans:$spring_version", 
@@ -59,27 +66,28 @@ dependencies {
             'com.squareup:javapoet:1.7.0',
             'io.reactivex:rxjava:1.2.4',
 			'com.github.jnr:jnr-unixsocket:0.15',
-	         'info.picocli:picocli:3.6.0',
+	        'info.picocli:picocli:3.6.0',
 			"io.reactivex.rxjava2:rxjava:2.2.2",
 			"org.java-websocket:Java-WebSocket:1.3.8",
 	        'junit:junit:4.12',
 	        'org.mockito:mockito-core:2.23.0'
 
-test {
-    testLogging {
-        showStandardStreams = true
-    }
 }
 
+archivesBaseName = 'web3sdk'
+group = 'org.fisco-bcos'
+version = '2.0.0'
+
+// for old sdk
 sourceSets {
 	main {
 		java {
 			srcDir 'src/main/java'
 			srcDir 'src/test/java'
 		}
-        resources  {
-            srcDir 'src/main/resources'
-        }
+		resources  {
+			srcDir 'src/test/resources'
+		}
 	}
 }
 
@@ -89,21 +97,22 @@ jar {
 	exclude '**/*.xml'
 	exclude '**/*.properties'
 
-    doLast {
-        copy {
-            from file('tools/')
-            into 'dist/'
-        }
+	doLast {
+		copy {
+			from file('tools/')
+			into 'dist/'
+		}
 		copy {
 			from configurations.runtime
 			into 'dist/lib'
 		}
 		copy {
-            from file('src/test/resources/')
-            into 'dist/conf'
-        }
+			from file('src/test/resources/')
+			into 'dist/conf'
+		}
 	}
 }
+//
 
 
 //signing {
@@ -152,5 +161,4 @@ jar {
 //		}
 //	}
 //}
-
-mainClassName  = System.getProperty("exec.mainClass")
+// mainClassName  = System.getProperty("exec.mainClass")
