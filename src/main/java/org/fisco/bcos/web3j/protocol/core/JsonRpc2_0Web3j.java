@@ -384,9 +384,18 @@ public class JsonRpc2_0Web3j implements Web3j {
             String address, DefaultBlockParameter defaultBlockParameter) {
         return new Request<>(
                 "getCode",
-                Arrays.asList(address, defaultBlockParameter.getValue()),
+                Arrays.asList(groupId, address),
                 web3jService,
                 EthGetCode.class);
+    }
+    
+    @Override
+    public Request<?, TotalTransactionCount> getTotalTransactionCount() {
+    	return new Request<>(
+    			"getTotalTransactionCount",
+    			Arrays.asList(groupId),
+    			web3jService,
+    			TotalTransactionCount.class);
     }
 
     @Override
@@ -462,6 +471,17 @@ public class JsonRpc2_0Web3j implements Web3j {
                         returnFullTransactionObjects),
                 web3jService,
                 EthBlock.class);
+    }
+    
+    @Override
+    public Request<?, BlockHash> getBlockHashByNumber(
+    		DefaultBlockParameter defaultBlockParameter) {
+    	return new Request<>(
+    			"getBlockHashByNumber",
+    			Arrays.asList(groupId,
+    					defaultBlockParameter.getValue()),
+    			web3jService,
+    			BlockHash.class);
     }
 
     @Override
