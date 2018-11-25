@@ -3,7 +3,7 @@ apply plugin: 'idea'
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'signing'
-apply plugin:'application'
+//apply plugin:'application'
 
 //指定JDK版本,改成系统中版本
 sourceCompatibility = 1.8
@@ -13,9 +13,13 @@ targetCompatibility = 1.8
 
 // In this section you declare where to find the dependencies of your project
 repositories {
-    maven {
-        url "http://oss.sonatype.org/content/groups/public/"
-    }
+//    maven {
+//        url "http://oss.sonatype.org/content/groups/public/"
+//    }
+	maven {
+		url "http://maven.aliyun.com/nexus/content/groups/public/"
+	}
+	mavenLocal()
     mavenCentral()
 }
 
@@ -171,4 +175,4 @@ jar {
 //	}
 //}
 
-mainClassName  = System.getProperty("exec.mainClass")
+//mainClassName  = System.getProperty("exec.mainClass")
