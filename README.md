@@ -25,16 +25,16 @@
       *基本测试*  gradle test --tests org.fisco.bcos.channel.test.BasicTest
 ---
   目前你也可以gradle build (确保gradle 版本在4.10.1以上) 之后到dist目录去执行java -cp命令:
-         *部署合约*
+- *部署合约*
             gradle run -Dexec.mainClass=org.fisco.bcos.channel.test.PerfOkTransaction --args='1 deploy'
            或者 java -cp 'conf/:apps/*:lib/*' org.fisco.bcos.channel.test.PerfOkTransaction 1 deploy
-         *发送交易*
+- *发送交易*
              gradle run -Dexec.mainClass=org.fisco.bcos.channel.test.PerfOkTransaction --args='1 transaction address'
             或者 java -cp 'conf/:apps/*:lib/*' org.fisco.bcos.channel.test.PerfOkTransaction 1 transaction address
-         *增加节点*（指定节点入网）
+- *增加节点*（指定节点入网）
             gradle run -Dexec.mainClass=org.fisco.bcos.channel.test.PrecompileManager --args='pbft add e2970447090490552c32b9cb020e16d277ef21e285bb3f3b7b919057285e3ef0cee156975f9d1d105d9240e91e4e324e46bb3c897045b9278b69597714ad6b22'
             或者 java -cp 'conf/:apps/*:lib/*' org.fisco.bcos.channel.test.PrecompileManager "pbft" "add" "e2970447090490552c32b9cb020e16d277ef21e285bb3f3b7b919057285e3ef0cee156975f9d1d105d9240e91e4e324e46bb3c897045b9278b69597714ad6b22"
-          *删除节点*（指定节点出网）
+- *删除节点*（指定节点出网）
             gradle run -Dexec.mainClass=org.fisco.bcos.channel.test.PrecompileManager --args='pbft remove e2970447090490552c32b9cb020e16d277ef21e285bb3f3b7b919057285e3ef0cee156975f9d1d105d9240e91e4e324e46bb3c897045b9278b69597714ad6b22'
            或者 java -cp 'conf/:apps/*:lib/*' org.fisco.bcos.channel.test.PrecompileManager "pbft" "remove" "e2970447090490552c32b9cb020e16d277ef21e285bb3f3b7b919057285e3ef0cee156975f9d1d105d9240e91e4e324e46bb3c897045b9278b69597714ad6b22"
 ---
