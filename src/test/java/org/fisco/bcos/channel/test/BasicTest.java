@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertNotNull;
@@ -35,6 +36,7 @@ public class BasicTest extends TestBase {
 
     @Test
     public void  syncTest() throws Exception {
+        System.out.println(web3j.ethSyncing().send().isSyncing());
         assertNotNull(web3j.ethSyncing().send().isSyncing());
     }
 
@@ -69,7 +71,12 @@ public class BasicTest extends TestBase {
 
     @Test
     public void  pendingTransactionsTest() throws Exception {
-        assertTrue(web3j.ethPendingTransaction().send().getPendingTransactions().size()>=0);
+        List<Transaction> transactions = web3j.ethPendingTransaction().send().getPendingTransactions();
+        System.out.println("**** pending transaction ****");
+        for(Transaction t : transactions) {
+            System.out.println(t.getHash());
+        }
+        assertTrue(transactions.size()>=0);
     }
 
     @Test
