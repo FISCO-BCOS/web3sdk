@@ -1,14 +1,14 @@
 package org.fisco.bcos.web3j.console;
 
+import org.fisco.bcos.web3j.crypto.CipherException;
+import org.fisco.bcos.web3j.crypto.WalletUtils;
+import org.fisco.bcos.web3j.utils.Console;
+
 import java.io.File;
 import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
-
-import org.fisco.bcos.web3j.crypto.CipherException;
-import org.fisco.bcos.web3j.crypto.WalletUtils;
-import org.fisco.bcos.web3j.utils.Console;
 
 /**
  * Simple class for creating a wallet file.
