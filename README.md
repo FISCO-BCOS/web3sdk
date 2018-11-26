@@ -36,4 +36,6 @@
      2 确保本地安装了fisco-solc；
      3 切换到tools/bin 执行 ./compile fisco-solc out;
      4 生成的bin文件即在tools/contracts/out目录下。
-     5 abi转成java类，可以参考项目中SolidityFunctionWrapperGeneratorTest 测试类可以帮你生成把abi文件转换成相应Java类。
+     5 abi转成java类，把tools/contracts/out下面的文件拷贝到src/test/resources/solidity目录下面
+     执行gradle test --tests org.fisco.bcos.channel.test.solidity.SolidityFunctionWrapperGeneratorTest.generateClassFromABIAndBIN ;测试类可以帮你生成把abi文件转换成相应Java类,
+     生成的类在src/test/java/org/fisco/bcos/temp文件夹下。
