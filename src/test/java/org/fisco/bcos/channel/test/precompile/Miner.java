@@ -1,4 +1,4 @@
-package org.fisco.bcos.channel.test;
+package org.fisco.bcos.channel.test.precompile;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collections;

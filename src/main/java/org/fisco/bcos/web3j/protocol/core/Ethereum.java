@@ -135,6 +135,8 @@ public interface Ethereum {
             DefaultBlockParameter defaultBlockParameter);
 
     Request<?, EthGetCode> ethGetCode(String address, DefaultBlockParameter defaultBlockParameter);
+    
+    Request<?, TotalTransactionCount> getTotalTransactionCount();
 
   //  Request<?, EthGetCode> ethGetCodeCNS(String contractName, DefaultBlockParameter defaultBlockParameter);
 
@@ -167,6 +169,9 @@ public interface Ethereum {
     Request<?, EthBlock> ethGetBlockByNumber(
             DefaultBlockParameter defaultBlockParameter,
             boolean returnFullTransactionObjects);
+    
+    Request<?, BlockHash> getBlockHashByNumber(
+    		DefaultBlockParameter defaultBlockParameter);
 
     Request<?, EthTransaction> ethGetTransactionByHash(String transactionHash);
 
