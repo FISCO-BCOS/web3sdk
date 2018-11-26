@@ -77,8 +77,8 @@ public class Server {
 					return;
 				}
 				else if(msg.getType() == 0x1000) {
-                    logger.debug("transaction message call back.");
-                }
+					logger.debug("transaction message call back.");
+				}
 				else {
 					logger.error("unknown message:{}", msg.getType());
 				}
