@@ -32,7 +32,7 @@ class PrecompileManager {
         ChannelEthereumService channelEthereumService = new ChannelEthereumService();
         channelEthereumService.setChannelService(service);
         /// init web3j of specified group according to configuration file
-        web3j = Web3j.build(channelEthereumService, service.getGroupId());
+        web3j = Web3j.build(channelEthereumService, Integer.parseInt(args[3]));
         if (args[0].equals("pbft")) {
             UpdatePBFTNode pbft = new UpdatePBFTNode();
             pbft.call(args, web3j, credentials, service.getGroupId());
