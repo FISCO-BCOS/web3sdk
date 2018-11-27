@@ -12,13 +12,11 @@ import org.fisco.bcos.web3j.protocol.channel.ResponseExcepiton;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameterName;
 import org.fisco.bcos.web3j.protocol.core.methods.request.Transaction;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthBlock.Block;
 import org.fisco.bcos.web3j.utils.Numeric;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.alibaba.fastjson.JSONObject;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ConsoleClient {
@@ -106,7 +104,7 @@ public class ConsoleClient {
                 	getBlockByNumber(params);
                 	break;
                 case "getBlockHashByNumber" :
-                case "gbhbn" :
+                case "ghbn" :
                 	getBlockHashByNumber(params);
                 	break;
                 case "getTransactionByHash" :
@@ -138,6 +136,7 @@ public class ConsoleClient {
                 	getTotalTransactionCount(params);
                 	break;
                 case "call" :
+                case "c" :
                 	call(params);
                 	break;
                 case "sendRawTransaction" :
@@ -236,7 +235,8 @@ public class ConsoleClient {
     private static void getBlockByHash(String[] params) throws IOException {
     	if(params.length < 2)
     	{
-    		System.out.println("Please provide block hash and transaction flag(optional).");
+    		System.out.println("getBlockByHash(gbbh): missing block hash and transaction flag(optional)");
+    		System.out.println("for example: getBlockByHash 0x5e743a... true");
     		return;
     	}
     	boolean flag = false;
@@ -250,7 +250,8 @@ public class ConsoleClient {
     private static void getBlockByNumber(String[] params) throws IOException {
     	if(params.length < 2)
     	{
-    		System.out.println("Please provide block number and transaction flag(optional).");
+    		System.out.println("getBlockByNumber(gbbn): missing block number and transaction flag(optional)");
+    		System.out.println("for example: getBlockByNumber 1 true");
     		return;
     	}
     	if(!params[1].matches("^[0-9]*$"))
@@ -270,7 +271,8 @@ public class ConsoleClient {
     private static void getBlockHashByNumber(String[] params) throws IOException {
     	if(params.length < 2)
     	{
-    		System.out.println("Please provide block number.");
+    		System.out.println("getBlockHashByNumber(ghbn): missing block number");
+    		System.out.println("for example: ghbn 1");
     		return;
     	}
     	if(!params[1].matches("^[0-9]*$"))
@@ -287,7 +289,8 @@ public class ConsoleClient {
     private static void getTransactionByHash(String[] params) throws IOException {
     	if(params.length < 2)
     	{
-    		System.out.println("Please provide transactions hash.");
+    		System.out.println("getTransactionByHash(gtbh): missing transactions hash");
+    		System.out.println("for example: gtbh 0x0x7536cf...");
     		return;
     	}
     	String transaction = web3j.ethGetTransactionByHash(params[1]).sendForReturnString();
@@ -298,7 +301,8 @@ public class ConsoleClient {
     private static void getTransactionByBlockHashAndIndex(String[] params) throws IOException {
     	if(params.length < 3)
     	{
-    		System.out.println("Please provide block hash and transaction index.");
+    		System.out.println("getTransactionByBlockHashAndIndex(gthi): missing block hash and transaction index");
+    		System.out.println("for example: gthi 0x5e743a... 0");
     		return;
     	}
     	if(!params[2].matches("^[0-9]*$"))
@@ -315,7 +319,8 @@ public class ConsoleClient {
     private static void getTransactionByBlockNumberAndIndex(String[] params) throws IOException {
     	if(params.length < 3)
     	{
-    		System.out.println("Please provide block hash and transaction index.");
+    		System.out.println("getTransactionByBlockNumberAndIndex(gtni): missing block number and transaction index");
+    		System.out.println("for example: gtni 1 0");
     		return;
     	}
     	if(!params[1].matches("^[0-9]*$"))
@@ -338,7 +343,8 @@ public class ConsoleClient {
     private static void getTransactionReceipt(String[] params) throws IOException {
     	if(params.length < 2)
     	{
-    		System.out.println("Please provide transaction hash.");
+    		System.out.println("getTransactionReceipt(gtr): missing transaction hash");
+    		System.out.println("for example: gtr 0x7536cf...");
     		return;
     	}
     	String transactionReceipt = web3j.ethGetTransactionReceipt(params[1]).sendForReturnString();
@@ -358,7 +364,8 @@ public class ConsoleClient {
     private static void getCode(String[] params) throws IOException {
     	if(params.length < 2)
     	{
-    		System.out.println("Please provide contract address.");
+    		System.out.println("getCode(gc): missing contract address");
+    		System.out.println("for example: gc 0xa94f53...");
     		return;
     	}
     	String code = web3j.ethGetCode(params[1], DefaultBlockParameterName.LATEST).sendForReturnString();
@@ -378,7 +385,8 @@ public class ConsoleClient {
     private static void call(String[] params) throws IOException {
     	if(params.length < 4)
     	{
-    		System.out.println("Please provide from, to and data to call.");
+    		System.out.println("call(c): missing from address, to address and data(hash of the method signature and encoded parameters)");
+    		System.out.println("for example: call 0x6bc952... 0xd6f1a7... 0xcdcd77...");
     		return;
     	}
     	Transaction tx = new Transaction(params[1], BigInteger.ZERO,  BigInteger.ZERO, BigInteger.ZERO, params[2],  BigInteger.ZERO, params[3]);
@@ -388,24 +396,21 @@ public class ConsoleClient {
     }
     
     private static void sendRawTransaction(String[] params) throws IOException {
-        if(params.length < 2 || "".equals(params[1].trim()))
+        if(params.length < 2)
         {
-            System.out.println("missing transactions rlp after 'sendRawTransaction', for example:");
-            System.out.println("sendRawTransaction 0x123ed..");
+            System.out.println("sendRawTransaction(srt): missing the signed transaction data");
+            System.out.println("for example: sendRawTransaction 0xa12b3ed...");
+            return;
         }
-        else
-        {
-            String txHash = web3j.ethSendRawTransaction(params[2]).sendForReturnString();
-            System.out.println(txHash);
-            
-        }
+        String txHash = web3j.ethSendRawTransaction(params[2]).sendForReturnString();
+        System.out.println(txHash);
         System.out.println();
     }
 
     private static void help() {
         singleLine();
         StringBuilder sb = new StringBuilder();
-        sb.append("help                                          Provide help information.\n");
+        sb.append("help(h)                                       Provide help information.\n");
         sb.append("getBlockNumber(gbn)                           Query the number of most recent block.\n");
         sb.append("getPbftView(gpv)                              Query the pbft view of node.\n");
         sb.append("getConsensusStatus(gcs)                       Query consensus status.\n");
@@ -414,10 +419,9 @@ public class ConsoleClient {
         sb.append("getPeers(gps)                                 Query peers currently connected to the client.\n");
         sb.append("getGroupPeers(ggp)                            Query peers currently connected to the client in the specified group.\n");
         sb.append("getGroupList(ggl)                             Query group list.\n");
-        sb.append("getGroupPeers(ggp)                            Query peers currently connected to the client in the specified group.\n");
         sb.append("getBlockByHash(gbbh)                          Query information about a block by hash.\n");
         sb.append("getBlockByNumber(gbbn)                        Query information about a block by block number.\n");
-        sb.append("getBlockHashByNumber(gbhbn)                   Query block hash by block number.\n");
+        sb.append("getBlockHashByNumber(ghbn)                    Query block hash by block number.\n");
         sb.append("getTransactionByHash(gtbh)                    Query information about a transaction requested by transaction hash.\n");
         sb.append("getTransactionByBlockHashAndIndex(gthi)       Query information about a transaction by block hash and transaction index position.\n");
         sb.append("getTransactionByBlockNumberAndIndex(gtni)     Query information about a transaction by block number and transaction index position.\n");
@@ -425,9 +429,9 @@ public class ConsoleClient {
         sb.append("getPendingTransactions(gpt)                   Query pending transactions.\n");
         sb.append("getCode(gc)                                   Query code at a given address.\n");
         sb.append("getTotalTransactionCount(gtc)                 Query total transaction count.\n");
-        sb.append("call                                          Executes a new message call immediately without creating a transaction.\n");
+        sb.append("call(c)                                       Executes a new message call immediately without creating a transaction.\n");
         sb.append("sendRawTransaction(srt)                       Creates new message call transaction or a contract creation for signed transactions.\n");
-        sb.append("quit                                          Quit console.");
+        sb.append("quit(q)                                       Quit console.");
         System.out.println(sb.toString());
         singleLine();
     }
