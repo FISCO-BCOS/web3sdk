@@ -1,17 +1,29 @@
 package org.fisco.bcos.web3j.console;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.math.BigInteger;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.util.List;
 import java.util.Scanner;
 
+import org.fisco.bcos.web3j.crypto.Credentials;
+import org.fisco.bcos.web3j.crypto.ECKeyPair;
+import org.fisco.bcos.web3j.crypto.Keys;
 import org.fisco.bcos.channel.client.Service;
+import org.fisco.bcos.channel.test.contract.Ok;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
 import org.fisco.bcos.web3j.protocol.channel.ResponseExcepiton;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameterName;
+import org.fisco.bcos.web3j.protocol.core.RemoteCall;
 import org.fisco.bcos.web3j.protocol.core.methods.request.Transaction;
+import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.fisco.bcos.web3j.tx.Contract;
 import org.fisco.bcos.web3j.utils.Numeric;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -23,9 +35,21 @@ public class ConsoleClient {
     
     private static  Service service = null;
     private static Web3j web3j = null;
+	public static java.math.BigInteger gasPrice = new BigInteger("1");
+	public static java.math.BigInteger gasLimit = new BigInteger("30000000");
+	public static java.math.BigInteger initialWeiValue = new BigInteger("0");
+    public static ECKeyPair keyPair;
+    public static Credentials credentials;
+    public static String contractAddress;
+    public static String contractName;
+    public static Class<?> contractClass;
+    public static RemoteCall<?> remoteCall;
     private static ObjectMapper mapper = new ObjectMapper();
-    public static void main(String[] args) {
+    
+    public static void main(String[] args) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException {
         
+    	welcomeInfo();
+    	
         ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
         service = context.getBean(Service.class);
         try {
@@ -35,10 +59,13 @@ public class ConsoleClient {
         }
         ChannelEthereumService channelEthereumService = new ChannelEthereumService();
         channelEthereumService.setChannelService(service);
+     // init the client keys
+        keyPair = Keys.createEcKeyPair();
+        credentials = Credentials.create(keyPair);
+
         web3j = Web3j.build(channelEthereumService, service.getGroupId());
         
         Scanner sc = new Scanner(System.in);
-        welcomeInfo();
         
         while(true)
         {
@@ -135,13 +162,24 @@ public class ConsoleClient {
                 case "gtc" :
                 	getTotalTransactionCount(params);
                 	break;
+                case "deploy" :
+                	deploy(params);
+                	break;
                 case "call" :
                 case "c" :
-                	call(params);
+                	try {
+						call(params);
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
                 	break;
-                case "sendRawTransaction" :
-                case "srt" :
-                    sendRawTransaction(params);
+                case "send" :
+                case "s" :
+					try {
+						send(params);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
                     break;
                 case "quit" :
                 case "q" :
@@ -236,7 +274,7 @@ public class ConsoleClient {
     	if(params.length < 2)
     	{
     		System.out.println("getBlockByHash(gbbh): missing block hash and transaction flag(optional)");
-    		System.out.println("for example: getBlockByHash 0x5e743a... true");
+    		System.out.println("example: getBlockByHash 0x5e743a... true");
     		return;
     	}
     	boolean flag = false;
@@ -251,7 +289,7 @@ public class ConsoleClient {
     	if(params.length < 2)
     	{
     		System.out.println("getBlockByNumber(gbbn): missing block number and transaction flag(optional)");
-    		System.out.println("for example: getBlockByNumber 1 true");
+    		System.out.println("example: getBlockByNumber 1 true");
     		return;
     	}
     	if(!params[1].matches("^[0-9]*$"))
@@ -272,7 +310,7 @@ public class ConsoleClient {
     	if(params.length < 2)
     	{
     		System.out.println("getBlockHashByNumber(ghbn): missing block number");
-    		System.out.println("for example: ghbn 1");
+    		System.out.println("example: ghbn 1");
     		return;
     	}
     	if(!params[1].matches("^[0-9]*$"))
@@ -290,7 +328,7 @@ public class ConsoleClient {
     	if(params.length < 2)
     	{
     		System.out.println("getTransactionByHash(gtbh): missing transactions hash");
-    		System.out.println("for example: gtbh 0x0x7536cf...");
+    		System.out.println("example: gtbh 0x0x7536cf...");
     		return;
     	}
     	String transaction = web3j.ethGetTransactionByHash(params[1]).sendForReturnString();
@@ -302,7 +340,7 @@ public class ConsoleClient {
     	if(params.length < 3)
     	{
     		System.out.println("getTransactionByBlockHashAndIndex(gthi): missing block hash and transaction index");
-    		System.out.println("for example: gthi 0x5e743a... 0");
+    		System.out.println("example: gthi 0x5e743a... 0");
     		return;
     	}
     	if(!params[2].matches("^[0-9]*$"))
@@ -320,7 +358,7 @@ public class ConsoleClient {
     	if(params.length < 3)
     	{
     		System.out.println("getTransactionByBlockNumberAndIndex(gtni): missing block number and transaction index");
-    		System.out.println("for example: gtni 1 0");
+    		System.out.println("example: gtni 1 0");
     		return;
     	}
     	if(!params[1].matches("^[0-9]*$"))
@@ -344,7 +382,7 @@ public class ConsoleClient {
     	if(params.length < 2)
     	{
     		System.out.println("getTransactionReceipt(gtr): missing transaction hash");
-    		System.out.println("for example: gtr 0x7536cf...");
+    		System.out.println("example: gtr 0x7536cf...");
     		return;
     	}
     	String transactionReceipt = web3j.ethGetTransactionReceipt(params[1]).sendForReturnString();
@@ -365,7 +403,7 @@ public class ConsoleClient {
     	if(params.length < 2)
     	{
     		System.out.println("getCode(gc): missing contract address");
-    		System.out.println("for example: gc 0xa94f53...");
+    		System.out.println("example: gc 0xa94f53...");
     		return;
     	}
     	String code = web3j.ethGetCode(params[1], DefaultBlockParameterName.LATEST).sendForReturnString();
@@ -382,31 +420,67 @@ public class ConsoleClient {
     	System.out.println();
     }
     
-    private static void call(String[] params) throws IOException {
-    	if(params.length < 4)
+    private static void deploy(String[] params) throws IOException {
+    	if(params.length < 2)
     	{
-    		System.out.println("call(c): missing from address, to address and data(hash of the method signature and encoded parameters)");
-    		System.out.println("for example: call 0x6bc952... 0xd6f1a7... 0xcdcd77...");
+    		System.out.println("deploy: missing contract name");
+    		System.out.println("example: deploy Ok");
     		return;
     	}
-    	Transaction tx = new Transaction(params[1], BigInteger.ZERO,  BigInteger.ZERO, BigInteger.ZERO, params[2],  BigInteger.ZERO, params[3]);
-    	String result = web3j.ethCall(tx, DefaultBlockParameterName.LATEST).sendForReturnString();
-    	JsonFormatUtil.printJson(result);
+    	contractName = "org.fisco.bcos.temp."+params[1];
+    	try {
+			contractClass = ContractClassFactory.getContractClass(contractName);
+			Method deploy = contractClass.getMethod("deploy", Web3j.class, Credentials.class, BigInteger.class, BigInteger.class, BigInteger.class);
+			remoteCall = (RemoteCall<?>) deploy.invoke(null, web3j, credentials, gasPrice, gasLimit, initialWeiValue);
+			Contract contract = (Contract) remoteCall.send();
+			contractAddress = contract.getContractAddress();
+			System.out.println(contractAddress);
+		} catch (Exception e) {
+			System.out.println(contractName + ".java is not exist");
+		}
     	System.out.println();
     }
     
-    private static void sendRawTransaction(String[] params) throws IOException {
+    private static void send(String[] params) throws Exception {
         if(params.length < 2)
         {
-            System.out.println("sendRawTransaction(srt): missing the signed transaction data");
-            System.out.println("for example: sendRawTransaction 0xa12b3ed...");
+            System.out.println("send(s): missing method name");
+            System.out.println("example: send trans 6");
             return;
         }
-        String txHash = web3j.ethSendRawTransaction(params[2]).sendForReturnString();
-        System.out.println(txHash);
+		Method load = contractClass.getMethod("load", String.class, Web3j.class, Credentials.class, BigInteger.class, BigInteger.class);
+		Object contractObject = load.invoke(null, contractAddress, web3j, credentials, gasPrice, gasLimit);
+		
+		Class[] parameterType = ContractClassFactory.getParameterType(contractClass, params[1]);
+		Method func = contractClass.getMethod(params[1], parameterType);
+		Object[] argobj = ContractClassFactory.getPrametersObject(params);
+		remoteCall = (RemoteCall<?>) func.invoke(contractObject, argobj);
+		
+		TransactionReceipt receipt = (TransactionReceipt) remoteCall.send();
+        System.out.println(receipt.getTransactionHash());
         System.out.println();
     }
 
+    private static void call(String[] params) throws Exception {
+    	if(params.length < 2)
+    	{
+    		System.out.println("call(c): missing method name");
+    		System.out.println("example: call get");
+    		return;
+    	}
+		Method load = contractClass.getMethod("load", String.class, Web3j.class, Credentials.class, BigInteger.class, BigInteger.class);
+		Object contractObject = load.invoke(null, contractAddress, web3j, credentials, gasPrice, gasLimit);
+		
+		Class[] parameterType = ContractClassFactory.getParameterType(contractClass, params[1]);
+		Method func = contractClass.getMethod(params[1], parameterType);
+		Object[] argobj = ContractClassFactory.getPrametersObject(params);
+		remoteCall = (RemoteCall<?>) func.invoke(contractObject, argobj);
+		
+		Object result = remoteCall.send();
+        System.out.println(result);
+        System.out.println();
+    }
+    
     private static void help() {
         singleLine();
         StringBuilder sb = new StringBuilder();
