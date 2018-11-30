@@ -1,7 +1,6 @@
 package org.fisco.bcos.web3j.console;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.security.InvalidAlgorithmParameterException;
@@ -14,15 +13,12 @@ import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.crypto.ECKeyPair;
 import org.fisco.bcos.web3j.crypto.Keys;
 import org.fisco.bcos.channel.client.Service;
-import org.fisco.bcos.channel.test.contract.Ok;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
 import org.fisco.bcos.web3j.protocol.channel.ResponseExcepiton;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameterName;
 import org.fisco.bcos.web3j.protocol.core.RemoteCall;
-import org.fisco.bcos.web3j.protocol.core.methods.request.Transaction;
-import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.tx.Contract;
 import org.fisco.bcos.web3j.utils.Numeric;
 import org.springframework.context.ApplicationContext;
@@ -167,19 +163,7 @@ public class ConsoleClient {
                 	break;
                 case "call" :
                 case "c" :
-                	try {
-						call(params);
-					} catch (Exception e1) {
-						e1.printStackTrace();
-					}
-                	break;
-                case "send" :
-                case "s" :
-					try {
-						send(params);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+					call(params);
                     break;
                 case "quit" :
                 case "q" :
@@ -430,8 +414,8 @@ public class ConsoleClient {
     	contractName = "org.fisco.bcos.temp."+params[1];
     	try {
 			contractClass = ContractClassFactory.getContractClass(contractName);
-			Method deploy = contractClass.getMethod("deploy", Web3j.class, Credentials.class, BigInteger.class, BigInteger.class, BigInteger.class);
-			remoteCall = (RemoteCall<?>) deploy.invoke(null, web3j, credentials, gasPrice, gasLimit, initialWeiValue);
+			Method deploy = contractClass.getMethod("deploy", Web3j.class, Credentials.class, BigInteger.class, BigInteger.class);
+			remoteCall = (RemoteCall<?>) deploy.invoke(null, web3j, credentials, gasPrice, gasLimit);
 			Contract contract = (Contract) remoteCall.send();
 			contractAddress = contract.getContractAddress();
 			System.out.println(contractAddress);
@@ -441,43 +425,30 @@ public class ConsoleClient {
     	System.out.println();
     }
     
-    private static void send(String[] params) throws Exception {
-        if(params.length < 2)
-        {
-            System.out.println("send(s): missing method name");
-            System.out.println("example: send trans 6");
-            return;
-        }
-		Method load = contractClass.getMethod("load", String.class, Web3j.class, Credentials.class, BigInteger.class, BigInteger.class);
-		Object contractObject = load.invoke(null, contractAddress, web3j, credentials, gasPrice, gasLimit);
-		
-		Class[] parameterType = ContractClassFactory.getParameterType(contractClass, params[1]);
-		Method func = contractClass.getMethod(params[1], parameterType);
-		Object[] argobj = ContractClassFactory.getPrametersObject(params);
-		remoteCall = (RemoteCall<?>) func.invoke(contractObject, argobj);
-		
-		TransactionReceipt receipt = (TransactionReceipt) remoteCall.send();
-        System.out.println(receipt.getTransactionHash());
-        System.out.println();
-    }
-
-    private static void call(String[] params) throws Exception {
+    private static void call(String[] params){
     	if(params.length < 2)
     	{
     		System.out.println("call(c): missing method name");
     		System.out.println("example: call get");
     		return;
     	}
-		Method load = contractClass.getMethod("load", String.class, Web3j.class, Credentials.class, BigInteger.class, BigInteger.class);
-		Object contractObject = load.invoke(null, contractAddress, web3j, credentials, gasPrice, gasLimit);
-		
-		Class[] parameterType = ContractClassFactory.getParameterType(contractClass, params[1]);
-		Method func = contractClass.getMethod(params[1], parameterType);
-		Object[] argobj = ContractClassFactory.getPrametersObject(params);
-		remoteCall = (RemoteCall<?>) func.invoke(contractObject, argobj);
-		
-		Object result = remoteCall.send();
-        System.out.println(result);
+		try {
+			Method load = contractClass.getMethod("load", String.class, Web3j.class, Credentials.class, BigInteger.class, BigInteger.class);
+			Object contractObject;
+			contractObject = load.invoke(null, contractAddress, web3j, credentials, gasPrice, gasLimit);
+			Class[] parameterType = ContractClassFactory.getParameterType(contractClass, params[1]);
+			String returnType = ContractClassFactory.getReturnType(contractClass, params[1]);
+			Method func = contractClass.getMethod(params[1], parameterType);
+			Object[] argobj = ContractClassFactory.getPrametersObject(parameterType, params);
+			remoteCall = (RemoteCall<?>) func.invoke(contractObject, argobj);
+			Object result;
+			result = remoteCall.send();
+			String resultStr;
+			resultStr = ContractClassFactory.getReturnObject(returnType, result);
+			System.out.println(resultStr);
+		} catch (Exception e) {
+			System.out.println(e);
+		}
         System.out.println();
     }
     
@@ -503,8 +474,8 @@ public class ConsoleClient {
         sb.append("getPendingTransactions(gpt)                   Query pending transactions.\n");
         sb.append("getCode(gc)                                   Query code at a given address.\n");
         sb.append("getTotalTransactionCount(gtc)                 Query total transaction count.\n");
-        sb.append("call(c)                                       Executes a new message call immediately without creating a transaction.\n");
-        sb.append("sendRawTransaction(srt)                       Creates new message call transaction or a contract creation for signed transactions.\n");
+        sb.append("deploy(d)                                     Deploy contract on blockchain.\n");
+        sb.append("call(c)                                       Call contract by method and paramters.\n");
         sb.append("quit(q)                                       Quit console.");
         System.out.println(sb.toString());
         singleLine();
