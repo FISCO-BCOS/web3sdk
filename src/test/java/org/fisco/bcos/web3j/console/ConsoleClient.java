@@ -59,14 +59,13 @@ public class ConsoleClient {
         }
         ChannelEthereumService channelEthereumService = new ChannelEthereumService();
         channelEthereumService.setChannelService(service);
-        // init the client keys
+
         keyPair = Keys.createEcKeyPair();
         credentials = Credentials.create(keyPair);
 
         web3j = Web3j.build(channelEthereumService, service.getGroupId());
 
         Scanner sc = new Scanner(System.in);
-
         while(true)
         {
             System.out.print("> ");
@@ -85,112 +84,96 @@ public class ConsoleClient {
             try {
 
                 switch (params[0]) {
-
-                    case "help" :
-                    case "h" :
-                        help();
-                        break;
-                    case "getBlockNumber" :
-                    case "gbn" :
-                        getBlockNumber(params);
-                        break;
-                    case "getPbftView" :
-                    case "gpv" :
-                        getPbftView(params);
-                        break;
-                    case "getConsensusStatus" :
-                    case "gcs" :
-                        getConsensusStatus(params);
-                        break;
-                    case "getSyncStatus" :
-                    case "gss" :
-                        getSyncStatus(params);
-                        break;
-                    case "getClientVersion" :
-                    case "gcv" :
-                        getClientVersion(params);
-                        break;
-                    case "getPeers" :
-                    case "gps" :
-                        getPeers(params);
-                        break;
-                    case "getGroupPeers" :
-                    case "ggp" :
-                        getGroupPeers(params);
-                        break;
-                    case "getGroupList" :
-                    case "ggl" :
-                        getGroupList(params);
-                        break;
-                    case "getBlockByHash" :
-                    case "gbbh" :
-                        getBlockByHash(params);
-                        break;
-                    case "getBlockByNumber" :
-                    case "gbbn" :
-                        getBlockByNumber(params);
-                        break;
-                    case "getBlockHashByNumber" :
-                    case "ghbn" :
-                        getBlockHashByNumber(params);
-                        break;
-                    case "getTransactionByHash" :
-                    case "gtbh" :
-                        getTransactionByHash(params);
-                        break;
-                    case "getTransactionByBlockHashAndIndex" :
-                    case "gthi" :
-                        getTransactionByBlockHashAndIndex(params);
-                        break;
-                    case "getTransactionByBlockNumberAndIndex" :
-                    case "gtni" :
-                        getTransactionByBlockNumberAndIndex(params);
-                        break;
-                    case "getTransactionReceipt" :
-                    case "gtr" :
-                        getTransactionReceipt(params);
-                        break;
-                    case "getPendingTransactions" :
-                    case "gpt" :
-                        getPendingTransactions(params);
-                        break;
-                    case "getCode" :
-                    case "gc" :
-                        getCode(params);
-                        break;
-                    case "getTotalTransactionCount" :
-                    case "gtc" :
-                        getTotalTransactionCount(params);
-                        break;
-                    case "deploy" :
-                        deploy(params);
-                        break;
-                    case "call" :
-                    case "c" :
-                        call(params);
-                        break;
-                    case "send" :
-                    case "s" :
-                        try {
-                            send(params);
-                        } catch (NoSuchMethodException e) {
-                            e.printStackTrace();
-                        } catch (SecurityException e) {
-                            e.printStackTrace();
-                        } catch (IllegalAccessException e) {
-                            e.printStackTrace();
-                        } catch (IllegalArgumentException e) {
-                            e.printStackTrace();
-                        } catch (InvocationTargetException e) {
-                            e.printStackTrace();
-                        }
-                        break;
-                    case "quit" :
-                    case "q" :
-                        System.exit(0);
-                    default:
-                        System.out.println("Unknown command, enter 'help' for command list.\n");
-                        break;
+                
+                case "help" :
+                case "h" :
+                    help();
+                    break;
+                case "getBlockNumber" :
+                case "gbn" :
+                    getBlockNumber(params);
+                    break;
+                case "getPbftView" :
+                case "gpv" :
+                    getPbftView(params);
+                    break;
+                case "getConsensusStatus" :
+                case "gcs" :
+                	getConsensusStatus(params);
+                	break;
+                case "getSyncStatus" :
+                case "gss" :
+                	getSyncStatus(params);
+                	break;
+                case "getClientVersion" :
+                case "gcv" :
+                	getClientVersion(params);
+                	break;
+                case "getPeers" :
+                case "gps" :
+                	getPeers(params);
+                	break;
+                case "getGroupPeers" :
+                case "ggp" :
+                	getGroupPeers(params);
+                	break;
+                case "getGroupList" :
+                case "ggl" :
+                	getGroupList(params);
+                	break;
+                case "getBlockByHash" :
+                case "gbbh" :
+                	getBlockByHash(params);
+                	break;
+                case "getBlockByNumber" :
+                case "gbbn" :
+                	getBlockByNumber(params);
+                	break;
+                case "getBlockHashByNumber" :
+                case "ghbn" :
+                	getBlockHashByNumber(params);
+                	break;
+                case "getTransactionByHash" :
+                case "gtbh" :
+                	getTransactionByHash(params);
+                	break;
+                case "getTransactionByBlockHashAndIndex" :
+                case "gthi" :
+                	getTransactionByBlockHashAndIndex(params);
+                	break;
+                case "getTransactionByBlockNumberAndIndex" :
+                case "gtni" :
+                	getTransactionByBlockNumberAndIndex(params);
+                	break;
+                case "getTransactionReceipt" :
+                case "gtr" :
+                	getTransactionReceipt(params);
+                	break;
+                case "getPendingTransactions" :
+                case "gpt" :
+                	getPendingTransactions(params);
+                	break;
+                case "getCode" :
+                case "gc" :
+                	getCode(params);
+                	break;
+                case "getTotalTransactionCount" :
+                case "gtc" :
+                	getTotalTransactionCount(params);
+                	break;
+                case "deploy" :
+                	deploy(params);
+                	break;
+                case "call" :
+                case "c" :
+					call(params);
+                    break;
+                case "quit" :
+                case "q" :
+                    System.exit(0);
+                default:
+                    System.out.println("Unknown command, enter 'help' for command list.\n");
+                    break;  
 
                 }
 
@@ -275,123 +258,124 @@ public class ConsoleClient {
     }
 
     private static void getBlockByHash(String[] params) throws IOException {
-        if(params.length < 2)
-        {
-            System.out.println("getBlockByHash(gbbh): missing block hash and transaction flag(optional)");
-            System.out.println("for example: getBlockByHash 0x5e743a... true");
-            return;
-        }
-        boolean flag = false;
-        if(params.length == 3 && "true".equals(params[2]))
-            flag = true;
-        String block = web3j.ethGetBlockByHash(params[1], flag).sendForReturnString();
-        JsonFormatUtil.printJson(block);
-        System.out.println();
+
+    	if(params.length < 2)
+    	{
+    		System.out.println("getBlockByHash(gbbh): missing block hash and transaction flag(optional)");
+    		System.out.println("example: getBlockByHash 0x5e743a... true");
+    		return;
+    	}
+    	boolean flag = false;
+    	if(params.length == 3 && "true".equals(params[2]))
+    		flag = true;
+    	String block = web3j.ethGetBlockByHash(params[1], flag).sendForReturnString();
+    	JsonFormatUtil.printJson(block);
+    	System.out.println();
     }
 
     private static void getBlockByNumber(String[] params) throws IOException {
-        if(params.length < 2)
-        {
-            System.out.println("getBlockByNumber(gbbn): missing block number and transaction flag(optional)");
-            System.out.println("for example: getBlockByNumber 1 true");
-            return;
-        }
-        if(!params[1].matches("^[0-9]*$"))
-        {
-            System.out.println("Please provide block number by decimal mode.");
-            return;
-        }
-        boolean flag = false;
-        if(params.length == 3 && "true".equals(params[2]))
-            flag = true;
-        BigInteger blockNumber = new BigInteger(params[1]);
-        String block = web3j.ethGetBlockByNumber(DefaultBlockParameter.valueOf(blockNumber), flag).sendForReturnString();
-        JsonFormatUtil.printJson(block);
-        System.out.println();
+    	if(params.length < 2)
+    	{
+    		System.out.println("getBlockByNumber(gbbn): missing block number and transaction flag(optional)");
+    		System.out.println("example: getBlockByNumber 1 true");
+    		return;
+    	}
+    	if(!params[1].matches("^[0-9]*$"))
+    	{
+    		System.out.println("Please provide block number by decimal mode.");
+    		return;
+    	}
+    	boolean flag = false;
+    	if(params.length == 3 && "true".equals(params[2]))
+    		flag = true;
+    	BigInteger blockNumber = new BigInteger(params[1]);
+    	String block = web3j.ethGetBlockByNumber(DefaultBlockParameter.valueOf(blockNumber), flag).sendForReturnString();
+    	JsonFormatUtil.printJson(block);
+    	System.out.println();
     }
 
     private static void getBlockHashByNumber(String[] params) throws IOException {
-        if(params.length < 2)
-        {
-            System.out.println("getBlockHashByNumber(ghbn): missing block number");
-            System.out.println("for example: ghbn 1");
-            return;
-        }
-        if(!params[1].matches("^[0-9]*$"))
-        {
-            System.out.println("Please provide block number by decimal mode.");
-            return;
-        }
-        BigInteger blockNumber = new BigInteger(params[1]);
-        String blockHash = web3j.getBlockHashByNumber(DefaultBlockParameter.valueOf(blockNumber)).sendForReturnString();
-        JsonFormatUtil.printJson(blockHash);
-        System.out.println();
+    	if(params.length < 2)
+    	{
+    		System.out.println("getBlockHashByNumber(ghbn): missing block number");
+    		System.out.println("example: ghbn 1");
+    		return;
+    	}
+    	if(!params[1].matches("^[0-9]*$"))
+    	{
+    		System.out.println("Please provide block number by decimal mode.");
+    		return;
+    	}
+    	BigInteger blockNumber = new BigInteger(params[1]);
+    	String blockHash = web3j.getBlockHashByNumber(DefaultBlockParameter.valueOf(blockNumber)).sendForReturnString();
+    	JsonFormatUtil.printJson(blockHash);
+    	System.out.println();
     }
 
     private static void getTransactionByHash(String[] params) throws IOException {
-        if(params.length < 2)
-        {
-            System.out.println("getTransactionByHash(gtbh): missing transactions hash");
-            System.out.println("for example: gtbh 0x0x7536cf...");
-            return;
-        }
-        String transaction = web3j.ethGetTransactionByHash(params[1]).sendForReturnString();
-        JsonFormatUtil.printJson(transaction);
-        System.out.println();
+    	if(params.length < 2)
+    	{
+    		System.out.println("getTransactionByHash(gtbh): missing transactions hash");
+    		System.out.println("example: gtbh 0x0x7536cf...");
+    		return;
+    	}
+    	String transaction = web3j.ethGetTransactionByHash(params[1]).sendForReturnString();
+    	JsonFormatUtil.printJson(transaction);
+    	System.out.println();
     }
 
     private static void getTransactionByBlockHashAndIndex(String[] params) throws IOException {
-        if(params.length < 3)
-        {
-            System.out.println("getTransactionByBlockHashAndIndex(gthi): missing block hash and transaction index");
-            System.out.println("for example: gthi 0x5e743a... 0");
-            return;
-        }
-        if(!params[2].matches("^[0-9]*$"))
-        {
-            System.out.println("Please provide transaction index by decimal mode.");
-            return;
-        }
-        BigInteger index = new BigInteger(params[2]);
-        String transaction = web3j.ethGetTransactionByBlockHashAndIndex(params[1], index).sendForReturnString();
-        JsonFormatUtil.printJson(transaction);
-        System.out.println();
+    	if(params.length < 3)
+    	{
+    		System.out.println("getTransactionByBlockHashAndIndex(gthi): missing block hash and transaction index");
+    		System.out.println("example: gthi 0x5e743a... 0");
+    		return;
+    	}
+    	if(!params[2].matches("^[0-9]*$"))
+    	{
+    		System.out.println("Please provide transaction index by decimal mode.");
+    		return;
+    	}
+    	BigInteger index = new BigInteger(params[2]);
+    	String transaction = web3j.ethGetTransactionByBlockHashAndIndex(params[1], index).sendForReturnString();
+    	JsonFormatUtil.printJson(transaction);
+    	System.out.println();
     }
 
     private static void getTransactionByBlockNumberAndIndex(String[] params) throws IOException {
-        if(params.length < 3)
-        {
-            System.out.println("getTransactionByBlockNumberAndIndex(gtni): missing block number and transaction index");
-            System.out.println("for example: gtni 1 0");
-            return;
-        }
-        if(!params[1].matches("^[0-9]*$"))
-        {
-            System.out.println("Please provide block number by decimal mode.");
-            return;
-        }
-        BigInteger blockNumber = new BigInteger(params[1]);
-        if(!params[2].matches("^[0-9]*$"))
-        {
-            System.out.println("Please provide transaction index by decimal mode.");
-            return;
-        }
-        BigInteger index = new BigInteger(params[2]);
-        String transaction = web3j.ethGetTransactionByBlockNumberAndIndex(DefaultBlockParameter.valueOf(blockNumber), index).sendForReturnString();
-        JsonFormatUtil.printJson(transaction);
-        System.out.println();
+    	if(params.length < 3)
+    	{
+    		System.out.println("getTransactionByBlockNumberAndIndex(gtni): missing block number and transaction index");
+    		System.out.println("example: gtni 1 0");
+    		return;
+    	}
+    	if(!params[1].matches("^[0-9]*$"))
+    	{
+    		System.out.println("Please provide block number by decimal mode.");
+    		return;
+    	}
+    	BigInteger blockNumber = new BigInteger(params[1]);
+    	if(!params[2].matches("^[0-9]*$"))
+    	{
+    		System.out.println("Please provide transaction index by decimal mode.");
+    		return;
+    	}
+    	BigInteger index = new BigInteger(params[2]);
+    	String transaction = web3j.ethGetTransactionByBlockNumberAndIndex(DefaultBlockParameter.valueOf(blockNumber), index).sendForReturnString();
+    	JsonFormatUtil.printJson(transaction);
+    	System.out.println();
     }
 
     private static void getTransactionReceipt(String[] params) throws IOException {
-        if(params.length < 2)
-        {
-            System.out.println("getTransactionReceipt(gtr): missing transaction hash");
-            System.out.println("for example: gtr 0x7536cf...");
-            return;
-        }
-        String transactionReceipt = web3j.ethGetTransactionReceipt(params[1]).sendForReturnString();
-        JsonFormatUtil.printJson(transactionReceipt);
-        System.out.println();
+    	if(params.length < 2)
+    	{
+    		System.out.println("getTransactionReceipt(gtr): missing transaction hash");
+    		System.out.println("example: gtr 0x7536cf...");
+    		return;
+    	}
+    	String transactionReceipt = web3j.ethGetTransactionReceipt(params[1]).sendForReturnString();
+    	JsonFormatUtil.printJson(transactionReceipt);
+    	System.out.println();
     }
 
     private static void getPendingTransactions(String[] params) throws IOException {
@@ -404,15 +388,15 @@ public class ConsoleClient {
     }
 
     private static void getCode(String[] params) throws IOException {
-        if(params.length < 2)
-        {
-            System.out.println("getCode(gc): missing contract address");
-            System.out.println("for example: gc 0xa94f53...");
-            return;
-        }
-        String code = web3j.ethGetCode(params[1], DefaultBlockParameterName.LATEST).sendForReturnString();
-        JsonFormatUtil.printJson(code);
-        System.out.println();
+    	if(params.length < 2)
+    	{
+    		System.out.println("getCode(gc): missing contract address");
+    		System.out.println("example: gc 0xa94f53...");
+    		return;
+    	}
+    	String code = web3j.ethGetCode(params[1], DefaultBlockParameterName.LATEST).sendForReturnString();
+    	JsonFormatUtil.printJson(code);
+    	System.out.println();
     }
 
     private static void getTotalTransactionCount(String[] params) throws IOException {
@@ -475,9 +459,55 @@ public class ConsoleClient {
         Transaction tx = new Transaction(params[1], BigInteger.ZERO,  BigInteger.ZERO, BigInteger.ZERO, params[2],  BigInteger.ZERO, params[3]);
         String result = web3j.ethCall(tx, DefaultBlockParameterName.LATEST).sendForReturnString();
         JsonFormatUtil.printJson(result);
+    
+    private static void deploy(String[] params) throws IOException {
+    	if(params.length < 2)
+    	{
+    		System.out.println("deploy: missing contract name");
+    		System.out.println("example: deploy Ok");
+    		return;
+    	}
+    	contractName = "org.fisco.bcos.temp."+params[1];
+    	try {
+			contractClass = ContractClassFactory.getContractClass(contractName);
+			Method deploy = contractClass.getMethod("deploy", Web3j.class, Credentials.class, BigInteger.class, BigInteger.class);
+			remoteCall = (RemoteCall<?>) deploy.invoke(null, web3j, credentials, gasPrice, gasLimit);
+			Contract contract = (Contract) remoteCall.send();
+			contractAddress = contract.getContractAddress();
+			System.out.println(contractAddress);
+		} catch (Exception e) {
+			System.out.println(contractName + ".java is not exist");
+		}
+    	System.out.println();
+    }
+    
+    private static void call(String[] params){
+    	if(params.length < 2)
+    	{
+    		System.out.println("call(c): missing method name");
+    		System.out.println("example: call get");
+    		return;
+    	}
+		try {
+			Method load = contractClass.getMethod("load", String.class, Web3j.class, Credentials.class, BigInteger.class, BigInteger.class);
+			Object contractObject;
+			contractObject = load.invoke(null, contractAddress, web3j, credentials, gasPrice, gasLimit);
+			Class[] parameterType = ContractClassFactory.getParameterType(contractClass, params[1]);
+			String returnType = ContractClassFactory.getReturnType(contractClass, params[1]);
+			Method func = contractClass.getMethod(params[1], parameterType);
+			Object[] argobj = ContractClassFactory.getPrametersObject(parameterType, params);
+			remoteCall = (RemoteCall<?>) func.invoke(contractObject, argobj);
+			Object result;
+			result = remoteCall.send();
+			String resultStr;
+			resultStr = ContractClassFactory.getReturnObject(returnType, result);
+			System.out.println(resultStr);
+		} catch (Exception e) {
+			System.out.println(e);
+		}
         System.out.println();
     }
-
+    
     private static void help() {
         singleLine();
         StringBuilder sb = new StringBuilder();
@@ -500,8 +530,8 @@ public class ConsoleClient {
         sb.append("getPendingTransactions(gpt)                   Query pending transactions.\n");
         sb.append("getCode(gc)                                   Query code at a given address.\n");
         sb.append("getTotalTransactionCount(gtc)                 Query total transaction count.\n");
-        sb.append("call(c)                                       Executes a new message call immediately without creating a transaction.\n");
-        sb.append("sendRawTransaction(srt)                       Creates new message call transaction or a contract creation for signed transactions.\n");
+        sb.append("deploy(d)                                     Deploy contract on blockchain.\n");
+        sb.append("call(c)                                       Call contract by method and paramters.\n");
         sb.append("quit(q)                                       Quit console.");
         System.out.println(sb.toString());
         singleLine();
