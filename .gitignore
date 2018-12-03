@@ -33,3 +33,5 @@ gradle.properties
 /out
 /log
 /dist
+/src/test/resources/ca.crt
+/src/test/resources/client.keystore
