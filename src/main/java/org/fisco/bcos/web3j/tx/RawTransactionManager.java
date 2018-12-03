@@ -38,7 +38,7 @@ public class RawTransactionManager extends TransactionManager {
 
 
     public RawTransactionManager(Web3j web3j, Credentials credentials, byte chainId) {
-        super(web3j,credentials.getAddress());
+        super(web3j,credentials);
         this.web3j = web3j;
         this.credentials = credentials;
 
@@ -47,7 +47,7 @@ public class RawTransactionManager extends TransactionManager {
 
     public RawTransactionManager(
             Web3j web3j, Credentials credentials, byte chainId, int attempts, int sleepDuration) {
-        super(web3j, attempts, sleepDuration,credentials.getAddress());
+        super(web3j, attempts, sleepDuration,credentials);
         this.web3j = web3j;
         this.credentials = credentials;
 
