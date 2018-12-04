@@ -18,7 +18,7 @@ public class BlockTest extends TestBase {
         EthBlock.Block block=  web3j.ethGetBlockByNumber(DefaultBlockParameter.valueOf(new BigInteger("1")), true).send().getBlock();
        assertEquals( block.getNonce(),new BigInteger("0"));
         System.out.println("getBlockNumber" + block.getNumber());
-        System.out.println("***** current block number is  ***** " + web3j.getBlockNumberCache());
+        System.out.println("***** current block number is  ***** " + (web3j.getBlockNumberCache().intValue()-500));
         assertTrue( block.getNumber().intValue()>0);
     }
 
