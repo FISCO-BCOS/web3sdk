@@ -206,9 +206,9 @@ public class ChannelConnections {
             .childHandler(new ChannelInitializer<SocketChannel>() {
                 @Override
                 public void initChannel(SocketChannel ch) throws Exception {
-                    KeyStore ks = KeyStore.getInstance("JKS");
+                    KeyStore ks = KeyStore.getInstance("PKCS12");
 
-					final Resource keystoreResource =  new ClassPathResource("client.keystore");
+					final Resource keystoreResource =  new ClassPathResource("keystore.p12");
 					final Resource caResource = new ClassPathResource("ca.crt");
 
 					ks.load(keystoreResource.getInputStream(), getKeystorePassWord().toCharArray());
@@ -293,16 +293,12 @@ public class ChannelConnections {
 		
 		final ChannelConnections selfService = this;
 		final ThreadPoolTaskExecutor selfThreadPool = threadPool;
-		
-		final Resource keystoreResource =  new ClassPathResource("client.keystore");
+
         final Resource caResource = new ClassPathResource("ca.crt");
         
 		bootstrap.handler(new ChannelInitializer<SocketChannel>() {
             @Override
             public void initChannel(SocketChannel ch) throws Exception {
-            	KeyStore ks = KeyStore.getInstance("JKS");
-            	InputStream ksInputStream = keystoreResource.getInputStream();
-            	ks.load(ksInputStream, 	getKeystorePassWord().toCharArray());
 				/*
 				 * 每次连接使用新的handler 连接信息从socketChannel中获取
 				 */
