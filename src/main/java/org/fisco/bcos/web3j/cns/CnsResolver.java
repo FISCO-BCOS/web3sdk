@@ -91,7 +91,7 @@ public class CnsResolver {
                     contractAddressInfo = cns.selectByName(contractName).send();
                     logger.debug("get contractName ", contractAddressInfo);
                     List<Contracts> contracts = jsonToContracts(contractAddressInfo);
-                    Contracts c = contracts.stream().filter(x -> x.getVersion().equals(contractVersion)).findFirst().get();
+                   Contracts c = contracts.stream().filter(x -> x.getVersion().equals(contractVersion)).findFirst().get();
                     address = c.getAddress();
                 } catch (Exception e) {
                     throw new RuntimeException("Unable to execute Ethereum request", e);
@@ -111,15 +111,17 @@ public class CnsResolver {
     public TransactionReceipt registerCns(String name, String version, String addr, String abi) throws Exception {
         Cns cns = lookupResolver();
         TransactionReceipt receipt = cns.insert(name, version, addr, abi).send();
+        if(receipt.getOutput()== "0") {
+            throw new CnsResolutionException("Cannot register: " + name + ":" + version );
+        }
         return receipt;
-
     }
 
 
     private List<Contracts> jsonToContracts(String contractAddressInfo) throws IOException {
 
         ObjectMapper objectMapper = ObjectMapperFactory.getObjectMapper();
-        List<Contracts> contracts = objectMapper.readValue(contractAddressInfo, List.class);
+        List<Contracts> contracts = objectMapper.readValue(contractAddressInfo, objectMapper.getTypeFactory().constructCollectionType(List.class, Contracts.class));
         return contracts;
     }
 

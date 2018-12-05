@@ -32,7 +32,7 @@ public class CnsResolverTest extends TestBase {
 
         Ok okDemo = Ok.deploy(web3j, credentials, gasPrice, gasLimit, initialWeiValue).send();
         System.out.println("okdemo contract address " + okDemo.getContractAddress());
-    TransactionReceipt receipt = cnsResolver.registerCns("hello world", "1.0", okDemo.getContractAddress(),"[\n" +
+    TransactionReceipt receipt = cnsResolver.registerCns("hello world", "8.0", okDemo.getContractAddress(),"[\n" +
             "\t{\n" +
             "\t\t\"constant\": false,\n" +
             "\t\t\"inputs\": [\n" +
@@ -70,7 +70,9 @@ public class CnsResolverTest extends TestBase {
             "]");
         System.out.println("receipt" + receipt.getBlockNumber());
         System.out.println("receipt" + receipt.getTransactionHash());
-        System.out.println( "cnsResolver address" +cnsResolver.resolve("hello world:1.0"));
+        System.out.println( "cnsResolver address" +cnsResolver.resolve("hello world:8.0"));
+        assertEquals(cnsResolver.resolve("hello world:8.0"),okDemo.getContractAddress());
+
     }
 
 

@@ -1,5 +1,6 @@
 package org.fisco.bcos.channel.handler;
 
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.security.KeyStore;
 import java.security.PrivateKey;
@@ -15,6 +16,8 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.security.cert.X509Certificate;
 
+import io.netty.channel.*;
+import io.netty.handler.ssl.SslHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
@@ -25,11 +28,6 @@ import org.fisco.bcos.channel.dto.EthereumMessage;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -40,6 +38,10 @@ import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.timeout.IdleStateHandler;
+
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
 
 public class ChannelConnections {
 	private static Logger logger = LoggerFactory.getLogger(ChannelConnections.class);
@@ -206,13 +208,12 @@ public class ChannelConnections {
             .childHandler(new ChannelInitializer<SocketChannel>() {
                 @Override
                 public void initChannel(SocketChannel ch) throws Exception {
-                    KeyStore ks = KeyStore.getInstance("JKS");
-
-					final Resource keystoreResource =  new ClassPathResource("client.keystore");
+                    KeyStore ks = KeyStore.getInstance("PKCS12");
+					final Resource keystoreResource =  new ClassPathResource("keystore.p12");
 					final Resource caResource = new ClassPathResource("ca.crt");
 
 					ks.load(keystoreResource.getInputStream(), getKeystorePassWord().toCharArray());
-                	
+
                 	/*
                 	 * 每次连接使用新的handler
                 	 * 连接信息从socketChannel中获取
@@ -294,13 +295,13 @@ public class ChannelConnections {
 		final ChannelConnections selfService = this;
 		final ThreadPoolTaskExecutor selfThreadPool = threadPool;
 		
-		final Resource keystoreResource =  new ClassPathResource("client.keystore");
+		final Resource keystoreResource =  new ClassPathResource("keystore.p12");
         final Resource caResource = new ClassPathResource("ca.crt");
         
 		bootstrap.handler(new ChannelInitializer<SocketChannel>() {
             @Override
             public void initChannel(SocketChannel ch) throws Exception {
-            	KeyStore ks = KeyStore.getInstance("JKS");
+            	KeyStore ks = KeyStore.getInstance("PKCS12");
             	InputStream ksInputStream = keystoreResource.getInputStream();
             	ks.load(ksInputStream, 	getKeystorePassWord().toCharArray());
 				/*
