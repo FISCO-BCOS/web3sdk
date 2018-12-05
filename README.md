@@ -15,7 +15,7 @@
        #===编译we3bsdk源码，生成dist目录 ===
        $ cd web3sdk
 
- 拷贝证书文件ca.crt和client.keystore到web3sdk/src/test/resources目录下；
+ 拷贝证书文件ca.crt和keystore.p12到web3sdk/src/test/resources目录下；
 找到 web3sdk/src/test/resources/applicationContext.xml文件的channelService,
 增加<property name="groupId" value="1" /> groupId配置。
  ---
