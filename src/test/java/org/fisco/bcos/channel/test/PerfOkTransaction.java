@@ -18,8 +18,8 @@ import java.util.concurrent.Future;
 public class PerfOkTransaction {
     public static void main(String[] args) throws Exception {
 
-        String groupId = args[0];
-        String method = args[1];
+        String groupId = "1";
+        String method = "deploy";
         ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
         Service service = context.getBean(Service.class);
         service.run();
