@@ -111,7 +111,7 @@ public class CnsResolver {
     public TransactionReceipt registerCns(String name, String version, String addr, String abi) throws Exception {
         Cns cns = lookupResolver();
         TransactionReceipt receipt = cns.insert(name, version, addr, abi).send();
-        if(receipt.getOutput()== "0") {
+        if("0x0000000000000000000000000000000000000000000000000000000000000000".equals(receipt.getOutput())) {
             throw new CnsResolutionException("Cannot register: " + name + ":" + version );
         }
         return receipt;
