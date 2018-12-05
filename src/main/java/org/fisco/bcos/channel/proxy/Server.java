@@ -25,6 +25,8 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timer;
 
+import javax.net.ssl.SSLException;
+
 public class Server {
 	private static Logger logger = LoggerFactory.getLogger(Server.class);
 	
@@ -159,7 +161,7 @@ public class Server {
 		this.timeoutHandler = timeoutHandler;
 	}
 
-	public void run() {
+	public void run() throws SSLException {
 		logger.debug("init ProxyServer");
 		
 		try {
