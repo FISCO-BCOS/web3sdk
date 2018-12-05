@@ -11,6 +11,8 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.time.LocalDateTime;
+import java.util.Random;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -32,7 +34,9 @@ public class CnsResolverTest extends TestBase {
 
         Ok okDemo = Ok.deploy(web3j, credentials, gasPrice, gasLimit, initialWeiValue).send();
         System.out.println("okdemo contract address " + okDemo.getContractAddress());
-    TransactionReceipt receipt = cnsResolver.registerCns("hello world", "8.0", okDemo.getContractAddress(),"[\n" +
+        int random = new Random().nextInt(1000);
+        String name = "hello world" + random;
+        TransactionReceipt receipt = cnsResolver.registerCns(name , "9.0", okDemo.getContractAddress(),"[\n" +
             "\t{\n" +
             "\t\t\"constant\": false,\n" +
             "\t\t\"inputs\": [\n" +
@@ -68,10 +72,11 @@ public class CnsResolverTest extends TestBase {
             "\t\t\"stateMutability\": \"payable\"\n" +
             "\t}\n" +
             "]");
-        System.out.println("receipt" + receipt.getBlockNumber());
         System.out.println("receipt" + receipt.getTransactionHash());
-        System.out.println( "cnsResolver address" +cnsResolver.resolve("hello world:8.0"));
-        assertEquals(cnsResolver.resolve("hello world:8.0"),okDemo.getContractAddress());
+        System.out.println("CNS NAME   " + name+":9.0" );
+        System.out.println("CNS register SUCCESSFULLY");
+        System.out.println( "cnsResolver address" +cnsResolver.resolve(name +":9.0"));
+        assertEquals(cnsResolver.resolve(name +":9.0"),okDemo.getContractAddress());
 
     }
 
