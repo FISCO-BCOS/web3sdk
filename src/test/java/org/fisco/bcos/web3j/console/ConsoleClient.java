@@ -193,7 +193,7 @@ public class ConsoleClient {
 				System.out.println(
 						"{\"error\":{\"code\":" + e.getCode() + ", \"message:\"" + "\"" + e.getMessage() + "\"}}");
 				System.out.println();
-			} catch (IOException e) {
+			} catch (Exception e) {
 				System.out.println(e.getMessage());
 				System.out.println();
 			}
@@ -231,29 +231,16 @@ public class ConsoleClient {
 		System.out.println();
 	}
 
-	private static void getObserverList(String[] params) {
-		List<String> observerList = null;
-		try {
-			observerList = web3j.getObserverList().send().getResult();
-			System.out.println(observerList);
-		} catch (IOException e) {
-			System.out.println(e);
-			;
-		}
+	private static void getObserverList(String[] params) throws IOException {
+		List<String> observerList = web3j.getObserverList().send().getResult();
+		JsonFormatUtil.printJson(observerList.toString());
 		System.out.println();
 
 	}
 
-	private static void getMinerList(String[] params) {
-		List<String> minerList = null;
-		try {
-			minerList = web3j.getMinerList().send().getResult();
-			JsonFormatUtil.printJson(minerList.toString());
-			;
-		} catch (IOException e) {
-			System.out.println(e);
-			;
-		}
+	private static void getMinerList(String[] params) throws IOException {
+		List<String> minerList = web3j.getMinerList().send().getResult();
+		JsonFormatUtil.printJson(minerList.toString());
 		System.out.println();
 
 	}
@@ -284,7 +271,7 @@ public class ConsoleClient {
 
 	private static void getGroupPeers(String[] params) throws IOException {
 		List<String> groupPeers = web3j.ethGroupPeers().send().getResult();
-		System.out.println(groupPeers);
+		JsonFormatUtil.printJson(groupPeers.toString());
 		System.out.println();
 	}
 
@@ -296,32 +283,37 @@ public class ConsoleClient {
 
 	private static void getBlockByHash(String[] params) throws IOException {
 		if (params.length < 2) {
-			System.out.println("getBlockByHash(gbbh): missing block hash and transaction flag(optional)");
+			System.out.println(
+					"getBlockByHash(gbbh): missing block hash and transaction detail flag(optional, false by default)");
 			System.out.println("example: getBlockByHash 0x5e743a... true");
 			return;
 		}
+		String blockHash = params[1];
+		if (isInvalidHash(blockHash))
+			return;
 		boolean flag = false;
 		if (params.length == 3 && "true".equals(params[2]))
 			flag = true;
-		String block = web3j.ethGetBlockByHash(params[1], flag).sendForReturnString();
+		String block = web3j.ethGetBlockByHash(blockHash, flag).sendForReturnString();
 		JsonFormatUtil.printJson(block);
 		System.out.println();
+
 	}
 
 	private static void getBlockByNumber(String[] params) throws IOException {
 		if (params.length < 2) {
-			System.out.println("getBlockByNumber(gbbn): missing block number and transaction flag(optional)");
+			System.out.println(
+					"getBlockByNumber(gbbn): missing block number and transaction detail flag(optional, false by default)");
 			System.out.println("example: getBlockByNumber 1 true");
 			return;
 		}
-		if (!params[1].matches("^[0-9]*$")) {
-			System.out.println("Please provide block number by decimal mode.");
+		String blockNumberStr = params[1];
+		if(isInvalidNumber(blockNumberStr, 0))
 			return;
-		}
+		BigInteger blockNumber = new BigInteger(blockNumberStr);
 		boolean flag = false;
 		if (params.length == 3 && "true".equals(params[2]))
 			flag = true;
-		BigInteger blockNumber = new BigInteger(params[1]);
 		String block = web3j.ethGetBlockByNumber(DefaultBlockParameter.valueOf(blockNumber), flag)
 				.sendForReturnString();
 		JsonFormatUtil.printJson(block);
@@ -334,14 +326,33 @@ public class ConsoleClient {
 			System.out.println("example: ghbn 1");
 			return;
 		}
-		if (!params[1].matches("^[0-9]*$")) {
-			System.out.println("Please provide block number by decimal mode.");
+		String blockNumberStr = params[1];
+		if(isInvalidNumber(blockNumberStr, 0))
+			return;
+		BigInteger blockNumber = new BigInteger(blockNumberStr);
+		if (blockNumber.intValue() > Numeric.decodeQuantity(web3j.ethBlockNumber().sendForReturnString()).intValue()) {
+			System.out.println("This block number doesn't exsit.");
 			return;
 		}
-		BigInteger blockNumber = new BigInteger(params[1]);
 		String blockHash = web3j.getBlockHashByNumber(DefaultBlockParameter.valueOf(blockNumber)).sendForReturnString();
 		JsonFormatUtil.printJson(blockHash);
 		System.out.println();
+	}
+
+	private static boolean isInvalidNumber(String number, int flag) {
+		String numberStr = number.trim();
+		if (!numberStr.matches("^[0-9]*$") || "".equals(numberStr)) {
+			if(flag == 0)
+				System.out.println("Please provide block number by decimal mode.");
+			else
+				System.out.println("Please provide transaction index by decimal mode.");
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+		
 	}
 
 	private static void getTransactionByHash(String[] params) throws IOException {
@@ -350,9 +361,25 @@ public class ConsoleClient {
 			System.out.println("example: gtbh 0x0x7536cf...");
 			return;
 		}
-		String transaction = web3j.ethGetTransactionByHash(params[1]).sendForReturnString();
+		String transactionHash = params[1];
+		if (isInvalidHash(transactionHash))
+			return;
+		String transaction = web3j.ethGetTransactionByHash(transactionHash).sendForReturnString();
+		if ("null".equals(transaction)) {
+			System.out.println("This transaction hash doesn't exist.");
+			return;
+		}
 		JsonFormatUtil.printJson(transaction);
 		System.out.println();
+	}
+
+	private static boolean isInvalidHash(String hash) {
+		if (hash.startsWith("0x") && hash.length() == 66) {
+			return false;
+		} else {
+			System.out.println("This is an invalid hash.");
+			return true;
+		}
 	}
 
 	private static void getTransactionByBlockHashAndIndex(String[] params) throws IOException {
@@ -361,12 +388,14 @@ public class ConsoleClient {
 			System.out.println("example: gthi 0x5e743a... 0");
 			return;
 		}
-		if (!params[2].matches("^[0-9]*$")) {
-			System.out.println("Please provide transaction index by decimal mode.");
+		String blockHash = params[1];
+		if (isInvalidHash(blockHash))
 			return;
-		}
-		BigInteger index = new BigInteger(params[2]);
-		String transaction = web3j.ethGetTransactionByBlockHashAndIndex(params[1], index).sendForReturnString();
+		String indexStr = params[2];
+		if(isInvalidNumber(indexStr, 1))
+			return;
+		BigInteger index = new BigInteger(indexStr);
+		String transaction = web3j.ethGetTransactionByBlockHashAndIndex(blockHash, index).sendForReturnString();
 		JsonFormatUtil.printJson(transaction);
 		System.out.println();
 	}
@@ -377,16 +406,14 @@ public class ConsoleClient {
 			System.out.println("example: gtni 1 0");
 			return;
 		}
-		if (!params[1].matches("^[0-9]*$")) {
-			System.out.println("Please provide block number by decimal mode.");
+		String blockNumberStr = params[1];
+		if(isInvalidNumber(blockNumberStr, 0))
 			return;
-		}
-		BigInteger blockNumber = new BigInteger(params[1]);
-		if (!params[2].matches("^[0-9]*$")) {
-			System.out.println("Please provide transaction index by decimal mode.");
+		BigInteger blockNumber = new BigInteger(blockNumberStr);
+		String indexStr = params[2];
+		if(isInvalidNumber(indexStr, 1))
 			return;
-		}
-		BigInteger index = new BigInteger(params[2]);
+		BigInteger index = new BigInteger(indexStr);
 		String transaction = web3j
 				.ethGetTransactionByBlockNumberAndIndex(DefaultBlockParameter.valueOf(blockNumber), index)
 				.sendForReturnString();
@@ -400,7 +427,14 @@ public class ConsoleClient {
 			System.out.println("example: gtr 0x7536cf...");
 			return;
 		}
-		String transactionReceipt = web3j.ethGetTransactionReceipt(params[1]).sendForReturnString();
+		String transactionHash = params[1];
+		if (isInvalidHash(transactionHash))
+			return;
+		String transactionReceipt = web3j.ethGetTransactionReceipt(transactionHash).sendForReturnString();
+		if ("null".equals(transactionReceipt)) {
+			System.out.println("This transaction hash doesn't exist.");
+			return;
+		}
 		JsonFormatUtil.printJson(transactionReceipt);
 		System.out.println();
 	}
@@ -420,7 +454,16 @@ public class ConsoleClient {
 			System.out.println("example: gc 0xa94f53...");
 			return;
 		}
-		String code = web3j.ethGetCode(params[1], DefaultBlockParameterName.LATEST).sendForReturnString();
+		String address = params[1];
+		if (!address.startsWith("0x") || !(address.length() == 42)) {
+			System.out.println("This is an invalid address.");
+			return;
+		}
+		String code = web3j.ethGetCode(address, DefaultBlockParameterName.LATEST).sendForReturnString();
+		if ("0x".equals(code)) {
+			System.out.println("This address doesn't exist.");
+			return;
+		}
 		JsonFormatUtil.printJson(code);
 		System.out.println();
 	}
@@ -434,83 +477,73 @@ public class ConsoleClient {
 		System.out.println();
 	}
 
-	private static void deploy(String[] params) throws IOException {
+	private static void deploy(String[] params) throws Exception {
 		if (params.length < 2) {
 			System.out.println("deploy: missing contract name");
 			System.out.println("example: deploy Ok");
 			return;
 		}
 		contractName = "org.fisco.bcos.temp." + params[1];
-		try {
-			contractClass = ContractClassFactory.getContractClass(contractName);
-			Method deploy = contractClass.getMethod("deploy", Web3j.class, Credentials.class, BigInteger.class,
-					BigInteger.class);
-			remoteCall = (RemoteCall<?>) deploy.invoke(null, web3j, credentials, gasPrice, gasLimit);
-			Contract contract = (Contract) remoteCall.send();
-			contractAddress = contract.getContractAddress();
-			System.out.println(contractAddress);
-		} catch (Exception e) {
-			System.out.println(contractName + ".java is not exist");
-		}
+		contractClass = ContractClassFactory.getContractClass(contractName);
+		Method deploy = contractClass.getMethod("deploy", Web3j.class, Credentials.class, BigInteger.class,
+				BigInteger.class);
+		remoteCall = (RemoteCall<?>) deploy.invoke(null, web3j, credentials, gasPrice, gasLimit);
+		Contract contract = (Contract) remoteCall.send();
+		contractAddress = contract.getContractAddress();
+		System.out.println(contractAddress);
 		System.out.println();
 	}
 
-	private static void call(String[] params) {
+	private static void call(String[] params) throws Exception {
 		if (params.length < 3) {
 			System.out.println("call(c): missing method name");
 			System.out.println("example: call get");
 			return;
 		}
-		try {
-			Method load = contractClass.getMethod("load", String.class, Web3j.class, Credentials.class,
-					BigInteger.class, BigInteger.class);
-			Object contractObject;
-			contractObject = load.invoke(null, contractAddress, web3j, credentials, gasPrice, gasLimit);
-			Class[] parameterType = ContractClassFactory.getParameterType(contractClass, params[1]);
-			String returnType = ContractClassFactory.getReturnType(contractClass, params[1]);
-			Method func = contractClass.getMethod(params[1], parameterType);
-			Object[] argobj = ContractClassFactory.getPrametersObject(parameterType, params);
-			remoteCall = (RemoteCall<?>) func.invoke(contractObject, argobj);
-			Object result;
-			result = remoteCall.send();
-			String resultStr;
-			resultStr = ContractClassFactory.getReturnObject(returnType, result);
-			System.out.println(resultStr);
-		} catch (Exception e) {
-			System.out.println(e);
-		}
+		Method load = contractClass.getMethod("load", String.class, Web3j.class, Credentials.class, BigInteger.class,
+				BigInteger.class);
+		Object contractObject;
+		contractObject = load.invoke(null, contractAddress, web3j, credentials, gasPrice, gasLimit);
+		Class[] parameterType = ContractClassFactory.getParameterType(contractClass, params[1]);
+		String returnType = ContractClassFactory.getReturnType(contractClass, params[1]);
+		Method func = contractClass.getMethod(params[1], parameterType);
+		Object[] argobj = ContractClassFactory.getPrametersObject(parameterType, params);
+		remoteCall = (RemoteCall<?>) func.invoke(contractObject, argobj);
+		Object result;
+		result = remoteCall.send();
+		String resultStr;
+		resultStr = ContractClassFactory.getReturnObject(returnType, result);
+		System.out.println(resultStr);
 		System.out.println();
 	}
 
-	private static void removePbft(String[] params) {
+	private static void removePbft(String[] params) throws Exception {
 
-		try {
-			if (params.length < 2) {
-				System.out.println("removePbft(rp): missing nodeID");
-				System.out.println("example: removePbft 10b3a2d4b...");
-				return;
-			}
-			UpdatePBFTNode pbft = new UpdatePBFTNode();
-			String nodeID = params[1];
-			List<String> observerList = web3j.getObserverList().send().getResult();
-			if(observerList.contains(nodeID))
-			{
-				System.out.println("The node is already a pbft observer node.");
-			}
-			else
-			{
-				String[] args = { "pbft", "remove", nodeID };
-				pbft.call(args, web3j, credentials, service.getGroupId());
-				System.out.println("Remove " + nodeID.substring(0, 8)+"..." + " to a pbft sealer of group " + service.getGroupId() + " successful.");
-			}
-			
-		} catch (Exception e) {
-			System.out.println(e);
+		if (params.length < 2) {
+			System.out.println("removePbft(rp): missing nodeID");
+			System.out.println("example: removePbft 10b3a2d4b...");
+			return;
+		}
+		UpdatePBFTNode pbft = new UpdatePBFTNode();
+		String nodeID = params[1];
+		List<String> minerList = web3j.getMinerList().send().getResult();
+		List<String> observerList = web3j.getObserverList().send().getResult();
+		if (nodeID.length() != 128) {
+			System.out.println("This is an invalid nodeID.");
+		} else if (observerList.contains(nodeID)) {
+			System.out.println("The node is already a pbft observer node.");
+		} else if (!minerList.contains(nodeID)) {
+			System.out.println("This is not a pbft sealer node.");
+		} else {
+			String[] args = { "pbft", "remove", nodeID };
+			pbft.call(args, web3j, credentials, service.getGroupId());
+			System.out.println("Remove " + nodeID.substring(0, 8) + "..." + " to a pbft sealer of group "
+					+ service.getGroupId() + " successful.");
 		}
 
 	}
 
-	private static void addPbft(String[] params) {
+	private static void addPbft(String[] params) throws Exception {
 		if (params.length < 2) {
 			System.out.println("addPbft(ap): missing nodeID");
 			System.out.println("example: addPbft 10b3a2d4b...");
@@ -518,21 +551,19 @@ public class ConsoleClient {
 		}
 		UpdatePBFTNode pbft = new UpdatePBFTNode();
 		String nodeID = params[1];
-		try {
-			List<String> minerList = web3j.getMinerList().send().getResult();
-			if(minerList.contains(nodeID))
-			{
-				System.out.println("The node is already a pbft sealer node.");
-			}
-			else
-			{
-				String[] args = { "pbft", "add", nodeID };
-				pbft.call(args, web3j, credentials, service.getGroupId());
-				System.out.println("Add " + nodeID.substring(0, 8)+"..." + " to a pbft sealer of group" + service.getGroupId() + " successful.");
-			}
-		}
-		catch (Exception e) {
-			System.out.println(e);
+		List<String> minerList = web3j.getMinerList().send().getResult();
+		List<String> observerList = web3j.getObserverList().send().getResult();
+		if (nodeID.length() != 128) {
+			System.out.println("This is an invalid nodeID.");
+		} else if (minerList.contains(nodeID)) {
+			System.out.println("The node is already a pbft sealer node.");
+		} else if (!observerList.contains(nodeID)) {
+			System.out.println("This is not a pbft observer node.");
+		} else {
+			String[] args = { "pbft", "add", nodeID };
+			pbft.call(args, web3j, credentials, service.getGroupId());
+			System.out.println("Add " + nodeID.substring(0, 8) + "..." + " to a pbft sealer of group "
+					+ service.getGroupId() + " successful.");
 		}
 
 	}
