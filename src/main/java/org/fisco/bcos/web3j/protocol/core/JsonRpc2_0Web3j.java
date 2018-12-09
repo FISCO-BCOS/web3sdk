@@ -189,11 +189,29 @@ public class JsonRpc2_0Web3j implements Web3j {
 
     @Override
     public Request<?, GroupList> ethGroupList() {
+    	return new Request<>(
+    			"getGroupList",
+    			Arrays.asList(groupId),
+    			web3jService,
+    			GroupList.class);
+    }
+    
+    @Override
+    public Request<?, MinerList> getMinerList() {
+    	return new Request<>(
+    			"getMinerList",
+    			Arrays.asList(groupId),
+    			web3jService,
+    			MinerList.class);
+    }
+    
+    @Override
+    public Request<?, ObserverList> getObserverList() {
         return new Request<>(
-                "getGroupList",
+                "getObserverList",
                Arrays.asList(groupId),
                 web3jService,
-                GroupList.class);
+                ObserverList.class);
     }
 
     @Override
