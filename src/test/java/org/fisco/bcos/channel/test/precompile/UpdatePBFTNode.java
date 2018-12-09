@@ -24,16 +24,16 @@ public class UpdatePBFTNode {
             Usage(args);
         String nodeId = args[2];
         if (operation.equals("add")) {
-            System.out.println("==== add " + nodeId + " to PBFT leaders of " + groupId);
+//            System.out.println("==== add " + nodeId + " to PBFT leaders of " + groupId);
             AddPBFTNode(nodeId, web3j, credentials);
-            System.out.println("==== add " + nodeId + " to PBFT leaders of " + groupId + " END ====");
-            System.exit(0);
+//            System.out.println("==== add " + nodeId + " to PBFT leaders of " + groupId + " END ====");
+//            System.exit(0);
         }
         if (operation.equals("remove")) {
-            System.out.println("==== remove " + nodeId + " from PBFT leaders of " + groupId);
+//            System.out.println("==== remove " + nodeId + " from PBFT leaders of " + groupId);
             RemovePBFTNode(nodeId, web3j, credentials);
-            System.out.println("==== remove " + nodeId + " from PBFT leaders of " + groupId + " END ====");
-            System.exit(0);
+//            System.out.println("==== remove " + nodeId + " from PBFT leaders of " + groupId + " END ====");
+//            System.exit(0);
         }
     }
 
@@ -64,9 +64,9 @@ public class UpdatePBFTNode {
         Miner miner = Miner.load(address, web3j, credentials, gasPrice, gasLimit);
         ///TransactionReceipt receipt = miner.remove(nodeId).sendAsync().get(60000, TimeUnit.MILLISECONDS);
         TransactionReceipt receipt = miner.remove(nodeId).send();
-        System.out.println("####get block number from TransactionReceipt: " + receipt.getBlockNumber());
-        System.out.println("####get transaction index from TransactionReceipt: " + receipt.getTransactionIndex());
-        System.out.println("####get gas used from TransactionReceipt: " + receipt.getGasUsed());
+//        System.out.println("####get block number from TransactionReceipt: " + receipt.getBlockNumber());
+//        System.out.println("####get transaction index from TransactionReceipt: " + receipt.getTransactionIndex());
+//        System.out.println("####get gas used from TransactionReceipt: " + receipt.getGasUsed());
     }
 
     /**
@@ -81,9 +81,9 @@ public class UpdatePBFTNode {
         Miner miner = Miner.load(address, web3j, credentials, gasPrice, gasLimit);
         ///TransactionReceipt receipt = miner.add(nodeId).sendAsync().get(60000, TimeUnit.MILLISECONDS);
         TransactionReceipt receipt = miner.add(nodeId).send();
-        System.out.println("####get block number from TransactionReceipt: " + receipt.getBlockNumber());
-        System.out.println("####get transaction index from TransactionReceipt: " + receipt.getTransactionIndex());
-        System.out.println("####get gas used from TransactionReceipt: " + receipt.getGasUsed());
+//        System.out.println("####get block number from TransactionReceipt: " + receipt.getBlockNumber());
+//        System.out.println("####get transaction index from TransactionReceipt: " + receipt.getTransactionIndex());
+//        System.out.println("####get gas used from TransactionReceipt: " + receipt.getGasUsed());
 
     }
 }

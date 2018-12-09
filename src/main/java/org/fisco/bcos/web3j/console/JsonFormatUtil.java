@@ -54,7 +54,8 @@ public class JsonFormatUtil {
 				}
 				break;
 			default:
-				sb.append(current);
+				if(!(current == " ".charAt(0)))
+					sb.append(current);
 			}
 		}
 
