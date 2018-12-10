@@ -1,6 +1,6 @@
 package org.fisco.bcos.channel.test;
 
-import org.fisco.bcos.channel.test.contract.Ok;
+import org.fisco.bcos.temp.Ok;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
@@ -102,7 +102,11 @@ public class BasicTest extends TestBase {
             System.out.println("####get block number by index from Block: " + web3j.ethGetBlockByNumber(DefaultBlockParameter.valueOf(new BigInteger("1")), true).send().getBlock().getNumber());
 
             System.out.println("####contract address is: " + okDemo.getContractAddress());
-            TransactionReceipt receipt = okDemo.trans(new BigInteger("4")).sendAsync().get(60000, TimeUnit.MILLISECONDS);
+          //  TransactionReceipt receipt = okDemo.trans(new BigInteger("4")).sendAsync().get(60000, TimeUnit.MILLISECONDS);
+            TransactionReceipt receipt = okDemo.trans(new BigInteger("4")).send();
+            List<Ok.TransEventEventResponse> events = okDemo.getTransEventEvents(receipt);
+            events.stream().forEach(System.out::println);
+
             System.out.println("###callback trans success");
 
             System.out.println("####get block number from TransactionReceipt: " + receipt.getBlockNumber());
