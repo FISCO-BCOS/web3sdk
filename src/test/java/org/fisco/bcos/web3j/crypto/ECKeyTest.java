@@ -1,8 +1,5 @@
-package org.fisco.bcos.channel.test.crypto;
+package org.fisco.bcos.web3j.crypto;
 
-import org.fisco.bcos.web3j.crypto.ECKeyPair;
-import org.fisco.bcos.web3j.crypto.Keys;
-import org.fisco.bcos.web3j.crypto.Sign;
 import org.bouncycastle.util.encoders.Hex;
 import org.junit.Test;
 

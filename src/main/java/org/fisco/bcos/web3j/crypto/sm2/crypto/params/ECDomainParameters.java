@@ -1,6 +1,6 @@
 package org.fisco.bcos.web3j.crypto.sm2.crypto.params;
 
-import org.bcos.web3j.crypto.sm2.util.Arrays;
+import org.fisco.bcos.web3j.crypto.sm2.util.Arrays;
 import org.bouncycastle.math.ec.ECConstants;
 import org.bouncycastle.math.ec.ECCurve;
 import org.bouncycastle.math.ec.ECPoint;
