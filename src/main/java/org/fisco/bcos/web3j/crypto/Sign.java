@@ -24,6 +24,16 @@ import static org.fisco.bcos.web3j.utils.Assertions.verifyPrecondition;
  * BitcoinJ ECKey</a> implementation.
  */
 public class Sign {
+    private static SignInterface signInterface = new ECDSASign();
+
+    public static SignInterface getSignInterface() {
+        return signInterface;
+    }
+
+    public static void setSignInterface(SignInterface signInterface) {
+        Sign.signInterface = signInterface;
+    }
+
     private static final X9ECParameters CURVE_PARAMS = CustomNamedCurves.getByName("secp256k1");
     static final ECDomainParameters CURVE = new ECDomainParameters(
             CURVE_PARAMS.getCurve(), CURVE_PARAMS.getG(), CURVE_PARAMS.getN(), CURVE_PARAMS.getH());
@@ -49,6 +59,7 @@ public class Sign {
         return signMessage(getEthereumMessageHash(message), keyPair, false);
     }
 
+    // very important   add 0x19 Ethreum
     public static SignatureData signMessage(byte[] message, ECKeyPair keyPair) {
         return signMessage(message, keyPair, true);
     }

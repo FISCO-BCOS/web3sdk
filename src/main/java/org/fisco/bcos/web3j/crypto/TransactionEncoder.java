@@ -80,27 +80,21 @@ public class TransactionEncoder {
         // value field will already be hex encoded, so we need to convert into binary first
         byte[] data = Numeric.hexStringToByteArray(rawTransaction.getData());
         result.add(RlpString.create(data));
-        String contractName = rawTransaction.getContractName();
-//        if (contractName != null && contractName.length() > 0) {
-//            result.add(RlpString.create(rawTransaction.getContractName()));
-//            result.add(RlpString.create(rawTransaction.getVersion()));
-//            result.add(RlpString.create(rawTransaction.getType()));
-//        }
 
         if (signatureData != null) {
-//            if (EncryptType.encryptType == 1) {
-//                result.add(RlpString.create(Bytes.trimLeadingZeroes(signatureData.getPub())));
-//                //logger.debug("RLP-Pub:{},RLP-PubLen:{}",Hex.toHexString(signatureData.getPub()),signatureData.getPub().length);
-//                result.add(RlpString.create(Bytes.trimLeadingZeroes(signatureData.getR())));
-//                //logger.debug("RLP-R:{},RLP-RLen:{}",Hex.toHexString(signatureData.getR()),signatureData.getR().length);
-//                result.add(RlpString.create(Bytes.trimLeadingZeroes(signatureData.getS())));
-//                //logger.debug("RLP-S:{},RLP-SLen:{}",Hex.toHexString(signatureData.getS()),signatureData.getS().length);
-//            }
-//            else{
+            if (EncryptType.encryptType == 1) {
+                result.add(RlpString.create(Bytes.trimLeadingZeroes(signatureData.getPub())));
+                //logger.debug("RLP-Pub:{},RLP-PubLen:{}",Hex.toHexString(signatureData.getPub()),signatureData.getPub().length);
+                result.add(RlpString.create(Bytes.trimLeadingZeroes(signatureData.getR())));
+                //logger.debug("RLP-R:{},RLP-RLen:{}",Hex.toHexString(signatureData.getR()),signatureData.getR().length);
+                result.add(RlpString.create(Bytes.trimLeadingZeroes(signatureData.getS())));
+                //logger.debug("RLP-S:{},RLP-SLen:{}",Hex.toHexString(signatureData.getS()),signatureData.getS().length);
+            }
+            else{
                 result.add(RlpString.create(signatureData.getV()));
                 result.add(RlpString.create(Bytes.trimLeadingZeroes(signatureData.getR())));
                 result.add(RlpString.create(Bytes.trimLeadingZeroes(signatureData.getS())));
-//            }
+              }
         }
         return result;
     }
