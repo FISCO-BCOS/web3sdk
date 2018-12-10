@@ -19,9 +19,7 @@ public class RawTransaction {
     private String to;
     private BigInteger value;
     private String data;
-    private String contractName;
     private BigInteger version = TransactionConstant.version;
-    private BigInteger type;//0 new合约,1 call
 
     protected RawTransaction(BigInteger randomid, BigInteger gasPrice, BigInteger gasLimit, BigInteger blockLimit, String to,
                            BigInteger value, String data) {
@@ -95,9 +93,7 @@ public class RawTransaction {
         return data;
     }
 
-    public BigInteger getType() { return type; }
 
     public BigInteger getVersion() { return version; }
 
-    public String getContractName() { return contractName; }
 }

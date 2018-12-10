@@ -278,11 +278,20 @@ public class Sign {
         private final byte v;
         private final byte[] r;
         private final byte[] s;
+        private final byte[] pub;
 
         public SignatureData(byte v, byte[] r, byte[] s) {
             this.v = v;
             this.r = r;
             this.s = s;
+            pub = null;
+        }
+
+        public SignatureData(byte v, byte[] r, byte[] s,byte[] pub) {
+            this.v = v;
+            this.r = r;
+            this.s = s;
+            this.pub = pub;
         }
 
         public byte getV() {
@@ -295,6 +304,10 @@ public class Sign {
 
         public byte[] getS() {
             return s;
+        }
+
+        public byte[] getPub() {
+            return pub;
         }
 
         @Override
@@ -322,6 +335,7 @@ public class Sign {
             int result = (int) v;
             result = 31 * result + Arrays.hashCode(r);
             result = 31 * result + Arrays.hashCode(s);
+            result = 63 * result + Arrays.hashCode(pub);
             return result;
         }
     }
