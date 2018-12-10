@@ -1,6 +1,6 @@
 package org.fisco.bcos.web3j.crypto.sm2.util.encoders;
 
-import org.bcos.web3j.crypto.sm2.util.Strings;
+import org.fisco.bcos.web3j.crypto.sm2.util.Strings;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

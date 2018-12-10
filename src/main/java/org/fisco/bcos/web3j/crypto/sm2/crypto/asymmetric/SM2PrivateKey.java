@@ -1,6 +1,6 @@
 package org.fisco.bcos.web3j.crypto.sm2.crypto.asymmetric;
 
-import org.bcos.web3j.crypto.sm2.util.KeyUtils;
+import org.fisco.bcos.web3j.crypto.sm2.util.KeyUtils;
 
 import java.math.BigInteger;
 import java.security.PrivateKey;

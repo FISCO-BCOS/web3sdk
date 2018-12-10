@@ -1,6 +1,6 @@
 package org.fisco.bcos.web3j.crypto.sm2.crypto.params;
 
-import org.bcos.web3j.crypto.sm2.crypto.CipherParameters;
+import org.fisco.bcos.web3j.crypto.sm2.crypto.CipherParameters;
 
 import java.security.SecureRandom;
 

@@ -1,8 +1,8 @@
 package org.fisco.bcos.web3j.crypto.sm2.crypto.digests;
 
-import org.bcos.web3j.crypto.sm2.crypto.ExtendedDigest;
-import org.bcos.web3j.crypto.sm2.util.Memoable;
-import org.bcos.web3j.crypto.sm2.util.Pack;
+import org.fisco.bcos.web3j.crypto.sm2.crypto.ExtendedDigest;
+import org.fisco.bcos.web3j.crypto.sm2.util.Memoable;
+import org.fisco.bcos.web3j.crypto.sm2.util.Pack;
 
 /**
  * base implementation of MD4 family style digest as outlined in
