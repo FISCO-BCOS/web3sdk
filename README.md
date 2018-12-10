@@ -23,6 +23,7 @@
       *部署OK合约* gradle test --tests  org.fisco.bcos.channel.test.contract.OkTest
       *压力测试*  gradle test --tests  org.fisco.bcos.channel.test.contract.PressureTest
       *基本测试*  gradle test --tests org.fisco.bcos.channel.test.BasicTest
+      *token测试*  gradle test --tests org.fisco.bcos.channel.test.contract.Erc20Test
 ---
   目前你也可以gradle build (确保gradle 版本在4.10.1以上) 之后到dist目录去执行java -cp命令:
 - *部署合约*
