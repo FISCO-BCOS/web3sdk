@@ -1,13 +1,15 @@
 package org.fisco.bcos.web3j.crypto;
 
+import org.fisco.bcos.channel.test.TestBase;
 import org.junit.Test;
 import org.fisco.bcos.web3j.utils.Numeric;
 
 import java.math.BigInteger;
+import java.util.Random;
 
 import static org.junit.Assert.*;
 
-public class TransactionDecoderTest {
+public class TransactionDecoderTest extends TestBase {
 
     @Test
     public void testDecoding() throws Exception {
@@ -16,14 +18,17 @@ public class TransactionDecoderTest {
         BigInteger gasLimit = BigInteger.TEN;
         String to = "0x0add5355";
         BigInteger value = BigInteger.valueOf(Long.MAX_VALUE);
-        RawTransaction rawTransaction = RawTransaction.createEtherTransaction(
-                nonce, gasPrice, gasLimit, to, value);
+        Random r = new Random();
+        BigInteger randomid = new BigInteger(250,r);
+        BigInteger blockLimit = web3j.getBlockNumberCache();
+        RawTransaction rawTransaction = RawTransaction.createContractTransaction(
+                randomid, gasPrice, gasLimit,blockLimit, value, "0x0000000000");
         byte[] encodedMessage = TransactionEncoder.encode(rawTransaction);
         String hexMessage = Numeric.toHexString(encodedMessage);
 
         RawTransaction result = TransactionDecoder.decode(hexMessage);
         assertNotNull(result);
-        assertEquals(nonce, result.getNonce());
+        assertEquals(blockLimit, result.getBlockLimit());
         assertEquals(gasPrice, result.getGasPrice());
         assertEquals(gasLimit, result.getGasLimit());
         assertEquals(to, result.getTo());
@@ -38,15 +43,20 @@ public class TransactionDecoderTest {
         BigInteger gasLimit = BigInteger.TEN;
         String to = "0x0add5355";
         BigInteger value = BigInteger.valueOf(Long.MAX_VALUE);
+
+
+        Random r = new Random();
+        BigInteger randomid = new BigInteger(250,r);
+        BigInteger blockLimit = web3j.getBlockNumberCache();
         RawTransaction rawTransaction = RawTransaction.createEtherTransaction(
-                nonce, gasPrice, gasLimit, to, value);
+                randomid, gasPrice, gasLimit,blockLimit, to, value);
         byte[] signedMessage = TransactionEncoder.signMessage(
                 rawTransaction, SampleKeys.CREDENTIALS);
         String hexMessage = Numeric.toHexString(signedMessage);
 
         RawTransaction result = TransactionDecoder.decode(hexMessage);
         assertNotNull(result);
-        assertEquals(nonce, result.getNonce());
+        assertEquals(randomid, result.getRandomid());
         assertEquals(gasPrice, result.getGasPrice());
         assertEquals(gasLimit, result.getGasLimit());
         assertEquals(to, result.getTo());
@@ -64,34 +74,6 @@ public class TransactionDecoderTest {
         assertNull(signedResult.getChainId());
     }
 
-    @Test
-    public void testDecodingSignedChainId() throws Exception {
-        BigInteger nonce = BigInteger.ZERO;
-        BigInteger gasPrice = BigInteger.ONE;
-        BigInteger gasLimit = BigInteger.TEN;
-        String to = "0x0add5355";
-        BigInteger value = BigInteger.valueOf(Long.MAX_VALUE);
-        Integer chainId = 1;
-        RawTransaction rawTransaction = RawTransaction.createEtherTransaction(
-                nonce, gasPrice, gasLimit, to, value);
-        byte[] signedMessage = TransactionEncoder.signMessage(
-                rawTransaction, chainId.byteValue(), SampleKeys.CREDENTIALS);
-        String hexMessage = Numeric.toHexString(signedMessage);
-
-        RawTransaction result = TransactionDecoder.decode(hexMessage);
-        assertNotNull(result);
-        assertEquals(nonce, result.getNonce());
-        assertEquals(gasPrice, result.getGasPrice());
-        assertEquals(gasLimit, result.getGasLimit());
-        assertEquals(to, result.getTo());
-        assertEquals(value, result.getValue());
-        assertEquals("", result.getData());
-        assertTrue(result instanceof SignedRawTransaction);
-        SignedRawTransaction signedResult = (SignedRawTransaction) result;
-        assertEquals(SampleKeys.ADDRESS, signedResult.getFrom());
-        signedResult.verify(SampleKeys.ADDRESS);
-        assertEquals(chainId, signedResult.getChainId());
-    }
 
     @Test
     public void testRSize31() throws Exception {
