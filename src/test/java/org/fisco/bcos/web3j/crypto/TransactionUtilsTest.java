@@ -1,12 +1,13 @@
 package org.fisco.bcos.web3j.crypto;
 
+import org.fisco.bcos.channel.test.TestBase;
 import org.junit.Test;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.fisco.bcos.web3j.crypto.TransactionUtils.generateTransactionHashHexEncoded;
 
-public class TransactionUtilsTest {
+public class TransactionUtilsTest extends TestBase {
 
     @Test
     public void testGenerateTransactionHash() {
