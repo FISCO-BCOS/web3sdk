@@ -1,0 +1,117 @@
+[
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "pageIndex",
+				"type": "uint256"
+			}
+		],
+		"name": "listTopicName",
+		"outputs": [
+			{
+				"name": "topicList",
+				"type": "bytes32[]"
+			}
+		],
+		"payable": false,
+		"type": "function",
+		"stateMutability": "view"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "topicName",
+				"type": "bytes32"
+			},
+			{
+				"name": "topicAddress",
+				"type": "address"
+			},
+			{
+				"name": "createdTimestamp",
+				"type": "uint256"
+			}
+		],
+		"name": "addTopicInfo",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"type": "function",
+		"stateMutability": "nonpayable"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "topicName",
+				"type": "bytes32"
+			}
+		],
+		"name": "getTopicInfo",
+		"outputs": [
+			{
+				"name": "topicAddress",
+				"type": "address"
+			},
+			{
+				"name": "senderAddress",
+				"type": "address"
+			},
+			{
+				"name": "createdTimestamp",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"type": "function",
+		"stateMutability": "view"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "topicName",
+				"type": "bytes32"
+			}
+		],
+		"name": "getTopicAddress",
+		"outputs": [
+			{
+				"name": "topicAddress",
+				"type": "address"
+			}
+		],
+		"payable": false,
+		"type": "function",
+		"stateMutability": "view"
+	},
+	{
+		"inputs": [
+			{
+				"name": "topicDataAddress",
+				"type": "address"
+			}
+		],
+		"type": "constructor",
+		"payable": true,
+		"stateMutability": "payable"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"name": "retCode",
+				"type": "uint256"
+			}
+		],
+		"name": "LogAddTopicNameAddress",
+		"type": "event"
+	}
+]
