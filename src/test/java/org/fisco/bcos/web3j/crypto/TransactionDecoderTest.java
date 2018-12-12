@@ -9,18 +9,16 @@ import java.util.Random;
 
 import static org.junit.Assert.*;
 
-public class TransactionDecoderTest extends TestBase {
+public class TransactionDecoderTest   {
 
     @Test
     public void testDecoding() throws Exception {
-        BigInteger nonce = BigInteger.ZERO;
         BigInteger gasPrice = BigInteger.ONE;
         BigInteger gasLimit = BigInteger.TEN;
         String to = "0x0add5355";
         BigInteger value = BigInteger.valueOf(Long.MAX_VALUE);
-        Random r = new Random();
-        BigInteger randomid = new BigInteger(250,r);
-        BigInteger blockLimit = web3j.getBlockNumberCache();
+        BigInteger randomid = new BigInteger("500");
+        BigInteger blockLimit = new BigInteger("501");
         RawTransaction rawTransaction = RawTransaction.createContractTransaction(
                 randomid, gasPrice, gasLimit,blockLimit, value, "0x0000000000");
         byte[] encodedMessage = TransactionEncoder.encode(rawTransaction);
@@ -31,23 +29,19 @@ public class TransactionDecoderTest extends TestBase {
         assertEquals(blockLimit, result.getBlockLimit());
         assertEquals(gasPrice, result.getGasPrice());
         assertEquals(gasLimit, result.getGasLimit());
-        assertEquals(to, result.getTo());
+        assertEquals("0x", result.getTo());
         assertEquals(value, result.getValue());
-        assertEquals("", result.getData());
+        assertEquals("0000000000", result.getData());
     }
 
     @Test
     public void testDecodingSigned() throws Exception {
-        BigInteger nonce = BigInteger.ZERO;
         BigInteger gasPrice = BigInteger.ONE;
         BigInteger gasLimit = BigInteger.TEN;
         String to = "0x0add5355";
         BigInteger value = BigInteger.valueOf(Long.MAX_VALUE);
-
-
-        Random r = new Random();
-        BigInteger randomid = new BigInteger(250,r);
-        BigInteger blockLimit = web3j.getBlockNumberCache();
+        BigInteger randomid = new BigInteger("500");
+        BigInteger blockLimit = new BigInteger("501");
         RawTransaction rawTransaction = RawTransaction.createEtherTransaction(
                 randomid, gasPrice, gasLimit,blockLimit, to, value);
         byte[] signedMessage = TransactionEncoder.signMessage(
