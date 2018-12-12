@@ -1,17 +1,18 @@
 package org.fisco.bcos.channel.test;
 
-import org.fisco.bcos.temp.Ok;
+import org.fisco.bcos.channel.test.contract.Ok;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
-import org.fisco.bcos.web3j.protocol.core.methods.response.*;
-import org.junit.Ignore;
+import org.fisco.bcos.web3j.protocol.core.methods.response.EthPeerList;
+import org.fisco.bcos.web3j.protocol.core.methods.response.GroupList;
+import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
+import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
