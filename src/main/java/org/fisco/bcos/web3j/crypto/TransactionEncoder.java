@@ -18,7 +18,7 @@ public class TransactionEncoder {
 
     public static byte[] signMessage(RawTransaction rawTransaction, Credentials credentials) {
         byte[] encodedTransaction = encode(rawTransaction);
-        Sign.SignatureData signatureData = Sign.signMessage(
+        Sign.SignatureData signatureData = Sign.getSignInterface().signMessage(
                 encodedTransaction, credentials.getEcKeyPair());
 
         return encode(rawTransaction, signatureData);
@@ -27,7 +27,7 @@ public class TransactionEncoder {
     public static byte[] signMessage(
             RawTransaction rawTransaction, byte chainId, Credentials credentials) {
         byte[] encodedTransaction = encode(rawTransaction, chainId);
-        Sign.SignatureData signatureData = Sign.signMessage(
+        Sign.SignatureData signatureData = Sign.getSignInterface().signMessage(
                 encodedTransaction, credentials.getEcKeyPair());
 
         Sign.SignatureData eip155SignatureData = createEip155SignatureData(signatureData, chainId);
