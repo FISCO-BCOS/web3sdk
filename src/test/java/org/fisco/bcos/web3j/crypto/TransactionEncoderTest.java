@@ -29,6 +29,17 @@ public class TransactionEncoderTest  {
     }
 
     @Test
+    public void testGMSignMessage() {
+        EncryptType encryptType = new EncryptType(1);
+
+        byte[] signedMessage = TransactionEncoder.signMessage(
+                createEtherTransaction(), SampleKeys.CREDENTIALS);
+        String hexMessage = Numeric.toHexString(signedMessage);
+        assertThat(hexMessage,
+                is("0xf85a8201f4010a8201f5840add5355887fffffffffffffff801ba01cf44d4680e1ecaf11a9a997b08055ae84c5d417b1fc7c2bdbaffc3fd4a7659aa07a424ef2ad019c599a24309c97f4cd10d0e4293a51d8c1abb095052bf54a7ba7"));
+    }
+
+    @Test
     public void testEtherTransactionAsRlpValues() {
         List<RlpType> rlpStrings = TransactionEncoder.asRlpValues(createEtherTransaction(),
                 new Sign.SignatureData((byte) 0, new byte[32], new byte[32]));

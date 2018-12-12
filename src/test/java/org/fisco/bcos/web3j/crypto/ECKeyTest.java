@@ -24,7 +24,7 @@ public class ECKeyTest {
         System.out.println("public key "+keyPair.getPublicKey());
         System.out.println("private key "+Hex.toHexString(keyPair.getPrivateKey().toByteArray()));
         String str = "hello world";
-        Sign.SignatureData sigData = Sign.signMessage(str.getBytes(),keyPair);
+        Sign.SignatureData sigData = Sign.getSignInterface().signMessage(str.getBytes(),keyPair);
         BigInteger publicKey  = Sign.signedMessageToKey(str.getBytes(),sigData);
         System.out.println("publicKey "+publicKey);
     }
