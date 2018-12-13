@@ -1,6 +1,7 @@
 package org.fisco.bcos.web3j.crypto;
 
 import org.fisco.bcos.channel.test.TestBase;
+import org.fisco.bcos.web3j.crypto.gm.GenCredential;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.fisco.bcos.web3j.rlp.RlpString;
@@ -34,8 +35,14 @@ public class TransactionEncoderTest  {
     public void testGMSignMessage() {
         EncryptType encryptType = new EncryptType(1);
 
+        Credentials credentials = GenCredential.create("a392604efc2fad9c0b3da43b5f698a2e3f270f170d859912be0d54742275c5f6");
+        System.out.println(credentials.getEcKeyPair().getPublicKey().toString(16));
+
+        Credentials credentials1 = Credentials.create("a392604efc2fad9c0b3da43b5f698a2e3f270f170d859912be0d54742275c5f6");
+        System.out.println(credentials1.getEcKeyPair().getPublicKey().toString(16));
+
         byte[] signedMessage = TransactionEncoder.signMessage(
-                createEtherTransaction(), SampleKeys.CREDENTIALS);
+                createEtherTransaction(), credentials);
         String hexMessage = Numeric.toHexString(signedMessage);
         assertThat(hexMessage,
                 is("0xf85a8201f4010a8201f5840add5355887fffffffffffffff801ba01cf44d4680e1ecaf11a9a997b08055ae84c5d417b1fc7c2bdbaffc3fd4a7659aa07a424ef2ad019c599a24309c97f4cd10d0e4293a51d8c1abb095052bf54a7ba7"));
