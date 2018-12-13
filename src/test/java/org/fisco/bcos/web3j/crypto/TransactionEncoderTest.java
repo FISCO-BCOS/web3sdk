@@ -1,6 +1,7 @@
 package org.fisco.bcos.web3j.crypto;
 
 import org.fisco.bcos.channel.test.TestBase;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.fisco.bcos.web3j.rlp.RlpString;
 import org.fisco.bcos.web3j.rlp.RlpType;
@@ -28,6 +29,7 @@ public class TransactionEncoderTest  {
                 is("0xf85a8201f4010a8201f5840add5355887fffffffffffffff801ba01cf44d4680e1ecaf11a9a997b08055ae84c5d417b1fc7c2bdbaffc3fd4a7659aa07a424ef2ad019c599a24309c97f4cd10d0e4293a51d8c1abb095052bf54a7ba7"));
     }
 
+    @Ignore
     @Test
     public void testGMSignMessage() {
         EncryptType encryptType = new EncryptType(1);

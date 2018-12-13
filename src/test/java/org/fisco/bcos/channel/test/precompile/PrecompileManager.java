@@ -1,14 +1,12 @@
 package org.fisco.bcos.channel.test.precompile;
 
-import org.fisco.bcos.channel.test.precompile.UpdatePBFTNode;
-import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.channel.client.Service;
+import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.protocol.Web3j;
+import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
 
-import java.io.IOException;
 import java.math.BigInteger;
 
 class PrecompileManager {
@@ -22,7 +20,6 @@ class PrecompileManager {
     private static BigInteger initialWeiValue = new BigInteger("0");
 
     public static void main(String[] args) throws Exception {
-
         /// init application context from xml
         ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
         /// init service
