@@ -34,5 +34,5 @@
       #===通过SDK部署合约和发交易
      1 把自己编写的sol文件文件放到src/test/resources/contracts下,确保合约名和文件名保持一致。
      2 在项目目录下执行
-     gradle test --tests org.fisco.bcos.channel.test.solidity.SolidityFunctionWrapperGeneratorTest.compileSolFilesToJavaTest ;测试类sol文件转换成相应Java类,
+     gradle test --tests org.fisco.bcos.web3j.solidity.SolidityFunctionWrapperGeneratorTest.compileSolFilesToJavaTest ;测试类sol文件转换成相应Java类,
      生成的类在src/test/java/org/fisco/bcos/temp文件夹下,并且生成的abi和bin在目录src/test/resources/solidity。

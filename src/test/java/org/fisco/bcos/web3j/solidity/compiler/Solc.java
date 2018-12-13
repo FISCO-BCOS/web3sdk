@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with the ethereumJ library. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.fisco.bcos.channel.test.solidity.compiler;
+package org.fisco.bcos.web3j.solidity.compiler;
 
 import java.io.File;
 import java.io.IOException;

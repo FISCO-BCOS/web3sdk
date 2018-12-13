@@ -15,26 +15,25 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with the ethereumJ library. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.fisco.bcos.channel.test.solidity;
+package org.fisco.bcos.web3j.solidity;
 
 
 import org.apache.commons.io.FileUtils;
-import org.fisco.bcos.channel.test.solidity.compiler.CompilationResult;
-import org.fisco.bcos.channel.test.solidity.compiler.SolidityCompiler;
 import org.fisco.bcos.web3j.codegen.SolidityFunctionWrapperGenerator;
+import org.fisco.bcos.web3j.solidity.compiler.CompilationResult;
+import org.fisco.bcos.web3j.solidity.compiler.SolidityCompiler;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static org.fisco.bcos.channel.test.solidity.compiler.SolidityCompiler.Options.*;
+
+import static org.fisco.bcos.web3j.solidity.compiler.SolidityCompiler.Options.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.StringContains.containsString;
 
@@ -158,7 +157,7 @@ public class CompilerTest {
 
         Path source = Paths.get("src","test","resources","contract","test3.sol");
 
-        SolidityCompiler.Option allowPathsOption = new SolidityCompiler.Options.AllowPaths(Collections.singletonList(source.getParent().getParent().toFile()));
+        SolidityCompiler.Option allowPathsOption = new AllowPaths(Collections.singletonList(source.getParent().getParent().toFile()));
         SolidityCompiler.Result res = SolidityCompiler.compile(source.toFile(), true, ABI, BIN, INTERFACE, METADATA, allowPathsOption);
         System.out.println("Out: '" + res.output + "'");
         System.out.println("Err: '" + res.errors + "'");
@@ -178,7 +177,7 @@ public class CompilerTest {
 
         Path source = Paths.get("src","test","resources","contract","file3.sol");
 
-        SolidityCompiler.Option allowPathsOption = new SolidityCompiler.Options.AllowPaths(Collections.singletonList(source.getParent().getParent().toAbsolutePath().toString()));
+        SolidityCompiler.Option allowPathsOption = new AllowPaths(Collections.singletonList(source.getParent().getParent().toAbsolutePath().toString()));
         SolidityCompiler.Result res = SolidityCompiler.compile(source.toFile(), true, ABI, BIN, INTERFACE, METADATA, allowPathsOption);
         System.out.println("Out: '" + res.output + "'");
         System.out.println("Err: '" + res.errors + "'");
@@ -193,7 +192,7 @@ public class CompilerTest {
 
         Path source = Paths.get("src","test","resources","contract","test3.sol");
 
-        SolidityCompiler.Option allowPathsOption = new SolidityCompiler.Options.AllowPaths(Collections.singletonList(source.getParent().getParent()));
+        SolidityCompiler.Option allowPathsOption = new AllowPaths(Collections.singletonList(source.getParent().getParent()));
         SolidityCompiler.Result res = SolidityCompiler.compile(source.toFile(), true, ABI, BIN, INTERFACE, METADATA, allowPathsOption);
         System.out.println("Out: '" + res.output + "'");
         System.out.println("Err: '" + res.errors + "'");

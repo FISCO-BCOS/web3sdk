@@ -1,12 +1,10 @@
-package org.fisco.bcos.channel.test.solidity;
+package org.fisco.bcos.web3j.solidity;
 
 import org.apache.commons.io.FileUtils;
-import org.fisco.bcos.channel.test.solidity.compiler.CompilationResult;
-import org.fisco.bcos.channel.test.solidity.compiler.SolidityCompiler;
 import org.fisco.bcos.web3j.codegen.SolidityFunctionWrapperGenerator;
-import org.junit.Assert;
+import org.fisco.bcos.web3j.solidity.compiler.CompilationResult;
+import org.fisco.bcos.web3j.solidity.compiler.SolidityCompiler;
 import org.junit.Test;
-import org.springframework.core.io.ClassPathResource;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,7 +12,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 
-import static org.fisco.bcos.channel.test.solidity.compiler.SolidityCompiler.Options.*;
+import static org.fisco.bcos.web3j.solidity.compiler.SolidityCompiler.Options.*;
 
 public class SolidityFunctionWrapperGeneratorTest {
 
