@@ -15,14 +15,13 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with the ethereumJ library. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.fisco.bcos.channel.test.solidity.compiler;
+package org.fisco.bcos.web3j.solidity.compiler;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.fisco.bcos.channel.test.solidity.compiler.ContractException.assembleError;
-
+import static org.fisco.bcos.web3j.solidity.compiler.ContractException.assembleError;
 public class Sources {
 
     private final Map<String, SourceArtifact> artifacts = new HashMap<>();

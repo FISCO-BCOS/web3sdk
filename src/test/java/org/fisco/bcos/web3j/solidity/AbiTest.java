@@ -15,14 +15,14 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with the ethereumJ library. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.fisco.bcos.channel.test.solidity;
-
-import static junit.framework.TestCase.assertEquals;
-import static org.junit.Assert.assertTrue;
+package org.fisco.bcos.web3j.solidity;
 
 import org.junit.Test;
 
 import java.io.IOException;
+
+import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class AbiTest {
 
