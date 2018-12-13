@@ -1,7 +1,7 @@
 package org.fisco.bcos.web3j.crypto;
 
-import org.fisco.bcos.web3j.crypto.sm2.SM2Sign;
-import org.fisco.bcos.web3j.crypto.sm3.SM3Digest;
+import org.fisco.bcos.web3j.crypto.gm.sm2.SM2Sign;
+import org.fisco.bcos.web3j.crypto.gm.sm3.SM3Digest;
 
 /**
  * Created by websterchen on 2018/4/25.
