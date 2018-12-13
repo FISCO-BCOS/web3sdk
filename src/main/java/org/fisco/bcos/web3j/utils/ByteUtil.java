@@ -18,7 +18,7 @@
 package org.fisco.bcos.web3j.utils;
 
 
-import org.fisco.bcos.web3j.crypto.sm2.util.encoders.Hex;
+import org.fisco.bcos.web3j.crypto.gm.sm2.util.encoders.Hex;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
