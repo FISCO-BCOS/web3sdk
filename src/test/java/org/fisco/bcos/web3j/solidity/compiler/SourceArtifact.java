@@ -15,20 +15,18 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with the ethereumJ library. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.fisco.bcos.channel.test.solidity.compiler;
+package org.fisco.bcos.web3j.solidity.compiler;
 
 
 import java.io.File;
-import java.io.IOException;
 import java.util.*;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
 import static org.apache.commons.collections4.CollectionUtils.disjunction;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.substringsBetween;
-import static org.fisco.bcos.channel.test.solidity.compiler.ContractException.assembleError;
+import static org.fisco.bcos.web3j.solidity.compiler.ContractException.assembleError;
 
 public class SourceArtifact {
 

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with the ethereumJ library. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.fisco.bcos.channel.test.solidity;
+package org.fisco.bcos.web3j.solidity;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -37,8 +37,8 @@ import static org.apache.commons.collections4.ListUtils.select;
 import static org.apache.commons.lang3.ArrayUtils.subarray;
 import static org.apache.commons.lang3.StringUtils.join;
 import static org.apache.commons.lang3.StringUtils.stripEnd;
-import static org.fisco.bcos.channel.test.solidity.SolidityType.IntType.decodeInt;
-import static org.fisco.bcos.channel.test.solidity.SolidityType.IntType.encodeInt;
+import static org.fisco.bcos.web3j.solidity.SolidityType.IntType.decodeInt;
+import static org.fisco.bcos.web3j.solidity.SolidityType.IntType.encodeInt;
 import static org.fisco.bcos.web3j.crypto.Hash.sha3;
 
 public class Abi extends ArrayList<Abi.Entry> {
