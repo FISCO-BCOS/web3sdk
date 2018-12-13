@@ -42,10 +42,10 @@ public class TransactionEncoderTest  {
         System.out.println(credentials1.getEcKeyPair().getPublicKey().toString(16));
 
         byte[] signedMessage = TransactionEncoder.signMessage(
-                createEtherTransaction(), credentials);
+                createContractTransaction(), credentials);
         String hexMessage = Numeric.toHexString(signedMessage);
         assertThat(hexMessage,
-                is("0xf85a8201f4010a8201f5840add5355887fffffffffffffff801ba01cf44d4680e1ecaf11a9a997b08055ae84c5d417b1fc7c2bdbaffc3fd4a7659aa07a424ef2ad019c599a24309c97f4cd10d0e4293a51d8c1abb095052bf54a7ba7"));
+                is("0xf8948201f4010a8201f5800a850000000000b8408234c544a9f3ce3b401a92cc7175602ce2a1e29b1ec135381c7d2a9e8f78f3edc9c06ee55252857c9a4560cb39e9d70d40f4331cace4d2b3121b967fa7a829f0a03d8627050f6688f27e2b5b89c9c141d3a48603029849e088486d1c7ea079ea7fa037024ed35d2c099d7eb68fb133e57735b03605ec32ded39ab305c3b56e5d99e7"));
     }
 
     @Test
