@@ -32,10 +32,7 @@
       java -cp 'conf/:apps/*:lib/*' org.fisco.bcos.channel.test.PrecompileManager "pbft" "remove" "e2970447090490552c32b9cb020e16d277ef21e285bb3f3b7b919057285e3ef0cee156975f9d1d105d9240e91e4e324e46bb3c897045b9278b69597714ad6b22"
 
       #===通过SDK部署合约和发交易
-     1 把自己编写的sol文件文件放到tools/contracts下。
-     2 确保本地安装了fisco-solc；
-     3 切换到tools/bin 执行 ./compile fisco-solc out;
-     4 生成的bin文件即在tools/contracts/out目录下。
-     5 abi转成java类，把tools/contracts/out下面的文件拷贝到src/test/resources/solidity目录下面
-     执行gradle test --tests org.fisco.bcos.channel.test.solidity.SolidityFunctionWrapperGeneratorTest.generateClassFromABIAndBIN ;测试类可以帮你生成把abi文件转换成相应Java类,
-     生成的类在src/test/java/org/fisco/bcos/temp文件夹下。
+     1 把自己编写的sol文件文件放到src/test/resources/contracts下,确保合约名和文件名保持一致。
+     2 在项目目录下执行
+     gradle test --tests org.fisco.bcos.channel.test.solidity.SolidityFunctionWrapperGeneratorTest.compileSolFilesToJavaTest ;测试类sol文件转换成相应Java类,
+     生成的类在src/test/java/org/fisco/bcos/temp文件夹下,并且生成的abi和bin在目录src/test/resources/solidity。
