@@ -23,17 +23,6 @@ repositories {
     mavenCentral()
 }
 
-sourceSets {
- main {
-  java {
-         srcDir 'src/main/java'
-         srcDir 'src/test/java'
-  }
-        resources  {
-            srcDir 'src/test/resources'
-        }
- }
-}
 
 def spring_version="4.3.18.RELEASE"
 List spring =[ 
