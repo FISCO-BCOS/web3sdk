@@ -1,6 +1,7 @@
 package org.fisco.bcos.web3j.crypto;
 
 import org.fisco.bcos.channel.test.TestBase;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.fisco.bcos.web3j.utils.Numeric;
 
@@ -68,7 +69,7 @@ public class TransactionDecoderTest   {
         assertNull(signedResult.getChainId());
     }
 
-
+    @Ignore
     @Test
     public void testRSize31() throws Exception {
         //CHECKSTYLE:OFF

@@ -1,6 +1,7 @@
 package org.fisco.bcos.web3j.crypto;
 
 import org.fisco.bcos.channel.test.TestBase;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.hamcrest.core.Is.is;
@@ -9,6 +10,7 @@ import static org.fisco.bcos.web3j.crypto.TransactionUtils.generateTransactionHa
 
 public class TransactionUtilsTest extends TestBase {
 
+    @Ignore
     @Test
     public void testGenerateTransactionHash() {
         assertThat(generateTransactionHashHexEncoded(
@@ -16,6 +18,7 @@ public class TransactionUtilsTest extends TestBase {
                 is("0xc3a0f520404c8cd0cb1c98be6b8e17ee32bf134ac1697d078e90422525c2d902"));
     }
 
+    @Ignore
     @Test
     public void testGenerateEip155TransactionHash() {
         assertThat(generateTransactionHashHexEncoded(

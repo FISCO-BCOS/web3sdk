@@ -74,7 +74,8 @@ dependencies {
 	        'junit:junit:4.12',
 	        'org.mockito:mockito-core:2.23.0',
 			'org.ethereum:solcJ-all:0.4.25',
-	 "org.apache.commons:commons-collections4:4.0"
+	 		"org.apache.commons:commons-collections4:4.0",
+			"commons-io:commons-io:2.4"
 
 }
 

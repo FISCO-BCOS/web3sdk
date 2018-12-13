@@ -18,14 +18,20 @@
 package org.fisco.bcos.channel.test.solidity;
 
 
+import org.apache.commons.io.FileUtils;
 import org.fisco.bcos.channel.test.solidity.compiler.CompilationResult;
 import org.fisco.bcos.channel.test.solidity.compiler.SolidityCompiler;
+import org.fisco.bcos.web3j.codegen.SolidityFunctionWrapperGenerator;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 
 import static org.fisco.bcos.channel.test.solidity.compiler.SolidityCompiler.Options.*;
@@ -96,24 +102,47 @@ public class CompilerTest {
     @Test
     public void compileFilesTest() throws IOException {
 
-        Path source = Paths.get("src","test","resources","solidity","file1.sol");
+        File solFileList = new File("src/test/resources/contract");
+        File[] solFiles = solFileList.listFiles();
 
-        SolidityCompiler.Result res = SolidityCompiler.compile(source.toFile(), true, ABI, BIN, INTERFACE, METADATA);
-        System.out.println("Out: '" + res.output + "'");
-        System.out.println("Err: '" + res.errors + "'");
-        CompilationResult result = CompilationResult.parse(res.output);
+        for (File solFile : solFiles) {
 
-        Assert.assertEquals("test1", result.getContractName());
-        Assert.assertEquals(source.toAbsolutePath(), result.getContractPath());
-
-        CompilationResult.ContractMetadata a = result.getContract(source, "test1");
-//        CallTransaction.Contract contract = new CallTransaction.Contract(a.abi);
-//        System.out.print(contract.functions[0].toString());
+            SolidityCompiler.Result res = SolidityCompiler.compile(solFile, true, ABI, BIN, INTERFACE, METADATA);
+            System.out.println("Out: '" + res.output + "'");
+            System.out.println("Err: '" + res.errors + "'");
+            CompilationResult result = CompilationResult.parse(res.output);
+         //   Assert.assertEquals(solFile.getName(), result.getContractName()+".sol");
+       //     Assert.assertEquals(solFile.getAbsolutePath(), result.getContractPath());
+            System.out.println("contractname  " + solFile.getName());
+            Path source = Paths.get(solFile.getPath());
+            // todo
+            String contractname = solFile.getName().split("\\.")[0];
+            CompilationResult.ContractMetadata a = result.getContract(source, solFile.getName().split("\\.")[0]);
+            System.out.println("abi   " + a.abi);
+            System.out.println("bin   " + a.bin);
+            FileUtils.writeStringToFile(new File("src/test/resources/solidity/" + contractname + ".abi"), a.abi);
+            FileUtils.writeStringToFile(new File("src/test/resources/solidity/" + contractname + ".bin"), a.bin);
+            String binFile;
+            String abiFile;
+            String tempDirPath = new File("src/test/java/").getAbsolutePath();
+            String packageName = "org.fisco.bcos.temp";
+                String filename = contractname;
+                abiFile = "src/test/resources/solidity/" + filename + ".abi";
+                binFile = "src/test/resources/solidity/" + filename + ".bin";
+                SolidityFunctionWrapperGenerator.main(Arrays.asList(
+                        "-a", abiFile,
+                        "-b", binFile,
+                        "-p", packageName,
+                        "-o", tempDirPath
+                ).toArray(new String[0]));
+            }
+            System.out.println("generate successfully");
     }
 
-    @Test public void compileFilesWithImportTest() throws IOException {
+    @Test
+    public void compileFilesWithImportTest() throws IOException {
 
-        Path source = Paths.get("src","test","resources","solidity","file2.sol");
+        Path source = Paths.get("src","test","resources","contract","file2.sol");
 
         SolidityCompiler.Result res = SolidityCompiler.compile(source.toFile(), true, ABI, BIN, INTERFACE, METADATA);
         System.out.println("Out: '" + res.output + "'");
@@ -127,7 +156,7 @@ public class CompilerTest {
 
     @Test public void compileFilesWithImportFromParentFileTest() throws IOException {
 
-        Path source = Paths.get("src","test","resources","solidity","foo","file3.sol");
+        Path source = Paths.get("src","test","resources","contract","test3.sol");
 
         SolidityCompiler.Option allowPathsOption = new SolidityCompiler.Options.AllowPaths(Collections.singletonList(source.getParent().getParent().toFile()));
         SolidityCompiler.Result res = SolidityCompiler.compile(source.toFile(), true, ABI, BIN, INTERFACE, METADATA, allowPathsOption);
@@ -144,9 +173,10 @@ public class CompilerTest {
 //        System.out.print(contract.functions[0].toString());
     }
 
-    @Test public void compileFilesWithImportFromParentStringTest() throws IOException {
+    @Test
+    public void compileFilesWithImportFromParentStringTest() throws IOException {
 
-        Path source = Paths.get("src","test","resources","solidity","foo","file3.sol");
+        Path source = Paths.get("src","test","resources","contract","file3.sol");
 
         SolidityCompiler.Option allowPathsOption = new SolidityCompiler.Options.AllowPaths(Collections.singletonList(source.getParent().getParent().toAbsolutePath().toString()));
         SolidityCompiler.Result res = SolidityCompiler.compile(source.toFile(), true, ABI, BIN, INTERFACE, METADATA, allowPathsOption);
@@ -161,7 +191,7 @@ public class CompilerTest {
 
     @Test public void compileFilesWithImportFromParentPathTest() throws IOException {
 
-        Path source = Paths.get("src","test","resources","solidity","foo","file3.sol");
+        Path source = Paths.get("src","test","resources","contract","test3.sol");
 
         SolidityCompiler.Option allowPathsOption = new SolidityCompiler.Options.AllowPaths(Collections.singletonList(source.getParent().getParent()));
         SolidityCompiler.Result res = SolidityCompiler.compile(source.toFile(), true, ABI, BIN, INTERFACE, METADATA, allowPathsOption);

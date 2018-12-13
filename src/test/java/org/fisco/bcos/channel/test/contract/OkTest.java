@@ -50,7 +50,7 @@ public class OkTest extends TestBase {
     @Test
     public void testLoadClass() throws Exception {
 
-        contractName = "org.fisco.bcos.temp." + "Ok";
+        contractName = "org.fisco.bcos.channel.test.contract." + "Ok";
             contractClass = ContractClassFactory.getContractClass(contractName);
             Method deploy = contractClass.getMethod("deploy", Web3j.class, Credentials.class, BigInteger.class, BigInteger.class, BigInteger.class);
             Method deploy1 = contractClass.getDeclaredMethod("deploy",Web3j.class, Credentials.class, BigInteger.class, BigInteger.class, BigInteger.class);
