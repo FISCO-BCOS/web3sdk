@@ -177,7 +177,7 @@ mv ca-agency.crt ca.crt
 (3)加载client.keystore中私钥作为交易私钥的示例代码<br>
 
 ```
-   KeyStore ks = KeyStore.getInstance("JKS");
+   KeyStore ks = KeyStore.getInstance("PKCS12");
    ksInputStream =  Ethereum.class.getClassLoader().getResourceAsStream(keyStoreFileName);
    ks.load(ksInputStream, keyStorePassword.toCharArray());
    Key key = ks.getKey("client", keyPassword.toCharArray());

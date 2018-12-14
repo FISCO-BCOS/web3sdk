@@ -17,11 +17,16 @@
 
       拷贝证书文件ca.crt和client.keystore到web3sdk/src/test/resources目录下；
       找到 web3sdk/src/test/resources/applicationContext.xml文件的channelService, 增加<property name="groupId" value="1" /> groupId配置。
+
       查询块高 gradle test --tests  org.fisco.bcos.channel.test.block.BlockTest
       部署OK合约 gradle test --tests  org.fisco.bcos.channel.test.contract.OkTest
       压力测试  gradle test --tests  org.fisco.bcos.channel.test.contract.PressureTest
       基本测试  gradle test --tests org.fisco.bcos.channel.test.BasicTest
+     *token测试*  gradle test --tests org.fisco.bcos.channel.test.contract.Erc20Test
+     *tps测试*  gradle run -Dexec.mainClass=org.fisco.bcos.channel.test.contract.PerfomanceOk --args='trans 100 100 1'
+
       目前你也可以gradle build 之后到dist目录去执行java -cp命令:
+
       # 部署合约
       java -cp 'conf/:apps/*:lib/*' org.fisco.bcos.channel.test.PerfOkTransaction 1 deploy
       # 发送交易
