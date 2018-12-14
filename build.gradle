@@ -19,17 +19,6 @@ repositories {
     mavenCentral()
 }
 
-sourceSets {
- main {
-  java {
-         srcDir 'src/main/java'
-         srcDir 'src/test/java'
-  }
-        resources  {
-            srcDir 'src/test/resources'
-        }
- }
-}
 
 def spring_version="4.3.18.RELEASE"
 
@@ -168,4 +157,4 @@ jar {
 //		}
 //	}
 //}
-// mainClassName  = System.getProperty("exec.mainClass")
+mainClassName  = System.getProperty("exec.mainClass") ?:  "org.fisco.bcos.channel.test.PerfOkTransaction"

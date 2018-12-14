@@ -4,13 +4,15 @@ import org.fisco.bcos.channel.test.contract.Ok;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
-import org.fisco.bcos.web3j.protocol.core.methods.response.*;
-import org.junit.Ignore;
+import org.fisco.bcos.web3j.protocol.core.methods.response.EthPeerList;
+import org.fisco.bcos.web3j.protocol.core.methods.response.GroupList;
+import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
+import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.concurrent.TimeUnit;
+import java.util.List;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -35,6 +37,7 @@ public class BasicTest extends TestBase {
 
     @Test
     public void  syncTest() throws Exception {
+        System.out.println(web3j.ethSyncing().send().isSyncing());
         assertNotNull(web3j.ethSyncing().send().isSyncing());
     }
 
@@ -69,7 +72,12 @@ public class BasicTest extends TestBase {
 
     @Test
     public void  pendingTransactionsTest() throws Exception {
-        assertTrue(web3j.ethPendingTransaction().send().getPendingTransactions().size()>=0);
+        List<Transaction> transactions = web3j.ethPendingTransaction().send().getPendingTransactions();
+        System.out.println("**** pending transaction ****");
+        for(Transaction t : transactions) {
+            System.out.println(t.getHash());
+        }
+        assertTrue(transactions.size()>=0);
     }
 
     @Test
@@ -95,7 +103,11 @@ public class BasicTest extends TestBase {
             System.out.println("####get block number by index from Block: " + web3j.ethGetBlockByNumber(DefaultBlockParameter.valueOf(new BigInteger("1")), true).send().getBlock().getNumber());
 
             System.out.println("####contract address is: " + okDemo.getContractAddress());
-            TransactionReceipt receipt = okDemo.trans(new BigInteger("4")).sendAsync().get(60000, TimeUnit.MILLISECONDS);
+          //  TransactionReceipt receipt = okDemo.trans(new BigInteger("4")).sendAsync().get(60000, TimeUnit.MILLISECONDS);
+            TransactionReceipt receipt = okDemo.trans(new BigInteger("4")).send();
+            List<Ok.TransEventEventResponse> events = okDemo.getTransEventEvents(receipt);
+            events.stream().forEach(System.out::println);
+
             System.out.println("###callback trans success");
 
             System.out.println("####get block number from TransactionReceipt: " + receipt.getBlockNumber());
