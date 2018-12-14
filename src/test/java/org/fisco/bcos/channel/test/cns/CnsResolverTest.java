@@ -27,8 +27,6 @@ public class CnsResolverTest extends TestBase {
     java.math.BigInteger gasLimit = new BigInteger("300000000");
     java.math.BigInteger initialWeiValue = new BigInteger("0");
 
-
-
     @Test
     public void getContractAddressFromNameAndVersion() throws Exception {
 
