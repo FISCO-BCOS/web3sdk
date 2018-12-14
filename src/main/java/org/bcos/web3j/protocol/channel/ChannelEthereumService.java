@@ -47,7 +47,8 @@ public class ChannelEthereumService extends Service {
         if (!request.isNeedTransCallback()) {
             response = channelService.sendEthereumMessage(ethereumRequest);
         } else {
-            response = channelService.sendEthereumMessage(ethereumRequest, request.getTransactionSucCallback());
+            response = channelService.sendEthereumMessage(ethereumRequest, request.getTransactionSucCallback(),
+                    txCallbackTimeout);
         }
 
         logger.debug("Ethereum Request:{} {}", ethereumRequest.getMessageID(), objectMapper.writeValueAsString(request));
@@ -88,4 +89,17 @@ public class ChannelEthereumService extends Service {
 	}
 
 	private Integer timeout = 0;
+
+    /**
+     *
+     */
+    private Integer txCallbackTimeout = 0;
+
+    public Integer getTxCallbackTimeout() {
+        return txCallbackTimeout;
+    }
+
+    public void setTxCallbackTimeout(Integer txCallbackTimeout) {
+        this.txCallbackTimeout = txCallbackTimeout;
+    }
 }

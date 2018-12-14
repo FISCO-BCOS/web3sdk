@@ -338,7 +338,8 @@ public class Service {
 		return callback.channelResponse;
 	}
 
-	public EthereumResponse sendEthereumMessage(EthereumRequest request, TransactionSucCallback transactionSucCallback) {
+	public EthereumResponse sendEthereumMessage(EthereumRequest request, TransactionSucCallback transactionSucCallback,
+												int txCallbackTimeout) {
         class Callback extends EthereumResponseCallback  {
             Callback() {
                 try {
@@ -364,7 +365,7 @@ public class Service {
         }
 
         Callback callback = new Callback();
-        asyncSendEthereumMessage(request, callback, transactionSucCallback);
+        asyncSendEthereumMessage(request, callback, transactionSucCallback, txCallbackTimeout);
         try {
             callback.semaphore.acquire(1);
         } catch (InterruptedException e) {
@@ -375,9 +376,10 @@ public class Service {
         return callback.ethereumResponse;
     }
 
-    public void asyncSendEthereumMessage(EthereumRequest request, EthereumResponseCallback ethereumResponseCallback, TransactionSucCallback transactionSucCallback) {
+    public void asyncSendEthereumMessage(EthereumRequest request, EthereumResponseCallback ethereumResponseCallback,
+										 TransactionSucCallback transactionSucCallback, int txCallbackTimeout) {
         this.asyncSendEthereumMessage(request, ethereumResponseCallback);
-        if(request.getTimeout() > 0) {
+        if(txCallbackTimeout > 0) {
             final TransactionSucCallback callbackInner = transactionSucCallback;
             callbackInner.setTimeout(timeoutHandler.newTimeout(new TimerTask() {
                 @Override
@@ -387,7 +389,7 @@ public class Service {
                     //timeout时清除map的数据,所以尽管后面有回包数据，也会找不到seq->callback的关系
                     seq2TransactionCallback.remove(request.getMessageID());
                 }
-            }, request.getTimeout(), TimeUnit.MILLISECONDS));
+            }, txCallbackTimeout, TimeUnit.MILLISECONDS));
             this.seq2TransactionCallback.put(request.getMessageID(), callbackInner);
         } else {
             this.seq2TransactionCallback.put(request.getMessageID(), transactionSucCallback);
