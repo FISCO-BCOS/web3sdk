@@ -36,13 +36,14 @@ public class ConsoleImpl implements ConsoleFace{
 	private static RemoteCall<?> remoteCall;
 
 	@SuppressWarnings("resource")
-	public ConsoleImpl() {
+	public ConsoleImpl(){
 		ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
 		service = context.getBean(Service.class);
 		try {
 			service.run();
 		} catch (Exception e) {
-			System.out.println(e);
+			System.out.println("Failed to initialize the client-side SSLContext, please checkout ca.crt File!");
+			System.exit(1);
 		}
 		ChannelEthereumService channelEthereumService = new ChannelEthereumService();
 		channelEthereumService.setChannelService(service);
@@ -396,7 +397,7 @@ public class ConsoleImpl implements ConsoleFace{
 	}
 	
 	@Override
-	public void getTotalTransactionCount(String[] params) throws IOException {
+	public void getTotalTransactionCount() throws IOException {
 		String transactionCount = web3j.getTotalTransactionCount().sendForReturnString();
 		JSONObject jo = JSONObject.parseObject(transactionCount);
 		jo.put("count", Numeric.decodeQuantity(jo.get("count").toString()));

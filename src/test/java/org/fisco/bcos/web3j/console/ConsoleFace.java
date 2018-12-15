@@ -46,7 +46,7 @@ public interface ConsoleFace {
 
 	void getCode(String[] params) throws IOException;
 
-	void getTotalTransactionCount(String[] params) throws IOException;
+	void getTotalTransactionCount() throws IOException;
 
 	void deploy(String[] params) throws Exception;
 
