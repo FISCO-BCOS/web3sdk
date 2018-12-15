@@ -24,7 +24,7 @@ public interface ConsoleFace {
 
 	void getPeers() throws IOException;
 
-	void getGroupPeers(String[] params) throws IOException;
+	void getGroupPeers() throws IOException;
 
 	void getGroupList() throws IOException;
 
