@@ -112,7 +112,7 @@ public class ConsoleClient {
 					break;
 				case "getTotalTransactionCount":
 				case "gtc":
-					console.getTotalTransactionCount(params);
+					console.getTotalTransactionCount();
 					break;
 				case "deploy":
 					console.deploy(params);
