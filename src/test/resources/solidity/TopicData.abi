@@ -1,0 +1,132 @@
+[
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "topicName",
+				"type": "bytes32"
+			}
+		],
+		"name": "isTopicExist",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"type": "function",
+		"stateMutability": "view"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "pageIndex",
+				"type": "uint256"
+			}
+		],
+		"name": "listTopic",
+		"outputs": [
+			{
+				"name": "topicList",
+				"type": "bytes32[10]"
+			}
+		],
+		"payable": false,
+		"type": "function",
+		"stateMutability": "view"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "topicArray",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bytes32"
+			}
+		],
+		"payable": false,
+		"type": "function",
+		"stateMutability": "view"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_topicName",
+				"type": "bytes32"
+			},
+			{
+				"name": "_topicAddress",
+				"type": "address"
+			},
+			{
+				"name": "_createdTimestamp",
+				"type": "uint256"
+			}
+		],
+		"name": "putTopic",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"type": "function",
+		"stateMutability": "nonpayable"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "topicName",
+				"type": "bytes32"
+			}
+		],
+		"name": "getTopicAddress",
+		"outputs": [
+			{
+				"name": "topicAddress",
+				"type": "address"
+			}
+		],
+		"payable": false,
+		"type": "function",
+		"stateMutability": "view"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "topicName",
+				"type": "bytes32"
+			}
+		],
+		"name": "getTopic",
+		"outputs": [
+			{
+				"name": "topicAddress",
+				"type": "address"
+			},
+			{
+				"name": "senderAddress",
+				"type": "address"
+			},
+			{
+				"name": "createTimestamp",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"type": "function",
+		"stateMutability": "view"
+	}
+]

@@ -1,0 +1,52 @@
+[
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "topicName",
+				"type": "bytes32"
+			},
+			{
+				"name": "eventContent",
+				"type": "string"
+			}
+		],
+		"name": "publishWeEvent",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"type": "function",
+		"stateMutability": "nonpayable"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"name": "topicName",
+				"type": "bytes32"
+			},
+			{
+				"indexed": false,
+				"name": "eventSeq",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"name": "eventBlockNumer",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"name": "eventContent",
+				"type": "string"
+			}
+		],
+		"name": "LogWeEvent",
+		"type": "event"
+	}
+]
