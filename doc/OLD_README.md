@@ -177,7 +177,7 @@ mv ca-agency.crt ca.crt
 (3)加载client.keystore中私钥作为交易私钥的示例代码<br>
 
 ```
-   KeyStore ks = KeyStore.getInstance("JKS");
+   KeyStore ks = KeyStore.getInstance("PKCS12");
    ksInputStream =  Ethereum.class.getClassLoader().getResourceAsStream(keyStoreFileName);
    ks.load(ksInputStream, keyStorePassword.toCharArray());
    Key key = ks.getKey("client", keyPassword.toCharArray());
@@ -886,7 +886,7 @@ ChannelEthereumService通过AMOP的网络连接支持web3j的Ethereum JSON RPC�
 > 样例给出的是新构建一个私钥文件。web3sdk也可以用证书来初始化交易签名私钥，对交易进行签可参考[存证sample](https://github.com/FISCO-BCOS/evidenceSample)。
 
 ```java
-import org.fisco.bcos.web3j.crypto.GenCredential;
+import org.fisco.bcos.web3j.crypto.gm.GenCredential;
 
 //...省略若干行...
 

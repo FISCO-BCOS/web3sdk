@@ -22,6 +22,7 @@ public class TransactionReceipt {
     private String status;
     private String from;
     private String to;
+    private String output;
     private List<Log> logs;
     private String logsBloom;
 
@@ -31,7 +32,7 @@ public class TransactionReceipt {
     public TransactionReceipt(String transactionHash, String transactionIndex,
                               String blockHash, String blockNumber, String cumulativeGasUsed,
                               String gasUsed, String contractAddress, String root, String status,
-                              String from, String to, List<Log> logs, String logsBloom) {
+                              String from, String to,String output, List<Log> logs, String logsBloom) {
         this.transactionHash = transactionHash;
         this.transactionIndex = transactionIndex;
         this.blockHash = blockHash;
@@ -43,6 +44,7 @@ public class TransactionReceipt {
         this.status = status;
         this.from = from;
         this.to = to;
+        this.output = output;
         this.logs = logs;
         this.logsBloom = logsBloom;
     }
@@ -82,6 +84,16 @@ public class TransactionReceipt {
     public String getBlockNumberRaw() {
         return blockNumber;
     }
+
+
+    public String getOutput() {
+        return output;
+    }
+
+    public void setOutput(String output) {
+        this.output = output;
+    }
+
 
     public void setBlockNumber(String blockNumber) {
         this.blockNumber = blockNumber;
@@ -235,6 +247,9 @@ public class TransactionReceipt {
         if (getLogs() != null ? !getLogs().equals(that.getLogs()) : that.getLogs() != null) {
             return false;
         }
+        if (getOutput() != null ? !getOutput().equals(that.getOutput()) : that.getOutput() != null) {
+            return false;
+        }
         return getLogsBloom() != null
                 ? getLogsBloom().equals(that.getLogsBloom()) : that.getLogsBloom() == null;
     }
@@ -252,6 +267,7 @@ public class TransactionReceipt {
         result = 31 * result + (getStatus() != null ? getStatus().hashCode() : 0);
         result = 31 * result + (getFrom() != null ? getFrom().hashCode() : 0);
         result = 31 * result + (getTo() != null ? getTo().hashCode() : 0);
+        result = 31 * result + (getOutput() != null ? getOutput().hashCode() : 0);
         result = 31 * result + (getLogs() != null ? getLogs().hashCode() : 0);
         result = 31 * result + (getLogsBloom() != null ? getLogsBloom().hashCode() : 0);
         return result;
@@ -271,6 +287,7 @@ public class TransactionReceipt {
                 + ", status='" + status + '\''
                 + ", from='" + from + '\''
                 + ", to='" + to + '\''
+                + ", output='" + output + '\''
                 + ", logs=" + logs
                 + ", logsBloom='" + logsBloom + '\''
                 + '}';

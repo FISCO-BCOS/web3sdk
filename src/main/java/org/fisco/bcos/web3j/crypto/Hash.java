@@ -17,6 +17,15 @@ import java.security.NoSuchAlgorithmException;
 public class Hash {
     private Hash() { }
 
+    private static HashInterface hashInterface = new SHA3Digest();
+    public static HashInterface getHashInterface() {
+        return hashInterface;
+    }
+
+    public static void setHashInterface(HashInterface hashInterface) {
+        Hash.hashInterface = hashInterface;
+    }
+
     /**
      * Keccak-256 hash function.
      *
