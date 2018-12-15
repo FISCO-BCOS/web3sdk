@@ -68,7 +68,7 @@ public class ConsoleClient {
 					break;
 				case "getGroupPeers":
 				case "ggp":
-					console.getGroupPeers(params);
+					console.getGroupPeers();
 					break;
 				case "getGroupList":
 				case "ggl":
@@ -133,7 +133,7 @@ public class ConsoleClient {
 				case "q":
 					System.exit(0);
 				default:
-					System.out.println("Unknown command, enter 'help' for command list.\n");
+					System.out.println("Undefined command: \""+params[0]+"\".  Try \"help\".\n");
 					break;
 
 				}

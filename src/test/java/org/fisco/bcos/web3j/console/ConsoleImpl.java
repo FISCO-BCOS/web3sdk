@@ -105,10 +105,10 @@ public class ConsoleImpl implements ConsoleFace{
 		sb.append("getPendingTransactions(gpt)                   Query pending transactions.\n");
 		sb.append("getCode(gc)                                   Query code at a given address.\n");
 		sb.append("getTotalTransactionCount(gtc)                 Query total transaction count.\n");
-		sb.append("deploy(d)                                     Deploy contract on blockchain.\n");
-		sb.append("call(c)                                       Call contract by method and paramters.\n");
-		sb.append("addPbft(ap)                                   Add Pbft nodes.\n");
-		sb.append("removePbft(rp)                                Remove Pbft nodes.\n");
+		sb.append("deploy(d)                                     Deploy a contract on blockchain.\n");
+		sb.append("call(c)                                       Call a contract by a function and paramters.\n");
+		sb.append("addPbft(ap)                                   Add a pbft node.\n");
+		sb.append("removePbft(rp)                                Remove a pbft nodes.\n");
 		sb.append("quit(q)                                       Quit console.");
 		System.out.println(sb.toString());
 		ConsoleUtils.singleLine();
@@ -173,7 +173,7 @@ public class ConsoleImpl implements ConsoleFace{
 	}
 	
 	@Override
-	public void getGroupPeers(String[] params) throws IOException {
+	public void getGroupPeers() throws IOException {
 		List<String> groupPeers = web3j.ethGroupPeers().send().getResult();
 		ConsoleUtils.printJson(groupPeers.toString());
 		System.out.println();
@@ -189,12 +189,15 @@ public class ConsoleImpl implements ConsoleFace{
 	@Override
 	public void getBlockByHash(String[] params) throws IOException {
 		if (params.length < 2) {
-			System.out.println(
-					"getBlockByHash(gbbh): missing block hash and transaction detail flag(optional, false by default)");
-			System.out.println("example: getBlockByHash 0x5e743a... true");
+			HelpInfo.promptHelp("gbbh");
 			return;
 		}
 		String blockHash = params[1];
+		if("-h".equals(blockHash) || "--help".equals(blockHash))
+		{
+			HelpInfo.getBlockByHashHelp();
+			return;
+		}
 		if (ConsoleUtils.isInvalidHash(blockHash))
 			return;
 		boolean flag = false;
@@ -209,12 +212,15 @@ public class ConsoleImpl implements ConsoleFace{
 	@Override
 	public void getBlockByNumber(String[] params) throws IOException {
 		if (params.length < 2) {
-			System.out.println(
-					"getBlockByNumber(gbbn): missing block number and transaction detail flag(optional, false by default)");
-			System.out.println("example: getBlockByNumber 1 true");
+			HelpInfo.promptHelp("gbbn");
 			return;
 		}
 		String blockNumberStr = params[1];
+		if("-h".equals(blockNumberStr) || "--help".equals(blockNumberStr))
+		{
+			HelpInfo.getBlockByNumberHelp();
+			return;
+		}
 		if(ConsoleUtils.isInvalidNumber(blockNumberStr, 0))
 			return;
 		BigInteger blockNumber = new BigInteger(blockNumberStr);
@@ -230,11 +236,15 @@ public class ConsoleImpl implements ConsoleFace{
 	@Override
 	public void getBlockHashByNumber(String[] params) throws IOException {
 		if (params.length < 2) {
-			System.out.println("getBlockHashByNumber(ghbn): missing block number");
-			System.out.println("example: ghbn 1");
+			HelpInfo.promptHelp("ghbn");
 			return;
 		}
 		String blockNumberStr = params[1];
+		if("-h".equals(blockNumberStr) || "--help".equals(blockNumberStr))
+		{
+			HelpInfo.getBlockHashByNumberHelp();
+			return;
+		}
 		if(ConsoleUtils.isInvalidNumber(blockNumberStr, 0))
 			return;
 		BigInteger blockNumber = new BigInteger(blockNumberStr);
@@ -250,11 +260,15 @@ public class ConsoleImpl implements ConsoleFace{
 	@Override
 	public void getTransactionByHash(String[] params) throws IOException {
 		if (params.length < 2) {
-			System.out.println("getTransactionByHash(gtbh): missing transactions hash");
-			System.out.println("example: gtbh 0x0x7536cf...");
+			HelpInfo.promptHelp("gtbh");
 			return;
 		}
 		String transactionHash = params[1];
+		if("-h".equals(transactionHash) || "--help".equals(transactionHash))
+		{
+			HelpInfo.getTransactionByHashHelp();
+			return;
+		}
 		if (ConsoleUtils.isInvalidHash(transactionHash))
 			return;
 		String transaction = web3j.ethGetTransactionByHash(transactionHash).sendForReturnString();
@@ -268,12 +282,20 @@ public class ConsoleImpl implements ConsoleFace{
 	
 	@Override
 	public void getTransactionByBlockHashAndIndex(String[] params) throws IOException {
-		if (params.length < 3) {
-			System.out.println("getTransactionByBlockHashAndIndex(gthi): missing block hash and transaction index");
-			System.out.println("example: gthi 0x5e743a... 0");
+		if (params.length < 2) {
+			HelpInfo.promptHelp("gthi");
 			return;
 		}
 		String blockHash = params[1];
+		if("-h".equals(blockHash) || "--help".equals(blockHash))
+		{
+			HelpInfo.getTransactionByBlockHashAndIndexHelp();
+			return;
+		}
+		if (params.length < 3) {
+			HelpInfo.promptHelp("gthi");
+			return;
+		}
 		if (ConsoleUtils.isInvalidHash(blockHash))
 			return;
 		String indexStr = params[2];
@@ -287,12 +309,20 @@ public class ConsoleImpl implements ConsoleFace{
 	
 	@Override
 	public void getTransactionByBlockNumberAndIndex(String[] params) throws IOException {
-		if (params.length < 3) {
-			System.out.println("getTransactionByBlockNumberAndIndex(gtni): missing block number and transaction index");
-			System.out.println("example: gtni 1 0");
+		if (params.length < 2) {
+			HelpInfo.promptHelp("gtni");
 			return;
 		}
 		String blockNumberStr = params[1];
+		if("-h".equals(blockNumberStr) || "--help".equals(blockNumberStr))
+		{
+			HelpInfo.getTransactionByBlockNumberAndIndexHelp();
+			return;
+		}
+		if (params.length < 3) {
+			HelpInfo.promptHelp("gtni");
+			return;
+		}
 		if(ConsoleUtils.isInvalidNumber(blockNumberStr, 0))
 			return;
 		BigInteger blockNumber = new BigInteger(blockNumberStr);
@@ -310,11 +340,15 @@ public class ConsoleImpl implements ConsoleFace{
 	@Override
 	public void getTransactionReceipt(String[] params) throws IOException {
 		if (params.length < 2) {
-			System.out.println("getTransactionReceipt(gtr): missing transaction hash");
-			System.out.println("example: gtr 0x7536cf...");
+			HelpInfo.promptHelp("gtr");
 			return;
 		}
 		String transactionHash = params[1];
+		if("-h".equals(transactionHash) || "--help".equals(transactionHash))
+		{
+			HelpInfo.getTransactionReceiptHelp();
+			return;
+		}
 		if (ConsoleUtils.isInvalidHash(transactionHash))
 			return;
 		String transactionReceipt = web3j.ethGetTransactionReceipt(transactionHash).sendForReturnString();
@@ -339,11 +373,15 @@ public class ConsoleImpl implements ConsoleFace{
 	@Override
 	public void getCode(String[] params) throws IOException {
 		if (params.length < 2) {
-			System.out.println("getCode(gc): missing contract address");
-			System.out.println("example: gc 0xa94f53...");
+			HelpInfo.promptHelp("gc");
 			return;
 		}
 		String address = params[1];
+		if("-h".equals(address) || "--help".equals(address))
+		{
+			HelpInfo.getCodeHelp();
+			return;
+		}
 		if (!address.startsWith("0x") || !(address.length() == 42)) {
 			System.out.println("This is an invalid address.");
 			return;
@@ -370,8 +408,12 @@ public class ConsoleImpl implements ConsoleFace{
 	@Override
 	public void deploy(String[] params) throws Exception {
 		if (params.length < 2) {
-			System.out.println("deploy: missing contract name");
-			System.out.println("example: deploy Ok");
+			HelpInfo.promptHelp("d");
+			return;
+		}
+		if("-h".equals(params[1]) || "--help".equals(params[1]))
+		{
+			HelpInfo.deployHelp();
 			return;
 		}
 		contractName = "org.fisco.bcos.temp." + params[1];
@@ -388,9 +430,17 @@ public class ConsoleImpl implements ConsoleFace{
 	@SuppressWarnings("rawtypes")
 	@Override
 	public void call(String[] params) throws Exception {
+		if (params.length < 2) {
+			HelpInfo.promptHelp("c");
+			return;
+		}
+		if("-h".equals(params[1]) || "--help".equals(params[1]))
+		{
+			HelpInfo.callHelp();
+			return;
+		}
 		if (params.length < 3) {
-			System.out.println("call(c): missing method name");
-			System.out.println("example: call get");
+			HelpInfo.promptHelp("c");
 			return;
 		}
 		Method load = contractClass.getMethod("load", String.class, Web3j.class, Credentials.class, BigInteger.class,
@@ -414,12 +464,15 @@ public class ConsoleImpl implements ConsoleFace{
 	public void removePbft(String[] params) throws Exception {
 
 		if (params.length < 2) {
-			System.out.println("removePbft(rp): missing nodeID");
-			System.out.println("example: removePbft 10b3a2d4b...");
+			HelpInfo.promptHelp("rp");
 			return;
 		}
-		UpdatePBFTNode pbft = new UpdatePBFTNode();
 		String nodeID = params[1];
+		if("-h".equals(nodeID) || "--help".equals(nodeID))
+		{
+			HelpInfo.removePbftHelp();
+			return;
+		}
 		List<String> minerList = web3j.getMinerList().send().getResult();
 		List<String> observerList = web3j.getObserverList().send().getResult();
 		if (nodeID.length() != 128) {
@@ -430,6 +483,7 @@ public class ConsoleImpl implements ConsoleFace{
 			System.out.println("This is not a pbft sealer node.");
 		} else {
 			String[] args = { "pbft", "remove", nodeID };
+			UpdatePBFTNode pbft = new UpdatePBFTNode();
 			pbft.call(args, web3j, credentials, service.getGroupId());
 			System.out.println("Remove " + nodeID.substring(0, 8) + "..." + " to a pbft sealer of group "
 					+ service.getGroupId() + " successful.");
@@ -440,12 +494,15 @@ public class ConsoleImpl implements ConsoleFace{
 	@Override
 	public void addPbft(String[] params) throws Exception {
 		if (params.length < 2) {
-			System.out.println("addPbft(ap): missing nodeID");
-			System.out.println("example: addPbft 10b3a2d4b...");
+			HelpInfo.promptHelp("ap");
 			return;
 		}
-		UpdatePBFTNode pbft = new UpdatePBFTNode();
 		String nodeID = params[1];
+		if("-h".equals(nodeID) || "--help".equals(nodeID))
+		{
+			HelpInfo.addPbftHelp();
+			return;
+		}
 		List<String> minerList = web3j.getMinerList().send().getResult();
 		List<String> observerList = web3j.getObserverList().send().getResult();
 		if (nodeID.length() != 128) {
@@ -456,6 +513,7 @@ public class ConsoleImpl implements ConsoleFace{
 			System.out.println("This is not a pbft observer node.");
 		} else {
 			String[] args = { "pbft", "add", nodeID };
+			UpdatePBFTNode pbft = new UpdatePBFTNode();
 			pbft.call(args, web3j, credentials, service.getGroupId());
 			System.out.println("Add " + nodeID.substring(0, 8) + "..." + " to a pbft sealer of group "
 					+ service.getGroupId() + " successful.");
