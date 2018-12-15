@@ -1,5 +1,6 @@
 package org.fisco.bcos.web3j.tx;
 
+import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.methods.response.EthSendTransaction;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
@@ -22,23 +23,23 @@ public abstract class TransactionManager {
     public static final long DEFAULT_POLLING_FREQUENCY = BLOCK_TIME;
 
     private final TransactionReceiptProcessor transactionReceiptProcessor;
-    private final String fromAddress;
+    final Credentials credentials;
 
     protected TransactionManager(
-            TransactionReceiptProcessor transactionReceiptProcessor, String fromAddress) {
+            TransactionReceiptProcessor transactionReceiptProcessor, Credentials credentials) {
         this.transactionReceiptProcessor = transactionReceiptProcessor;
-        this.fromAddress = fromAddress;
+        this.credentials = credentials;
     }
 
-    protected TransactionManager(Web3j web3j, String fromAddress) {
+    protected TransactionManager(Web3j web3j, Credentials credentials) {
         this(new PollingTransactionReceiptProcessor(
                         web3j, DEFAULT_POLLING_FREQUENCY, DEFAULT_POLLING_ATTEMPTS_PER_TX_HASH),
-                fromAddress);
+                credentials);
     }
 
     protected TransactionManager(
-            Web3j web3j, int attempts, long sleepDuration, String fromAddress) {
-        this(new PollingTransactionReceiptProcessor(web3j, sleepDuration, attempts), fromAddress);
+            Web3j web3j, int attempts, long sleepDuration, Credentials credentials) {
+        this(new PollingTransactionReceiptProcessor(web3j, sleepDuration, attempts), credentials);
     }
 
     protected TransactionReceipt executeTransaction(
@@ -57,7 +58,7 @@ public abstract class TransactionManager {
             throws IOException;
 
     public String getFromAddress() {
-        return fromAddress;
+        return credentials.getAddress();
     }
 
     private TransactionReceipt processResponse(EthSendTransaction transactionResponse)

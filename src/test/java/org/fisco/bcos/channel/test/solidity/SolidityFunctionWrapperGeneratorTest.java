@@ -2,7 +2,6 @@ package org.fisco.bcos.channel.test.solidity;
 
 import org.fisco.bcos.web3j.codegen.SolidityFunctionWrapperGenerator;
 import org.junit.Test;
-import org.springframework.core.io.ClassPathResource;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,21 +32,21 @@ public class SolidityFunctionWrapperGeneratorTest {
     }
 
     @Test
-    public void generateClassFromABIAndBIN() throws Exception {
-    File  fileList = new File("src/test/resources/solidity");
-    File[] files = fileList.listFiles();
-    for(File file : files) {
-        String filename = file.getName();
-        String commonName = filename.split("\\.")[0];
-        abiFile = "src/test/resources/solidity/"+commonName+ ".abi";
-        binFile =  "src/test/resources/solidity/"+commonName+".bin";
-        SolidityFunctionWrapperGenerator.main(Arrays.asList(
-                "-a", abiFile,
-                "-b", binFile,
-                "-p", packageName,
-                "-o", tempDirPath
-        ).toArray(new String[0]));
-    }
+    public void generateClassFromABIForGreeter() throws Exception {
+        File  fileList = new File("src/test/resources/solidity");
+        File[] files = fileList.listFiles();
+        for(File file : files) {
+            String filename = file.getName();
+            String commonName = filename.split("\\.")[0];
+            abiFile = "src/test/resources/solidity/"+commonName+ ".abi";
+            binFile =  "src/test/resources/solidity/"+commonName+".bin";
+            SolidityFunctionWrapperGenerator.main(Arrays.asList(
+                    "-a", abiFile,
+                    "-b", binFile,
+                    "-p", packageName,
+                    "-o", tempDirPath
+            ).toArray(new String[0]));
+        }
         System.out.println("generate successfully");
     }
 
