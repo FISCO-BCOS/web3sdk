@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.channel.test.precompile.UpdatePBFTNode;
+import org.fisco.bcos.web3j.cns.CnsResolver;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.crypto.ECKeyPair;
 import org.fisco.bcos.web3j.crypto.Keys;
@@ -32,6 +33,7 @@ public class ConsoleImpl implements ConsoleFace{
 	private static Credentials credentials;
 	private static String contractAddress;
 	private static String contractName;
+	private static String contractVersion;
 	private static Class<?> contractClass;
 	private static RemoteCall<?> remoteCall;
 
@@ -417,6 +419,10 @@ public class ConsoleImpl implements ConsoleFace{
 			HelpInfo.deployHelp();
 			return;
 		}
+		if (params.length < 3) {
+			HelpInfo.promptHelp("d");
+			return;
+		}
 		contractName = "org.fisco.bcos.temp." + params[1];
 		contractClass = ContractClassFactory.getContractClass(contractName);
 		Method deploy = contractClass.getMethod("deploy", Web3j.class, Credentials.class, BigInteger.class,
@@ -424,6 +430,11 @@ public class ConsoleImpl implements ConsoleFace{
 		remoteCall = (RemoteCall<?>) deploy.invoke(null, web3j, credentials, gasPrice, gasLimit);
 		Contract contract = (Contract) remoteCall.send();
 		contractAddress = contract.getContractAddress();
+		contractVersion = params[2];
+		// register cns
+		CnsResolver cnsResolver = new CnsResolver(web3j, credentials);
+		cnsResolver.registerCns(params[1], contractVersion, contractAddress, contract.getContractBinary());
+		
 		System.out.println(contractAddress);
 		System.out.println();
 	}
@@ -440,16 +451,23 @@ public class ConsoleImpl implements ConsoleFace{
 			HelpInfo.callHelp();
 			return;
 		}
-		if (params.length < 3) {
+		if (params.length < 4) {
 			HelpInfo.promptHelp("c");
 			return;
 		}
 		Method load = contractClass.getMethod("load", String.class, Web3j.class, Credentials.class, BigInteger.class,
 				BigInteger.class);
 		Object contractObject;
+		
+		//get address from cns
+		contractName = params[1];
+		contractVersion = params[2];
+		CnsResolver cnsResolver = new CnsResolver(web3j, credentials);
+		contractAddress = cnsResolver.resolve(contractName+":"+contractVersion);
+		
 		contractObject = load.invoke(null, contractAddress, web3j, credentials, gasPrice, gasLimit);
-		Class[] parameterType = ContractClassFactory.getParameterType(contractClass, params[1]);
-		String returnType = ContractClassFactory.getReturnType(contractClass, params[1]);
+		Class[] parameterType = ContractClassFactory.getParameterType(contractClass, params[3]);
+		String returnType = ContractClassFactory.getReturnType(contractClass, params[3]);
 		Method func = contractClass.getMethod(params[1], parameterType);
 		Object[] argobj = ContractClassFactory.getPrametersObject(parameterType, params);
 		remoteCall = (RemoteCall<?>) func.invoke(contractObject, argobj);
