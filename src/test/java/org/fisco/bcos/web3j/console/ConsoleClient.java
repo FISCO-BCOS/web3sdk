@@ -115,6 +115,7 @@ public class ConsoleClient {
 					console.getTotalTransactionCount();
 					break;
 				case "deploy":
+				case "d":
 					console.deploy(params);
 					break;
 				case "call":

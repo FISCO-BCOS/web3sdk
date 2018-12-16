@@ -263,8 +263,8 @@ public class ConsoleTest{
     }
     @Test(expected= ClassNotFoundException.class) 
     public void deployTestException() throws Exception {
-    	String[] params3 = {"d", "ae"};
-    	console.deploy(params3);
+    	String[] params = {"d", "ae", "1.0"};
+    	console.deploy(params);
     }
     @Test
     public void deployTest() throws Exception {
@@ -278,8 +278,12 @@ public class ConsoleTest{
     	assertTrue(!"".equals(log.getLog()));
     	log.clearLog();
         	
-    	String[] params3 = {"gc", "Ok"};
+    	String[] params3 = {"d", "Ok"};
     	console.deploy(params3);
+    	assertTrue(!"".equals(log.getLog()));
+    	
+    	String[] params4 = {"d", "Ok", "1.0"};
+    	console.deploy(params4);
     	assertTrue(!"".equals(log.getLog()));
     }
     @Test
@@ -294,13 +298,14 @@ public class ConsoleTest{
     	assertTrue(!"".equals(log.getLog()));
     	log.clearLog();
     	
-//    	String[] params3 = {"c", "Ok"};
-//    	console.call(params3);
-//    	assertTrue(!"".equals(log.getLog()));
-//    	
-//    	String[] params4 = {"c", "Ok", "trans", "1"};
-//    	console.call(params4);
-//    	assertTrue(!"".equals(log.getLog()));
+    	String[] params3 = {"c", "Ok"};
+    	console.call(params3);
+    	assertTrue(!"".equals(log.getLog()));
+    	
+    	String[] params4 = {"c", "Ok", "1.0"};
+    	console.call(params4);
+    	assertTrue(!"".equals(log.getLog()));
+    	
     }
     @Test
     public void addPbftTest() throws Exception {
