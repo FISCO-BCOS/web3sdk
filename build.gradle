@@ -64,7 +64,9 @@ dependencies {
 	        'org.mockito:mockito-core:2.23.0',
 			'org.ethereum:solcJ-all:0.4.25',
 	 		"org.apache.commons:commons-collections4:4.0",
-			"commons-io:commons-io:2.4"
+			"commons-io:commons-io:2.4",
+			'com.github.stefanbirkner:system-rules:1.18.0'
+			
 
 }
 
@@ -157,4 +159,4 @@ jar {
 //		}
 //	}
 //}
-mainClassName  = System.getProperty("exec.mainClass") ?:  "org.fisco.bcos.channel.test.PerfOkTransaction"
+//mainClassName  = System.getProperty("exec.mainClass") ?:  "org.fisco.bcos.channel.test.PerfOkTransaction"

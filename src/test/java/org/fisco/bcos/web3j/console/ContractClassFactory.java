@@ -43,7 +43,7 @@ public class ContractClassFactory {
     
 	@SuppressWarnings("rawtypes")
 	public static Object[] getPrametersObject(Class[] type, String[] params) {
-		Object[] obj = new Object[params.length - 2];
+		Object[] obj = new Object[params.length - 4];
     	for (int i = 0; i < obj.length; i++) 
     	{	
 			if(type[i] == String.class)

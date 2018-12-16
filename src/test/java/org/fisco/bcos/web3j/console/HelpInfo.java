@@ -82,14 +82,17 @@ public class HelpInfo {
 	public static void deployHelp() 
 	{
 		System.out.println("Deploy a contract on blockchain.");
-		System.out.println("Usage: d contractName");
+		System.out.println("Usage: d contractName contractVersion");
 		System.out.println("contractName -- A name for a contract.");
+		System.out.println("contractVersion -- A version for a contract.");
 		System.out.println();
 	}
 	public static void callHelp() 
 	{
 		System.out.println("Call a contract by a function and paramters.");
-		System.out.println("Usage: c contractName function parameters");
+		System.out.println("Usage: c contractName contractVersion function parameters");
+		System.out.println("contractName -- A name for a contract.");
+		System.out.println("contractVersion -- A version for a contract.");
 		System.out.println("function -- A function of a contract.");
 		System.out.println("parameters -- Parameters(splited by a space) for a function.");
 		System.out.println();
