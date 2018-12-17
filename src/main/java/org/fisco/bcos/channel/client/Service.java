@@ -339,6 +339,7 @@ public class Service {
 		// 选取发送节点
 		try {
 			ChannelConnections fromChannelConnections = allChannelConnections.get(orgID);
+
 			if (fromChannelConnections == null) {
 				// 没有找到对应的链
 				// 返回错误
@@ -349,6 +350,7 @@ public class Service {
 
 
 			ChannelHandlerContext ctx = fromChannelConnections.randomNetworkConnection();
+
 			ByteBuf out = ctx.alloc().buffer();
 			ethereumMessage.writeHeader(out);
 			ethereumMessage.writeExtra(out);
@@ -376,7 +378,7 @@ public class Service {
 
 			sended = true;
 		} catch (Exception e) {
-			logger.error("system error", e);
+			logger.error("system error: " + e.getMessage());
 
 			EthereumResponse response = new EthereumResponse();
 			response.setErrorCode(-1);
