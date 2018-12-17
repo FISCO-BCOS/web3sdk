@@ -1,5 +1,6 @@
 package org.fisco.bcos.channel.handler;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyStore;
 import java.security.PrivateKey;
@@ -62,8 +63,8 @@ public class ChannelConnections {
 
 	private Callback callback;
 	private List<String> connectionsStr;
-	private String keystorePassWord = "123456";
-	private String clientCertPassWord = "123456";
+	private String keystorePassWord;
+	private String clientCertPassWord;
 	private List<ConnectionInfo> connections = new ArrayList<ConnectionInfo>();
 	private Boolean running = false;
 	private ThreadPoolTaskExecutor threadPool;
