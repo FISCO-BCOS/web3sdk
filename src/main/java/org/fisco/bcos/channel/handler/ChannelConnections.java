@@ -63,8 +63,8 @@ public class ChannelConnections {
 
 	private Callback callback;
 	private List<String> connectionsStr;
-	private String keystorePassWord;
-	private String clientCertPassWord;
+	private String keystorePassWord = "";
+	private String clientCertPassWord= "";
 	private List<ConnectionInfo> connections = new ArrayList<ConnectionInfo>();
 	private Boolean running = false;
 	private ThreadPoolTaskExecutor threadPool;
