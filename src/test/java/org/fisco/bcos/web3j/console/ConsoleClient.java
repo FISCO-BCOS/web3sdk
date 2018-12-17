@@ -114,21 +114,25 @@ public class ConsoleClient {
 				case "gtc":
 					console.getTotalTransactionCount();
 					break;
-				case "deploy":
-				case "d":
-					console.deploy(params);
+				case "deployByCNS":
+				case "dbc":
+					console.deployByCNS(params);
 					break;
-				case "call":
-				case "c":
-					console.call(params);
+				case "callByCNS":
+				case "cbc":
+					console.callByCNS(params);
 					break;
-				case "addPbft":
-				case "ap":
-					console.addPbft(params);
+				case "addMiner":
+				case "am":
+					console.addMiner(params);
 					break;
-				case "removePbft":
-				case "rp":
-					console.removePbft(params);
+				case "addObserver":
+				case "ao":
+					console.addObserver(params);
+					break;
+				case "removeNode":
+				case "rn":
+					console.removeNode(params);
 					break;
 				case "quit":
 				case "q":

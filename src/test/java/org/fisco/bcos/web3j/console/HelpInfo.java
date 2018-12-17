@@ -97,18 +97,25 @@ public class HelpInfo {
 		System.out.println("parameters -- Parameters(splited by a space) for a function.");
 		System.out.println();
 	}
-	public static void addPbftHelp() 
+	public static void addObserverHelp() 
 	{
-		System.out.println("Add a pbft node.");
-		System.out.println("Usage: ap nodeID");
-		System.out.println("nodeID -- nodeID of a pbft observer node.");
+		System.out.println("Add an observer node.");
+		System.out.println("Usage: ao nodeID");
+		System.out.println("nodeID -- nodeID of node.");
 		System.out.println();
 	}
-	public static void removePbftHelp() 
+	public static void addMinerHelp() 
 	{
-		System.out.println("Remove a pbft node.");
-		System.out.println("Usage: rp nodeID");
-		System.out.println("nodeID -- nodeID of a pbft sealer node.");
+		System.out.println("Add a miner node.");
+		System.out.println("Usage: am nodeID");
+		System.out.println("nodeID -- nodeID of a node.");
+		System.out.println();
+	}
+	public static void removeNodeHelp() 
+	{
+		System.out.println("Remove a node.");
+		System.out.println("Usage: rn nodeID");
+		System.out.println("nodeID -- nodeID of a node.");
 		System.out.println();
 	}
 
