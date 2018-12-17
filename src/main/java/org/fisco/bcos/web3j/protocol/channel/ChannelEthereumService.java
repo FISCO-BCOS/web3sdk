@@ -3,6 +3,7 @@ package org.fisco.bcos.web3j.protocol.channel;
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.channel.dto.EthereumRequest;
 import org.fisco.bcos.channel.dto.EthereumResponse;
+import org.fisco.bcos.web3j.protocol.exceptions.MessageDecodingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,7 +65,7 @@ public class ChannelEthereumService extends org.fisco.bcos.web3j.protocol.Servic
                 return t;
             }
             catch(Exception e) {
-                throw new IOException(response.getContent());
+                throw new MessageDecodingException(response.getContent());
             }
         }
         else {

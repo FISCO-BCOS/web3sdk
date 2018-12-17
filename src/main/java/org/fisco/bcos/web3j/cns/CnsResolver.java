@@ -96,7 +96,6 @@ public class CnsResolver {
                 } catch (Exception e) {
                     throw new RuntimeException("Unable to execute Ethereum request", e);
                 }
-
                 if (!WalletUtils.isValidAddress(address)) {
                     throw new RuntimeException("Unable to resolve address for name: " + contractNameAndVersion);
                 } else {
