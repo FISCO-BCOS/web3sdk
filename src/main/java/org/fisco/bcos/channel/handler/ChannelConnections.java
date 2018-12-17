@@ -13,6 +13,7 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.SslProvider;
 import io.netty.handler.timeout.IdleStateHandler;
 import org.fisco.bcos.channel.dto.EthereumMessage;
 import org.slf4j.Logger;
@@ -51,8 +52,8 @@ public class ChannelConnections {
 
 	private Callback callback;
 	private List<String> connectionsStr;
-	private String keystorePassWord;
-	private String clientCertPassWord;
+	private String keystorePassWord = "";
+	private String clientCertPassWord = "";
 	private List<ConnectionInfo> connections = new ArrayList<ConnectionInfo>();
 	private Boolean running = false;
 	private ThreadPoolTaskExecutor threadPool;
@@ -328,11 +329,12 @@ public class ChannelConnections {
 			KeyStore ks = KeyStore.getInstance("PKCS12");
 			InputStream ksInputStream = keystoreResource.getInputStream();
 			ks.load(ksInputStream, getKeystorePassWord().toCharArray());
-			sslCtx = SslContextBuilder.forClient().trustManager(caResource.getFile()).build();
+			sslCtx = SslContextBuilder.forClient().sslProvider( SslProvider.OPENSSL).trustManager(caResource.getFile()).build();
+		//	SslContext sslContext = SslContextBuilder.forServer(ssc.certificate(), ssc.privateKey()) .sslProvider( SslProvider. OPENSSL).ciphers(ciphers).build();
 		}  catch (Exception e)
 		{
 			logger.debug( "SSLCONTEXT ***********" + e.getMessage());
-			throw new SSLException("Failed to initialize the client-side SSLContext, please checkout ca.crt File!", e);
+			throw new SSLException("Failed to initialize the client-side SSLContext, please check ca.crt File and keystore.p12 File!", e);
 		}
 		return sslCtx;
 	}
