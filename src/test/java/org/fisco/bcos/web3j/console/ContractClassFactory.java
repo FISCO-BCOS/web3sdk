@@ -19,7 +19,8 @@ public class ContractClassFactory {
 		return (Class<?>) Class.forName(contractName); 
 	}
 	
-    public static Class[] getParameterType(Class clazz, String methodName) throws ClassNotFoundException {
+    @SuppressWarnings("rawtypes")
+	public static Class[] getParameterType(Class clazz, String methodName) throws ClassNotFoundException {
         Method[] methods = clazz.getDeclaredMethods();
         Class[] type = null;
         for (Method method : methods) {
@@ -40,8 +41,9 @@ public class ContractClassFactory {
         return type;
     }
     
+	@SuppressWarnings("rawtypes")
 	public static Object[] getPrametersObject(Class[] type, String[] params) {
-		Object[] obj = new Object[params.length - 2];
+		Object[] obj = new Object[params.length - 4];
     	for (int i = 0; i < obj.length; i++) 
     	{	
 			if(type[i] == String.class)
@@ -78,7 +80,8 @@ public class ContractClassFactory {
 		return obj;
 	}
 	
-    public static String getReturnType(Class clazz, String methodName) throws ClassNotFoundException {
+    @SuppressWarnings("rawtypes")
+	public static String getReturnType(Class clazz, String methodName) throws ClassNotFoundException {
         Method[] methods = clazz.getDeclaredMethods();
         String returnType = null;
         for (Method method : methods) 
@@ -110,6 +113,7 @@ public class ContractClassFactory {
        return returnType;
     }
 
+	@SuppressWarnings("unchecked")
 	public static String getReturnObject(String returnType, Object result) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		String resultStr = null;
 		if(returnType.startsWith("Tuple") && "byte[]".equals(returnType.substring(7, 13)))
