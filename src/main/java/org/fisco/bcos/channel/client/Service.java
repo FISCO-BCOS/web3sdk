@@ -125,6 +125,7 @@ public class Service {
 							sleepTime += connectSleepPerMillis;
 						}
 					}
+
 					if(!running)
 					{
 						logger.error("connectSeconds = " + connectSeconds);

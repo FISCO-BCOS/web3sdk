@@ -29,8 +29,6 @@
 			<map>
 				<entry key="fisco">
 					<bean class="org.fisco.bcos.channel.handler.ChannelConnections">
-						<property name="keystorePassWord" value="123456" />
-						<property name="clientCertPassWord" value="123456" />
                         <property name="connectionsStr">
 							<list>
                  <!--[nodeid]@[ip]:[channelPort]-->
