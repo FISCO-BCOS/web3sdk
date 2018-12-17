@@ -90,6 +90,12 @@ public interface Ethereum {
     
     //增加eth_pbftView接口
     Request<?, EthPbftView> ethPbftView();
+    
+    //增加getMinerList接口
+    Request<?, MinerList> getMinerList();
+    
+    //增加getObserverList接口
+    Request<?, ObserverList> getObserverList();
 
     //增加consensusStatus接口
     Request<?,EthConsensusStatus> consensusStatus();
