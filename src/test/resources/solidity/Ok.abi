@@ -32,5 +32,17 @@
 		"type": "constructor",
 		"payable": true,
 		"stateMutability": "payable"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"name": "num",
+				"type": "uint256"
+			}
+		],
+		"name": "transEvent",
+		"type": "event"
 	}
 ]
