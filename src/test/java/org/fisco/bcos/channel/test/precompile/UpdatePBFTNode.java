@@ -84,4 +84,3 @@ public class UpdatePBFTNode {
         System.out.println("####get gas used from TransactionReceipt: " + receipt.getGasUsed());
     }
 }
-

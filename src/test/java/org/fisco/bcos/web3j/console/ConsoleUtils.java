@@ -1,6 +1,6 @@
 package org.fisco.bcos.web3j.console;
 
-public class JsonFormatUtil {
+public class ConsoleUtils {
 
 	public static void main(String[] args) {
 		String json = "{\"name\":\"chenggang\",\"age\":24}";
@@ -54,7 +54,8 @@ public class JsonFormatUtil {
 				}
 				break;
 			default:
-				sb.append(current);
+				if(!(current == " ".charAt(0)))
+					sb.append(current);
 			}
 		}
 
@@ -65,5 +66,40 @@ public class JsonFormatUtil {
 		for (int i = 0; i < indent; i++) {
 			sb.append('\t');
 		}
+	}
+	
+	public static boolean isInvalidHash(String hash) {
+		if (hash.startsWith("0x") && hash.length() == 66) {
+			return false;
+		} else {
+			System.out.println("This is an invalid hash.");
+			return true;
+		}
+	}
+	
+	public static boolean isInvalidNumber(String number, int flag) {
+		String numberStr = number.trim();
+		if (!numberStr.matches("^[0-9]*$") || "".equals(numberStr)) {
+			if(flag == 0)
+				System.out.println("Please provide block number by decimal mode.");
+			else
+				System.out.println("Please provide transaction index by decimal mode.");
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+		
+	}
+	
+	public static void singleLine() {
+		System.out.println(
+				"----------------------------------------------------------------------------------------------");
+	}
+
+	public static void doubleLine() {
+		System.out.println(
+				"==============================================================================================");
 	}
 }
