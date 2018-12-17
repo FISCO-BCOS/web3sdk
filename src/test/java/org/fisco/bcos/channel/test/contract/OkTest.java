@@ -23,13 +23,15 @@ public class OkTest extends TestBase {
 
     public static Class<?> contractClass;
     public String  contractName;
+    public RemoteCall<?>  remoteCall;
+    public String contractAddress;
+    public java.math.BigInteger gasPrice = new BigInteger("300000000");
+    public java.math.BigInteger gasLimit = new BigInteger("300000000");
+    public java.math.BigInteger initialWeiValue = new BigInteger("0");
 
     @Test
     public void testOkContract() throws Exception {
 
-        java.math.BigInteger gasPrice = new BigInteger("300000000");
-        java.math.BigInteger gasLimit = new BigInteger("300000000");
-        java.math.BigInteger initialWeiValue = new BigInteger("0");
 
         Ok okDemo = Ok.deploy(web3j, credentials, gasPrice, gasLimit, initialWeiValue).send();
 
