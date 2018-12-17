@@ -29,12 +29,10 @@
 			<map>
 				<entry key="fisco">
 					<bean class="org.fisco.bcos.channel.handler.ChannelConnections">
-						<property name="keystorePassWord" value="123456" />
-						<property name="clientCertPassWord" value="123456" />
                         <property name="connectionsStr">
 							<list>
                  				<!--[nodeid]@[ip]:[channelPort]-->
-								<value>node1@10.107.105.81:40001</value>
+								<value>node1@10.107.105.137:30301</value>
 							</list>
 						</property>
                     </bean>
