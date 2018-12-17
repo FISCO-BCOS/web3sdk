@@ -48,15 +48,15 @@ public class UpdatePBFTNode {
         System.exit(0);
     }
 
-    private void AddNodeToMiner(String nodeId, Web3j web3j, Credentials credentials) throws Exception {
+    public void AddNodeToMiner(String nodeId, Web3j web3j, Credentials credentials) throws Exception {
         AddMiner(MinerPrecompileAddress, web3j, credentials, nodeId);
     }
 
-    private void AddNodeToObserver(String nodeId, Web3j web3j, Credentials credentials) throws Exception {
+    public void AddNodeToObserver(String nodeId, Web3j web3j, Credentials credentials) throws Exception {
         AddObserver(MinerPrecompileAddress, web3j, credentials, nodeId);
     }
 	
-	private void RemoveNode(String nodeId, Web3j web3j, Credentials credentials) throws Exception {
+	public void RemoveNode(String nodeId, Web3j web3j, Credentials credentials) throws Exception {
         Remove(MinerPrecompileAddress, web3j, credentials, nodeId);
     }
 

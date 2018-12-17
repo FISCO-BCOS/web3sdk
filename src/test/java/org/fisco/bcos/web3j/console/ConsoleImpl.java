@@ -16,6 +16,7 @@ import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameterName;
 import org.fisco.bcos.web3j.protocol.core.RemoteCall;
+import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.tx.Contract;
 import org.fisco.bcos.web3j.utils.Numeric;
 import org.springframework.context.ApplicationContext;
@@ -110,8 +111,9 @@ public class ConsoleImpl implements ConsoleFace{
 		sb.append("getTotalTransactionCount(gtc)                 Query total transaction count.\n");
 		sb.append("deploy(d)                                     Deploy a contract on blockchain.\n");
 		sb.append("call(c)                                       Call a contract by a function and paramters.\n");
-		sb.append("addPbft(ap)                                   Add a pbft node.\n");
-		sb.append("removePbft(rp)                                Remove a pbft nodes.\n");
+		sb.append("addMiner(am)                                  Add a miner node.\n");
+		sb.append("addObserver(ao)                               Add an observer node.\n");
+		sb.append("removeNode(rn)                                Remove a node.\n");
 		sb.append("quit(q)                                       Quit console.");
 		System.out.println(sb.toString());
 		ConsoleUtils.singleLine();
@@ -134,7 +136,15 @@ public class ConsoleImpl implements ConsoleFace{
 	@Override
 	public void getObserverList() throws IOException {
 		List<String> observerList = web3j.getObserverList().send().getResult();
-		ConsoleUtils.printJson(observerList.toString());
+		String observers = observerList.toString();
+		if("[]".equals(observers))
+		{
+			System.out.println("[]");
+		}
+		else
+		{
+			ConsoleUtils.printJson(observers);
+		}
 		System.out.println();
 
 	}
@@ -142,7 +152,15 @@ public class ConsoleImpl implements ConsoleFace{
 	@Override
 	public void getMinerList() throws IOException {
 		List<String> minerList = web3j.getMinerList().send().getResult();
-		ConsoleUtils.printJson(minerList.toString());
+		String miners = minerList.toString();
+		if("[]".equals(miners))
+		{
+			System.out.println("[]");
+		}
+		else
+		{
+			ConsoleUtils.printJson(miners);
+		}
 		System.out.println();
 
 	}
@@ -419,10 +437,6 @@ public class ConsoleImpl implements ConsoleFace{
 			HelpInfo.deployHelp();
 			return;
 		}
-		if (params.length < 3) {
-			HelpInfo.promptHelp("d");
-			return;
-		}
 		contractName = "org.fisco.bcos.temp." + params[1];
 		contractClass = ContractClassFactory.getContractClass(contractName);
 		Method deploy = contractClass.getMethod("deploy", Web3j.class, Credentials.class, BigInteger.class,
@@ -430,16 +444,10 @@ public class ConsoleImpl implements ConsoleFace{
 		remoteCall = (RemoteCall<?>) deploy.invoke(null, web3j, credentials, gasPrice, gasLimit);
 		Contract contract = (Contract) remoteCall.send();
 		contractAddress = contract.getContractAddress();
-		contractVersion = params[2];
-		// register cns
-		CnsResolver cnsResolver = new CnsResolver(web3j, credentials);
-		cnsResolver.registerCns(params[1], contractVersion, contractAddress, contract.getContractBinary());
-		
 		System.out.println(contractAddress);
 		System.out.println();
 	}
 	
-	@SuppressWarnings("rawtypes")
 	@Override
 	public void call(String[] params) throws Exception {
 		if (params.length < 2) {
@@ -455,6 +463,8 @@ public class ConsoleImpl implements ConsoleFace{
 			HelpInfo.promptHelp("c");
 			return;
 		}
+		contractName = "org.fisco.bcos.temp." + params[1];
+		contractClass = ContractClassFactory.getContractClass(contractName);
 		Method load = contractClass.getMethod("load", String.class, Web3j.class, Credentials.class, BigInteger.class,
 				BigInteger.class);
 		Object contractObject;
@@ -468,7 +478,7 @@ public class ConsoleImpl implements ConsoleFace{
 		contractObject = load.invoke(null, contractAddress, web3j, credentials, gasPrice, gasLimit);
 		Class[] parameterType = ContractClassFactory.getParameterType(contractClass, params[3]);
 		String returnType = ContractClassFactory.getReturnType(contractClass, params[3]);
-		Method func = contractClass.getMethod(params[1], parameterType);
+		Method func = contractClass.getMethod(params[3], parameterType);
 		Object[] argobj = ContractClassFactory.getPrametersObject(parameterType, params);
 		remoteCall = (RemoteCall<?>) func.invoke(contractObject, argobj);
 		Object result;
@@ -480,64 +490,151 @@ public class ConsoleImpl implements ConsoleFace{
 	}
 	
 	@Override
-	public void removePbft(String[] params) throws Exception {
-
+	public void deployByCNS(String[] params) throws Exception {
 		if (params.length < 2) {
-			HelpInfo.promptHelp("rp");
+			HelpInfo.promptHelp("d");
+			return;
+		}
+		if("-h".equals(params[1]) || "--help".equals(params[1]))
+		{
+			HelpInfo.deployHelp();
+			return;
+		}
+		if (params.length < 3) {
+			HelpInfo.promptHelp("d");
+			return;
+		}
+		contractName = "org.fisco.bcos.temp." + params[1];
+		contractClass = ContractClassFactory.getContractClass(contractName);
+		Method deploy = contractClass.getMethod("deploy", Web3j.class, Credentials.class, BigInteger.class,
+				BigInteger.class);
+		remoteCall = (RemoteCall<?>) deploy.invoke(null, web3j, credentials, gasPrice, gasLimit);
+		Contract contract = (Contract) remoteCall.send();
+		contractAddress = contract.getContractAddress();
+		contractVersion = params[2];
+		// register cns
+		CnsResolver cnsResolver = new CnsResolver(web3j, credentials);
+		TransactionReceipt registerCns = cnsResolver.registerCns(params[1], contractVersion, contractAddress, contract.getContractBinary());
+		System.out.println(contractAddress);
+		System.out.println();
+	}
+	
+	@SuppressWarnings("rawtypes")
+	@Override
+	public void callByCNS(String[] params) throws Exception {
+		if (params.length < 2) {
+			HelpInfo.promptHelp("c");
+			return;
+		}
+		if("-h".equals(params[1]) || "--help".equals(params[1]))
+		{
+			HelpInfo.callHelp();
+			return;
+		}
+		if (params.length < 4) {
+			HelpInfo.promptHelp("c");
+			return;
+		}
+		contractName = "org.fisco.bcos.temp." + params[1];
+		contractClass = ContractClassFactory.getContractClass(contractName);
+		Method load = contractClass.getMethod("load", String.class, Web3j.class, Credentials.class, BigInteger.class,
+				BigInteger.class);
+		Object contractObject;
+		
+		//get address from cns
+		contractName = params[1];
+		contractVersion = params[2];
+		CnsResolver cnsResolver = new CnsResolver(web3j, credentials);
+		contractAddress = cnsResolver.resolve(contractName+":"+contractVersion);
+		
+		contractObject = load.invoke(null, contractAddress, web3j, credentials, gasPrice, gasLimit);
+		Class[] parameterType = ContractClassFactory.getParameterType(contractClass, params[3]);
+		String returnType = ContractClassFactory.getReturnType(contractClass, params[3]);
+		Method func = contractClass.getMethod(params[3], parameterType);
+		Object[] argobj = ContractClassFactory.getPrametersObject(parameterType, params);
+		remoteCall = (RemoteCall<?>) func.invoke(contractObject, argobj);
+		Object result;
+		result = remoteCall.send();
+		String resultStr;
+		resultStr = ContractClassFactory.getReturnObject(returnType, result);
+		System.out.println(resultStr);
+		System.out.println();
+	}
+	
+	@Override
+	public void addMiner(String[] params) throws Exception {
+		if (params.length < 2) {
+			HelpInfo.promptHelp("am");
 			return;
 		}
 		String nodeID = params[1];
 		if("-h".equals(nodeID) || "--help".equals(nodeID))
 		{
-			HelpInfo.removePbftHelp();
+			HelpInfo.addMinerHelp();
 			return;
 		}
-		List<String> minerList = web3j.getMinerList().send().getResult();
-		List<String> observerList = web3j.getObserverList().send().getResult();
 		if (nodeID.length() != 128) {
 			System.out.println("This is an invalid nodeID.");
-		} else if (observerList.contains(nodeID)) {
-			System.out.println("The node is already a pbft observer node.");
-		} else if (!minerList.contains(nodeID)) {
-			System.out.println("This is not a pbft sealer node.");
-		} else {
-			String[] args = { "pbft", "remove", nodeID };
+		} 
+		else {
 			UpdatePBFTNode pbft = new UpdatePBFTNode();
-			pbft.call(args, web3j, credentials, service.getGroupId());
-			System.out.println("Remove " + nodeID.substring(0, 8) + "..." + " to a pbft sealer of group "
+			pbft.AddNodeToMiner(nodeID, web3j, credentials);
+			System.out.println("Add " + nodeID.substring(0, 8) + "..." + " to a miner of group "
 					+ service.getGroupId() + " successful.");
+			System.out.println();
 		}
 
 	}
 	
 	@Override
-	public void addPbft(String[] params) throws Exception {
+	public void addObserver(String[] params) throws Exception {
+
 		if (params.length < 2) {
-			HelpInfo.promptHelp("ap");
+			HelpInfo.promptHelp("ao");
 			return;
 		}
 		String nodeID = params[1];
 		if("-h".equals(nodeID) || "--help".equals(nodeID))
 		{
-			HelpInfo.addPbftHelp();
+			HelpInfo.addObserverHelp();
 			return;
 		}
-		List<String> minerList = web3j.getMinerList().send().getResult();
-		List<String> observerList = web3j.getObserverList().send().getResult();
 		if (nodeID.length() != 128) {
 			System.out.println("This is an invalid nodeID.");
-		} else if (minerList.contains(nodeID)) {
-			System.out.println("The node is already a pbft sealer node.");
-		} else if (!observerList.contains(nodeID)) {
-			System.out.println("This is not a pbft observer node.");
-		} else {
-			String[] args = { "pbft", "add", nodeID };
+		} 
+		else {
 			UpdatePBFTNode pbft = new UpdatePBFTNode();
-			pbft.call(args, web3j, credentials, service.getGroupId());
-			System.out.println("Add " + nodeID.substring(0, 8) + "..." + " to a pbft sealer of group "
+			pbft.AddNodeToObserver(nodeID, web3j, credentials);
+			System.out.println("Add " + nodeID.substring(0, 8) + "..." + " to an observer of group "
 					+ service.getGroupId() + " successful.");
+			System.out.println();
 		}
 
+	}
+	
+	@Override
+	public void removeNode(String[] params) throws Exception {
+		if (params.length < 2) {
+			HelpInfo.promptHelp("rn");
+			return;
+		}
+		String nodeID = params[1];
+		if("-h".equals(nodeID) || "--help".equals(nodeID))
+		{
+			HelpInfo.removeNodeHelp();
+			return;
+		}
+		if (nodeID.length() != 128) {
+			System.out.println("This is an invalid nodeID.");
+		} 
+		else {
+			UpdatePBFTNode pbft = new UpdatePBFTNode();
+			pbft.RemoveNode(nodeID, web3j, credentials);
+			System.out.println("Remove " + nodeID.substring(0, 8) + "..." + " in group "
+					+ service.getGroupId() + " successful.");
+			System.out.println();
+		}
+		
 	}
 
 }

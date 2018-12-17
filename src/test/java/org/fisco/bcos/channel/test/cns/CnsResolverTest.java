@@ -73,7 +73,7 @@ public class CnsResolverTest extends TestBase {
         System.out.println("receipt" + receipt.getTransactionHash());
         System.out.println("CNS NAME   " + name+":9.0" );
         System.out.println("CNS register SUCCESSFULLY");
-        System.out.println( "cnsResolver address" +cnsResolver.resolve(name +":9.0"));
+        System.out.println( "cnsResolver address " +cnsResolver.resolve(name +":9.0"));
         assertEquals(cnsResolver.resolve(name +":9.0"),okDemo.getContractAddress());
 
     }
