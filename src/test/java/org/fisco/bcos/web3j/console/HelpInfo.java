@@ -82,15 +82,32 @@ public class HelpInfo {
 	public static void deployHelp() 
 	{
 		System.out.println("Deploy a contract on blockchain.");
-		System.out.println("Usage: d contractName contractVersion");
+		System.out.println("Usage: d contractName");
 		System.out.println("contractName -- A name for a contract.");
-		System.out.println("contractVersion -- A version for a contract.");
 		System.out.println();
 	}
 	public static void callHelp() 
 	{
 		System.out.println("Call a contract by a function and paramters.");
-		System.out.println("Usage: c contractName contractVersion function parameters");
+		System.out.println("Usage: c contractName contractAddress function parameters");
+		System.out.println("contractName -- A name for a contract.");
+		System.out.println("contractAddress -- An address for a contract.");
+		System.out.println("function -- A function of a contract.");
+		System.out.println("parameters -- Parameters(splited by a space) for a function.");
+		System.out.println();
+	}
+	public static void deployByCNSHelp() 
+	{
+		System.out.println("Deploy a contract on blockchain by CNS.");
+		System.out.println("Usage: dbc contractName contractVersion");
+		System.out.println("contractName -- A name for a contract.");
+		System.out.println("contractVersion -- A version for a contract.");
+		System.out.println();
+	}
+	public static void callByCNSHelp() 
+	{
+		System.out.println("Call a contract by a function and paramters by CNS.");
+		System.out.println("Usage: cbc contractName contractVersion function parameters");
 		System.out.println("contractName -- A name for a contract.");
 		System.out.println("contractVersion -- A version for a contract.");
 		System.out.println("function -- A function of a contract.");

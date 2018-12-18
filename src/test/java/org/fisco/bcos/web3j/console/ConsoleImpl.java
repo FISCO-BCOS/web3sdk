@@ -111,12 +111,15 @@ public class ConsoleImpl implements ConsoleFace{
 		sb.append("getTotalTransactionCount(gtc)                 Query total transaction count.\n");
 		sb.append("deploy(d)                                     Deploy a contract on blockchain.\n");
 		sb.append("call(c)                                       Call a contract by a function and paramters.\n");
+		sb.append("deployByCNS(dbc)                              Deploy a contract on blockchain by CNS.\n");
+		sb.append("callByCNS(cbc)                                Call a contract by a function and paramters by CNS.\n");
 		sb.append("addMiner(am)                                  Add a miner node.\n");
 		sb.append("addObserver(ao)                               Add an observer node.\n");
 		sb.append("removeNode(rn)                                Remove a node.\n");
 		sb.append("quit(q)                                       Quit console.");
 		System.out.println(sb.toString());
 		ConsoleUtils.singleLine();
+		System.out.println();
 	}
 	
 	@Override
@@ -469,12 +472,12 @@ public class ConsoleImpl implements ConsoleFace{
 				BigInteger.class);
 		Object contractObject;
 		
-		//get address from cns
-		contractName = params[1];
-		contractVersion = params[2];
-		CnsResolver cnsResolver = new CnsResolver(web3j, credentials);
-		contractAddress = cnsResolver.resolve(contractName+":"+contractVersion);
-		
+		contractAddress = params[2];
+		if (!contractAddress.startsWith("0x") || !(contractAddress.length() == 42)) {
+			System.out.println("This is an invalid address.");
+			System.out.println();
+			return;
+		}
 		contractObject = load.invoke(null, contractAddress, web3j, credentials, gasPrice, gasLimit);
 		Class[] parameterType = ContractClassFactory.getParameterType(contractClass, params[3]);
 		String returnType = ContractClassFactory.getReturnType(contractClass, params[3]);
@@ -492,16 +495,16 @@ public class ConsoleImpl implements ConsoleFace{
 	@Override
 	public void deployByCNS(String[] params) throws Exception {
 		if (params.length < 2) {
-			HelpInfo.promptHelp("d");
+			HelpInfo.promptHelp("dbc");
 			return;
 		}
 		if("-h".equals(params[1]) || "--help".equals(params[1]))
 		{
-			HelpInfo.deployHelp();
+			HelpInfo.deployByCNSHelp();
 			return;
 		}
 		if (params.length < 3) {
-			HelpInfo.promptHelp("d");
+			HelpInfo.promptHelp("dbc");
 			return;
 		}
 		contractName = "org.fisco.bcos.temp." + params[1];
@@ -523,16 +526,16 @@ public class ConsoleImpl implements ConsoleFace{
 	@Override
 	public void callByCNS(String[] params) throws Exception {
 		if (params.length < 2) {
-			HelpInfo.promptHelp("c");
+			HelpInfo.promptHelp("cbc");
 			return;
 		}
 		if("-h".equals(params[1]) || "--help".equals(params[1]))
 		{
-			HelpInfo.callHelp();
+			HelpInfo.callByCNSHelp();
 			return;
 		}
 		if (params.length < 4) {
-			HelpInfo.promptHelp("c");
+			HelpInfo.promptHelp("cbc");
 			return;
 		}
 		contractName = "org.fisco.bcos.temp." + params[1];
