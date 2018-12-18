@@ -114,6 +114,14 @@ public class ConsoleClient {
 				case "gtc":
 					console.getTotalTransactionCount();
 					break;
+				case "deploy":
+				case "d":
+					console.deploy(params);
+					break;
+				case "call":
+				case "c":
+					console.call(params);
+					break;
 				case "deployByCNS":
 				case "dbc":
 					console.deployByCNS(params);
