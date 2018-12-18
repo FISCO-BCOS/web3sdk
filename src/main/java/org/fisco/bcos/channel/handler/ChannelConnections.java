@@ -1,5 +1,6 @@
 package org.fisco.bcos.channel.handler;
 
+import com.google.common.collect.Lists;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
@@ -9,11 +10,10 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import io.netty.handler.codec.http2.Http2SecurityUtil;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import io.netty.handler.ssl.SslContext;
-import io.netty.handler.ssl.SslContextBuilder;
-import io.netty.handler.ssl.SslProvider;
+import io.netty.handler.ssl.*;
 import io.netty.handler.timeout.IdleStateHandler;
 import org.fisco.bcos.channel.dto.EthereumMessage;
 import org.slf4j.Logger;
@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import sun.security.ssl.SSLContextImpl;
 
 import javax.net.ssl.SSLException;
 import java.io.InputStream;
@@ -329,12 +330,12 @@ public class ChannelConnections {
 			KeyStore ks = KeyStore.getInstance("PKCS12");
 			InputStream ksInputStream = keystoreResource.getInputStream();
 			ks.load(ksInputStream, getKeystorePassWord().toCharArray());
-			sslCtx = SslContextBuilder.forClient().sslProvider( SslProvider.OPENSSL).trustManager(caResource.getFile()).build();
-		//	SslContext sslContext = SslContextBuilder.forServer(ssc.certificate(), ssc.privateKey()) .sslProvider( SslProvider. OPENSSL).ciphers(ciphers).build();
+			//List<String> ciphers = Lists.newArrayList("ECDHE-RSA-AES128-SHA", "ECDHE-RSA-AES256-SHA", "AES128-SHA", "AES256-SHA", "DES-CBC3-SHA");
+			sslCtx = SslContextBuilder.forClient().trustManager(caResource.getFile()).sslProvider( SslProvider.JDK).build();
 		}  catch (Exception e)
 		{
 			logger.debug( "SSLCONTEXT ***********" + e.getMessage());
-			throw new SSLException("Failed to initialize the client-side SSLContext, please check ca.crt File and keystore.p12 File!", e);
+			throw new SSLException("Failed to initialize the client-side SSLContext: "+ e.getMessage() );
 		}
 		return sslCtx;
 	}
