@@ -21,5 +21,4 @@ public class BlockTest extends TestBase {
         System.out.println("***** current block number is  ***** " + (web3j.getBlockNumberCache().intValue()-500));
         assertTrue( block.getNumber().intValue()>0);
     }
-
 }
