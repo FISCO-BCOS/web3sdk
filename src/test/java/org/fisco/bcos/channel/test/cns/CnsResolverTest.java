@@ -34,7 +34,7 @@ public class CnsResolverTest extends TestBase {
         System.out.println("okdemo contract address " + okDemo.getContractAddress());
         int random = new Random().nextInt(1000);
         String name = "hello world" + random;
-        TransactionReceipt receipt = cnsResolver.registerCns(name , "9.0", okDemo.getContractAddress(),"[\n" +
+        TransactionReceipt receipt = cnsResolver.registerCns(name , "10.0", okDemo.getContractAddress(),"[\n" +
             "\t{\n" +
             "\t\t\"constant\": false,\n" +
             "\t\t\"inputs\": [\n" +
@@ -73,8 +73,8 @@ public class CnsResolverTest extends TestBase {
         System.out.println("receipt" + receipt.getTransactionHash());
         System.out.println("CNS NAME   " + name+":9.0" );
         System.out.println("CNS register SUCCESSFULLY");
-        System.out.println( "cnsResolver address " +cnsResolver.resolve(name +":9.0"));
-        assertEquals(cnsResolver.resolve(name +":9.0"),okDemo.getContractAddress());
+        System.out.println( "cnsResolver address " +cnsResolver.resolve(name +":10.0"));
+        assertEquals(cnsResolver.resolve(name +":10.0"),okDemo.getContractAddress());
 
     }
 
