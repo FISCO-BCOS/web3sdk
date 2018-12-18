@@ -265,6 +265,48 @@ public class ConsoleTest{
     	log.clearLog();
     }
     @Test(expected= ClassNotFoundException.class) 
+    public void deployTestException() throws Exception {
+    	String[] params = {"d", "ae"};
+    	console.deploy(params);
+    }
+    @Test
+    public void deployTest() throws Exception {
+    	String[] params1 = {};
+    	console.deploy(params1);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+    	String[] params2 = {"d", "-h"};
+    	console.deploy(params2);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+    	String[] params3 = {"d", "Ok"};
+    	console.deploy(params3);
+    	assertTrue(!"".equals(log.getLog()));
+    }
+    @Test
+    public void callTest() throws Exception {
+    	String[] params1 = {};
+    	console.call(params1);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+    	String[] params2 = {"c", "-h"};
+    	console.call(params2);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+    	String[] params3 = {"c", "Ok"};
+    	console.call(params3);
+    	assertTrue(!"".equals(log.getLog()));
+    	
+    	String[] params4 = {"c", "Ok", "0x1"};
+    	console.call(params4);
+    	assertTrue(!"".equals(log.getLog()));
+    	
+    }
+    @Test(expected= ClassNotFoundException.class) 
     public void deployByCNSTestException() throws Exception {
     	String[] params = {"d", "ae", "1.0"};
     	console.deployByCNS(params);
@@ -276,17 +318,13 @@ public class ConsoleTest{
     	assertTrue(!"".equals(log.getLog()));
     	log.clearLog();
     	
-    	String[] params2 = {"d", "-h"};
+    	String[] params2 = {"dbc", "-h"};
     	console.deployByCNS(params2);
     	assertTrue(!"".equals(log.getLog()));
     	log.clearLog();
         	
-    	String[] params3 = {"d", "Ok"};
+    	String[] params3 = {"dbc", "Ok"};
     	console.deployByCNS(params3);
-    	assertTrue(!"".equals(log.getLog()));
-    	
-    	String[] params4 = {"d", "Ok", "1.0"};
-    	console.deployByCNS(params4);
     	assertTrue(!"".equals(log.getLog()));
     }
     @Test
@@ -296,16 +334,16 @@ public class ConsoleTest{
     	assertTrue(!"".equals(log.getLog()));
     	log.clearLog();
     	
-    	String[] params2 = {"c", "-h"};
+    	String[] params2 = {"cbc", "-h"};
     	console.callByCNS(params2);
     	assertTrue(!"".equals(log.getLog()));
     	log.clearLog();
     	
-    	String[] params3 = {"c", "Ok"};
+    	String[] params3 = {"cbc", "Ok"};
     	console.callByCNS(params3);
     	assertTrue(!"".equals(log.getLog()));
     	
-    	String[] params4 = {"c", "Ok", "1.0"};
+    	String[] params4 = {"cbc", "Ok", "1.0"};
     	console.callByCNS(params4);
     	assertTrue(!"".equals(log.getLog()));
     	
@@ -326,9 +364,6 @@ public class ConsoleTest{
     	console.addMiner(params3);
     	assertTrue(!"".equals(log.getLog()));
     	
-    	String[] params4 = {"am", "037c255c06161711b6234b8c0960a6979ef039374ccc8b723afea2107cba3432dbbc837a714b7da20111f74d5a24e91925c773a72158fa066f586055379a1772"};
-    	console.addMiner(params4);
-    	assertTrue(!"".equals(log.getLog()));
     }
     @Test
     public void addObserverTest() throws Exception {
