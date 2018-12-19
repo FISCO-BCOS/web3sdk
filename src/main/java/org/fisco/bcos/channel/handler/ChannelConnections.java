@@ -1,6 +1,5 @@
 package org.fisco.bcos.channel.handler;
 
-import com.google.common.collect.Lists;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
@@ -10,10 +9,11 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
-import io.netty.handler.codec.http2.Http2SecurityUtil;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import io.netty.handler.ssl.*;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.SslProvider;
 import io.netty.handler.timeout.IdleStateHandler;
 import org.fisco.bcos.channel.dto.EthereumMessage;
 import org.slf4j.Logger;
@@ -21,7 +21,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import sun.security.ssl.SSLContextImpl;
 
 import javax.net.ssl.SSLException;
 import java.io.InputStream;
@@ -230,30 +229,18 @@ public class ChannelConnections {
 
 	public void init() {
 		logger.debug("init connections");
-
-		Set<String> hostSet = new HashSet<String>();
-
 		// 初始化connections
 		for (String conn : connectionsStr) {
 			ConnectionInfo connection = new ConnectionInfo();
 
-			String[] split1 = conn.split("@");
-			connection.setNodeID(split1[0]);
-
-			if (split1.length > 1) {
-				hostSet.add(split1[1]);
-
-				String[] split2 = split1[1].split(":");
+				String[] split2 = conn.split(":");
 
 				connection.setHost(split2[0]);
 				connection.setPort(Integer.parseInt(split2[1]));
 
-				networkConnections.put(split1[1], null);
+				networkConnections.put(conn, null);
 
-				logger.debug("add direct node :[" + split1[0] + "]:[" + split1[1] + "]");
-			} else {
-				logger.debug("add undirected node:[" + split1[0] + "]");
-			}
+				logger.debug("add direct node :["+  "]:[" + split2[1] + "]");
 
 			connection.setConfig(true);
 			connections.add(connection);
