@@ -15,18 +15,13 @@
 		<property name="groupId" value="1" />
 		<property name="orgID" value="fisco" />
 		<property name="allChannelConnections">
-			<map>
-				<entry key="fisco">
-					<bean class="org.fisco.bcos.channel.handler.ChannelConnections">
-                        <property name="connectionsStr">
-							<list>
-                 					<!--[ip]:[channelPort]-->
-								<value>***REMOVED***:30301</value>
-							</list>
-						</property>
-                    </bean>
-				</entry>
-			</map>
+				<bean class="org.fisco.bcos.channel.handler.ChannelConnections">
+                    <property name="connectionsStr">
+						<list>
+							<value>***REMOVED***:30301</value>
+						</list>
+					</property>
+                </bean>
 		</property>
 	</bean>
 
