@@ -87,6 +87,7 @@ public class CnsResolver {
             String address;
 
             try {
+                // if has version
                 if (contractNameAndVersion.contains(":")) {
                     String contractName = contractNameAndVersion.split(":")[0];
                     String contractVersion = contractNameAndVersion.split(":")[1];
@@ -96,6 +97,7 @@ public class CnsResolver {
                     List<Contracts> contracts = jsonToContracts(contractAddressInfo);
                     address = contracts.get(0).getAddress();
                 } else {
+                    // only contract name
                     contractAddressInfo = cns.selectByName(contractNameAndVersion).send();
                     logger.debug("get contractName ", contractAddressInfo);
                     List<Contracts> contracts = jsonToContracts(contractAddressInfo);
