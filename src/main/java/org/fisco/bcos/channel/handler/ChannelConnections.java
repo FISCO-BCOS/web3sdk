@@ -59,6 +59,7 @@ public class ChannelConnections {
 	private ThreadPoolTaskExecutor threadPool;
 	private long idleTimeout = (long)10000;
 	private long heartBeatDelay = (long)2000;
+	public Map<String, ChannelHandlerContext> networkConnections = new HashMap<String, ChannelHandlerContext>();
 
 	public interface Callback {
 		void onConnect(ChannelHandlerContext ctx);
@@ -66,7 +67,6 @@ public class ChannelConnections {
 		void onMessage(ChannelHandlerContext ctx, ByteBuf message);
 	}
 
-	public Map<String, ChannelHandlerContext> networkConnections = new HashMap<String, ChannelHandlerContext>();
 
 	public Callback getCallback() {
 		return callback;

@@ -28,7 +28,7 @@ public class Service {
 	private Integer connectSeconds = 30;
 	private Integer connectSleepPerMillis = 1;
 	private String orgID;
-	private ConcurrentHashMap<String, ChannelConnections> allChannelConnections;
+	private ChannelConnections allChannelConnections;
 	private ChannelPushCallback pushCallback;
 	private Map<String, Object> seq2Callback = new ConcurrentHashMap<String, Object>();
 	private int groupId;
@@ -80,12 +80,13 @@ public class Service {
 		this.pushCallback = pushCallback;
 	}
 
-	public ConcurrentHashMap<String, ChannelConnections> getAllChannelConnections() {
+
+	public ChannelConnections getAllChannelConnections() {
 		return allChannelConnections;
 	}
 
-	public void setAllChannelConnections(ConcurrentHashMap<String, ChannelConnections> keyID2connections) {
-		this.allChannelConnections = keyID2connections;
+	public void setAllChannelConnections(ChannelConnections allChannelConnections) {
+		this.allChannelConnections = allChannelConnections;
 	}
 
 
@@ -95,21 +96,17 @@ public class Service {
 		try {
 			ConnectionCallback connectionCallback = new ConnectionCallback(topics);
 			connectionCallback.setChannelService(this);
-
-			for(Map.Entry<String, ChannelConnections> entry: allChannelConnections.entrySet()) {
-				entry.getValue().setCallback(connectionCallback);
-				entry.getValue().init();
-				entry.getValue().setThreadPool(threadPool);
-
-				if(entry.getKey().equals(orgID)) {
-					entry.getValue().startConnect();
+			allChannelConnections.setCallback(connectionCallback);
+			allChannelConnections.init();
+			allChannelConnections.setThreadPool(threadPool);
+			allChannelConnections.startConnect();
 
 					int sleepTime = 0;
 					boolean running = false;
 					while (true) {
-						for (String key : entry.getValue().getNetworkConnections().keySet()) {
-							if (entry.getValue().getNetworkConnections().get(key) != null
-									&& entry.getValue().getNetworkConnections().get(key).channel().isActive()) {
+						Map<String, ChannelHandlerContext> networkConnection = allChannelConnections.getNetworkConnections();
+						for (String key : networkConnection.keySet()) {
+							if (networkConnection.get(key) != null && networkConnection.get(key).channel().isActive()) {
 								running = true;
 								break;
 							}
@@ -133,8 +130,6 @@ public class Service {
 						throw new Exception("Init ChannelService fail!Please Refer To Link Below:https://github.com/FISCO-BCOS/web3sdk/wiki/web3sdk-debug");
 					}
 				}
-			}
-		}
 		catch (InterruptedException e) {
 			logger.error("system error ", e);
 			Thread.currentThread().interrupt();
@@ -189,45 +184,6 @@ public class Service {
 		return callback.ethereumResponse;
 	}
 
-	public ChannelResponse sendChannelMessage(ChannelRequest request) {
-		class Callback extends ChannelResponseCallback  {
-
-			public ChannelResponse channelResponse;
-			public Semaphore semaphore = new Semaphore(1, true);
-
-			Callback() {
-				try {
-					semaphore.acquire(1);
-
-				} catch (InterruptedException e) {
-					logger.error("error:", e);
-                    Thread.currentThread().interrupt();
-				}
-			}
-
-			@Override
-			public void onResponseMessage(ChannelResponse response) {
-				channelResponse = response;
-
-				logger.debug("response: {}", response.getContent());
-
-				semaphore.release();
-			}
-
-		};
-
-		Callback callback = new Callback();
-
-		asyncSendChannelMessage(request, callback);
-		try {
-			callback.semaphore.acquire(1);
-		} catch (InterruptedException e) {
-			logger.error("system error:", e);
-            Thread.currentThread().interrupt();
-		}
-
-		return callback.channelResponse;
-	}
 
 	public EthereumResponse sendEthereumMessage(EthereumRequest request, TransactionSucCallback transactionSucCallback) {
         class Callback extends EthereumResponseCallback  {
@@ -338,7 +294,7 @@ public class Service {
 
 		// 选取发送节点
 		try {
-			ChannelConnections fromChannelConnections = allChannelConnections.get(orgID);
+			ChannelConnections fromChannelConnections = allChannelConnections;
 
 			if (fromChannelConnections == null) {
 				// 没有找到对应的链
@@ -393,85 +349,6 @@ public class Service {
 		}
 	}
 
-	public void asyncSendChannelMessage(ChannelRequest request, ChannelResponseCallback callback) {
-		try {
-			logger.debug("processing ChannelRequest: " + request.getMessageID());
-			callback.setService(this);
-
-			ChannelMessage channelMessage = new ChannelMessage();
-
-			channelMessage.setSeq(request.getMessageID());
-			channelMessage.setResult(0);
-			channelMessage.setType((short) 0x20); //链上链下请求0x20
-			channelMessage.setData(request.getContent().getBytes());
-
-			try {
-				List<ConnectionInfo> fromConnectionInfos = new ArrayList<ConnectionInfo>();
-				List<ConnectionInfo> toConnectionInfos = new ArrayList<ConnectionInfo>();
-
-				// 设置发送节点
-				ChannelConnections fromChannelConnections = allChannelConnections.get(orgID);
-				if (fromChannelConnections == null) {
-					// 没有找到对应的链
-					// 返回错误
-					logger.error("not found :{}", request.getFromOrg());
-
-					throw new Exception("not found local node");
-				}
-				fromConnectionInfos.addAll(fromChannelConnections.getConnections());
-
-				logger.debug("FromOrg:{} nodes:{}", request.getFromOrg(), fromChannelConnections.getConnections().size());
-
-				callback.setFromChannelConnections(fromChannelConnections);
-				callback.setFromConnectionInfos(fromConnectionInfos);
-
-				//设置目的节点
-				ChannelConnections toChannelConnections = allChannelConnections.get(request.getToOrg());
-				if (toChannelConnections == null) {
-					logger.error("not found ToOrg: {}", request.getToOrg());
-
-					throw new Exception("not found ToOrg");
-				}
-				toConnectionInfos.addAll(toChannelConnections.getConnections());
-				logger.debug("org:{} nodes:{}", request.getToOrg(), toChannelConnections.getConnections().size());
-
-				callback.setToConnectionInfos(toConnectionInfos);
-
-				//设置消息内容
-				callback.setRequest(channelMessage);
-
-				seq2Callback.put(request.getMessageID(), callback);
-
-				if(request.getTimeout() > 0) {
-					final ChannelResponseCallback callbackInner = callback;
-					callback.setTimeout(timeoutHandler.newTimeout(new TimerTask() {
-						ChannelResponseCallback _callback = callbackInner;
-
-						@Override
-						public void run(Timeout timeout) throws Exception {
-							//处理超时逻辑
-							_callback.onTimeout();
-						}
-					}, request.getTimeout(), TimeUnit.MILLISECONDS));
-				}
-
-				callback.retrySendMessage(0);
-			} catch (Exception e) {
-				logger.error("send message fail: ", e);
-
-				ChannelResponse response = new ChannelResponse();
-				response.setErrorCode(100);
-				response.setMessageID(request.getMessageID());
-				response.setErrorMessage(e.getMessage());
-				response.setContent("");
-
-				callback.onResponse(response);
-				return;
-			}
-		} catch (Exception e) {
-			logger.error("system error", e);
-		}
-	}
 
 	public void asyncSendChannelMessage2(ChannelRequest request, ChannelResponseCallback2 callback) {
 		try {
@@ -490,7 +367,7 @@ public class Service {
 				List<ConnectionInfo> fromConnectionInfos = new ArrayList<ConnectionInfo>();
 
 				// 设置发送节点
-				ChannelConnections fromChannelConnections = allChannelConnections.get(orgID);
+				ChannelConnections fromChannelConnections = allChannelConnections;
 				if (fromChannelConnections == null) {
 					// 没有找到对应的链
 					// 返回错误
