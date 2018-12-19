@@ -74,6 +74,8 @@ public class CnsResolverTest extends TestBase {
         System.out.println("CNS NAME   " + name+":9.0" );
         System.out.println("CNS register SUCCESSFULLY");
         System.out.println( "cnsResolver address" +cnsResolver.resolve(name +":10.0"));
+        System.out.println( "cnsResolver address" +cnsResolver.resolve(name ));
+        System.out.println( "cnsResolver address" +cnsResolver.resolve(okDemo.getContractAddress() ));
         assertEquals(cnsResolver.resolve(name +":10.0"),okDemo.getContractAddress());
 
     }
