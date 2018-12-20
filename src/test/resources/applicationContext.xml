@@ -10,36 +10,19 @@
     http://www.springframework.org/schema/tx/spring-tx-2.5.xsd  
          http://www.springframework.org/schema/aop   
     http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
-    <bean id="pool" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
-		<property name="corePoolSize" value="50" />
-		<property name="maxPoolSize" value="100" />
-		<property name="queueCapacity" value="500" />
-		<property name="keepAliveSeconds" value="60" />
-		<property name="rejectedExecutionHandler">
-			<bean class="java.util.concurrent.ThreadPoolExecutor.AbortPolicy" />
-		</property>
-    </bean>
 
 	<bean id="channelService" class="org.fisco.bcos.channel.client.Service">
 		<property name="groupId" value="1" />
 		<property name="orgID" value="fisco" />
-		<property name="connectSeconds" value="10" />
-		<property name="connectSleepPerMillis" value="10" />
 		<property name="allChannelConnections">
-			<map>
-				<entry key="fisco">
-					<bean class="org.fisco.bcos.channel.handler.ChannelConnections">
-						<property name="keystorePassWord" value="123456" />
-						<property name="clientCertPassWord" value="123456" />
-                        <property name="connectionsStr">
-							<list>
-                 				<!--[nodeid]@[ip]:[channelPort]-->
-								<value>node1@10.107.105.81:40001</value>
-							</list>
-						</property>
-                    </bean>
-				</entry>
-			</map>
+				<bean class="org.fisco.bcos.channel.handler.ChannelConnections">
+                    <property name="connectionsStr">
+						<list>
+							<value>10.107.105.138:30301</value>
+						</list>
+					</property>
+                </bean>
 		</property>
 	</bean>
+
 </beans>

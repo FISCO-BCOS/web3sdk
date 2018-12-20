@@ -1,13 +1,10 @@
-package org.fisco.bcos.channel.test;
+package org.fisco.bcos.channel.test.precompile;
 
-import org.fisco.bcos.channel.test.Miner;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.protocol.Web3j;
-import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
-import org.fisco.bcos.web3j.protocol.core.methods.response.*;
+import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 
 import java.math.BigInteger;
-import java.util.concurrent.TimeUnit;
 
 public class UpdatePBFTNode {
     private static BigInteger gasPrice = new BigInteger("300000000");
@@ -23,68 +20,67 @@ public class UpdatePBFTNode {
         if (args.length < 3)
             Usage(args);
         String nodeId = args[2];
-        if (operation.equals("add")) {
-            System.out.println("==== add " + nodeId + " to PBFT leaders of " + groupId);
-            AddPBFTNode(nodeId, web3j, credentials);
-            System.out.println("==== add " + nodeId + " to PBFT leaders of " + groupId + " END ====");
+        if (operation.equals("addMiner")) {
+            System.out.println("==== addMiner " + nodeId + " of " + groupId);
+            AddNodeToMiner(nodeId, web3j, credentials);
+            System.out.println("==== addMiner " + nodeId + " of " + groupId + " END ====");
+            System.exit(0);
+        }
+        if (operation.equals("addObserver")) {
+            System.out.println("==== addObserver " + nodeId + " of " + groupId);
+            AddNodeToObserver(nodeId, web3j, credentials);
+            System.out.println("==== addObserver " + nodeId + " of " + groupId + " END ====");
             System.exit(0);
         }
         if (operation.equals("remove")) {
-            System.out.println("==== remove " + nodeId + " from PBFT leaders of " + groupId);
-            RemovePBFTNode(nodeId, web3j, credentials);
-            System.out.println("==== remove " + nodeId + " from PBFT leaders of " + groupId + " END ====");
+            System.out.println("==== remove " + nodeId + " of " + groupId);
+            RemoveNode(nodeId, web3j, credentials);
+            System.out.println("==== remove " + nodeId + " of " + groupId + " END ====");
             System.exit(0);
         }
     }
 
     private void Usage(String[] args) {
         System.out.println("Usage:");
-        System.out.println("java -cp 'conf/:apps/*:lib/*' org.fisco.bcos.channel.test.PrecompileManager pbft add ${nodeId} : add given nodeId to PBFT leaders by calling precompile");
-        System.out.println("java -cp 'conf/:apps/*:lib/*' org.fisco.bcos.channel.test.PrecompileManager pbft remove ${nodeId} : remove given nodeId from PBFT leaders by calling precompile");
+        System.out.println("java -cp 'conf/:apps/*:lib/*' org.fisco.bcos.channel.test.PrecompileManager pbft addMiner ${nodeId}");
+        System.out.println("java -cp 'conf/:apps/*:lib/*' org.fisco.bcos.channel.test.PrecompileManager pbft addObserver ${nodeId}");
+		System.out.println("java -cp 'conf/:apps/*:lib/*' org.fisco.bcos.channel.test.PrecompileManager pbft remove ${nodeId}");
         System.exit(0);
     }
 
-    private void RemovePBFTNode(String nodeId, Web3j web3j, Credentials credentials) throws Exception {
-        RemoveNode(MinerPrecompileAddress, web3j, credentials, nodeId);
+    private void AddNodeToMiner(String nodeId, Web3j web3j, Credentials credentials) throws Exception {
+        AddMiner(MinerPrecompileAddress, web3j, credentials, nodeId);
     }
 
-    private void AddPBFTNode(String nodeId, Web3j web3j, Credentials credentials) throws Exception {
-        AddNode(MinerPrecompileAddress, web3j, credentials, nodeId);
+    private void AddNodeToObserver(String nodeId, Web3j web3j, Credentials credentials) throws Exception {
+        AddObserver(MinerPrecompileAddress, web3j, credentials, nodeId);
+    }
+	
+	private void RemoveNode(String nodeId, Web3j web3j, Credentials credentials) throws Exception {
+        Remove(MinerPrecompileAddress, web3j, credentials, nodeId);
     }
 
-    /**
-     * remove node id from the PBFT leaders
-     *
-     * @param address:    the contract address
-     * @param web3j:      the web3j object
-     * @param credentials : the credential related to the private key to send transactions
-     * @param nodeId      : given node id to be removed from the PBFT leaders
-     */
-    private void RemoveNode(String address, Web3j web3j, Credentials credentials, String nodeId) throws Exception {
-        Miner miner = Miner.load(address, web3j, credentials, gasPrice, gasLimit);
-        ///TransactionReceipt receipt = miner.remove(nodeId).sendAsync().get(60000, TimeUnit.MILLISECONDS);
-        TransactionReceipt receipt = miner.remove(nodeId).send();
+    private void AddMiner(String address, Web3j web3j, Credentials credentials, String nodeId) throws Exception {
+        ConsensusSystemTable consensus = ConsensusSystemTable.load(address, web3j, credentials, gasPrice, gasLimit);
+        TransactionReceipt receipt = consensus.addMiner(nodeId).send();
         System.out.println("####get block number from TransactionReceipt: " + receipt.getBlockNumber());
         System.out.println("####get transaction index from TransactionReceipt: " + receipt.getTransactionIndex());
         System.out.println("####get gas used from TransactionReceipt: " + receipt.getGasUsed());
     }
 
-    /**
-     * add specified node to the PBFT leaders
-     *
-     * @param address:     the contract address
-     * @param web3j:       the web3j object
-     * @param credentials: the credential related to the private key to send transactions
-     * @param nodeId:      given node id to be added to the PBFT leaders
-     */
-    private void AddNode(String address, Web3j web3j, Credentials credentials, String nodeId) throws Exception {
-        Miner miner = Miner.load(address, web3j, credentials, gasPrice, gasLimit);
-        ///TransactionReceipt receipt = miner.add(nodeId).sendAsync().get(60000, TimeUnit.MILLISECONDS);
-        TransactionReceipt receipt = miner.add(nodeId).send();
+	private void AddObserver(String address, Web3j web3j, Credentials credentials, String nodeId) throws Exception {
+        ConsensusSystemTable consensus = ConsensusSystemTable.load(address, web3j, credentials, gasPrice, gasLimit);
+        TransactionReceipt receipt = consensus.addObserver(nodeId).send();
         System.out.println("####get block number from TransactionReceipt: " + receipt.getBlockNumber());
         System.out.println("####get transaction index from TransactionReceipt: " + receipt.getTransactionIndex());
         System.out.println("####get gas used from TransactionReceipt: " + receipt.getGasUsed());
-
+    }
+	
+	private void Remove(String address, Web3j web3j, Credentials credentials, String nodeId) throws Exception {
+        ConsensusSystemTable consensus = ConsensusSystemTable.load(address, web3j, credentials, gasPrice, gasLimit);
+        TransactionReceipt receipt = consensus.remove(nodeId).send();
+        System.out.println("####get block number from TransactionReceipt: " + receipt.getBlockNumber());
+        System.out.println("####get transaction index from TransactionReceipt: " + receipt.getTransactionIndex());
+        System.out.println("####get gas used from TransactionReceipt: " + receipt.getGasUsed());
     }
 }
-

@@ -33,3 +33,4 @@ gradle.properties
 /out
 /log
 /dist
+/src/test/resources/ca.crt

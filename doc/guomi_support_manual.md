@@ -775,7 +775,7 @@ web3sdk向链上发交易时，必须初始化Crendentials对象，为了便于�
 <br>
 
 ```java
-import org.fisco.bcos.web3j.crypto.GenCredential;
+import org.fisco.bcos.web3j.crypto.gm.GenCredential;
 
 //...省略若干行...
 
