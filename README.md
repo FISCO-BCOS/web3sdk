@@ -1,42 +1,86 @@
+web3jsdk:  JAVA FISCO-BCOS API
+==================================
 
-## 技术文档
+  web3sdk provide the java API for fisco-bcos node, the project fork from web3j of Ethereum and add  the corresponding modification according to the FISCO-BCOS characteristics.
+This allows you to work with the  FISCO-BCOS blockchain, without the additional overhead of having to write your own integration code for the platform.
 
-1 #配置
-# SDK编译
+Features
+--------
 
-       #=== 创建并进入web3sdk源码放置目录（假设为~/mydata/）=====
-       $ mkdir -p ~/mydata
-       $ cd ~/mydata
+- Complete implementation of fisco-bcos's `[JSON-RPC]( https://github.com/ethereum/wiki/wiki/JSON-RPC)
+- Auto-generation of Java smart contract wrappers to create, deploy,    transact with and call smart
+  contracts from native Java code
+  [Solidity Introduce](https://solidity.readthedocs.io/en/v0.4.24)
+  
+- [Contract Name Service (CNS)](https://ens.domains)
+- Comprehensive integration tests demonstrating a number of the above scenarios
+- Command line tools
+- [AMOP]()
+- [Guomi support](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/guomi/index.html)
 
-       #==== 拉取git代码 ====
-       $ git clone https://github.com/FISCO-BCOS/web3sdk
 
-       #===编译we3bsdk源码，生成dist目录 ===
-       $ cd web3sdk
+Getting started
+---------------
 
-      拷贝证书文件ca.crt和client.keystore到web3sdk/src/test/resources目录下；
-      找到 web3sdk/src/test/resources/applicationContext.xml文件的channelService, 增加<property name="groupId" value="1" /> groupId配置。
+Typically your application should depend on release versions of web3j.
+| Add the relevant dependency to your project. recommend using Java 8 and gradle（4.10.1 and above）:
 
-      查询块高 gradle test --tests  org.fisco.bcos.channel.test.block.BlockTest
-      部署OK合约 gradle test --tests  org.fisco.bcos.channel.test.contract.OkTest
-      压力测试  gradle test --tests  org.fisco.bcos.channel.test.contract.PressureTest
-      基本测试  gradle test --tests org.fisco.bcos.channel.test.BasicTest
-     *token测试*  gradle test --tests org.fisco.bcos.channel.test.contract.Erc20Test
-     *tps测试*  gradle run -Dexec.mainClass=org.fisco.bcos.channel.test.contract.PerfomanceOk --args='trans 100 100 1'
+Maven
+-----
 
-      目前你也可以gradle build 之后到dist目录去执行java -cp命令:
+    <dependency>
+	    <groupId>org.fisco-bcos</groupId>
+	    <artifactId>web3sdk</artifactId>
+	    <version>2.0.0</version>
+    </dependency>
 
-      # 部署合约
-      java -cp 'conf/:apps/*:lib/*' org.fisco.bcos.channel.test.PerfOkTransaction 1 deploy
-      # 发送交易
-      java -cp 'conf/:apps/*:lib/*' org.fisco.bcos.channel.test.PerfOkTransaction 1 transaction address
-      # 增加节点（指定节点入网）
-      java -cp 'conf/:apps/*:lib/*' org.fisco.bcos.channel.test.PrecompileManager "pbft" "add" "e2970447090490552c32b9cb020e16d277ef21e285bb3f3b7b919057285e3ef0cee156975f9d1d105d9240e91e4e324e46bb3c897045b9278b69597714ad6b22"
-      # 删除节点（指定节点出网）
-      java -cp 'conf/:apps/*:lib/*' org.fisco.bcos.channel.test.PrecompileManager "pbft" "remove" "e2970447090490552c32b9cb020e16d277ef21e285bb3f3b7b919057285e3ef0cee156975f9d1d105d9240e91e4e324e46bb3c897045b9278b69597714ad6b22"
 
-      #===通过SDK部署合约和发交易
-     1 把自己编写的sol文件文件放到src/test/resources/contracts下,确保合约名和文件名保持一致。
-     2 在项目目录下执行
-     gradle test --tests org.fisco.bcos.web3j.solidity.SolidityFunctionWrapperGeneratorTest.compileSolFilesToJavaTest ;测试类sol文件转换成相应Java类,
-     生成的类在src/test/java/org/fisco/bcos/temp文件夹下,并且生成的abi和bin在目录src/test/resources/solidity。
+Gradle
+------
+
+  compile ('org.fisco-bcos:web3sdk:2.0.0')
+
+
+ Build instructions
+------------------
+
+web3jsdk includes integration tests for running against a live fisco-bcos node.
+ For Consortium blockchain, you should have the access permissions to connect the node. So copy the ca.crt file and keystore.p12 file to the resource directory of the project.
+ For more details about how to config your sdk to connect to fisco-bcos node , see Resources [SDK CONFIG](http://127.0.0.1/books/fisco-bcos/page/sdk-%E4%BD%BF%E7%94%A8)
+
+To run a full build (excluding integration tests):
+
+
+     $ ./gradlew build
+
+
+To run the integration tests:
+  
+   - getBlockNumberTest: 
+
+  ./gradlew test --tests org.fisco.bcos.channel.test.block.BlockTest 
+   
+   - DeployContractTest:
+
+  ./gradlew test --tests org.fisco.bcos.channel.test.contract.OkTest 
+   - BasicTest: 
+
+  ./gradlew test --tests org.fisco.bcos.channel.test.BasicTest 
+
+
+
+
+## Community
+
+Financial Blockchain Shenzhen Consortium (FISCO) has attracted more than 100 members including financial institutions and financial information service companies so far. The first members include the following organizations: Beyondsoft, Huawei, Shenzheng, Shenzhou Digital, Forms Syntron, Tencent, WeBank, Yuexiu Jinke.
+
+- Join our WeChat [![Scan](https://img.shields.io/badge/style-Scan_QR_Code-green.svg?logo=wechat&longCache=false&style=social&label=Group)](docs/images/WeChatQR.jpeg) 
+
+
+- Discuss in [![Gitter](https://img.shields.io/badge/style-on_gitter-green.svg?logo=gitter&longCache=false&style=social&label=Chat)](https://gitter.im/fisco-bcos/Lobby) 
+
+
+- Read news by [![](https://img.shields.io/twitter/url/http/shields.io.svg?style=social&label=Follow@FiscoBcos)](https://twitter.com/FiscoBcos)
+
+
+- Mail us at [![](https://img.shields.io/twitter/url/http/shields.io.svg?logo=Gmail&style=social&label=service@fisco.com.cn)](mailto:service@fisco.com.cn)
