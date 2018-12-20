@@ -61,4 +61,10 @@ public interface ConsoleFace {
 	void addObserver(String[] params) throws Exception;
 	
 	void removeNode(String[] params) throws Exception;
+	
+	void addAuthority(String[] params) throws Exception;
+	
+	void removeAuthority(String[] params) throws Exception;
+	
+	void queryAuthority(String[] params) throws Exception;
 }
