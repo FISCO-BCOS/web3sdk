@@ -1,14 +1,15 @@
 web3jsdk:  JAVA FISCO-BCOS API
 ==================================
 
-  web3sdk provide the java API for fisco-bcos node, the project fork from web3j of Ethereum and add  the corresponding modification according to the FISCO-BCOS characteristics.
-This allows you to work with the  FISCO-BCOS blockchain, without the additional overhead of having to write your own integration code for the platform.
-![sdk.png](./images/sdk.png)
+Web3sdk provide the java API for fisco-bcos node, the project fork from web3j of Ethereum and add  the corresponding modification according to the FISCO-BCOS characteristics.
+This allows you to work with the  FISCO-BCOS blockchain, without the additional overhead of having to write your own integration code for the platform.   
+
+	![sdk.png](./images/sdk.png)
 Features
 --------
 
-- Complete implementation of fisco-bcos's `[JSON-RPC]( https://github.com/ethereum/wiki/wiki/JSON-RPC)
-- Auto-generation of Java smart contract wrappers to create, deploy,    transact with and call smart
+- Complete implementation of fisco-bcos's [JSON-RPC]( https://github.com/ethereum/wiki/wiki/JSON-RPC)
+- Auto-generation of Java smart contract wrappers to create, deploy, transact with and call smart
   contracts from native Java code
   [Solidity Introduce](https://solidity.readthedocs.io/en/v0.4.24)
   
@@ -38,7 +39,7 @@ Maven
 Gradle
 ------
 
-  compile ('org.fisco-bcos:web3sdk:2.0.0')
+  	compile ('org.fisco-bcos:web3sdk:2.0.0')
 
 
  Build instructions
