@@ -50,23 +50,26 @@ web3jsdk includes integration tests for running against a live fisco-bcos node.
 
 To run a full build (excluding integration tests):
 
-
-     $ ./gradlew build
-
+```bash
+$ ./gradlew build
+```
 
 To run the integration tests:
-  
-   - getBlockNumberTest: 
 
-  ./gradlew test --tests org.fisco.bcos.channel.test.block.BlockTest 
-   
+   - getBlockNumberTest:
+
+```bash
+  ./gradlew test --tests org.fisco.bcos.channel.test.block.BlockTest
+```
+
    - DeployContractTest:
-
-  ./gradlew test --tests org.fisco.bcos.channel.test.contract.OkTest 
-   - BasicTest: 
-
-  ./gradlew test --tests org.fisco.bcos.channel.test.BasicTest 
-
+```bash
+  ./gradlew test --tests org.fisco.bcos.channel.test.contract.OkTest
+```
+   - BasicTest:
+```bash
+  ./gradlew test --tests org.fisco.bcos.channel.test.BasicTest
+```
 
 
 
