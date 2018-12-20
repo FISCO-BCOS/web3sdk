@@ -8,11 +8,13 @@ import org.bcos.web3j.crypto.GenCredential;
 import org.bcos.web3j.protocol.Web3j;
 import org.bcos.web3j.protocol.channel.ChannelEthereumService;
 import org.bcos.web3j.protocol.core.DefaultBlockParameter;
+import org.bcos.web3j.protocol.core.methods.response.EthPeers;
 import org.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.math.BigInteger;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -43,6 +45,8 @@ public class BasicTest {
                 throw new Exception("create Credentials failed");
             }
             testDeployContract(web3j, credentials);
+           List<EthPeers.Peers> ethPeers = web3j.getAdminPeers().send().getAdminPeers();
+            System.out.println(ethPeers.get(0).getNetwork());
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception("Execute basic test failed");
