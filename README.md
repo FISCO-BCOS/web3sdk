@@ -1,8 +1,8 @@
 web3jsdk:  JAVA FISCO-BCOS API
 ==================================
 
-Web3sdk provide the java API for fisco-bcos node, the project fork from web3j of Ethereum and add  the corresponding modification according to the FISCO-BCOS characteristics.
-This allows you to work with the  FISCO-BCOS blockchain, without the additional overhead of having to write your own integration code for the platform.   
+Web3sdk provides the java API for fisco-bcos nodes, the project forks from web3j of Ethereum and adds  the corresponding modification according to the FISCO-BCOS characteristics.
+This allows you to work with the  FISCO-BCOS blockchain, without  additional overhead of having to write your own integration code for the platform.
 
 ![sdk.png](./images/sdk.png)
 Features
@@ -23,8 +23,8 @@ Features
 Getting started
 ---------------
 
-Typically your application should depend on release versions of web3j.
-| Add the relevant dependency to your project. recommend using Java 8 and gradle（4.10.1 and above）:
+Typically, your application should depend on release versions of web3j.
+Add the relevant dependency to your project.  Then Java 8 and gradle（4.10.1 and above） are recommended:
 
 Maven
 -----
