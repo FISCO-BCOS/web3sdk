@@ -49,7 +49,7 @@ web3jsdk includes integration tests for running against a live fisco-bcos node.
  For Consortium blockchain, you should have the access permissions to connect the node. So copy the ca.crt file and keystore.p12 file to the resource directory of the project.
  For more details about how to config your sdk to connect to fisco-bcos node , see Resources [SDK CONFIG](http://wiki.weoa.com/books/fisco-bcos/page/sdk-%E4%BD%BF%E7%94%A8)
 
-To run a full build (excluding integration tests):
+To run a full build (including integration tests):
 
 ```bash
 $ ./gradlew build
