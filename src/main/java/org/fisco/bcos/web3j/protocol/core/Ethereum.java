@@ -90,6 +90,12 @@ public interface Ethereum {
     
     //增加eth_pbftView接口
     Request<?, EthPbftView> ethPbftView();
+    
+    //增加getMinerList接口
+    Request<?, MinerList> getMinerList();
+    
+    //增加getObserverList接口
+    Request<?, ObserverList> getObserverList();
 
     //增加consensusStatus接口
     Request<?,EthConsensusStatus> consensusStatus();
@@ -135,6 +141,8 @@ public interface Ethereum {
             DefaultBlockParameter defaultBlockParameter);
 
     Request<?, EthGetCode> ethGetCode(String address, DefaultBlockParameter defaultBlockParameter);
+    
+    Request<?, TotalTransactionCount> getTotalTransactionCount();
 
   //  Request<?, EthGetCode> ethGetCodeCNS(String contractName, DefaultBlockParameter defaultBlockParameter);
 
@@ -167,6 +175,9 @@ public interface Ethereum {
     Request<?, EthBlock> ethGetBlockByNumber(
             DefaultBlockParameter defaultBlockParameter,
             boolean returnFullTransactionObjects);
+    
+    Request<?, BlockHash> getBlockHashByNumber(
+    		DefaultBlockParameter defaultBlockParameter);
 
     Request<?, EthTransaction> ethGetTransactionByHash(String transactionHash);
 

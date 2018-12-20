@@ -17,6 +17,15 @@ import java.security.NoSuchAlgorithmException;
 public class Hash {
     private Hash() { }
 
+    private static HashInterface hashInterface = new SHA3Digest();
+    public static HashInterface getHashInterface() {
+        return hashInterface;
+    }
+
+    public static void setHashInterface(HashInterface hashInterface) {
+        Hash.hashInterface = hashInterface;
+    }
+
     /**
      * Keccak-256 hash function.
      *
@@ -24,9 +33,7 @@ public class Hash {
      * @return hash value as hex encoded string
      */
     public static String sha3(String hexInput) {
-        byte[] bytes = Numeric.hexStringToByteArray(hexInput);
-        byte[] result = sha3(bytes);
-        return Numeric.toHexString(result);
+        return hashInterface.hash(hexInput);
     }
 
     /**
@@ -38,9 +45,7 @@ public class Hash {
      * @return hash value
      */
     public static byte[] sha3(byte[] input, int offset, int length) {
-        Keccak.DigestKeccak kecc = new Keccak.Digest256();
-        kecc.update(input, offset, length);
-        return kecc.digest();
+        return hashInterface.hash(input,offset,length);
     }
 
     /**
@@ -50,7 +55,7 @@ public class Hash {
      * @return hash value
      */
     public static byte[] sha3(byte[] input) {
-        return sha3(input, 0, input.length);
+        return hashInterface.hash(input,0,input.length);
     }
 
     /**

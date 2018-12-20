@@ -296,6 +296,9 @@ elif [ $1 == "PermissionInfo" -o $1 == "FilterChain" -o $1 == "Filter" -o $1 == 
 
 elif [ $1 == "InitTokens" -o $1 == "SendSelectedTokens" -o $1 == "RegisterAccount" -o $1 == "TokenTracking" -o $1 == "GetBalance" -o $1 == "SelectTokens" -o $1 == "GetToken" -o $1 == "GetTx" -o $1 == "GetVault" ] ; then
     exec "$JAVACMD" "${JVM_OPTS[@]}" -classpath "$CLASSPATH" org.fisco.bcos.web3j.contract.tools.UTXODemo "$@"
+
+elif [ $1 == "-c" ]; then	
+	java -cp "../apps/*:../conf/:../lib/*" org.fisco.bcos.web3j.console.ConsoleClient
 	
 else	
 	exec "$JAVACMD" "${JVM_OPTS[@]}" -classpath "$CLASSPATH" Runner "$@"

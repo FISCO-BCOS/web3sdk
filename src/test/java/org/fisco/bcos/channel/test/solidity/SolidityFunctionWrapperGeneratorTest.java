@@ -2,7 +2,6 @@ package org.fisco.bcos.channel.test.solidity;
 
 import org.fisco.bcos.web3j.codegen.SolidityFunctionWrapperGenerator;
 import org.junit.Test;
-import org.springframework.core.io.ClassPathResource;
 
 import java.io.File;
 import java.io.IOException;

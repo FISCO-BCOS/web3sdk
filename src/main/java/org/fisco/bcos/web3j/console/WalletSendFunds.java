@@ -1,10 +1,5 @@
 package org.fisco.bcos.web3j.console;
 
-import java.io.File;
-import java.math.BigDecimal;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.crypto.WalletUtils;
 import org.fisco.bcos.web3j.protocol.Web3j;
@@ -15,6 +10,11 @@ import org.fisco.bcos.web3j.protocol.http.HttpService;
 import org.fisco.bcos.web3j.protocol.infura.InfuraHttpService;
 import org.fisco.bcos.web3j.tx.Transfer;
 import org.fisco.bcos.web3j.utils.Convert;
+
+import java.io.File;
+import java.math.BigDecimal;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import static org.fisco.bcos.web3j.utils.Console.exitError;
 

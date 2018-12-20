@@ -1,13 +1,13 @@
 package org.fisco.bcos.web3j.console;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-
 import org.fisco.bcos.web3j.crypto.CipherException;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.crypto.WalletUtils;
 import org.fisco.bcos.web3j.utils.Console;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
 
 import static org.fisco.bcos.web3j.utils.Console.exitError;
 

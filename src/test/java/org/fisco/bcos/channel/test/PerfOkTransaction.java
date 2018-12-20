@@ -1,21 +1,25 @@
 package org.fisco.bcos.channel.test;
 
+import org.fisco.bcos.web3j.crypto.Keys;
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.channel.test.contract.Ok;
 import org.fisco.bcos.web3j.crypto.Credentials;
+import org.fisco.bcos.web3j.crypto.ECKeyPair;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
+import org.fisco.bcos.web3j.protocol.core.RemoteCall;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.math.BigInteger;
+import java.util.concurrent.Future;
 
 public class PerfOkTransaction {
     public static void main(String[] args) throws Exception {
 
-        String groupId = args[0];
-        String method = args[1];
+        String groupId = "1";
+        String method = "deploy";
         ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
         Service service = context.getBean(Service.class);
         service.run();
@@ -43,6 +47,9 @@ public class PerfOkTransaction {
             String address = args[2];
             Ok okDemo = Ok.load(address, web3, credentials, gasPrice, gasLimit);
             TransactionReceipt receipt = okDemo.trans(new BigInteger("4")).send();
+//            RemoteCall<BigInteger> remoteCall = okDemo.get();
+//            BigInteger send = remoteCall.send();
+//            System.out.println(send);
             System.out.println("transaction success , receipt is " + receipt.getTransactionHash());
         }
     }

@@ -3,7 +3,10 @@ package org.fisco.bcos.temp;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.Callable;
 import org.fisco.bcos.web3j.abi.TypeReference;
+import org.fisco.bcos.web3j.abi.datatypes.Address;
 import org.fisco.bcos.web3j.abi.datatypes.Function;
 import org.fisco.bcos.web3j.abi.datatypes.Type;
 import org.fisco.bcos.web3j.abi.datatypes.Utf8String;
@@ -11,6 +14,7 @@ import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.RemoteCall;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.fisco.bcos.web3j.tuples.generated.Tuple3;
 import org.fisco.bcos.web3j.tx.Contract;
 import org.fisco.bcos.web3j.tx.TransactionManager;
 import org.fisco.bcos.web3j.tx.gas.ContractGasProvider;
@@ -25,11 +29,11 @@ import org.fisco.bcos.web3j.tx.gas.ContractGasProvider;
  * <p>Generated with web3j version none.
  */
 public class HelloWorld extends Contract {
-    private static final String BINARY = "6060604052341561000c57fe5b5b604060405190810160405280600b81526020017f48692c57656c636f6d652100000000000000000000000000000000000000000081525060009080519060200190610059929190610060565b505b610105565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f106100a157805160ff19168380011785556100cf565b828001600101855582156100cf579182015b828111156100ce5782518255916020019190600101906100b3565b5b5090506100dc91906100e0565b5090565b61010291905b808211156100fe5760008160009055506001016100e6565b5090565b90565b6102e2806101146000396000f30060606040526000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff1680634ed3885e146100465780636d4ce63c146100a0575bfe5b341561004e57fe5b61009e600480803590602001908201803590602001908080601f01602080910402602001604051908101604052809392919081815260200183838082843782019150505050505091905050610139565b005b34156100a857fe5b6100b0610154565b60405180806020018281038252838181518152602001915080519060200190808383600083146100ff575b8051825260208311156100ff576020820191506020810190506020830392506100db565b505050905090810190601f16801561012b5780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b806000908051906020019061014f9291906101fd565b505b50565b61015c61027d565b60008054600181600116156101000203166002900480601f0160208091040260200160405190810160405280929190818152602001828054600181600116156101000203166002900480156101f25780601f106101c7576101008083540402835291602001916101f2565b820191906000526020600020905b8154815290600101906020018083116101d557829003601f168201915b505050505090505b90565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f1061023e57805160ff191683800117855561026c565b8280016001018555821561026c579182015b8281111561026b578251825591602001919060010190610250565b5b5090506102799190610291565b5090565b602060405190810160405280600081525090565b6102b391905b808211156102af576000816000905550600101610297565b5090565b905600a165627a7a723058205014c78bb70b810e7101a96c3c85818a83cce183e79ef258bb8fa63023839a810029";
-
-    public static final String FUNC_SET = "set";
+    private static final String BINARY = "6060604052341561000c57fe5b5b61051f8061001c6000396000f30060606040526000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff1680636d4ce63c14610046578063bcc708bd1461018c575bfe5b341561004e57fe5b610056610248565b6040518080602001806020018473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020018381038352868181518152602001915080519060200190808383600083146100db575b8051825260208311156100db576020820191506020810190506020830392506100b7565b505050905090810190601f1680156101075780820380516001836020036101000a031916815260200191505b5083810382528581815181526020019150805190602001908083836000831461014f575b80518252602083111561014f5760208201915060208101905060208303925061012b565b505050905090810190601f16801561017b5780820380516001836020036101000a031916815260200191505b509550505050505060405180910390f35b341561019457fe5b610246600480803590602001908201803590602001908080601f0160208091040260200160405190810160405280939291908181526020018383808284378201915050505050509190803590602001908201803590602001908080601f0160208091040260200160405190810160405280939291908181526020018383808284378201915050505050509190803573ffffffffffffffffffffffffffffffffffffffff169060200190919050506103c5565b005b61025061043a565b61025861043a565b600060006001600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16828054600181600116156101000203166002900480601f0160208091040260200160405190810160405280929190818152602001828054600181600116156101000203166002900480156103165780601f106102eb57610100808354040283529160200191610316565b820191906000526020600020905b8154815290600101906020018083116102f957829003601f168201915b50505050509250818054600181600116156101000203166002900480601f0160208091040260200160405190810160405280929190818152602001828054600181600116156101000203166002900480156103b25780601f10610387576101008083540402835291602001916103b2565b820191906000526020600020905b81548152906001019060200180831161039557829003601f168201915b505050505091509250925092505b909192565b82600090805190602001906103db92919061044e565b5081600190805190602001906103f292919061044e565b5080600260006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055505b505050565b602060405190810160405280600081525090565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f1061048f57805160ff19168380011785556104bd565b828001600101855582156104bd579182015b828111156104bc5782518255916020019190600101906104a1565b5b5090506104ca91906104ce565b5090565b6104f091905b808211156104ec5760008160009055506001016104d4565b5090565b905600a165627a7a7230582077eb001d5b8fe332048512970de02e5294440752419ffd8ff37ed7cefd30aa250029";
 
     public static final String FUNC_GET = "get";
+
+    public static final String FUNC_SET = "set";
 
     @Deprecated
     protected HelloWorld(String contractAddress, Web3j web3j, Credentials credentials, BigInteger gasPrice, BigInteger gasLimit) {
@@ -49,19 +53,31 @@ public class HelloWorld extends Contract {
         super(BINARY, contractAddress, web3j, transactionManager, contractGasProvider);
     }
 
-    public RemoteCall<TransactionReceipt> set(String n) {
-        final Function function = new Function(
-                FUNC_SET, 
-                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(n)), 
-                Collections.<TypeReference<?>>emptyList());
-        return executeRemoteCallTransaction(function);
-    }
-
-    public RemoteCall<String> get() {
+    public RemoteCall<Tuple3<String, String, String>> get() {
         final Function function = new Function(FUNC_GET, 
                 Arrays.<Type>asList(), 
-                Arrays.<TypeReference<?>>asList(new TypeReference<Utf8String>() {}));
-        return executeRemoteCallSingleValueReturn(function, String.class);
+                Arrays.<TypeReference<?>>asList(new TypeReference<Utf8String>() {}, new TypeReference<Utf8String>() {}, new TypeReference<Address>() {}));
+        return new RemoteCall<Tuple3<String, String, String>>(
+                new Callable<Tuple3<String, String, String>>() {
+                    @Override
+                    public Tuple3<String, String, String> call() throws Exception {
+                        List<Type> results = executeCallMultipleValueReturn(function);
+                        return new Tuple3<String, String, String>(
+                                (String) results.get(0).getValue(), 
+                                (String) results.get(1).getValue(), 
+                                (String) results.get(2).getValue());
+                    }
+                });
+    }
+
+    public RemoteCall<TransactionReceipt> set(String _first_name, String _last_name, String _addr) {
+        final Function function = new Function(
+                FUNC_SET, 
+                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(_first_name), 
+                new org.fisco.bcos.web3j.abi.datatypes.Utf8String(_last_name), 
+                new org.fisco.bcos.web3j.abi.datatypes.Address(_addr)), 
+                Collections.<TypeReference<?>>emptyList());
+        return executeRemoteCallTransaction(function);
     }
 
     @Deprecated
@@ -86,13 +102,13 @@ public class HelloWorld extends Contract {
         return deployRemoteCall(HelloWorld.class, web3j, credentials, contractGasProvider, BINARY, "");
     }
 
-    public static RemoteCall<HelloWorld> deploy(Web3j web3j, TransactionManager transactionManager, ContractGasProvider contractGasProvider) {
-        return deployRemoteCall(HelloWorld.class, web3j, transactionManager, contractGasProvider, BINARY, "");
-    }
-
     @Deprecated
     public static RemoteCall<HelloWorld> deploy(Web3j web3j, Credentials credentials, BigInteger gasPrice, BigInteger gasLimit) {
         return deployRemoteCall(HelloWorld.class, web3j, credentials, gasPrice, gasLimit, BINARY, "");
+    }
+
+    public static RemoteCall<HelloWorld> deploy(Web3j web3j, TransactionManager transactionManager, ContractGasProvider contractGasProvider) {
+        return deployRemoteCall(HelloWorld.class, web3j, transactionManager, contractGasProvider, BINARY, "");
     }
 
     @Deprecated
