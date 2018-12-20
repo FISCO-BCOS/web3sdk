@@ -89,15 +89,14 @@ public class ConsoleTest{
     	assertTrue(!"".equals(log.getLog()));
     	log.clearLog();
     	
-    }
-    
-    @Test(expected= Exception.class) 
-    public void getBlockByHashExceptionTest() throws Exception {
-    	String[] params1 = {"gbbh", "0xca0577fa37367e89628e2db0a7adfccdd4b53e5fe781d7e34a3d5edbe29d1961"};
-    	console.getBlockByHash(params1);
+    	String[] params4 = {"gbbh", "0xca0577fa37367e89628e2db0a7adfccdd4b53e5fe781d7e34a3d5edbe29d1961"};
+    	console.getBlockByHash(params4);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
     	
-    	String[] params2 = {"gbbh", "0xca0577fa37367e89628e2db0a7adfccdd4b53e5fe781d7e34a3d5edbe29d1961", "true"};
-    	console.getBlockByHash(params2);
+    	String[] params5 = {"gbbh", "0xca0577fa37367e89628e2db0a7adfccdd4b53e5fe781d7e34a3d5edbe29d1961", "true"};
+    	console.getBlockByHash(params5);
+    	assertTrue(!"".equals(log.getLog()));
     }
     
     @Test
@@ -398,6 +397,54 @@ public class ConsoleTest{
     	console.removeNode(params3);
     	assertTrue(!"".equals(log.getLog()));
     	
+    }
+    @Test
+    public void addAuthorityTest() throws Exception {
+    	String[] params1 = {};
+    	console.addAuthority(params1);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+    	String[] params2 = {"aa", "-h"};
+    	console.addAuthority(params2);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+    	String[] params3 = {"aa", "t_test","0xf1585b8d0e08a0a00fff662e24d67ba95a438256"};
+    	console.addAuthority(params3);
+    	assertTrue(!"".equals(log.getLog()));
+    }
+    @Test
+    public void removeAuthorityTest() throws Exception {
+    	String[] params1 = {};
+    	console.removeAuthority(params1);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+    	String[] params2 = {"ra", "-h"};
+    	console.removeAuthority(params2);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+    	String[] params3 = {"ra", "t_test", "0xf1585b8d0e08a0a00fff662e24d67ba95a438256"};
+    	console.removeAuthority(params3);
+    	assertTrue(!"".equals(log.getLog()));
+    }
+    @Test
+    public void queryAuthorityTest() throws Exception {
+    	String[] params1 = {};
+    	console.removeAuthority(params1);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+    	String[] params2 = {"qa", "-h"};
+    	console.removeAuthority(params2);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+    	String[] params3 = {"qa", "t_test", "0xf1585b8d0e08a0a00fff662e24d67ba95a438256"};
+    	console.removeAuthority(params3);
+    	assertTrue(!"".equals(log.getLog()));
     }
     
 }

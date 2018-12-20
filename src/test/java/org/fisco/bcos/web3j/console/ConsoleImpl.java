@@ -6,6 +6,8 @@ import java.math.BigInteger;
 import java.util.List;
 
 import org.fisco.bcos.channel.client.Service;
+import org.fisco.bcos.channel.test.precompile.Authority;
+import org.fisco.bcos.channel.test.precompile.AuthorityTableService;
 import org.fisco.bcos.channel.test.precompile.UpdatePBFTNode;
 import org.fisco.bcos.web3j.cns.CnsResolver;
 import org.fisco.bcos.web3j.crypto.Credentials;
@@ -116,6 +118,9 @@ public class ConsoleImpl implements ConsoleFace{
 		sb.append("addMiner(am)                                  Add a miner node.\n");
 		sb.append("addObserver(ao)                               Add an observer node.\n");
 		sb.append("removeNode(rn)                                Remove a node.\n");
+		sb.append("addAuthority(aa)                              Add authority for table by address.\n");
+		sb.append("removeAuthority(ra)                           Remove authority for table by address.\n");
+		sb.append("queryAuthority(qa)                            Query authority information.\n");
 		sb.append("quit(q)                                       Quit console.");
 		System.out.println(sb.toString());
 		ConsoleUtils.singleLine();
@@ -406,8 +411,8 @@ public class ConsoleImpl implements ConsoleFace{
 			HelpInfo.getCodeHelp();
 			return;
 		}
-		if (!address.startsWith("0x") || !(address.length() == 42)) {
-			System.out.println("This is an invalid address.");
+		if(ConsoleUtils.isInvalidAddress(address))
+		{
 			return;
 		}
 		String code = web3j.ethGetCode(address, DefaultBlockParameterName.LATEST).sendForReturnString();
@@ -473,9 +478,8 @@ public class ConsoleImpl implements ConsoleFace{
 		Object contractObject;
 		
 		contractAddress = params[2];
-		if (!contractAddress.startsWith("0x") || !(contractAddress.length() == 42)) {
-			System.out.println("This is an invalid address.");
-			System.out.println();
+		if(ConsoleUtils.isInvalidAddress(contractAddress))
+		{
 			return;
 		}
 		contractObject = load.invoke(null, contractAddress, web3j, credentials, gasPrice, gasLimit);
@@ -633,10 +637,100 @@ public class ConsoleImpl implements ConsoleFace{
 		else {
 			UpdatePBFTNode pbft = new UpdatePBFTNode();
 			pbft.RemoveNode(nodeID, web3j, credentials);
-			System.out.println("Remove " + nodeID.substring(0, 8) + "..." + " in group "
+			System.out.println("Remove " + nodeID.substring(0, 8) + "..." + " of group "
 					+ service.getGroupId() + " successful.");
 			System.out.println();
 		}
+		
+	}
+	
+	@Override
+	public void addAuthority(String[] params) throws Exception {
+		if (params.length < 2) {
+			HelpInfo.promptHelp("aa");
+			return;
+		}
+		String tableName = params[1];
+		if("-h".equals(tableName) || "--help".equals(tableName))
+		{
+			HelpInfo.addAuthorityHelp();
+			return;
+		}
+		if (params.length < 3) {
+			HelpInfo.promptHelp("aa");
+			return;
+		}
+		String addr = params[2];
+		if(ConsoleUtils.isInvalidAddress(addr))
+		{
+			return;
+		}
+		AuthorityTableService authority = new AuthorityTableService();
+		authority.add(tableName, addr, web3j, credentials);
+		System.out.println("add " + "tableName:" +tableName + " address:"+addr+ " of group "
+				+ service.getGroupId() + " successful.");
+		System.out.println();
+		
+	}
+	
+	@Override
+	public void removeAuthority(String[] params) throws Exception {
+		if (params.length < 2) {
+			HelpInfo.promptHelp("ra");
+			return;
+		}
+		String tableName = params[1];
+		if("-h".equals(tableName) || "--help".equals(tableName))
+		{
+			HelpInfo.removeAuthorityHelp();
+			return;
+		}
+		if (params.length < 3) {
+			HelpInfo.promptHelp("ra");
+			return;
+		}
+		String addr = params[2];
+		if(ConsoleUtils.isInvalidAddress(addr))
+		{
+			return;
+		}
+		AuthorityTableService authority = new AuthorityTableService();
+		authority.remove(tableName, addr, web3j, credentials);
+		System.out.println("remove " + "tableName:" +tableName + " address:"+addr+ " of group "
+				+ service.getGroupId() + " successful.");
+		System.out.println();
+		
+	}
+	
+	@Override
+	public void queryAuthority(String[] params) throws Exception {
+		if (params.length < 2) {
+			HelpInfo.promptHelp("qa");
+			return;
+		}
+		String tableName = params[1];
+		if("-h".equals(tableName) || "--help".equals(tableName))
+		{
+			HelpInfo.queryAuthorityHelp();
+			return;
+		}
+		AuthorityTableService authorityTableService = new AuthorityTableService();
+		List<Authority> authoritys = authorityTableService.query(tableName, web3j, credentials);
+		if(authoritys.isEmpty())
+		{
+			System.out.println("Empty set.");
+			System.out.println();
+			return;
+		}
+		ConsoleUtils.singleLine();
+		System.out.println("table_name"+"\t\t\t"+"address"+"\t\t\t\t"+"enable_num");
+		ConsoleUtils.singleLine();
+		for (Authority authority: authoritys) 
+		{
+			System.out.println(authority.getTable_name().substring(6)+"\t\t"+authority.getAddress()+"\t"+authority.getEnable_num());
+		}
+		ConsoleUtils.singleLine();
+		System.out.println();
 		
 	}
 

@@ -142,6 +142,18 @@ public class ConsoleClient {
 				case "rn":
 					console.removeNode(params);
 					break;
+				case "addAuthority":
+				case "aa":
+					console.addAuthority(params);
+					break;
+				case "removeAuthority":
+				case "ra":
+					console.removeAuthority(params);
+					break;
+				case "queryAuthority":
+				case "qa":
+					console.queryAuthority(params);
+					break;
 				case "quit":
 				case "q":
 					System.exit(0);
