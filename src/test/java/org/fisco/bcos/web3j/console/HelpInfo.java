@@ -5,6 +5,7 @@ public class HelpInfo {
 	public static void promptHelp(String command) 
 	{
 		System.out.println("Try '"+ command +" --help' for more information.");
+		System.out.println();
 	}
 	
 	public static void getBlockByHashHelp()
@@ -133,6 +134,32 @@ public class HelpInfo {
 		System.out.println("Remove a node.");
 		System.out.println("Usage: rn nodeID");
 		System.out.println("nodeID -- nodeID of a node.");
+		System.out.println();
+	}
+
+	public static void addAuthorityHelp() 
+	{
+		System.out.println("Add authority for table by address.");
+		System.out.println("Usage: aa tableName address");
+		System.out.println("tableName -- name of a table.");
+		System.out.println("address -- address of tx.origin.");
+		System.out.println();
+	}
+	
+	public static void removeAuthorityHelp() 
+	{
+		System.out.println("Remove authority for table by address.");
+		System.out.println("Usage: ra tableName address");
+		System.out.println("tableName -- name of a table.");
+		System.out.println("address -- address of tx.origin.");
+		System.out.println();
+	}
+	
+	public static void queryAuthorityHelp() 
+	{
+		System.out.println("Query authority information.");
+		System.out.println("Usage: qa tableName");
+		System.out.println("tableName -- name of a table.");
 		System.out.println();
 	}
 

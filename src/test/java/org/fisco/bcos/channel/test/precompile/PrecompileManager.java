@@ -33,7 +33,13 @@ class PrecompileManager {
         if (args[0].equals("pbft")) {
             UpdatePBFTNode pbft = new UpdatePBFTNode();
             pbft.call(args, web3j, credentials, service.getGroupId());
-        } else {
+        } 
+        else if(args[0].equals("authority"))
+        {
+        	AuthorityTableService authority = new AuthorityTableService();
+        	authority.call(args, web3j, credentials, service.getGroupId());
+        }
+        else {
             System.out.println("Invalid Param, only support updatePBFTNode precompile now!");
         }
     }
