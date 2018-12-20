@@ -1,5 +1,7 @@
 package org.fisco.bcos.web3j.tx;
 
+import org.fisco.bcos.web3j.cns.CnsResolver;
+import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.methods.response.EthGasPrice;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
@@ -21,9 +23,20 @@ public abstract class ManagedTransaction {
 
     protected TransactionManager transactionManager;
 
+    protected CnsResolver cnsResolver;
+
     protected ManagedTransaction(Web3j web3j, TransactionManager transactionManager) {
         this.transactionManager = transactionManager;
         this.web3j = web3j;
+        this.cnsResolver = new CnsResolver(web3j,transactionManager.credentials);
+    }
+
+    public long getSyncThreshold() {
+        return cnsResolver.getSyncThreshold();
+    }
+
+    public void setSyncThreshold(long syncThreshold) {
+        cnsResolver.setSyncThreshold(syncThreshold);
     }
 
     public BigInteger requestCurrentGasPrice() throws IOException {

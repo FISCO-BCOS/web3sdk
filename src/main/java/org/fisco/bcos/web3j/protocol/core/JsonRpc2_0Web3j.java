@@ -120,21 +120,21 @@ public class JsonRpc2_0Web3j implements Web3j {
         this.web3jRx = new JsonRpc2_0Rx(this, scheduledExecutorService);
         this.blockTime = pollingInterval;
         this.scheduledExecutorService = scheduledExecutorService;
-        ExecutorService cachedThreadPool = Executors.newFixedThreadPool(Web3AsyncThreadPoolSize.web3AsyncPoolSize);
-
-        cachedThreadPool.execute(new Runnable() {
-            public void run() {
-                while (true) {
-                    try {
-                    	Thread.sleep(10000);
-                        EthBlockNumber ethBlockNumber = ethBlockNumber().sendAsync().get(10000, TimeUnit.MILLISECONDS);
-                        setBlockNumber(ethBlockNumber.getBlockNumber());
-                    } catch (Exception e) {
-                        logger.error("Exception: " + e);
-                    }
-                }
-            }
-        });
+//        ExecutorService cachedThreadPool = Executors.newFixedThreadPool(Web3AsyncThreadPoolSize.web3AsyncPoolSize);
+//
+//        cachedThreadPool.execute(new Runnable() {
+//            public void run() {
+//                while (true) {
+//                    try {
+//                    	Thread.sleep(10000);
+//                        EthBlockNumber ethBlockNumber = ethBlockNumber().sendAsync().get(10000, TimeUnit.MILLISECONDS);
+//                        setBlockNumber(ethBlockNumber.getBlockNumber());
+//                    } catch (Exception e) {
+//                        logger.error("Exception: " + e);
+//                    }
+//                }
+//            }
+//        });
     }
 
     @Override
@@ -189,11 +189,29 @@ public class JsonRpc2_0Web3j implements Web3j {
 
     @Override
     public Request<?, GroupList> ethGroupList() {
+    	return new Request<>(
+    			"getGroupList",
+    			Arrays.asList(groupId),
+    			web3jService,
+    			GroupList.class);
+    }
+    
+    @Override
+    public Request<?, MinerList> getMinerList() {
+    	return new Request<>(
+    			"getMinerList",
+    			Arrays.asList(groupId),
+    			web3jService,
+    			MinerList.class);
+    }
+    
+    @Override
+    public Request<?, ObserverList> getObserverList() {
         return new Request<>(
-                "getGroupList",
+                "getObserverList",
                Arrays.asList(groupId),
                 web3jService,
-                GroupList.class);
+                ObserverList.class);
     }
 
     @Override
@@ -384,9 +402,18 @@ public class JsonRpc2_0Web3j implements Web3j {
             String address, DefaultBlockParameter defaultBlockParameter) {
         return new Request<>(
                 "getCode",
-                Arrays.asList(address, defaultBlockParameter.getValue()),
+                Arrays.asList(groupId, address),
                 web3jService,
                 EthGetCode.class);
+    }
+    
+    @Override
+    public Request<?, TotalTransactionCount> getTotalTransactionCount() {
+    	return new Request<>(
+    			"getTotalTransactionCount",
+    			Arrays.asList(groupId),
+    			web3jService,
+    			TotalTransactionCount.class);
     }
 
     @Override
@@ -462,6 +489,17 @@ public class JsonRpc2_0Web3j implements Web3j {
                         returnFullTransactionObjects),
                 web3jService,
                 EthBlock.class);
+    }
+    
+    @Override
+    public Request<?, BlockHash> getBlockHashByNumber(
+    		DefaultBlockParameter defaultBlockParameter) {
+    	return new Request<>(
+    			"getBlockHashByNumber",
+    			Arrays.asList(groupId,
+    					defaultBlockParameter.getValue()),
+    			web3jService,
+    			BlockHash.class);
     }
 
     @Override
