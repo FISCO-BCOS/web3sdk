@@ -108,7 +108,7 @@ public class ChannelEthereumService extends Service {
 
     public void setTxCallbackTimeout(Integer txCallbackTimeout) {
         if (txCallbackTimeout < 0) {
-            throw new RuntimeException("txCallbackTimeout must >= 0");
+            throw new IllegalArgumentException("txCallbackTimeout must >= 0");
         }
         this.txCallbackTimeout = txCallbackTimeout;
     }
