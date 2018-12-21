@@ -44,9 +44,11 @@ public class BasicTest {
                 System.out.println("create Credentials failed");
                 throw new Exception("create Credentials failed");
             }
+            List<EthPeers.Peers> ethPeers = web3j.getAdminPeers().send().getAdminPeers();
+           System.out.println("***    " + ethPeers.get(0).getId());
+           System.out.println("***    " + ethPeers.get(0).getNetwork().get("remoteAddress"));
+
             testDeployContract(web3j, credentials);
-           List<EthPeers.Peers> ethPeers = web3j.getAdminPeers().send().getAdminPeers();
-            System.out.println(ethPeers.get(0).getNetwork());
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception("Execute basic test failed");
