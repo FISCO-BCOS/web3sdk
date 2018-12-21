@@ -130,6 +130,10 @@ public class ConsoleClient {
 				case "rp":
 					console.removePbft(params);
 					break;
+				case "setSystemConfigByKey":
+				case "ssc":
+					console.setSystemConfigByKey(params);
+					break;
 				case "quit":
 				case "q":
 					System.exit(0);
