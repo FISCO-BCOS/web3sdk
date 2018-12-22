@@ -6,6 +6,8 @@ import java.math.BigInteger;
 import java.util.List;
 
 import org.fisco.bcos.channel.client.Service;
+import org.fisco.bcos.channel.test.precompile.Authority;
+import org.fisco.bcos.channel.test.precompile.AuthorityTableService;
 import org.fisco.bcos.channel.test.precompile.UpdatePBFTNode;
 import org.fisco.bcos.channel.test.precompile.SetSystemConfig;
 import org.fisco.bcos.web3j.cns.CnsResolver;
@@ -17,6 +19,7 @@ import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameterName;
 import org.fisco.bcos.web3j.protocol.core.RemoteCall;
+import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.tx.Contract;
 import org.fisco.bcos.web3j.utils.Numeric;
 import org.springframework.context.ApplicationContext;
@@ -39,7 +42,8 @@ public class ConsoleImpl implements ConsoleFace{
 	private static RemoteCall<?> remoteCall;
 
 	@SuppressWarnings("resource")
-	public ConsoleImpl(){
+	public ConsoleImpl(String[] args){
+		
 		ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
 		service = context.getBean(Service.class);
 		try {
@@ -51,11 +55,47 @@ public class ConsoleImpl implements ConsoleFace{
 		ChannelEthereumService channelEthereumService = new ChannelEthereumService();
 		channelEthereumService.setChannelService(service);
 		try {
-			keyPair = Keys.createEcKeyPair();
+			if(args.length < 1)
+			{
+				keyPair = Keys.createEcKeyPair();
+				credentials = Credentials.create(keyPair);
+			}
+			else
+			{	
+			    String priviteKey1 = "3bed914595c159cbce70ec5fb6aff3d6797e0c5ee5a7a9224a21cae8932d84a4";
+			    String origin1 = "0xf1585b8d0e08a0a00fff662e24d67ba95a438256";
+			    String priviteKey2 = "ab40568a2f77b4cb70706b4c6119916a143eb75c0d618e5f69909af1f9f9695e";
+			    String origin2 = "0xc0d0e6ccc0b44c12196266548bec4a3616160e7d";
+			    String priviteKey3 = "d0fee0a4e3c545a9394965042f8f891b6e5482c212a7428ec175d6aed121353a";
+			    String origin3 = "0x1600e34312edea101d8b41a3465f2e381b66baed";
+				String privateKeyFlag = args[0];
+				String privateKey = "";
+				String origin = "";
+		    	switch(privateKeyFlag)
+		    	{
+		    	case "1":
+		    		privateKey = priviteKey1;
+		    		origin = origin1;
+		    		break;
+		    	case "2":
+		    		privateKey = priviteKey2;
+		    		origin = origin2;
+		    		break;
+		    	case "3":
+		    		privateKey = priviteKey3;
+		    		origin = origin3;
+		    		break;
+		    	default:
+		    		System.out.println("Please provide 1 or 2 or 3 for specifying priviteKey.");
+		    		System.exit(0);;
+		    	}
+				credentials = Credentials.create(privateKey);
+				System.out.println("tx.origin = "+origin);
+			}
+				
 		} catch (Exception e) {
 			e.printStackTrace();
 		} 
-		credentials = Credentials.create(keyPair);
 
 		web3j = Web3j.build(channelEthereumService, service.getGroupId());
 	}
@@ -111,12 +151,19 @@ public class ConsoleImpl implements ConsoleFace{
 		sb.append("getTotalTransactionCount(gtc)                 Query total transaction count.\n");
 		sb.append("deploy(d)                                     Deploy a contract on blockchain.\n");
 		sb.append("call(c)                                       Call a contract by a function and paramters.\n");
-		sb.append("addPbft(ap)                                   Add a pbft node.\n");
-		sb.append("removePbft(rp)                                Remove a pbft nodes.\n");
+		sb.append("deployByCNS(dbc)                              Deploy a contract on blockchain by CNS.\n");
+		sb.append("callByCNS(cbc)                                Call a contract by a function and paramters by CNS.\n");
+		sb.append("addMiner(am)                                  Add a miner node.\n");
+		sb.append("addObserver(ao)                               Add an observer node.\n");
+		sb.append("removeNode(rn)                                Remove a node.\n");
+		sb.append("addAuthority(aa)                              Add authority for table by address.\n");
+		sb.append("removeAuthority(ra)                           Remove authority for table by address.\n");
+		sb.append("queryAuthority(qa)                            Query authority information.\n");
 		sb.append("setSystemConfigByKey(ssc)                     Set a system config.\n");
 		sb.append("quit(q)                                       Quit console.");
 		System.out.println(sb.toString());
 		ConsoleUtils.singleLine();
+		System.out.println();
 	}
 	
 	@Override
@@ -136,7 +183,15 @@ public class ConsoleImpl implements ConsoleFace{
 	@Override
 	public void getObserverList() throws IOException {
 		List<String> observerList = web3j.getObserverList().send().getResult();
-		ConsoleUtils.printJson(observerList.toString());
+		String observers = observerList.toString();
+		if("[]".equals(observers))
+		{
+			System.out.println("[]");
+		}
+		else
+		{
+			ConsoleUtils.printJson(observers);
+		}
 		System.out.println();
 
 	}
@@ -144,7 +199,15 @@ public class ConsoleImpl implements ConsoleFace{
 	@Override
 	public void getMinerList() throws IOException {
 		List<String> minerList = web3j.getMinerList().send().getResult();
-		ConsoleUtils.printJson(minerList.toString());
+		String miners = minerList.toString();
+		if("[]".equals(miners))
+		{
+			System.out.println("[]");
+		}
+		else
+		{
+			ConsoleUtils.printJson(miners);
+		}
 		System.out.println();
 
 	}
@@ -387,8 +450,8 @@ public class ConsoleImpl implements ConsoleFace{
 			HelpInfo.getCodeHelp();
 			return;
 		}
-		if (!address.startsWith("0x") || !(address.length() == 42)) {
-			System.out.println("This is an invalid address.");
+		if(ConsoleUtils.isInvalidAddress(address))
+		{
 			return;
 		}
 		String code = web3j.ethGetCode(address, DefaultBlockParameterName.LATEST).sendForReturnString();
@@ -421,10 +484,6 @@ public class ConsoleImpl implements ConsoleFace{
 			HelpInfo.deployHelp();
 			return;
 		}
-		if (params.length < 3) {
-			HelpInfo.promptHelp("d");
-			return;
-		}
 		contractName = "org.fisco.bcos.temp." + params[1];
 		contractClass = ContractClassFactory.getContractClass(contractName);
 		Method deploy = contractClass.getMethod("deploy", Web3j.class, Credentials.class, BigInteger.class,
@@ -432,16 +491,10 @@ public class ConsoleImpl implements ConsoleFace{
 		remoteCall = (RemoteCall<?>) deploy.invoke(null, web3j, credentials, gasPrice, gasLimit);
 		Contract contract = (Contract) remoteCall.send();
 		contractAddress = contract.getContractAddress();
-		contractVersion = params[2];
-		// register cns
-		CnsResolver cnsResolver = new CnsResolver(web3j, credentials);
-		cnsResolver.registerCns(params[1], contractVersion, contractAddress, contract.getContractBinary());
-		
 		System.out.println(contractAddress);
 		System.out.println();
 	}
 	
-	@SuppressWarnings("rawtypes")
 	@Override
 	public void call(String[] params) throws Exception {
 		if (params.length < 2) {
@@ -457,6 +510,79 @@ public class ConsoleImpl implements ConsoleFace{
 			HelpInfo.promptHelp("c");
 			return;
 		}
+		contractName = "org.fisco.bcos.temp." + params[1];
+		contractClass = ContractClassFactory.getContractClass(contractName);
+		Method load = contractClass.getMethod("load", String.class, Web3j.class, Credentials.class, BigInteger.class,
+				BigInteger.class);
+		Object contractObject;
+		
+		contractAddress = params[2];
+		if(ConsoleUtils.isInvalidAddress(contractAddress))
+		{
+			return;
+		}
+		contractObject = load.invoke(null, contractAddress, web3j, credentials, gasPrice, gasLimit);
+		Class[] parameterType = ContractClassFactory.getParameterType(contractClass, params[3]);
+		String returnType = ContractClassFactory.getReturnType(contractClass, params[3]);
+		Method func = contractClass.getMethod(params[3], parameterType);
+		Object[] argobj = ContractClassFactory.getPrametersObject(parameterType, params);
+		remoteCall = (RemoteCall<?>) func.invoke(contractObject, argobj);
+		Object result;
+		result = remoteCall.send();
+		String resultStr;
+		resultStr = ContractClassFactory.getReturnObject(returnType, result);
+		System.out.println(resultStr);
+		System.out.println();
+	}
+	
+	@Override
+	public void deployByCNS(String[] params) throws Exception {
+		if (params.length < 2) {
+			HelpInfo.promptHelp("dbc");
+			return;
+		}
+		if("-h".equals(params[1]) || "--help".equals(params[1]))
+		{
+			HelpInfo.deployByCNSHelp();
+			return;
+		}
+		if (params.length < 3) {
+			HelpInfo.promptHelp("dbc");
+			return;
+		}
+		contractName = "org.fisco.bcos.temp." + params[1];
+		contractClass = ContractClassFactory.getContractClass(contractName);
+		Method deploy = contractClass.getMethod("deploy", Web3j.class, Credentials.class, BigInteger.class,
+				BigInteger.class);
+		remoteCall = (RemoteCall<?>) deploy.invoke(null, web3j, credentials, gasPrice, gasLimit);
+		Contract contract = (Contract) remoteCall.send();
+		contractAddress = contract.getContractAddress();
+		contractVersion = params[2];
+		// register cns
+		CnsResolver cnsResolver = new CnsResolver(web3j, credentials);
+		TransactionReceipt registerCns = cnsResolver.registerCns(params[1], contractVersion, contractAddress, contract.getContractBinary());
+		System.out.println(contractAddress);
+		System.out.println();
+	}
+	
+	@SuppressWarnings("rawtypes")
+	@Override
+	public void callByCNS(String[] params) throws Exception {
+		if (params.length < 2) {
+			HelpInfo.promptHelp("cbc");
+			return;
+		}
+		if("-h".equals(params[1]) || "--help".equals(params[1]))
+		{
+			HelpInfo.callByCNSHelp();
+			return;
+		}
+		if (params.length < 4) {
+			HelpInfo.promptHelp("cbc");
+			return;
+		}
+		contractName = "org.fisco.bcos.temp." + params[1];
+		contractClass = ContractClassFactory.getContractClass(contractName);
 		Method load = contractClass.getMethod("load", String.class, Web3j.class, Credentials.class, BigInteger.class,
 				BigInteger.class);
 		Object contractObject;
@@ -470,7 +596,7 @@ public class ConsoleImpl implements ConsoleFace{
 		contractObject = load.invoke(null, contractAddress, web3j, credentials, gasPrice, gasLimit);
 		Class[] parameterType = ContractClassFactory.getParameterType(contractClass, params[3]);
 		String returnType = ContractClassFactory.getReturnType(contractClass, params[3]);
-		Method func = contractClass.getMethod(params[1], parameterType);
+		Method func = contractClass.getMethod(params[3], parameterType);
 		Object[] argobj = ContractClassFactory.getPrametersObject(parameterType, params);
 		remoteCall = (RemoteCall<?>) func.invoke(contractObject, argobj);
 		Object result;
@@ -482,64 +608,200 @@ public class ConsoleImpl implements ConsoleFace{
 	}
 	
 	@Override
-	public void removePbft(String[] params) throws Exception {
-
+	public void addMiner(String[] params) throws Exception {
 		if (params.length < 2) {
-			HelpInfo.promptHelp("rp");
+			HelpInfo.promptHelp("am");
 			return;
 		}
 		String nodeID = params[1];
 		if("-h".equals(nodeID) || "--help".equals(nodeID))
 		{
-			HelpInfo.removePbftHelp();
+			HelpInfo.addMinerHelp();
 			return;
 		}
-		List<String> minerList = web3j.getMinerList().send().getResult();
-		List<String> observerList = web3j.getObserverList().send().getResult();
 		if (nodeID.length() != 128) {
 			System.out.println("This is an invalid nodeID.");
-		} else if (observerList.contains(nodeID)) {
-			System.out.println("The node is already a pbft observer node.");
-		} else if (!minerList.contains(nodeID)) {
-			System.out.println("This is not a pbft sealer node.");
-		} else {
-			String[] args = { "pbft", "remove", nodeID };
+		} 
+		else {
 			UpdatePBFTNode pbft = new UpdatePBFTNode();
-			pbft.call(args, web3j, credentials, service.getGroupId());
-			System.out.println("Remove " + nodeID.substring(0, 8) + "..." + " to a pbft sealer of group "
+			pbft.AddNodeToMiner(nodeID, web3j, credentials);
+			System.out.println("Add " + nodeID.substring(0, 8) + "..." + " to a miner of group "
 					+ service.getGroupId() + " successful.");
+			System.out.println();
 		}
 
 	}
 	
 	@Override
-	public void addPbft(String[] params) throws Exception {
+	public void addObserver(String[] params) throws Exception {
+
 		if (params.length < 2) {
-			HelpInfo.promptHelp("ap");
+			HelpInfo.promptHelp("ao");
 			return;
 		}
 		String nodeID = params[1];
 		if("-h".equals(nodeID) || "--help".equals(nodeID))
 		{
-			HelpInfo.addPbftHelp();
+			HelpInfo.addObserverHelp();
 			return;
 		}
-		List<String> minerList = web3j.getMinerList().send().getResult();
-		List<String> observerList = web3j.getObserverList().send().getResult();
 		if (nodeID.length() != 128) {
 			System.out.println("This is an invalid nodeID.");
-		} else if (minerList.contains(nodeID)) {
-			System.out.println("The node is already a pbft sealer node.");
-		} else if (!observerList.contains(nodeID)) {
-			System.out.println("This is not a pbft observer node.");
-		} else {
-			String[] args = { "pbft", "add", nodeID };
+		} 
+		else {
 			UpdatePBFTNode pbft = new UpdatePBFTNode();
-			pbft.call(args, web3j, credentials, service.getGroupId());
-			System.out.println("Add " + nodeID.substring(0, 8) + "..." + " to a pbft sealer of group "
+			pbft.AddNodeToObserver(nodeID, web3j, credentials);
+			System.out.println("Add " + nodeID.substring(0, 8) + "..." + " to an observer of group "
 					+ service.getGroupId() + " successful.");
+			System.out.println();
 		}
 
+	}
+	
+	@Override
+	public void removeNode(String[] params) throws Exception {
+		if (params.length < 2) {
+			HelpInfo.promptHelp("rn");
+			return;
+		}
+		String nodeID = params[1];
+		if("-h".equals(nodeID) || "--help".equals(nodeID))
+		{
+			HelpInfo.removeNodeHelp();
+			return;
+		}
+		if (nodeID.length() != 128) {
+			System.out.println("This is an invalid nodeID.");
+		} 
+		else {
+			UpdatePBFTNode pbft = new UpdatePBFTNode();
+			pbft.RemoveNode(nodeID, web3j, credentials);
+			System.out.println("Remove " + nodeID.substring(0, 8) + "..." + " of group "
+					+ service.getGroupId() + " successful.");
+			System.out.println();
+		}
+		
+	}
+	
+	@Override
+	public void addAuthority(String[] params) throws Exception {
+		if (params.length < 2) {
+			HelpInfo.promptHelp("aa");
+			return;
+		}
+		String tableName = params[1];
+		if("-h".equals(tableName) || "--help".equals(tableName))
+		{
+			HelpInfo.addAuthorityHelp();
+			return;
+		}
+		if (params.length < 3) {
+			HelpInfo.promptHelp("aa");
+			return;
+		}
+		String addr = params[2];
+		if(ConsoleUtils.isInvalidAddress(addr))
+		{
+			return;
+		}
+		AuthorityTableService authority = new AuthorityTableService();
+		int result = authority.add(tableName, addr, web3j, credentials);
+		if(result == 1)
+		{
+			System.out.println("add " + "tableName:" +tableName + " address:"+addr+ " of group "
+					+ service.getGroupId() + " successful.");
+		}
+		else if(result == 0)
+		{
+			System.out.println("tableName:" +tableName + " address:"+addr+ " of group "
+					+ service.getGroupId() + " already exist.");
+		}
+		else
+		{
+			System.out.println("This account is not authorized");
+		}
+		System.out.println();
+		
+	}
+	
+	@Override
+	public void removeAuthority(String[] params) throws Exception {
+		if (params.length < 2) {
+			HelpInfo.promptHelp("ra");
+			return;
+		}
+		String tableName = params[1];
+		if("-h".equals(tableName) || "--help".equals(tableName))
+		{
+			HelpInfo.removeAuthorityHelp();
+			return;
+		}
+		if (params.length < 3) {
+			HelpInfo.promptHelp("ra");
+			return;
+		}
+		String addr = params[2];
+		if(ConsoleUtils.isInvalidAddress(addr))
+		{
+			return;
+		}
+		AuthorityTableService authority = new AuthorityTableService();
+		int result = authority.remove(tableName, addr, web3j, credentials);
+		if(result == 1)
+		{
+			System.out.println("remove " + "tableName:" +tableName + " address:"+addr+ " of group "
+					+ service.getGroupId() + " successful.");
+		}
+		else if(result == 0)
+		{
+			System.out.println("tableName:" +tableName + " address:"+addr+ " of group "
+					+ service.getGroupId() + " does not exist.");
+		}
+		else
+		{
+			System.out.println("This account is not authorized");
+		}
+		System.out.println();
+		
+	}
+	
+	@Override
+	public void queryAuthority(String[] params) throws Exception {
+		if (params.length < 2) {
+			HelpInfo.promptHelp("qa");
+			return;
+		}
+		String tableName = params[1];
+		if("-h".equals(tableName) || "--help".equals(tableName))
+		{
+			HelpInfo.queryAuthorityHelp();
+			return;
+		}
+		AuthorityTableService authorityTableService = new AuthorityTableService();
+		List<Authority> authoritys = authorityTableService.query(tableName, web3j, credentials);
+		if(authoritys.isEmpty())
+		{
+			System.out.println("Empty set.");
+			System.out.println();
+			return;
+		}
+		ConsoleUtils.singleLine();
+		System.out.println("table_name"+"\t\t\t"+"address"+"\t\t\t\t"+"enable_num");
+		ConsoleUtils.singleLine();
+		for (Authority authority: authoritys) 
+		{
+			if("_sys_tables_".equals(tableName) || "_sys_miners_".equals(tableName) || "_sys_table_access_".equals(tableName))
+			{
+				System.out.println(authority.getTable_name()+"\t\t"+authority.getAddress()+"\t"+authority.getEnable_num());
+			}
+			else
+			{
+				System.out.println(authority.getTable_name().substring(6)+"\t\t"+authority.getAddress()+"\t"+authority.getEnable_num());
+			}
+		}
+		ConsoleUtils.singleLine();
+		System.out.println();
+		
 	}
 
 	@Override
