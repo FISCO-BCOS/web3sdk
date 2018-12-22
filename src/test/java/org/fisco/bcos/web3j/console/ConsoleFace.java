@@ -55,4 +55,6 @@ public interface ConsoleFace {
 	void removePbft(String[] params) throws Exception;
 
 	void addPbft(String[] params) throws Exception;
+
+	void setSystemConfigByKey(String[] params) throws Exception;
 }

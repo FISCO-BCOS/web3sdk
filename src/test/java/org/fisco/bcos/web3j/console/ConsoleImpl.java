@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.channel.test.precompile.UpdatePBFTNode;
+import org.fisco.bcos.channel.test.precompile.SetSystemConfig;
 import org.fisco.bcos.web3j.cns.CnsResolver;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.crypto.ECKeyPair;
@@ -112,6 +113,7 @@ public class ConsoleImpl implements ConsoleFace{
 		sb.append("call(c)                                       Call a contract by a function and paramters.\n");
 		sb.append("addPbft(ap)                                   Add a pbft node.\n");
 		sb.append("removePbft(rp)                                Remove a pbft nodes.\n");
+		sb.append("setSystemConfigByKey(ssc)                     Set a system config.\n");
 		sb.append("quit(q)                                       Quit console.");
 		System.out.println(sb.toString());
 		ConsoleUtils.singleLine();
@@ -540,4 +542,23 @@ public class ConsoleImpl implements ConsoleFace{
 
 	}
 
+	@Override
+	public void setSystemConfigByKey(String[] params) throws Exception {
+		if (params.length < 2) {
+			HelpInfo.promptHelp("ssc");
+			return;
+		}
+		String key = params[1];
+		String value = params[2];
+		if("-h".equals(key) || "--help".equals(key))
+		{
+			HelpInfo.setSystemConfigByKeyHelp();
+			return;
+		}
+
+		String[] args = { "setSystemConfig", key, value };
+		SetSystemConfig config = new SetSystemConfig();
+		config.call(args, web3j, credentials, service.getGroupId());
+		System.out.println("Set " + key + "by value " + value + " of group " + service.getGroupId() + " successful.");
+	}
 }

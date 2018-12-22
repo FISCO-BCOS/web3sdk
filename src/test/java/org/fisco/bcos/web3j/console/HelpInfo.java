@@ -104,12 +104,19 @@ public class HelpInfo {
 		System.out.println("nodeID -- nodeID of a pbft observer node.");
 		System.out.println();
 	}
-	public static void removePbftHelp() 
+	public static void removePbftHelp()
 	{
 		System.out.println("Remove a pbft node.");
 		System.out.println("Usage: rp nodeID");
 		System.out.println("nodeID -- nodeID of a pbft sealer node.");
 		System.out.println();
 	}
-
+	public static void setSystemConfigByKeyHelp()
+	{
+		System.out.println("Set a system config.");
+		System.out.println("Usage: ssc key value");
+		System.out.println("key -- the name of system config(tx_count_limit/tx_gas_limit supported currently).");
+		System.out.println("value -- the value of system config to be set.");
+		System.out.println();
+	}
 }
