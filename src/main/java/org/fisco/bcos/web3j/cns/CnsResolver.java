@@ -35,6 +35,7 @@ public class CnsResolver {
     private static String registryContract = "0x0000000000000000000000000000000000001004";
 
     private Cns cnsRegistry;
+
     public CnsResolver(Web3j web3j, long syncThreshold, Credentials credentials) {
         this.web3j = web3j;
         transactionManager = new ClientTransactionManager(web3j, credentials);  // don't use empty string
@@ -77,33 +78,40 @@ public class CnsResolver {
 
     public String resolve(String contractNameAndVersion) {
 
-        if (contractNameAndVersion!= null &&WalletUtils.isValidAddress(contractNameAndVersion)) {
-            return contractNameAndVersion;
-        } else {
-            if (contractNameAndVersion != null && (contractNameAndVersion.contains(":"))) {
-                String contractName = contractNameAndVersion.split(":")[0];
-                String contractVersion = contractNameAndVersion.split(":")[1];
-                String contractAddressInfo = null;
-                String address;
-                Cns cns;
-                try {
-                    cns = lookupResolver();
-                    contractAddressInfo = cns.selectByName(contractName).send();
+        if (!isValidCnsName(contractNameAndVersion)) {
+             return contractNameAndVersion;
+        }
+            Cns cns;
+            cns = lookupResolver();
+            String contractAddressInfo;
+            String address;
+
+            try {
+                // if has version
+                if (contractNameAndVersion.contains(":")) {
+                    String contractName = contractNameAndVersion.split(":")[0];
+                    String contractVersion = contractNameAndVersion.split(":")[1];
+
+                    contractAddressInfo = cns.selectByNameAndVersion(contractName, contractVersion).send();
                     logger.debug("get contractName ", contractAddressInfo);
                     List<Contracts> contracts = jsonToContracts(contractAddressInfo);
-                   Contracts c = contracts.stream().filter(x -> x.getVersion().equals(contractVersion)).findFirst().get();
-                    address = c.getAddress();
-                } catch (Exception e) {
-                    throw new RuntimeException("Unable to execute Ethereum request", e);
-                }
-                if (!WalletUtils.isValidAddress(address)) {
-                    throw new RuntimeException("Unable to resolve address for name: " + contractNameAndVersion);
+                    address = contracts.get(0).getAddress();
                 } else {
-                    return address;
+                    // only contract name
+                    contractAddressInfo = cns.selectByName(contractNameAndVersion).send();
+                    logger.debug("get contractName ", contractAddressInfo);
+                    List<Contracts> contracts = jsonToContracts(contractAddressInfo);
+                    Contracts c = contracts.get(contracts.size() - 1);
+                    address = c.getAddress();
                 }
+            } catch (Exception e) {
+                throw new RuntimeException("Unable to execute Ethereum request", e);
             }
-            else
-                return null;
+
+        if (!WalletUtils.isValidAddress(address)) {
+            throw new RuntimeException("Unable to resolve address for name: " + contractNameAndVersion);
+        } else {
+            return address;
         }
     }
 

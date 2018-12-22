@@ -88,7 +88,7 @@ public class CompilerTest {
                     "}";
 
         SolidityCompiler.Result res = SolidityCompiler.compile(
-                contractSrc.getBytes(), true, ABI, BIN, INTERFACE, METADATA);
+                contractSrc.getBytes(), true, BIN);
         System.out.println("Out: '" + res.output + "'");
         System.out.println("Err: '" + res.errors + "'");
         CompilationResult result = CompilationResult.parse(res.output);
