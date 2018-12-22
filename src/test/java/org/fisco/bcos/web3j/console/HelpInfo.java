@@ -5,6 +5,7 @@ public class HelpInfo {
 	public static void promptHelp(String command) 
 	{
 		System.out.println("Try '"+ command +" --help' for more information.");
+		System.out.println();
 	}
 	
 	public static void getBlockByHashHelp()
@@ -82,33 +83,83 @@ public class HelpInfo {
 	public static void deployHelp() 
 	{
 		System.out.println("Deploy a contract on blockchain.");
-		System.out.println("Usage: d contractName contractVersion");
+		System.out.println("Usage: d contractName");
 		System.out.println("contractName -- A name for a contract.");
-		System.out.println("contractVersion -- A version for a contract.");
 		System.out.println();
 	}
 	public static void callHelp() 
 	{
 		System.out.println("Call a contract by a function and paramters.");
-		System.out.println("Usage: c contractName contractVersion function parameters");
+		System.out.println("Usage: c contractName contractAddress function parameters");
+		System.out.println("contractName -- A name for a contract.");
+		System.out.println("contractAddress -- An address for a contract.");
+		System.out.println("function -- A function of a contract.");
+		System.out.println("parameters -- Parameters(splited by a space) for a function.");
+		System.out.println();
+	}
+	public static void deployByCNSHelp() 
+	{
+		System.out.println("Deploy a contract on blockchain by CNS.");
+		System.out.println("Usage: dbc contractName contractVersion");
+		System.out.println("contractName -- A name for a contract.");
+		System.out.println("contractVersion -- A version for a contract.");
+		System.out.println();
+	}
+	public static void callByCNSHelp() 
+	{
+		System.out.println("Call a contract by a function and paramters by CNS.");
+		System.out.println("Usage: cbc contractName contractVersion function parameters");
 		System.out.println("contractName -- A name for a contract.");
 		System.out.println("contractVersion -- A version for a contract.");
 		System.out.println("function -- A function of a contract.");
 		System.out.println("parameters -- Parameters(splited by a space) for a function.");
 		System.out.println();
 	}
-	public static void addPbftHelp() 
+	public static void addObserverHelp() 
 	{
-		System.out.println("Add a pbft node.");
-		System.out.println("Usage: ap nodeID");
-		System.out.println("nodeID -- nodeID of a pbft observer node.");
+		System.out.println("Add an observer node.");
+		System.out.println("Usage: ao nodeID");
+		System.out.println("nodeID -- nodeID of node.");
 		System.out.println();
 	}
-	public static void removePbftHelp()
+	public static void addMinerHelp() 
 	{
-		System.out.println("Remove a pbft node.");
-		System.out.println("Usage: rp nodeID");
-		System.out.println("nodeID -- nodeID of a pbft sealer node.");
+		System.out.println("Add a miner node.");
+		System.out.println("Usage: am nodeID");
+		System.out.println("nodeID -- nodeID of a node.");
+		System.out.println();
+	}
+	public static void removeNodeHelp() 
+	{
+		System.out.println("Remove a node.");
+		System.out.println("Usage: rn nodeID");
+		System.out.println("nodeID -- nodeID of a node.");
+		System.out.println();
+	}
+
+	public static void addAuthorityHelp() 
+	{
+		System.out.println("Add authority for table by address.");
+		System.out.println("Usage: aa tableName address");
+		System.out.println("tableName -- name of a table.");
+		System.out.println("address -- address of tx.origin.");
+		System.out.println();
+	}
+	
+	public static void removeAuthorityHelp() 
+	{
+		System.out.println("Remove authority for table by address.");
+		System.out.println("Usage: ra tableName address");
+		System.out.println("tableName -- name of a table.");
+		System.out.println("address -- address of tx.origin.");
+		System.out.println();
+	}
+	
+	public static void queryAuthorityHelp() 
+	{
+		System.out.println("Query authority information.");
+		System.out.println("Usage: qa tableName");
+		System.out.println("tableName -- name of a table.");
 		System.out.println();
 	}
 	public static void setSystemConfigByKeyHelp()

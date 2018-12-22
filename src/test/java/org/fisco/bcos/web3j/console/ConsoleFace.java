@@ -49,12 +49,24 @@ public interface ConsoleFace {
 	void getTotalTransactionCount() throws IOException;
 
 	void deploy(String[] params) throws Exception;
-
+	
 	void call(String[] params) throws Exception;
+	
+	void deployByCNS(String[] params) throws Exception;
 
-	void removePbft(String[] params) throws Exception;
+	void callByCNS(String[] params) throws Exception;
 
-	void addPbft(String[] params) throws Exception;
+	void addMiner(String[] params) throws Exception;
+
+	void addObserver(String[] params) throws Exception;
+	
+	void removeNode(String[] params) throws Exception;
+	
+	void addAuthority(String[] params) throws Exception;
+	
+	void removeAuthority(String[] params) throws Exception;
+	
+	void queryAuthority(String[] params) throws Exception;
 
 	void setSystemConfigByKey(String[] params) throws Exception;
 }

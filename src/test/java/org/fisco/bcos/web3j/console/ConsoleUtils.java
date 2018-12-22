@@ -72,7 +72,8 @@ public class ConsoleUtils {
 		if (hash.startsWith("0x") && hash.length() == 66) {
 			return false;
 		} else {
-			System.out.println("This is an invalid hash.");
+			System.out.println("Please provide a valid hash.");
+			System.out.println();
 			return true;
 		}
 	}
@@ -84,6 +85,7 @@ public class ConsoleUtils {
 				System.out.println("Please provide block number by decimal mode.");
 			else
 				System.out.println("Please provide transaction index by decimal mode.");
+			System.out.println();
 			return true;
 		}
 		else
@@ -91,6 +93,18 @@ public class ConsoleUtils {
 			return false;
 		}
 		
+	}
+	public static boolean isInvalidAddress(String address) {
+		 if(!address.startsWith("0x") || !(address.length() == 42))
+		 {
+			 System.out.println("Please provide a valid address.");
+			 System.out.println();
+			 return true;
+		 }
+		 else
+		 {
+			 return false;
+		 }
 	}
 	
 	public static void singleLine() {
