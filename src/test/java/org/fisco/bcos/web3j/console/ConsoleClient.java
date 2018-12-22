@@ -10,7 +10,7 @@ public class ConsoleClient {
 	@SuppressWarnings("resource")
 	public static void main(String[] args) {
 
-		ConsoleFace console = new ConsoleImpl();
+		ConsoleFace console = new ConsoleImpl(args);
 		console.welcome();
 		
 		Scanner sc = new Scanner(System.in);
@@ -122,13 +122,37 @@ public class ConsoleClient {
 				case "c":
 					console.call(params);
 					break;
-				case "addPbft":
-				case "ap":
-					console.addPbft(params);
+				case "deployByCNS":
+				case "dbc":
+					console.deployByCNS(params);
 					break;
-				case "removePbft":
-				case "rp":
-					console.removePbft(params);
+				case "callByCNS":
+				case "cbc":
+					console.callByCNS(params);
+					break;
+				case "addMiner":
+				case "am":
+					console.addMiner(params);
+					break;
+				case "addObserver":
+				case "ao":
+					console.addObserver(params);
+					break;
+				case "removeNode":
+				case "rn":
+					console.removeNode(params);
+					break;
+				case "addAuthority":
+				case "aa":
+					console.addAuthority(params);
+					break;
+				case "removeAuthority":
+				case "ra":
+					console.removeAuthority(params);
+					break;
+				case "queryAuthority":
+				case "qa":
+					console.queryAuthority(params);
 					break;
 				case "setSystemConfigByKey":
 				case "ssc":
