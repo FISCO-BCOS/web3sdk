@@ -134,7 +134,6 @@ public class RawTransactionManager extends TransactionManager {
 
         String hexValue = Numeric.toHexString(signedMessage);
         EthSendTransaction ethSendTransaction  =  web3j.ethSendRawTransaction(hexValue).send();
-
         if (ethSendTransaction != null && !ethSendTransaction.hasError()) {
             String txHashLocal = Hash.sha3(hexValue);
             String txHashRemote = ethSendTransaction.getTransactionHash();
