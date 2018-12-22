@@ -1,0 +1,26 @@
+
+
+# safelist
+branches:
+  only:
+  - 2.0-dev
+
+language: java
+jdk:
+  - oraclejdk8
+
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+
+before_install:
+  - gradle wrapper
+
+script: 
+  - travis_wait 30 ./gradlew check
+  - ./gradlew build -x test
