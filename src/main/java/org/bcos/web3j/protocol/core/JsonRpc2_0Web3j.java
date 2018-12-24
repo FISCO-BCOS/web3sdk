@@ -172,6 +172,16 @@ public class JsonRpc2_0Web3j implements Web3j {
     }
 
     @Override
+    public Request<?, EthPeers> getAdminPeers() {
+        return new Request<>(
+                "admin_peers",
+                Collections.<String>emptyList(),
+                ID,
+                web3jService,
+                EthPeers.class);
+    }
+
+    @Override
     public Request<?, NetVersion> netVersion() {
         return new Request<>(
                 "net_version",
