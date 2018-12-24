@@ -89,16 +89,4 @@ jar {
             into 'dist/conf'
         }
 	}
-	uploadArchives {
-		repositories {
-			mavenDeployer {
-				repository(url: 'http://***REMOVED***/nexus/content/repositories/releases/') {
-					authentication(userName: 'deployment', password: 'deployment123')
-				}
-				pom.groupId = 'org.bcos.channel'
-				pom.version = 'opt-0817'
-				pom.artifactId = 'web3sdk'
-			}
-		}
-	}
 }
