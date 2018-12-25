@@ -10,7 +10,7 @@ public class UpdatePBFTNode {
     private static BigInteger gasPrice = new BigInteger("300000000");
     private static BigInteger gasLimit = new BigInteger("300000000");
     private static BigInteger initialWeiValue = new BigInteger("0");
-    private static String MinerPrecompileAddress = "0x000000000000000000000000000000000001003";
+    private static String MinerPrecompileAddress = "0x0000000000000000000000000000000000001003";
 
     public void call(String[] args, Web3j web3j, Credentials credentials, int groupId) throws Exception {
         /// get functions
