@@ -12,8 +12,7 @@ import org.junit.contrib.java.lang.system.SystemOutRule;
 
 public class ConsoleTest{
 	
-    private static ConsoleFace console = new ConsoleImpl();
-    
+    private static ConsoleFace console = new ConsoleImpl(new String[0]);
 	@Rule
 	public final SystemOutRule log = new SystemOutRule().enableLog();
 	
