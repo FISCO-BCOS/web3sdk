@@ -41,7 +41,8 @@ public class ConsoleImpl implements ConsoleFace{
 	private static RemoteCall<?> remoteCall;
 
 	@SuppressWarnings("resource")
-	public ConsoleImpl(){
+	public ConsoleImpl(String[] args){
+		
 		ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
 		service = context.getBean(Service.class);
 		try {
@@ -53,11 +54,47 @@ public class ConsoleImpl implements ConsoleFace{
 		ChannelEthereumService channelEthereumService = new ChannelEthereumService();
 		channelEthereumService.setChannelService(service);
 		try {
-			keyPair = Keys.createEcKeyPair();
+			if(args.length < 1)
+			{
+				keyPair = Keys.createEcKeyPair();
+				credentials = Credentials.create(keyPair);
+			}
+			else
+			{	
+			    String priviteKey1 = "3bed914595c159cbce70ec5fb6aff3d6797e0c5ee5a7a9224a21cae8932d84a4";
+			    String origin1 = "0xf1585b8d0e08a0a00fff662e24d67ba95a438256";
+			    String priviteKey2 = "ab40568a2f77b4cb70706b4c6119916a143eb75c0d618e5f69909af1f9f9695e";
+			    String origin2 = "0xc0d0e6ccc0b44c12196266548bec4a3616160e7d";
+			    String priviteKey3 = "d0fee0a4e3c545a9394965042f8f891b6e5482c212a7428ec175d6aed121353a";
+			    String origin3 = "0x1600e34312edea101d8b41a3465f2e381b66baed";
+				String privateKeyFlag = args[0];
+				String privateKey = "";
+				String origin = "";
+		    	switch(privateKeyFlag)
+		    	{
+		    	case "1":
+		    		privateKey = priviteKey1;
+		    		origin = origin1;
+		    		break;
+		    	case "2":
+		    		privateKey = priviteKey2;
+		    		origin = origin2;
+		    		break;
+		    	case "3":
+		    		privateKey = priviteKey3;
+		    		origin = origin3;
+		    		break;
+		    	default:
+		    		System.out.println("Please provide 1 or 2 or 3 for specifying priviteKey.");
+		    		System.exit(0);;
+		    	}
+				credentials = Credentials.create(privateKey);
+				System.out.println("tx.origin = "+origin);
+			}
+				
 		} catch (Exception e) {
 			e.printStackTrace();
 		} 
-		credentials = Credentials.create(keyPair);
 
 		web3j = Web3j.build(channelEthereumService, service.getGroupId());
 	}
@@ -666,9 +703,21 @@ public class ConsoleImpl implements ConsoleFace{
 			return;
 		}
 		AuthorityTableService authority = new AuthorityTableService();
-		authority.add(tableName, addr, web3j, credentials);
-		System.out.println("add " + "tableName:" +tableName + " address:"+addr+ " of group "
-				+ service.getGroupId() + " successful.");
+		int result = authority.add(tableName, addr, web3j, credentials);
+		if(result == 1)
+		{
+			System.out.println("add " + "tableName:" +tableName + " address:"+addr+ " of group "
+					+ service.getGroupId() + " successful.");
+		}
+		else if(result == 0)
+		{
+			System.out.println("tableName:" +tableName + " address:"+addr+ " of group "
+					+ service.getGroupId() + " already exist.");
+		}
+		else
+		{
+			System.out.println("This account is not authorized");
+		}
 		System.out.println();
 		
 	}
@@ -695,9 +744,21 @@ public class ConsoleImpl implements ConsoleFace{
 			return;
 		}
 		AuthorityTableService authority = new AuthorityTableService();
-		authority.remove(tableName, addr, web3j, credentials);
-		System.out.println("remove " + "tableName:" +tableName + " address:"+addr+ " of group "
-				+ service.getGroupId() + " successful.");
+		int result = authority.remove(tableName, addr, web3j, credentials);
+		if(result == 1)
+		{
+			System.out.println("remove " + "tableName:" +tableName + " address:"+addr+ " of group "
+					+ service.getGroupId() + " successful.");
+		}
+		else if(result == 0)
+		{
+			System.out.println("tableName:" +tableName + " address:"+addr+ " of group "
+					+ service.getGroupId() + " does not exist.");
+		}
+		else
+		{
+			System.out.println("This account is not authorized");
+		}
 		System.out.println();
 		
 	}
@@ -727,7 +788,14 @@ public class ConsoleImpl implements ConsoleFace{
 		ConsoleUtils.singleLine();
 		for (Authority authority: authoritys) 
 		{
-			System.out.println(authority.getTable_name().substring(6)+"\t\t"+authority.getAddress()+"\t"+authority.getEnable_num());
+			if("_sys_tables_".equals(tableName) || "_sys_miners_".equals(tableName) || "_sys_table_access_".equals(tableName))
+			{
+				System.out.println(authority.getTable_name()+"\t\t"+authority.getAddress()+"\t"+authority.getEnable_num());
+			}
+			else
+			{
+				System.out.println(authority.getTable_name().substring(6)+"\t\t"+authority.getAddress()+"\t"+authority.getEnable_num());
+			}
 		}
 		ConsoleUtils.singleLine();
 		System.out.println();
