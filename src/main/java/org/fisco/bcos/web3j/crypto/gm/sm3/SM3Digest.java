@@ -3,6 +3,8 @@ package org.fisco.bcos.web3j.crypto.gm.sm3;
 
 import org.bouncycastle.util.encoders.Hex;
 import org.fisco.bcos.web3j.crypto.HashInterface;
+import org.fisco.bcos.web3j.utils.Numeric;
+import org.fisco.bcos.web3j.utils.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,13 +33,15 @@ public class SM3Digest implements HashInterface {
 	@Override
 	public String hash(String hexInput){
 		byte[] md = new byte[32];
-		byte[] msg = Hex.decode(hexInput);
+//		 hexInput = cleanHexPrefix(hexInput);
+//		byte[] msg = Hex.decode(hexInput);
+		byte[] msg = Numeric.hexStringToByteArray(hexInput);
 		logger.debug("sm3 hash origData:{}",hexInput);
 		SM3Digest sm3 = new SM3Digest();
 		sm3.update(msg, 0, msg.length);
 		sm3.doFinal(md, 0);
 		logger.debug("sm3 hash data:{}",Hex.toHexString(md));
-		return Hex.toHexString(md);
+		return Numeric.toHexString(md);
 	}
 
 	@Override
@@ -183,5 +187,18 @@ public class SM3Digest implements HashInterface {
 		sm3.doFinal(md, 0);
 		String s = new String(Hex.encode(md));
 		System.out.println(s.toUpperCase().compareTo(strHash.toUpperCase()));
+	}
+
+	public static String cleanHexPrefix(String input) {
+		if (containsHexPrefix(input)) {
+			return input.substring(2);
+		} else {
+			return input;
+		}
+	}
+
+	public static boolean containsHexPrefix(String input) {
+		return !Strings.isEmpty(input) && input.length() > 1
+				&& input.charAt(0) == '0' && input.charAt(1) == 'x';
 	}
 }

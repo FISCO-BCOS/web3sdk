@@ -20,7 +20,7 @@ import static org.fisco.bcos.web3j.protocol.core.JsonRpc2_0Web3j.BLOCK_TIME;
 public abstract class TransactionManager {
 
     public static final int DEFAULT_POLLING_ATTEMPTS_PER_TX_HASH = 40;
-    public static final long DEFAULT_POLLING_FREQUENCY = BLOCK_TIME;
+    public static final long DEFAULT_POLLING_FREQUENCY = BLOCK_TIME;  //15 * 100
 
     private final TransactionReceiptProcessor transactionReceiptProcessor;
     final Credentials credentials;

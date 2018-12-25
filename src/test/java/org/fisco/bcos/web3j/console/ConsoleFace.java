@@ -67,4 +67,6 @@ public interface ConsoleFace {
 	void removeAuthority(String[] params) throws Exception;
 	
 	void queryAuthority(String[] params) throws Exception;
+
+	void setSystemConfigByKey(String[] params) throws Exception;
 }
