@@ -55,35 +55,49 @@ public class AuthorityTableService {
         System.exit(0);
     }
 
-    public void add(String tableName, String addr, Web3j web3j, Credentials credentials) throws Exception {
-        add(AuthorityPrecompileAddress, web3j, credentials, tableName, addr);
+    public int add(String tableName, String addr, Web3j web3j, Credentials credentials) throws Exception {
+        return add(AuthorityPrecompileAddress, web3j, credentials, tableName, addr);
     }
 
-    public void remove(String tableName, String addr, Web3j web3j, Credentials credentials) throws Exception {
-        remove(AuthorityPrecompileAddress, web3j, credentials, tableName, addr);
+    public int remove(String tableName, String addr, Web3j web3j, Credentials credentials) throws Exception {
+        return remove(AuthorityPrecompileAddress, web3j, credentials, tableName, addr);
     }
     
     public List<Authority> query(String tableName, Web3j web3j, Credentials credentials) throws Exception {
     	return query(AuthorityPrecompileAddress, web3j, credentials, tableName);
     }
 	
-    private void add(String address, Web3j web3j, Credentials credentials, String tableName, String addr) throws Exception {
+    private int add(String address, Web3j web3j, Credentials credentials, String tableName, String addr) throws Exception {
     	@SuppressWarnings("deprecation")
 		AuthorityTable authority = AuthorityTable.load(address, web3j, credentials, gasPrice, gasLimit);
         TransactionReceipt receipt = authority.insert(tableName, addr).send();
-        System.out.println("####get block number from TransactionReceipt: " + receipt.getBlockNumber());
-        System.out.println("####get transaction index from TransactionReceipt: " + receipt.getTransactionIndex());
-        System.out.println("####get gas used from TransactionReceipt: " + receipt.getGasUsed());
+        int result = 0;
+        if("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff".equals(receipt.getOutput()))
+        {
+        	result = -1;
+        }
+        else
+        {
+        	result = Integer.valueOf(receipt.getOutput().substring(2), 16).intValue();
+        }
+		return result;
     }
 
-	private void remove(String address, Web3j web3j, Credentials credentials, String tableName, String addr) throws Exception {
+	private int remove(String address, Web3j web3j, Credentials credentials, String tableName, String addr) throws Exception {
 		@SuppressWarnings("deprecation")
 		AuthorityTable authority = AuthorityTable.load(address, web3j, credentials, gasPrice, gasLimit);
         TransactionReceipt receipt = authority.remove(tableName, addr).send();
-        System.out.println("####get block number from TransactionReceipt: " + receipt.getBlockNumber());
-        System.out.println("####get transaction index from TransactionReceipt: " + receipt.getTransactionIndex());
-        System.out.println("####get gas used from TransactionReceipt: " + receipt.getGasUsed());
-    }
+        int result = 0;
+        if("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff".equals(receipt.getOutput()))
+        {
+        	result = -1;
+        }
+        else
+        {
+        	result = Integer.valueOf(receipt.getOutput().substring(2), 16).intValue();
+        }
+		return result;	
+	}
 	
 	private List<Authority> query(String address, Web3j web3j, Credentials credentials, String tableName) throws Exception {
 		@SuppressWarnings("deprecation")

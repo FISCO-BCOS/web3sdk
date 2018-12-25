@@ -34,7 +34,7 @@
                         <property name="connectionsStr">
 							<list>
                  <!--[nodeid]@[ip]:[channelPort]-->
-								<value>node1@***REMOVED***:30305</value>
+								<value>node1@127.0.0.1:30310</value>
 							</list>
 						</property>
                     </bean>
