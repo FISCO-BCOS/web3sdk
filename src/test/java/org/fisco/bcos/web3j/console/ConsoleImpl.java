@@ -467,8 +467,8 @@ public class ConsoleImpl implements ConsoleFace{
 	public void getTotalTransactionCount() throws IOException {
 		String transactionCount = web3j.getTotalTransactionCount().sendForReturnString();
 		JSONObject jo = JSONObject.parseObject(transactionCount);
-		jo.put("count", Numeric.decodeQuantity(jo.get("count").toString()));
-		jo.put("number", Numeric.decodeQuantity(jo.get("number").toString()));
+		jo.put("txSum", Numeric.decodeQuantity(jo.get("txSum").toString()));
+		jo.put("blockNumber", Numeric.decodeQuantity(jo.get("blockNumber").toString()));
 		ConsoleUtils.printJson(jo.toJSONString());
 		System.out.println();
 	}
