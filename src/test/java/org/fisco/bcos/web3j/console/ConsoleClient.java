@@ -157,6 +157,10 @@ public class ConsoleClient {
 				case "ssc":
 					console.setSystemConfigByKey(params);
 					break;
+				case "getSystemConfigByKey":
+				case "gsc":
+					console.getSystemConfigByKey(params);
+					break;
 				case "quit":
 				case "q":
 					System.exit(0);

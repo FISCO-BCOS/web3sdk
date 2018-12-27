@@ -88,14 +88,6 @@ public class ConsoleTest{
     	assertTrue(!"".equals(log.getLog()));
     	log.clearLog();
     	
-    	String[] params4 = {"gbbh", "0xca0577fa37367e89628e2db0a7adfccdd4b53e5fe781d7e34a3d5edbe29d1961"};
-    	console.getBlockByHash(params4);
-    	assertTrue(!"".equals(log.getLog()));
-    	log.clearLog();
-    	
-    	String[] params5 = {"gbbh", "0xca0577fa37367e89628e2db0a7adfccdd4b53e5fe781d7e34a3d5edbe29d1961", "true"};
-    	console.getBlockByHash(params5);
-    	assertTrue(!"".equals(log.getLog()));
     }
     
     @Test
@@ -304,11 +296,7 @@ public class ConsoleTest{
     	assertTrue(!"".equals(log.getLog()));
     	
     }
-    @Test(expected= ClassNotFoundException.class) 
-    public void deployByCNSTestException() throws Exception {
-    	String[] params = {"d", "ae", "1.0"};
-    	console.deployByCNS(params);
-    }
+
     @Test
     public void deployByCNSTest() throws Exception {
     	String[] params1 = {};
