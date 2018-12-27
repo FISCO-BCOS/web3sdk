@@ -170,4 +170,11 @@ public class HelpInfo {
 		System.out.println("value -- the value of system config to be set.");
 		System.out.println();
 	}
+	public static void getSystemConfigByKeyHelp()
+	{
+		System.out.println("Query a system config value by key.");
+		System.out.println("Usage: gsc key");
+		System.out.println("key -- the name of system config(tx_count_limit/tx_gas_limit supported currently).");
+		System.out.println();
+	}
 }

@@ -31,15 +31,19 @@ public class SetSystemConfig {
         System.exit(0);
     }
 
-    private void SetValueByKey(String key, String value, Web3j web3j, Credentials credentials) throws Exception {
-        SetValue(SystemConfigPrecompileAddress, web3j, credentials, key, value);
+    public int SetValueByKey(String key, String value, Web3j web3j, Credentials credentials) throws Exception {
+        return SetValue(SystemConfigPrecompileAddress, web3j, credentials, key, value);
     }
 	
-    private void SetValue(String address, Web3j web3j, Credentials credentials, String key, String value) throws Exception {
+    private int SetValue(String address, Web3j web3j, Credentials credentials, String key, String value) throws Exception {
         SystemConfigTable systemConfig = SystemConfigTable.load(address, web3j, credentials, gasPrice, gasLimit);
         TransactionReceipt receipt = systemConfig.setValueByKey(key, value).send();
-        System.out.println("####get block number from TransactionReceipt: " + receipt.getBlockNumber());
-        System.out.println("####get transaction index from TransactionReceipt: " + receipt.getTransactionIndex());
-        System.out.println("####get gas used from TransactionReceipt: " + receipt.getGasUsed());
+		int result = 0;
+		if ("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff".equals(receipt.getOutput())) {
+			result = -1;
+		} else {
+			result = Integer.valueOf(receipt.getOutput().substring(2), 16).intValue();
+		}
+		return result;
     }
 }

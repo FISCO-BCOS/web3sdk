@@ -231,6 +231,15 @@ public class JsonRpc2_0Web3j implements Web3j {
                 web3jService,
                 EthPeers.class);
     }
+    
+    @Override
+    public Request<?, SystemConfig> getSystemConfigByKey(String key) {
+    	return new Request<>(
+    			"getSystemConfigByKey",
+    			Arrays.asList(groupId, key),
+    			web3jService,
+    			SystemConfig.class);
+    }
 
     @Override
     public Request<?, EthProtocolVersion> ethProtocolVersion() {
