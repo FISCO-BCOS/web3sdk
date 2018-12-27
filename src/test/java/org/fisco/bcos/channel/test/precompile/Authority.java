@@ -24,7 +24,6 @@ public class Authority {
 	public void setEnable_num(String enable_num) {
 		this.enable_num = enable_num;
 	}
-	
 	@Override
 	public String toString() {
 		return "Authority [table_name=" + table_name + ", address=" + address + ", enable_num=" + enable_num + "]";
