@@ -156,6 +156,7 @@ public class ConsoleImpl implements ConsoleFace {
 		sb.append("removeAuthority(ra)                           Remove authority for table by address.\n");
 		sb.append("queryAuthority(qa)                            Query authority information.\n");
 		sb.append("setSystemConfigByKey(ssc)                     Set a system config.\n");
+		sb.append("getSystemConfigByKey(gsc)                     Query a system config value by key.\n");
 		sb.append("quit(q)                                       Quit console.");
 		System.out.println(sb.toString());
 		ConsoleUtils.singleLine();
@@ -822,6 +823,23 @@ public class ConsoleImpl implements ConsoleFace {
 		{
 			System.out.println("Set " + key + "by value " + value + " of group " + service.getGroupId() + " successful.");
 		}
+		System.out.println();
+	}
+	
+	@Override
+	public void getSystemConfigByKey(String[] params) throws Exception {
+		if (params.length < 2) {
+			HelpInfo.promptHelp("gsc");
+			return;
+		}
+		String key = params[1];
+		if ("-h".equals(key) || "--help".equals(key)) {
+			HelpInfo.getSystemConfigByKeyHelp();
+			return;
+		}
+		String[] args = { "getSystemConfigByKey", key};
+		String value = web3j.getSystemConfigByKey(key).sendForReturnString();
+		System.out.println(value);
 		System.out.println();
 	}
 }
