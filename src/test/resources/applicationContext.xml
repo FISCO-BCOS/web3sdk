@@ -18,7 +18,7 @@
 				<bean class="org.fisco.bcos.channel.handler.ChannelConnections">
                     <property name="connectionsStr">
 						<list>
-							<value>127.0.0.1:30301</value>
+							<value>10.107.105.138:30301</value>
 						</list>
 				</property>
                 </bean>
