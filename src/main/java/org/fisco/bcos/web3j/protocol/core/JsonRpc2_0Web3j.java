@@ -128,7 +128,6 @@ public class JsonRpc2_0Web3j implements Web3j {
                 try {
                     EthBlockNumber ethBlockNumber = ethBlockNumber().sendAsync().get(10000, TimeUnit.MILLISECONDS);
                     setBlockNumber(ethBlockNumber.getBlockNumber());
-                    System.out.println("blcoknumber  " + ethBlockNumber.getBlockNumber());
                 } catch (Exception e) {
                     logger.error("Exception: " + e);
                 }
