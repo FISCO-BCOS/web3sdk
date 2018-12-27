@@ -816,7 +816,7 @@ public class ConsoleImpl implements ConsoleFace {
 		}
 		else
 		{
-			System.out.println("Set " + key + "by value " + value + " of group " + service.getGroupId() + " successful.");
+			System.out.println("Set " + key + " by value " + value + " of group " + service.getGroupId() + " successful.");
 		}
 		System.out.println();
 	}
