@@ -4,15 +4,15 @@ import java.util.Scanner;
 
 import org.fisco.bcos.web3j.protocol.channel.ResponseExcepiton;
 
-
 public class ConsoleClient {
 
 	@SuppressWarnings("resource")
 	public static void main(String[] args) {
 
-		ConsoleFace console = new ConsoleImpl(args);
+		ConsoleFace console = new ConsoleImpl();
+		console.init(args);
 		console.welcome();
-		
+
 		Scanner sc = new Scanner(System.in);
 		while (true) {
 			System.out.print("> ");
@@ -158,11 +158,15 @@ public class ConsoleClient {
 				case "ssc":
 					console.setSystemConfigByKey(params);
 					break;
+				case "getSystemConfigByKey":
+				case "gsc":
+					console.getSystemConfigByKey(params);
+					break;
 				case "quit":
 				case "q":
 					System.exit(0);
 				default:
-					System.out.println("Undefined command: \""+params[0]+"\".  Try \"help\".\n");
+					System.out.println("Undefined command: \"" + params[0] + "\".  Try \"help\".\n");
 					break;
 
 				}
@@ -171,7 +175,10 @@ public class ConsoleClient {
 				System.out.println(
 						"{\"error\":{\"code\":" + e.getCode() + ", \"message:\"" + "\"" + e.getMessage() + "\"}}");
 				System.out.println();
-			} catch (Exception e) {
+			} catch (ClassNotFoundException e) {
+				System.out.println(e.getMessage()+" does not exist.");
+				System.out.println();
+			}catch (Exception e) {
 				System.out.println(e.getMessage());
 				System.out.println();
 			}

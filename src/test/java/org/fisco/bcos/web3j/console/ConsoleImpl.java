@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.util.List;
 
+import org.apache.http.util.Args;
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.channel.test.precompile.Authority;
 import org.fisco.bcos.channel.test.precompile.AuthorityTableService;
@@ -27,23 +28,23 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.alibaba.fastjson.JSONObject;
 
-public class ConsoleImpl implements ConsoleFace{
-	
-	private static Service service = null;
-	private static Web3j web3j = null;
-	private static java.math.BigInteger gasPrice = new BigInteger("1");
-	private static java.math.BigInteger gasLimit = new BigInteger("30000000");
-	private static ECKeyPair keyPair;
-	private static Credentials credentials;
-	private static String contractAddress;
-	private static String contractName;
-	private static String contractVersion;
-	private static Class<?> contractClass;
-	private static RemoteCall<?> remoteCall;
+public class ConsoleImpl implements ConsoleFace {
 
-	@SuppressWarnings("resource")
-	public ConsoleImpl(String[] args){
-		
+	private Service service = null;
+	private Web3j web3j = null;
+	private java.math.BigInteger gasPrice = new BigInteger("1");
+	private java.math.BigInteger gasLimit = new BigInteger("30000000");
+	private ECKeyPair keyPair;
+	private Credentials credentials;
+	private String contractAddress;
+	private String contractName;
+	private String contractVersion;
+	private Class<?> contractClass;
+	private RemoteCall<?> remoteCall;
+	private String privateKey = "";
+	private String origin = "";
+
+	public void init(String[] args) {
 		ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
 		service = context.getBean(Service.class);
 		try {
@@ -55,51 +56,40 @@ public class ConsoleImpl implements ConsoleFace{
 		ChannelEthereumService channelEthereumService = new ChannelEthereumService();
 		channelEthereumService.setChannelService(service);
 		try {
-			if(args.length < 1)
-			{
+			if (args.length < 1) {
 				keyPair = Keys.createEcKeyPair();
 				credentials = Credentials.create(keyPair);
-			}
-			else
-			{	
-			    String priviteKey1 = "3bed914595c159cbce70ec5fb6aff3d6797e0c5ee5a7a9224a21cae8932d84a4";
-			    String origin1 = "0xf1585b8d0e08a0a00fff662e24d67ba95a438256";
-			    String priviteKey2 = "ab40568a2f77b4cb70706b4c6119916a143eb75c0d618e5f69909af1f9f9695e";
-			    String origin2 = "0xc0d0e6ccc0b44c12196266548bec4a3616160e7d";
-			    String priviteKey3 = "d0fee0a4e3c545a9394965042f8f891b6e5482c212a7428ec175d6aed121353a";
-			    String origin3 = "0x1600e34312edea101d8b41a3465f2e381b66baed";
+			} else {
 				String privateKeyFlag = args[0];
-				String privateKey = "";
-				String origin = "";
-		    	switch(privateKeyFlag)
-		    	{
-		    	case "1":
-		    		privateKey = priviteKey1;
-		    		origin = origin1;
-		    		break;
-		    	case "2":
-		    		privateKey = priviteKey2;
-		    		origin = origin2;
-		    		break;
-		    	case "3":
-		    		privateKey = priviteKey3;
-		    		origin = origin3;
-		    		break;
-		    	default:
-		    		System.out.println("Please provide 1 or 2 or 3 for specifying priviteKey.");
-		    		System.exit(0);;
-		    	}
+				switch (privateKeyFlag) {
+				case "1":
+					privateKey = Common.PRIVITEKEY1;
+					origin = Common.ORIGIN1;
+					break;
+				case "2":
+					privateKey = Common.PRIVITEKEY2;
+					origin = Common.ORIGIN2;
+					break;
+				case "3":
+					privateKey = Common.PRIVITEKEY3;
+					origin = Common.ORIGIN3;
+					break;
+				default:
+					System.out.println("Please provide 1 or 2 or 3 for specifying priviteKey.");
+					System.exit(0);
+					;
+				}
 				credentials = Credentials.create(privateKey);
-				System.out.println("tx.origin = "+origin);
+				System.out.println("tx.origin = " + origin);
 			}
-				
+
 		} catch (Exception e) {
 			e.printStackTrace();
-		} 
+		}
 
 		web3j = Web3j.build(channelEthereumService, service.getGroupId());
 	}
-	
+
 	@Override
 	public void welcome() {
 		ConsoleUtils.doubleLine();
@@ -118,7 +108,7 @@ public class ConsoleImpl implements ConsoleFace{
 		System.out.println();
 		ConsoleUtils.doubleLine();
 	}
-	
+
 	@Override
 	public void help() {
 		ConsoleUtils.singleLine();
@@ -152,7 +142,8 @@ public class ConsoleImpl implements ConsoleFace{
 		sb.append("deploy(d)                                     Deploy a contract on blockchain.\n");
 		sb.append("call(c)                                       Call a contract by a function and paramters.\n");
 		sb.append("deployByCNS(dbc)                              Deploy a contract on blockchain by CNS.\n");
-		sb.append("callByCNS(cbc)                                Call a contract by a function and paramters by CNS.\n");
+		sb.append(
+				"callByCNS(cbc)                                Call a contract by a function and paramters by CNS.\n");
 		sb.append("addMiner(am)                                  Add a miner node.\n");
 		sb.append("addObserver(ao)                               Add an observer node.\n");
 		sb.append("removeNode(rn)                                Remove a node.\n");
@@ -160,100 +151,95 @@ public class ConsoleImpl implements ConsoleFace{
 		sb.append("removeAuthority(ra)                           Remove authority for table by address.\n");
 		sb.append("queryAuthority(qa)                            Query authority information.\n");
 		sb.append("setSystemConfigByKey(ssc)                     Set a system config.\n");
+		sb.append("getSystemConfigByKey(gsc)                     Query a system config value by key.\n");
 		sb.append("quit(q)                                       Quit console.");
 		System.out.println(sb.toString());
 		ConsoleUtils.singleLine();
 		System.out.println();
 	}
-	
+
 	@Override
 	public void getBlockNumber() throws IOException {
 		String blockNumber = web3j.ethBlockNumber().sendForReturnString();
 		System.out.println(Numeric.decodeQuantity(blockNumber));
 		System.out.println();
 	}
-	
+
 	@Override
 	public void getPbftView() throws IOException {
 		String pbftView = web3j.ethPbftView().sendForReturnString();
 		System.out.println(Numeric.decodeQuantity(pbftView));
 		System.out.println();
 	}
-	
+
 	@Override
 	public void getObserverList() throws IOException {
 		List<String> observerList = web3j.getObserverList().send().getResult();
 		String observers = observerList.toString();
-		if("[]".equals(observers))
-		{
+		if ("[]".equals(observers)) {
 			System.out.println("[]");
-		}
-		else
-		{
+		} else {
 			ConsoleUtils.printJson(observers);
 		}
 		System.out.println();
 
 	}
-	
+
 	@Override
 	public void getMinerList() throws IOException {
 		List<String> minerList = web3j.getMinerList().send().getResult();
 		String miners = minerList.toString();
-		if("[]".equals(miners))
-		{
+		if ("[]".equals(miners)) {
 			System.out.println("[]");
-		}
-		else
-		{
+		} else {
 			ConsoleUtils.printJson(miners);
 		}
 		System.out.println();
 
 	}
-	
+
 	@Override
 	public void getConsensusStatus() throws IOException {
 		String consensusStatus = web3j.consensusStatus().sendForReturnString();
 		ConsoleUtils.printJson(consensusStatus);
 		System.out.println();
 	}
-	
+
 	@Override
 	public void getSyncStatus() throws IOException {
 		String syncStatus = web3j.ethSyncing().sendForReturnString();
 		ConsoleUtils.printJson(syncStatus);
 		System.out.println();
 	}
-	
+
 	@Override
 	public void getClientVersion() throws IOException {
 		String clientVersion = web3j.web3ClientVersion().sendForReturnString();
 		System.out.println(clientVersion);
 		System.out.println();
 	}
-	
+
 	@Override
 	public void getPeers() throws IOException {
 		String peers = web3j.ethPeersInfo().sendForReturnString();
 		ConsoleUtils.printJson(peers);
 		System.out.println();
 	}
-	
+
 	@Override
 	public void getGroupPeers() throws IOException {
 		List<String> groupPeers = web3j.ethGroupPeers().send().getResult();
 		ConsoleUtils.printJson(groupPeers.toString());
 		System.out.println();
 	}
-	
+
 	@Override
 	public void getGroupList() throws IOException {
 		List<String> groupList = web3j.ethGroupList().send().getResult();
 		System.out.println(groupList);
 		System.out.println();
 	}
-	
+
 	@Override
 	public void getBlockByHash(String[] params) throws IOException {
 		if (params.length < 2) {
@@ -261,8 +247,7 @@ public class ConsoleImpl implements ConsoleFace{
 			return;
 		}
 		String blockHash = params[1];
-		if("-h".equals(blockHash) || "--help".equals(blockHash))
-		{
+		if ("-h".equals(blockHash) || "--help".equals(blockHash)) {
 			HelpInfo.getBlockByHashHelp();
 			return;
 		}
@@ -276,7 +261,7 @@ public class ConsoleImpl implements ConsoleFace{
 		System.out.println();
 
 	}
-	
+
 	@Override
 	public void getBlockByNumber(String[] params) throws IOException {
 		if (params.length < 2) {
@@ -284,12 +269,11 @@ public class ConsoleImpl implements ConsoleFace{
 			return;
 		}
 		String blockNumberStr = params[1];
-		if("-h".equals(blockNumberStr) || "--help".equals(blockNumberStr))
-		{
+		if ("-h".equals(blockNumberStr) || "--help".equals(blockNumberStr)) {
 			HelpInfo.getBlockByNumberHelp();
 			return;
 		}
-		if(ConsoleUtils.isInvalidNumber(blockNumberStr, 0))
+		if (ConsoleUtils.isInvalidNumber(blockNumberStr, 0))
 			return;
 		BigInteger blockNumber = new BigInteger(blockNumberStr);
 		boolean flag = false;
@@ -300,7 +284,7 @@ public class ConsoleImpl implements ConsoleFace{
 		ConsoleUtils.printJson(block);
 		System.out.println();
 	}
-	
+
 	@Override
 	public void getBlockHashByNumber(String[] params) throws IOException {
 		if (params.length < 2) {
@@ -308,12 +292,11 @@ public class ConsoleImpl implements ConsoleFace{
 			return;
 		}
 		String blockNumberStr = params[1];
-		if("-h".equals(blockNumberStr) || "--help".equals(blockNumberStr))
-		{
+		if ("-h".equals(blockNumberStr) || "--help".equals(blockNumberStr)) {
 			HelpInfo.getBlockHashByNumberHelp();
 			return;
 		}
-		if(ConsoleUtils.isInvalidNumber(blockNumberStr, 0))
+		if (ConsoleUtils.isInvalidNumber(blockNumberStr, 0))
 			return;
 		BigInteger blockNumber = new BigInteger(blockNumberStr);
 		if (blockNumber.intValue() > Numeric.decodeQuantity(web3j.ethBlockNumber().sendForReturnString()).intValue()) {
@@ -324,7 +307,7 @@ public class ConsoleImpl implements ConsoleFace{
 		ConsoleUtils.printJson(blockHash);
 		System.out.println();
 	}
-	
+
 	@Override
 	public void getTransactionByHash(String[] params) throws IOException {
 		if (params.length < 2) {
@@ -332,8 +315,7 @@ public class ConsoleImpl implements ConsoleFace{
 			return;
 		}
 		String transactionHash = params[1];
-		if("-h".equals(transactionHash) || "--help".equals(transactionHash))
-		{
+		if ("-h".equals(transactionHash) || "--help".equals(transactionHash)) {
 			HelpInfo.getTransactionByHashHelp();
 			return;
 		}
@@ -347,7 +329,7 @@ public class ConsoleImpl implements ConsoleFace{
 		ConsoleUtils.printJson(transaction);
 		System.out.println();
 	}
-	
+
 	@Override
 	public void getTransactionByBlockHashAndIndex(String[] params) throws IOException {
 		if (params.length < 2) {
@@ -355,8 +337,7 @@ public class ConsoleImpl implements ConsoleFace{
 			return;
 		}
 		String blockHash = params[1];
-		if("-h".equals(blockHash) || "--help".equals(blockHash))
-		{
+		if ("-h".equals(blockHash) || "--help".equals(blockHash)) {
 			HelpInfo.getTransactionByBlockHashAndIndexHelp();
 			return;
 		}
@@ -367,14 +348,14 @@ public class ConsoleImpl implements ConsoleFace{
 		if (ConsoleUtils.isInvalidHash(blockHash))
 			return;
 		String indexStr = params[2];
-		if(ConsoleUtils.isInvalidNumber(indexStr, 1))
+		if (ConsoleUtils.isInvalidNumber(indexStr, 1))
 			return;
 		BigInteger index = new BigInteger(indexStr);
 		String transaction = web3j.ethGetTransactionByBlockHashAndIndex(blockHash, index).sendForReturnString();
 		ConsoleUtils.printJson(transaction);
 		System.out.println();
 	}
-	
+
 	@Override
 	public void getTransactionByBlockNumberAndIndex(String[] params) throws IOException {
 		if (params.length < 2) {
@@ -382,8 +363,7 @@ public class ConsoleImpl implements ConsoleFace{
 			return;
 		}
 		String blockNumberStr = params[1];
-		if("-h".equals(blockNumberStr) || "--help".equals(blockNumberStr))
-		{
+		if ("-h".equals(blockNumberStr) || "--help".equals(blockNumberStr)) {
 			HelpInfo.getTransactionByBlockNumberAndIndexHelp();
 			return;
 		}
@@ -391,11 +371,11 @@ public class ConsoleImpl implements ConsoleFace{
 			HelpInfo.promptHelp("gtni");
 			return;
 		}
-		if(ConsoleUtils.isInvalidNumber(blockNumberStr, 0))
+		if (ConsoleUtils.isInvalidNumber(blockNumberStr, 0))
 			return;
 		BigInteger blockNumber = new BigInteger(blockNumberStr);
 		String indexStr = params[2];
-		if(ConsoleUtils.isInvalidNumber(indexStr, 1))
+		if (ConsoleUtils.isInvalidNumber(indexStr, 1))
 			return;
 		BigInteger index = new BigInteger(indexStr);
 		String transaction = web3j
@@ -404,7 +384,7 @@ public class ConsoleImpl implements ConsoleFace{
 		ConsoleUtils.printJson(transaction);
 		System.out.println();
 	}
-	
+
 	@Override
 	public void getTransactionReceipt(String[] params) throws IOException {
 		if (params.length < 2) {
@@ -412,8 +392,7 @@ public class ConsoleImpl implements ConsoleFace{
 			return;
 		}
 		String transactionHash = params[1];
-		if("-h".equals(transactionHash) || "--help".equals(transactionHash))
-		{
+		if ("-h".equals(transactionHash) || "--help".equals(transactionHash)) {
 			HelpInfo.getTransactionReceiptHelp();
 			return;
 		}
@@ -427,7 +406,7 @@ public class ConsoleImpl implements ConsoleFace{
 		ConsoleUtils.printJson(transactionReceipt);
 		System.out.println();
 	}
-	
+
 	@Override
 	public void getPendingTransactions() throws IOException {
 		String pendingTransactions = web3j.ethPendingTransaction().sendForReturnString();
@@ -445,13 +424,11 @@ public class ConsoleImpl implements ConsoleFace{
 			return;
 		}
 		String address = params[1];
-		if("-h".equals(address) || "--help".equals(address))
-		{
+		if ("-h".equals(address) || "--help".equals(address)) {
 			HelpInfo.getCodeHelp();
 			return;
 		}
-		if(ConsoleUtils.isInvalidAddress(address))
-		{
+		if (ConsoleUtils.isInvalidAddress(address)) {
 			return;
 		}
 		String code = web3j.ethGetCode(address, DefaultBlockParameterName.LATEST).sendForReturnString();
@@ -462,25 +439,24 @@ public class ConsoleImpl implements ConsoleFace{
 		ConsoleUtils.printJson(code);
 		System.out.println();
 	}
-	
+
 	@Override
 	public void getTotalTransactionCount() throws IOException {
 		String transactionCount = web3j.getTotalTransactionCount().sendForReturnString();
 		JSONObject jo = JSONObject.parseObject(transactionCount);
-		jo.put("count", Numeric.decodeQuantity(jo.get("count").toString()));
-		jo.put("number", Numeric.decodeQuantity(jo.get("number").toString()));
+		jo.put("txSum", Numeric.decodeQuantity(jo.get("txSum").toString()));
+		jo.put("blockNumber", Numeric.decodeQuantity(jo.get("blockNumber").toString()));
 		ConsoleUtils.printJson(jo.toJSONString());
 		System.out.println();
 	}
-	
+
 	@Override
 	public void deploy(String[] params) throws Exception {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("d");
 			return;
 		}
-		if("-h".equals(params[1]) || "--help".equals(params[1]))
-		{
+		if ("-h".equals(params[1]) || "--help".equals(params[1])) {
 			HelpInfo.deployHelp();
 			return;
 		}
@@ -494,15 +470,14 @@ public class ConsoleImpl implements ConsoleFace{
 		System.out.println(contractAddress);
 		System.out.println();
 	}
-	
+
 	@Override
 	public void call(String[] params) throws Exception {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("c");
 			return;
 		}
-		if("-h".equals(params[1]) || "--help".equals(params[1]))
-		{
+		if ("-h".equals(params[1]) || "--help".equals(params[1])) {
 			HelpInfo.callHelp();
 			return;
 		}
@@ -515,10 +490,9 @@ public class ConsoleImpl implements ConsoleFace{
 		Method load = contractClass.getMethod("load", String.class, Web3j.class, Credentials.class, BigInteger.class,
 				BigInteger.class);
 		Object contractObject;
-		
+
 		contractAddress = params[2];
-		if(ConsoleUtils.isInvalidAddress(contractAddress))
-		{
+		if (ConsoleUtils.isInvalidAddress(contractAddress)) {
 			return;
 		}
 		contractObject = load.invoke(null, contractAddress, web3j, credentials, gasPrice, gasLimit);
@@ -534,20 +508,43 @@ public class ConsoleImpl implements ConsoleFace{
 		System.out.println(resultStr);
 		System.out.println();
 	}
-	
+
 	@Override
 	public void deployByCNS(String[] params) throws Exception {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("dbc");
 			return;
 		}
-		if("-h".equals(params[1]) || "--help".equals(params[1]))
-		{
+		if ("-h".equals(params[1]) || "--help".equals(params[1])) {
 			HelpInfo.deployByCNSHelp();
 			return;
 		}
 		if (params.length < 3) {
 			HelpInfo.promptHelp("dbc");
+			return;
+		}
+		AuthorityTableService authorityTableService = new AuthorityTableService();
+		List<Authority> authoritys = authorityTableService.query(Common.SYS_CNS, web3j, credentials);
+		boolean flag = false;
+		if(authoritys.size() == 0)
+		{
+			flag = true;
+		}
+		else
+		{
+			for (Authority authority: authoritys) 
+			{	
+				if((credentials.getAddress()).equals(authority.getAddress()))
+				{
+					flag = true;
+					break;
+				}
+			}
+		}
+		if(!flag)
+		{
+			System.out.println(Common.NOAUTHORITY);
+			System.out.println();
 			return;
 		}
 		contractName = "org.fisco.bcos.temp." + params[1];
@@ -560,11 +557,12 @@ public class ConsoleImpl implements ConsoleFace{
 		contractVersion = params[2];
 		// register cns
 		CnsResolver cnsResolver = new CnsResolver(web3j, credentials);
-		TransactionReceipt registerCns = cnsResolver.registerCns(params[1], contractVersion, contractAddress, contract.getContractBinary());
+		TransactionReceipt registerCns = cnsResolver.registerCns(params[1], contractVersion, contractAddress,
+				contract.getContractBinary());
 		System.out.println(contractAddress);
 		System.out.println();
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	@Override
 	public void callByCNS(String[] params) throws Exception {
@@ -572,8 +570,7 @@ public class ConsoleImpl implements ConsoleFace{
 			HelpInfo.promptHelp("cbc");
 			return;
 		}
-		if("-h".equals(params[1]) || "--help".equals(params[1]))
-		{
+		if ("-h".equals(params[1]) || "--help".equals(params[1])) {
 			HelpInfo.callByCNSHelp();
 			return;
 		}
@@ -586,13 +583,13 @@ public class ConsoleImpl implements ConsoleFace{
 		Method load = contractClass.getMethod("load", String.class, Web3j.class, Credentials.class, BigInteger.class,
 				BigInteger.class);
 		Object contractObject;
-		
-		//get address from cns
+
+		// get address from cns
 		contractName = params[1];
 		contractVersion = params[2];
 		CnsResolver cnsResolver = new CnsResolver(web3j, credentials);
-		contractAddress = cnsResolver.resolve(contractName+":"+contractVersion);
-		
+		contractAddress = cnsResolver.resolve(contractName + ":" + contractVersion);
+
 		contractObject = load.invoke(null, contractAddress, web3j, credentials, gasPrice, gasLimit);
 		Class[] parameterType = ContractClassFactory.getParameterType(contractClass, params[3]);
 		String returnType = ContractClassFactory.getReturnType(contractClass, params[3]);
@@ -606,7 +603,7 @@ public class ConsoleImpl implements ConsoleFace{
 		System.out.println(resultStr);
 		System.out.println();
 	}
-	
+
 	@Override
 	public void addMiner(String[] params) throws Exception {
 		if (params.length < 2) {
@@ -614,24 +611,28 @@ public class ConsoleImpl implements ConsoleFace{
 			return;
 		}
 		String nodeID = params[1];
-		if("-h".equals(nodeID) || "--help".equals(nodeID))
-		{
+		if ("-h".equals(nodeID) || "--help".equals(nodeID)) {
 			HelpInfo.addMinerHelp();
 			return;
 		}
 		if (nodeID.length() != 128) {
 			System.out.println("This is an invalid nodeID.");
-		} 
-		else {
+		} else {
 			UpdatePBFTNode pbft = new UpdatePBFTNode();
-			pbft.AddNodeToMiner(nodeID, web3j, credentials);
-			System.out.println("Add " + nodeID.substring(0, 8) + "..." + " to a miner of group "
-					+ service.getGroupId() + " successful.");
+			int result = pbft.AddNodeToMiner(nodeID, web3j, credentials);
+			System.out.println("result = "+result);
+			if (result == 1) {
+				System.out.println("Add " + nodeID.substring(0, 8) + "..." + " to a miner of group " + service.getGroupId()
+				+ " successful.");
+			} 
+			else {
+				System.out.println(Common.NOAUTHORITY);
+			}
 			System.out.println();
 		}
 
 	}
-	
+
 	@Override
 	public void addObserver(String[] params) throws Exception {
 
@@ -640,24 +641,29 @@ public class ConsoleImpl implements ConsoleFace{
 			return;
 		}
 		String nodeID = params[1];
-		if("-h".equals(nodeID) || "--help".equals(nodeID))
-		{
+		if ("-h".equals(nodeID) || "--help".equals(nodeID)) {
 			HelpInfo.addObserverHelp();
 			return;
 		}
 		if (nodeID.length() != 128) {
 			System.out.println("This is an invalid nodeID.");
-		} 
-		else {
+		} else {
 			UpdatePBFTNode pbft = new UpdatePBFTNode();
-			pbft.AddNodeToObserver(nodeID, web3j, credentials);
-			System.out.println("Add " + nodeID.substring(0, 8) + "..." + " to an observer of group "
-					+ service.getGroupId() + " successful.");
+			int result = pbft.AddNodeToObserver(nodeID, web3j, credentials);
+			System.out.println("result = "+result);
+			if (result == 1) {
+				System.out.println("Add " + nodeID.substring(0, 8) + "..." + " to an observer of group "
+						+ service.getGroupId() + " successful.");
+			} 
+			else {
+				System.out.println(Common.NOAUTHORITY);
+			}
+
 			System.out.println();
 		}
 
 	}
-	
+
 	@Override
 	public void removeNode(String[] params) throws Exception {
 		if (params.length < 2) {
@@ -665,24 +671,22 @@ public class ConsoleImpl implements ConsoleFace{
 			return;
 		}
 		String nodeID = params[1];
-		if("-h".equals(nodeID) || "--help".equals(nodeID))
-		{
+		if ("-h".equals(nodeID) || "--help".equals(nodeID)) {
 			HelpInfo.removeNodeHelp();
 			return;
 		}
 		if (nodeID.length() != 128) {
 			System.out.println("This is an invalid nodeID.");
-		} 
-		else {
+		} else {
 			UpdatePBFTNode pbft = new UpdatePBFTNode();
 			pbft.RemoveNode(nodeID, web3j, credentials);
-			System.out.println("Remove " + nodeID.substring(0, 8) + "..." + " of group "
-					+ service.getGroupId() + " successful.");
+			System.out.println(
+					"Remove " + nodeID.substring(0, 8) + "..." + " of group " + service.getGroupId() + " successful.");
 			System.out.println();
 		}
-		
+
 	}
-	
+
 	@Override
 	public void addAuthority(String[] params) throws Exception {
 		if (params.length < 2) {
@@ -690,8 +694,7 @@ public class ConsoleImpl implements ConsoleFace{
 			return;
 		}
 		String tableName = params[1];
-		if("-h".equals(tableName) || "--help".equals(tableName))
-		{
+		if ("-h".equals(tableName) || "--help".equals(tableName)) {
 			HelpInfo.addAuthorityHelp();
 			return;
 		}
@@ -700,30 +703,24 @@ public class ConsoleImpl implements ConsoleFace{
 			return;
 		}
 		String addr = params[2];
-		if(ConsoleUtils.isInvalidAddress(addr))
-		{
+		if (ConsoleUtils.isInvalidAddress(addr)) {
 			return;
 		}
 		AuthorityTableService authority = new AuthorityTableService();
 		int result = authority.add(tableName, addr, web3j, credentials);
-		if(result == 1)
-		{
-			System.out.println("add " + "tableName:" +tableName + " address:"+addr+ " of group "
+		if (result == 1) {
+			System.out.println("add " + "tableName:" + tableName + " address:" + addr + " of group "
 					+ service.getGroupId() + " successful.");
-		}
-		else if(result == 0)
-		{
-			System.out.println("tableName:" +tableName + " address:"+addr+ " of group "
-					+ service.getGroupId() + " already exist.");
-		}
-		else
-		{
-			System.out.println("This account is not authorized");
+		} else if (result == 0) {
+			System.out.println("tableName:" + tableName + " address:" + addr + " of group " + service.getGroupId()
+					+ " already exist.");
+		} else {
+			System.out.println(Common.NOAUTHORITY);
 		}
 		System.out.println();
-		
+
 	}
-	
+
 	@Override
 	public void removeAuthority(String[] params) throws Exception {
 		if (params.length < 2) {
@@ -731,8 +728,7 @@ public class ConsoleImpl implements ConsoleFace{
 			return;
 		}
 		String tableName = params[1];
-		if("-h".equals(tableName) || "--help".equals(tableName))
-		{
+		if ("-h".equals(tableName) || "--help".equals(tableName)) {
 			HelpInfo.removeAuthorityHelp();
 			return;
 		}
@@ -741,30 +737,24 @@ public class ConsoleImpl implements ConsoleFace{
 			return;
 		}
 		String addr = params[2];
-		if(ConsoleUtils.isInvalidAddress(addr))
-		{
+		if (ConsoleUtils.isInvalidAddress(addr)) {
 			return;
 		}
 		AuthorityTableService authority = new AuthorityTableService();
 		int result = authority.remove(tableName, addr, web3j, credentials);
-		if(result == 1)
-		{
-			System.out.println("remove " + "tableName:" +tableName + " address:"+addr+ " of group "
+		if (result == 1) {
+			System.out.println("remove " + "tableName:" + tableName + " address:" + addr + " of group "
 					+ service.getGroupId() + " successful.");
-		}
-		else if(result == 0)
-		{
-			System.out.println("tableName:" +tableName + " address:"+addr+ " of group "
-					+ service.getGroupId() + " does not exist.");
-		}
-		else
-		{
-			System.out.println("This account is not authorized");
+		} else if (result == 0) {
+			System.out.println("tableName:" + tableName + " address:" + addr + " of group " + service.getGroupId()
+					+ " does not exist.");
+		} else {
+			System.out.println(Common.NOAUTHORITY);
 		}
 		System.out.println();
-		
+
 	}
-	
+
 	@Override
 	public void queryAuthority(String[] params) throws Exception {
 		if (params.length < 2) {
@@ -772,36 +762,33 @@ public class ConsoleImpl implements ConsoleFace{
 			return;
 		}
 		String tableName = params[1];
-		if("-h".equals(tableName) || "--help".equals(tableName))
-		{
+		if ("-h".equals(tableName) || "--help".equals(tableName)) {
 			HelpInfo.queryAuthorityHelp();
 			return;
 		}
 		AuthorityTableService authorityTableService = new AuthorityTableService();
 		List<Authority> authoritys = authorityTableService.query(tableName, web3j, credentials);
-		if(authoritys.isEmpty())
-		{
+		if (authoritys.isEmpty()) {
 			System.out.println("Empty set.");
 			System.out.println();
 			return;
 		}
 		ConsoleUtils.singleLine();
-		System.out.println("table_name"+"\t\t\t"+"address"+"\t\t\t\t"+"enable_num");
+		System.out.println("table_name" + "\t\t\t" + "address" + "\t\t\t\t" + "enable_num");
 		ConsoleUtils.singleLine();
-		for (Authority authority: authoritys) 
-		{
-			if("_sys_tables_".equals(tableName) || "_sys_miners_".equals(tableName) || "_sys_table_access_".equals(tableName))
-			{
-				System.out.println(authority.getTable_name()+"\t\t"+authority.getAddress()+"\t"+authority.getEnable_num());
-			}
-			else
-			{
-				System.out.println(authority.getTable_name().substring(6)+"\t\t"+authority.getAddress()+"\t"+authority.getEnable_num());
+		for (Authority authority : authoritys) {
+			if (Common.SYS_TABLES.equals(tableName) || Common.SYS_ACCESS_TABLE.equals(tableName)
+					|| Common.SYS_MINERS.equals(tableName) || Common.SYS_CNS.equals(tableName) || Common.SYS_CONFIG.equals(tableName)) {
+				System.out.println(
+						authority.getTable_name() + "\t\t" + authority.getAddress() + "\t" + authority.getEnable_num());
+			} else {
+				System.out.println(authority.getTable_name().substring(6) + "\t\t" + authority.getAddress() + "\t"
+						+ authority.getEnable_num());
 			}
 		}
 		ConsoleUtils.singleLine();
 		System.out.println();
-		
+
 	}
 
 	@Override
@@ -811,16 +798,43 @@ public class ConsoleImpl implements ConsoleFace{
 			return;
 		}
 		String key = params[1];
-		String value = params[2];
-		if("-h".equals(key) || "--help".equals(key))
-		{
+		if ("-h".equals(key) || "--help".equals(key)) {
 			HelpInfo.setSystemConfigByKeyHelp();
 			return;
 		}
+		if (params.length < 3) {
+			HelpInfo.promptHelp("ssc");
+			return;
+		}
+		String value = params[2];
 
 		String[] args = { "setSystemConfig", key, value };
 		SetSystemConfig config = new SetSystemConfig();
-		config.call(args, web3j, credentials, service.getGroupId());
-		System.out.println("Set " + key + "by value " + value + " of group " + service.getGroupId() + " successful.");
+		int result = config.SetValueByKey(key, value, web3j, credentials);
+		if(result == -1){
+			System.out.println(Common.NOAUTHORITY);
+		}
+		else
+		{
+			System.out.println("Set " + key + " by value " + value + " of group " + service.getGroupId() + " successful.");
+		}
+		System.out.println();
+	}
+	
+	@Override
+	public void getSystemConfigByKey(String[] params) throws Exception {
+		if (params.length < 2) {
+			HelpInfo.promptHelp("gsc");
+			return;
+		}
+		String key = params[1];
+		if ("-h".equals(key) || "--help".equals(key)) {
+			HelpInfo.getSystemConfigByKeyHelp();
+			return;
+		}
+		String[] args = { "getSystemConfigByKey", key};
+		String value = web3j.getSystemConfigByKey(key).sendForReturnString();
+		System.out.println(value);
+		System.out.println();
 	}
 }
