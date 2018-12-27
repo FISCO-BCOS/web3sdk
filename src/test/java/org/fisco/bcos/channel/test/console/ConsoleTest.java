@@ -12,7 +12,11 @@ import org.junit.contrib.java.lang.system.SystemOutRule;
 
 public class ConsoleTest{
 	
-    private static ConsoleFace console = new ConsoleImpl(new String[0]);
+    private ConsoleFace console = new ConsoleImpl();
+    {
+    	console.init(new String[0]);
+    }
+    
 	@Rule
 	public final SystemOutRule log = new SystemOutRule().enableLog();
 	
@@ -431,6 +435,40 @@ public class ConsoleTest{
     	
     	String[] params3 = {"qa", "t_test", "0xf1585b8d0e08a0a00fff662e24d67ba95a438256"};
     	console.removeAuthority(params3);
+    	assertTrue(!"".equals(log.getLog()));
+    }
+    
+    @Test
+    public void setSystemConfigByKeyTest() throws Exception {
+    	String[] params1 = {};
+    	console.setSystemConfigByKey(params1);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+    	String[] params2 = {"ssc", "-h"};
+    	console.setSystemConfigByKey(params2);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+    	String[] params3 = {"ssc", "tx_count_limit", "1000"};
+    	console.setSystemConfigByKey(params3);
+    	assertTrue(!"".equals(log.getLog()));
+    }
+    
+    @Test
+    public void getSystemConfigByKeyTest() throws Exception {
+    	String[] params1 = {};
+    	console.getSystemConfigByKey(params1);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+    	String[] params2 = {"gsc", "-h"};
+    	console.getSystemConfigByKey(params2);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+    	String[] params3 = {"gsc", "tx_gas_limit"};
+    	console.getSystemConfigByKey(params3);
     	assertTrue(!"".equals(log.getLog()));
     }
     

@@ -9,7 +9,8 @@ public class ConsoleClient {
 	@SuppressWarnings("resource")
 	public static void main(String[] args) {
 
-		ConsoleFace console = new ConsoleImpl(args);
+		ConsoleFace console = new ConsoleImpl();
+		console.init(args);
 		console.welcome();
 
 		Scanner sc = new Scanner(System.in);

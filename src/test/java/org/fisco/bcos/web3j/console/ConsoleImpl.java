@@ -30,26 +30,21 @@ import com.alibaba.fastjson.JSONObject;
 
 public class ConsoleImpl implements ConsoleFace {
 
-	private static Service service = null;
-	private static Web3j web3j = null;
-	private static java.math.BigInteger gasPrice = new BigInteger("1");
-	private static java.math.BigInteger gasLimit = new BigInteger("30000000");
-	private static ECKeyPair keyPair;
-	private static Credentials credentials;
-	private static String contractAddress;
-	private static String contractName;
-	private static String contractVersion;
-	private static Class<?> contractClass;
-	private static RemoteCall<?> remoteCall;
+	private Service service = null;
+	private Web3j web3j = null;
+	private java.math.BigInteger gasPrice = new BigInteger("1");
+	private java.math.BigInteger gasLimit = new BigInteger("30000000");
+	private ECKeyPair keyPair;
+	private Credentials credentials;
+	private String contractAddress;
+	private String contractName;
+	private String contractVersion;
+	private Class<?> contractClass;
+	private RemoteCall<?> remoteCall;
 	private String privateKey = "";
 	private String origin = "";
 
-	@SuppressWarnings("resource")
-	public ConsoleImpl(String[] args) {
-		init(args);
-	}
-
-	private void init(String[] args) {
+	public void init(String[] args) {
 		ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
 		service = context.getBean(Service.class);
 		try {
