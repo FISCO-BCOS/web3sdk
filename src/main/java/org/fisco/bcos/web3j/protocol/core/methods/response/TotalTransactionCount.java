@@ -11,34 +11,32 @@ public class TotalTransactionCount extends Response<TotalTransactionCount.Transa
     }
 	
 	public class TransactionCount {
-		private String count;
-		private String number;
+		private String txSum;
+		private String blockNumber;
 		public TransactionCount() {
 			
 		}
-		public TransactionCount(String count, String number) {
-			super();
-			this.count = count;
-			this.number = number;
+		public TransactionCount(String txSum, String blockNumber) {
+			this.txSum = txSum;
+			this.blockNumber = blockNumber;
 		}
-		public String getCountRaw() {
-			return count;
+		public BigInteger getTxSum() {
+			return Numeric.decodeQuantity(txSum);
 		}
-		public BigInteger getCount() {
-			return Numeric.decodeQuantity(count);
+		public String getTxSumRaw() {
+			return txSum;
 		}
-		public void setCount(String count) {
-			this.count = count;
+		public void setTxSum(String txSum) {
+			this.txSum = txSum;
 		}
-		public String getNumberRaw() {
-			return number;
+		public BigInteger getBlockNumber() {
+			return Numeric.decodeQuantity(blockNumber);
 		}
-		public BigInteger getNumber() {
-			return Numeric.decodeQuantity(number);
+	    public String getBlockNumberRaw() {
+	        return blockNumber;
+	    }
+		public void setBlockNumber(String blockNumber) {
+			this.blockNumber = blockNumber;
 		}
-		public void setNumber(String number) {
-			this.number = number;
-		}
-		
 	}
 }
