@@ -12,7 +12,10 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.math.BigInteger;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static java.lang.System.exit;
 
 public class PerfomanceOk {
 	static Logger logger = LoggerFactory.getLogger(PerfomanceOk.class);
@@ -36,8 +39,6 @@ public class PerfomanceOk {
 		//初始化交易签名私钥
 		Credentials credentials = Credentials.create("b83261efa42895c38c6c2364ca878f43e77f3cddbc922bf57d0d48070f79feb6");
 
-		//ECKeyPair keyPair = Keys.createEcKeyPair();
-		//Credentials credentials = Credentials.create(keyPair);
 
 		//初始化交易参数
 		BigInteger gasPrice = new BigInteger("30000000");
@@ -51,9 +52,9 @@ public class PerfomanceOk {
 		Integer startNum = 0;
 		
 		ThreadPoolTaskExecutor threadPool = new ThreadPoolTaskExecutor();
-		threadPool.setCorePoolSize(100);
+		threadPool.setCorePoolSize(300);
 		threadPool.setMaxPoolSize(500);
-		threadPool.setQueueCapacity(1000000);
+		threadPool.setQueueCapacity(10000);
 		
 		threadPool.initialize();
 		
@@ -64,7 +65,6 @@ public class PerfomanceOk {
 		case "trans":
 			count = Integer.parseInt(args[1]);
 			qps = Integer.parseInt(args[2]);
-
 			break;
 		default:
 			System.out.println("参数: <trans> <请求总数> <QPS>");
@@ -111,6 +111,8 @@ public class PerfomanceOk {
 			});
 
 		}
+		exit(1);
+
 
 	}
 }
