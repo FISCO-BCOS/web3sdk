@@ -814,6 +814,10 @@ public class ConsoleImpl implements ConsoleFace {
 		if(result == -1){
 			System.out.println(Common.NOAUTHORITY);
 		}
+		else if(result == 0)
+		{
+			System.out.println("Set " + key + " by value " + value + " of group " + service.getGroupId() + " failed.");
+		}
 		else
 		{
 			System.out.println("Set " + key + " by value " + value + " of group " + service.getGroupId() + " successful.");
