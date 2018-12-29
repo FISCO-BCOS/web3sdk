@@ -80,6 +80,8 @@ import org.fisco.bcos.web3j.protocol.rx.JsonRpc2_0Rx;
 import org.fisco.bcos.web3j.utils.Async;
 import org.fisco.bcos.web3j.utils.Numeric;
 
+import static java.util.concurrent.Executors.newSingleThreadScheduledExecutor;
+
 /**
  * JSON-RPC 2.0 factory implementation.
  */
@@ -93,6 +95,7 @@ public class JsonRpc2_0Web3j implements Web3j {
     private final long blockTime;
     private final ScheduledExecutorService scheduledExecutorService;
     private  int groupId = 1;
+    private BigInteger blockNumber = new BigInteger("1");
 
     synchronized public BigInteger getBlockNumber() {
         return blockNumber;
@@ -101,8 +104,6 @@ public class JsonRpc2_0Web3j implements Web3j {
     synchronized public void setBlockNumber(BigInteger blockNumber) {
         this.blockNumber = blockNumber;
     }
-
-    private BigInteger blockNumber = new BigInteger("1");
 
     public JsonRpc2_0Web3j(Web3jService web3jService) {
         this(web3jService, DEFAULT_BLOCK_TIME, Async.defaultExecutorService());
@@ -120,21 +121,21 @@ public class JsonRpc2_0Web3j implements Web3j {
         this.web3jRx = new JsonRpc2_0Rx(this, scheduledExecutorService);
         this.blockTime = pollingInterval;
         this.scheduledExecutorService = scheduledExecutorService;
-//        ExecutorService cachedThreadPool = Executors.newFixedThreadPool(Web3AsyncThreadPoolSize.web3AsyncPoolSize);
-//
-//        cachedThreadPool.execute(new Runnable() {
-//            public void run() {
-//                while (true) {
-//                    try {
-//                    	Thread.sleep(10000);
-//                        EthBlockNumber ethBlockNumber = ethBlockNumber().sendAsync().get(10000, TimeUnit.MILLISECONDS);
-//                        setBlockNumber(ethBlockNumber.getBlockNumber());
-//                    } catch (Exception e) {
-//                        logger.error("Exception: " + e);
-//                    }
-//                }
-//            }
-//        });
+
+        ScheduledExecutorService scheduleService = Executors.newSingleThreadScheduledExecutor();
+        Runnable runnable = new Runnable() {
+            public void run() {
+                try {
+                    EthBlockNumber ethBlockNumber = ethBlockNumber().sendAsync().get(10000, TimeUnit.MILLISECONDS);
+                    setBlockNumber(ethBlockNumber.getBlockNumber());
+                } catch (Exception e) {
+                    logger.error("Exception: " + e);
+                }
+            }
+        };
+// 第二个参数为首次执行的延时时间，第三个参数为定时执行的间隔时间  
+        scheduleService.scheduleAtFixedRate(runnable,1,1,TimeUnit.SECONDS);
+
     }
 
     @Override
@@ -143,6 +144,7 @@ public class JsonRpc2_0Web3j implements Web3j {
         {
             try {
                 EthBlockNumber ethBlockNumber = ethBlockNumber().sendAsync().get();
+                System.out.println("blocknumber is  " + ethBlockNumber.getBlockNumber());
                 setBlockNumber(ethBlockNumber.getBlockNumber());
             } catch (Exception e) {
                 logger.error("Exception: " + e);
