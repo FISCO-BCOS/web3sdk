@@ -73,7 +73,7 @@ public class Service {
 			try {
 				Message message = new Message();
 				message.setResult(0);
-				message.setType((short)0x32); //topic设置topic消息0x32
+				message.setType((short) 0x32); //topic设置topic消息0x32
 				message.setSeq(UUID.randomUUID().toString().replaceAll("-", ""));
 
 				logger.debug("connection established，send topic to the connection:{}", message.getSeq());
@@ -104,72 +104,66 @@ public class Service {
 
 				logger.trace("receive Message type: {}", msg.getType());
 
-				if(msg.getType() == 0x20 || msg.getType() == 0x21) {
+				if (msg.getType() == 0x20 || msg.getType() == 0x21) {
 					logger.debug("channel message");
 
 					ChannelMessage channelMessage = new ChannelMessage(msg);
 					channelMessage.readExtra(message);
 
 					channelService.onReceiveChannelMessage(ctx, channelMessage);
-				}
-				else if(msg.getType() == 0x30 || msg.getType() == 0x31) {
+				} else if (msg.getType() == 0x30 || msg.getType() == 0x31) {
 					logger.debug("channel2 message");
 
 					ChannelMessage2 channelMessage = new ChannelMessage2(msg);
 					channelMessage.readExtra(message);
 
 					channelService.onReceiveChannelMessage2(ctx, channelMessage);
-				}
-				else if(msg.getType() == 0x12) {
+				} else if (msg.getType() == 0x12) {
 					logger.debug("Ethereum message");
 
 					EthereumMessage ethereumMessage = new EthereumMessage(msg);
 					ethereumMessage.readExtra(message);
 
 					channelService.onReceiveEthereumMessage(ctx, ethereumMessage);
+				} else if (msg.getType() == 0x13) {
+					msg.readExtra(message);
+
+					String content = "1";
+					try {
+						content = new String(msg.getData(), "utf-8");
+					} catch (UnsupportedEncodingException e) {
+						logger.error("heartbeat packet cannot be parsed");
+					} catch (Exception e) {
+						logger.error("heartbeat packet Exception");
+					}
+
+					if (content.equals("0")) {
+						logger.trace("heartbeat packet，send heartbeat packet back");
+						Message response = new Message();
+
+						response.setSeq(msg.getSeq());
+						response.setResult(0);
+						response.setType((short) 0x13);
+						response.setData("1".getBytes());
+
+						ByteBuf out = ctx.alloc().buffer();
+						response.writeHeader(out);
+						response.writeExtra(out);
+
+						ctx.writeAndFlush(out);
+					} else if (content.equals("1")) {
+						logger.trace("heartbeat response");
+					}
+				} else if (msg.getType() == 0x1000) {
+					//交易上链成功回调的消息
+					logger.debug("EthereumMessage response");
+					EthereumMessage ethereumMessage = new EthereumMessage(msg);
+					ethereumMessage.readExtra(message);
+					channelService.onReceiveTransactionMessage(ctx, ethereumMessage);
+				} else {
+					logger.error("unknown message type:{}", msg.getType());
 				}
-                else if(msg.getType() == 0x13) {
-                    msg.readExtra(message);
-
-                    String content = "1";
-                    try {
-                        content = new String(msg.getData(), "utf-8");
-                    } catch (UnsupportedEncodingException e) {
-                        logger.error("heartbeat packet cannot be parsed");
-                    } catch (Exception e) {
-                        logger.error("heartbeat packet Exception");
-                    }
-
-                    if(content.equals("0")) {
-                        logger.trace("heartbeat packet，send heartbeat packet back");
-                        Message response = new Message();
-
-                        response.setSeq(msg.getSeq());
-                        response.setResult(0);
-                        response.setType((short) 0x13);
-                        response.setData("1".getBytes());
-
-                        ByteBuf out = ctx.alloc().buffer();
-                        response.writeHeader(out);
-                        response.writeExtra(out);
-
-                        ctx.writeAndFlush(out);
-                    }
-                    else if(content.equals("1")) {
-                        logger.trace("heartbeat response");
-                    }
-                }
-                else if (msg.getType() == 0x1000) {
-                    //交易上链成功回调的消息
-                    logger.debug("EthereumMessage response");
-                    EthereumMessage ethereumMessage = new EthereumMessage(msg);
-                    ethereumMessage.readExtra(message);
-                    channelService.onReceiveTransactionMessage(ctx, ethereumMessage);
-                }
-                else {
-                    logger.error("unknown message type:{}", msg.getType());
-                }
-			}finally {
+			} finally {
 				message.release();
 			}
 		}
@@ -211,12 +205,12 @@ public class Service {
 			ConnectionCallback connectionCallback = new ConnectionCallback();
 			connectionCallback.setChannelService(this);
 
-			for(Map.Entry<String, ChannelConnections> entry: allChannelConnections.entrySet()) {
+			for (Map.Entry<String, ChannelConnections> entry : allChannelConnections.entrySet()) {
 				entry.getValue().setCallback(connectionCallback);
 				entry.getValue().init();
 				entry.getValue().setThreadPool(threadPool);
 
-				if(entry.getKey().equals(orgID)) {
+				if (entry.getKey().equals(orgID)) {
 					entry.getValue().startConnect();
 
 					int sleepTime = 0;
@@ -230,30 +224,24 @@ public class Service {
 							}
 						}
 
-						if (running || sleepTime > connectSeconds*1000)
-						{
+						if (running || sleepTime > connectSeconds * 1000) {
 							break;
-						}
-						else
-						{
+						} else {
 							Thread.sleep(connectSleepPerMillis);
 							sleepTime += connectSleepPerMillis;
 						}
 					}
-					if(!running)
-					{
+					if (!running) {
 						logger.error("connectSeconds = " + connectSeconds);
 						logger.error("init ChannelService fail!");
 						throw new Exception("Init ChannelService fail!Please Refer To Link Below:https://github.com/FISCO-BCOS/web3sdk/wiki/web3sdk-debug");
 					}
 				}
 			}
-		}
-		catch (InterruptedException e) {
+		} catch (InterruptedException e) {
 			logger.error("system error ", e);
 			Thread.currentThread().interrupt();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			logger.error("system error ", e);
 			throw e;
 		}
@@ -261,14 +249,14 @@ public class Service {
 	}
 
 	public EthereumResponse sendEthereumMessage(EthereumRequest request) {
-		class Callback extends EthereumResponseCallback  {
+		class Callback extends EthereumResponseCallback {
 			Callback() {
 				try {
 					semaphore.acquire(1);
 
 				} catch (InterruptedException e) {
 					logger.error("error :", e);
-                    Thread.currentThread().interrupt();
+					Thread.currentThread().interrupt();
 				}
 			}
 
@@ -276,10 +264,9 @@ public class Service {
 			public void onResponse(EthereumResponse response) {
 				ethereumResponse = response;
 
-				if(ethereumResponse != null && ethereumResponse.getContent() != null) {
+				if (ethereumResponse != null && ethereumResponse.getContent() != null) {
 					logger.debug("response: {}", response.getContent());
-				}
-				else {
+				} else {
 					logger.error("ethereum error");
 				}
 
@@ -288,7 +275,8 @@ public class Service {
 
 			public EthereumResponse ethereumResponse;
 			public Semaphore semaphore = new Semaphore(1, true);
-		};
+		}
+		;
 
 		Callback callback = new Callback();
 
@@ -297,21 +285,21 @@ public class Service {
 			callback.semaphore.acquire(1);
 		} catch (InterruptedException e) {
 			logger.error("system error:", e);
-            Thread.currentThread().interrupt();
+			Thread.currentThread().interrupt();
 		}
 
 		return callback.ethereumResponse;
 	}
 
 	public ChannelResponse sendChannelMessage(ChannelRequest request) {
-		class Callback extends ChannelResponseCallback  {
+		class Callback extends ChannelResponseCallback {
 			Callback() {
 				try {
 					semaphore.acquire(1);
 
 				} catch (InterruptedException e) {
 					logger.error("error:", e);
-                    Thread.currentThread().interrupt();
+					Thread.currentThread().interrupt();
 				}
 			}
 
@@ -328,7 +316,8 @@ public class Service {
 			public ChannelResponse channelResponse;
 			public Semaphore semaphore = new Semaphore(1, true);
 
-		};
+		}
+		;
 
 		Callback callback = new Callback();
 
@@ -337,77 +326,78 @@ public class Service {
 			callback.semaphore.acquire(1);
 		} catch (InterruptedException e) {
 			logger.error("system error:", e);
-            Thread.currentThread().interrupt();
+			Thread.currentThread().interrupt();
 		}
 
 		return callback.channelResponse;
 	}
 
 	public EthereumResponse sendEthereumMessage(EthereumRequest request, TransactionSucCallback transactionSucCallback) {
-        class Callback extends EthereumResponseCallback  {
-            Callback() {
-                try {
-                    semaphore.acquire(1);
-
-                } catch (InterruptedException e) {
-                    logger.error("error:", e);
-                    Thread.currentThread().interrupt();
-                }
-            }
-
-            @Override
-            public void onResponse(EthereumResponse response) {
-                ethereumResponse = response;
-
-                logger.info("response: {}", response.getContent());
-
-                semaphore.release();
-            }
-
-            public EthereumResponse ethereumResponse;
-            public Semaphore semaphore = new Semaphore(1, true);
-        }
-
-        Callback callback = new Callback();
-        asyncSendEthereumMessage(request, callback, transactionSucCallback);
-        try {
-            callback.semaphore.acquire(1);
-        } catch (InterruptedException e) {
-            logger.error("system error:", e);
-            Thread.currentThread().interrupt();
-        }
-
-        return callback.ethereumResponse;
-    }
-
-    public void asyncSendEthereumMessage(EthereumRequest request, EthereumResponseCallback ethereumResponseCallback, TransactionSucCallback transactionSucCallback) {
-        this.asyncSendEthereumMessage(request, ethereumResponseCallback);
-        if(request.getTimeout() > 0) {
-            final TransactionSucCallback callbackInner = transactionSucCallback;
-            callbackInner.setTimeout(timeoutHandler.newTimeout(new TimerTask() {
-                @Override
-                public void run(Timeout timeout) throws Exception {
-                    //处理超时逻辑
-                    callbackInner.onTimeout();
-                    //timeout时清除map的数据,所以尽管后面有回包数据，也会找不到seq->callback的关系
-                    seq2TransactionCallback.remove(request.getMessageID());
-                }
-            }, request.getTimeout(), TimeUnit.MILLISECONDS));
-            this.seq2TransactionCallback.put(request.getMessageID(), callbackInner);
-        } else {
-            this.seq2TransactionCallback.put(request.getMessageID(), transactionSucCallback);
-        }
-    }
-
-	public ChannelResponse sendChannelMessage2(ChannelRequest request) {
-		class Callback extends ChannelResponseCallback2  {
+		class Callback extends EthereumResponseCallback {
 			Callback() {
 				try {
 					semaphore.acquire(1);
 
 				} catch (InterruptedException e) {
 					logger.error("error:", e);
-                    Thread.currentThread().interrupt();
+					Thread.currentThread().interrupt();
+				}
+			}
+
+			@Override
+			public void onResponse(EthereumResponse response) {
+				ethereumResponse = response;
+
+				logger.info("response: {}", response.getContent());
+
+				semaphore.release();
+			}
+
+			public EthereumResponse ethereumResponse;
+			public Semaphore semaphore = new Semaphore(1, true);
+		}
+
+		Callback callback = new Callback();
+		asyncSendEthereumMessage(request, callback, transactionSucCallback);
+		try {
+			callback.semaphore.acquire(1);
+		} catch (InterruptedException e) {
+			logger.error("system error:", e);
+			Thread.currentThread().interrupt();
+		}
+
+		return callback.ethereumResponse;
+	}
+
+	public void asyncSendEthereumMessage(EthereumRequest request, EthereumResponseCallback ethereumResponseCallback, TransactionSucCallback transactionSucCallback) {
+		this.asyncSendEthereumMessage(request, ethereumResponseCallback);
+		if (request.getTimeout() > 0) {
+			final TransactionSucCallback callbackInner = transactionSucCallback;
+			callbackInner.setTimeout(timeoutHandler.newTimeout(new TimerTask() {
+				@Override
+				public void run(Timeout timeout) throws Exception {
+					logger.info("asyncSendEthereumMessage timeout:seq ", request.getMessageID());
+					//处理超时逻辑
+					callbackInner.onTimeout();
+					//timeout时清除map的数据,所以尽管后面有回包数据，也会找不到seq->callback的关系
+					seq2TransactionCallback.remove(request.getMessageID());
+				}
+			}, request.getTimeout(), TimeUnit.MILLISECONDS));
+			this.seq2TransactionCallback.put(request.getMessageID(), callbackInner);
+		} else {
+			this.seq2TransactionCallback.put(request.getMessageID(), transactionSucCallback);
+		}
+	}
+
+	public ChannelResponse sendChannelMessage2(ChannelRequest request) {
+		class Callback extends ChannelResponseCallback2 {
+			Callback() {
+				try {
+					semaphore.acquire(1);
+
+				} catch (InterruptedException e) {
+					logger.error("error:", e);
+					Thread.currentThread().interrupt();
 				}
 			}
 
@@ -423,7 +413,8 @@ public class Service {
 			public ChannelResponse channelResponse;
 			public Semaphore semaphore = new Semaphore(1, true);
 
-		};
+		}
+		;
 
 		Callback callback = new Callback();
 
@@ -432,7 +423,7 @@ public class Service {
 			callback.semaphore.acquire(1);
 		} catch (InterruptedException e) {
 			logger.error("system error:", e);
-            Thread.currentThread().interrupt();
+			Thread.currentThread().interrupt();
 		}
 
 		return callback.channelResponse;
@@ -469,13 +460,14 @@ public class Service {
 
 			seq2Callback.put(request.getMessageID(), callback);
 
-			if(request.getTimeout() > 0) {
+			if (request.getTimeout() > 0) {
 				final EthereumResponseCallback callbackInner = callback; //ethereum名字可能会搞混，换成channel
 				callback.setTimeout(timeoutHandler.newTimeout(new TimerTask() {
 					EthereumResponseCallback _callback = callbackInner;
 
 					@Override
 					public void run(Timeout timeout) throws Exception {
+						logger.info("asyncSendEthereumMessage timeout:seq ", request.getMessageID());
 						//处理超时逻辑
 						_callback.onTimeout();
 					}
@@ -484,9 +476,9 @@ public class Service {
 
 			ctx.writeAndFlush(out);
 
-			logger.debug("send Ethereum message to " + ((SocketChannel)ctx.channel()).remoteAddress().getAddress().getHostAddress()
+			logger.debug("send Ethereum message to " + ((SocketChannel) ctx.channel()).remoteAddress().getAddress().getHostAddress()
 					+ ":"
-					+ ((SocketChannel)ctx.channel()).remoteAddress().getPort() + " success");
+					+ ((SocketChannel) ctx.channel()).remoteAddress().getPort() + " success");
 
 			sended = true;
 		} catch (Exception e) {
@@ -494,11 +486,11 @@ public class Service {
 
 			EthereumResponse response = new EthereumResponse();
 			response.setErrorCode(-1);
-			response.setErrorMessage(e.getMessage()+"Please Refer To Link Below:https://github.com/FISCO-BCOS/web3sdk/wiki/web3sdk-debug");
+			response.setErrorMessage(e.getMessage() + "Please Refer To Link Below:https://github.com/FISCO-BCOS/web3sdk/wiki/web3sdk-debug");
 			response.setContent("");
 			response.setMessageID(request.getMessageID());
 
-			if(callback.getTimeout() != null) {
+			if (callback.getTimeout() != null) {
 				callback.getTimeout().cancel();
 			}
 			callback.onResponse(response);
@@ -554,13 +546,14 @@ public class Service {
 
 				seq2Callback.put(request.getMessageID(), callback);
 
-				if(request.getTimeout() > 0) {
+				if (request.getTimeout() > 0) {
 					final ChannelResponseCallback callbackInner = callback;
 					callback.setTimeout(timeoutHandler.newTimeout(new TimerTask() {
 						ChannelResponseCallback _callback = callbackInner;
 
 						@Override
 						public void run(Timeout timeout) throws Exception {
+							logger.info("asyncSendChannelMessage timeout:seq ", request.getMessageID());
 							//处理超时逻辑
 							_callback.onTimeout();
 						}
@@ -621,13 +614,14 @@ public class Service {
 
 				seq2Callback.put(request.getMessageID(), callback);
 
-				if(request.getTimeout() > 0) {
+				if (request.getTimeout() > 0) {
 					final ChannelResponseCallback2 callbackInner = callback;
 					callback.setTimeout(timeoutHandler.newTimeout(new TimerTask() {
 						ChannelResponseCallback2 _callback = callbackInner;
 
 						@Override
 						public void run(Timeout timeout) throws Exception {
+							logger.info("asyncSendChannelMessage2 timeout:seq ", request.getMessageID());
 							//处理超时逻辑
 							_callback.onTimeout();
 						}
@@ -655,8 +649,7 @@ public class Service {
 	public void setTopics(List<String> topics) {
 		try {
 			this.topics = topics;
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			logger.error("system error", e);
 		}
 	}
@@ -668,7 +661,7 @@ public class Service {
 			responseMessage.setData(response.getContent().getBytes());
 			responseMessage.setResult(response.getErrorCode());
 			responseMessage.setSeq(seq);
-			responseMessage.setType((short)0x21); //链上链下回包0x21
+			responseMessage.setType((short) 0x21); //链上链下回包0x21
 			responseMessage.setToNode(fromNode);
 			responseMessage.setFromNode(toNode);
 
@@ -692,7 +685,7 @@ public class Service {
 			responseMessage.setData(response.getContent().getBytes());
 			responseMessage.setResult(response.getErrorCode());
 			responseMessage.setSeq(seq);
-			responseMessage.setType((short)0x31); //链上链下二期回包0x31
+			responseMessage.setType((short) 0x31); //链上链下二期回包0x31
 			responseMessage.setTopic(topic);
 
 			ByteBuf out = ctx.alloc().buffer();
@@ -708,12 +701,12 @@ public class Service {
 	}
 
 	public void onReceiveChannelMessage(ChannelHandlerContext ctx, ChannelMessage message) {
-		ChannelResponseCallback callback = (ChannelResponseCallback)seq2Callback.get(message.getSeq());
+		ChannelResponseCallback callback = (ChannelResponseCallback) seq2Callback.get(message.getSeq());
 		logger.debug("onReceiveChannelMessage seq:{}", message.getSeq());
 
-		if(message.getType() == 0x20) { //链上链下请求
+		if (message.getType() == 0x20) { //链上链下请求
 			logger.debug("channel Message PUSH");
-			if(callback != null) {
+			if (callback != null) {
 				//清空callback再处理
 				logger.debug("seq already existed，clean:{}", message.getSeq());
 				seq2Callback.remove(message.getSeq());
@@ -722,7 +715,7 @@ public class Service {
 			try {
 				ChannelPush push = new ChannelPush();
 
-				if(pushCallback != null) {
+				if (pushCallback != null) {
 					push.setService(this);
 					push.setCtx(ctx);
 					push.setMessageID(message.getSeq());
@@ -734,35 +727,31 @@ public class Service {
 					push.setContent(new String(message.getData(), 0, message.getData().length));
 
 					pushCallback.onPush(push);
-				}
-				else {
+				} else {
 					logger.error("can not push，unset push callback");
 				}
-			}
-			catch(Exception e) {
+			} catch (Exception e) {
 				logger.error("pushCallback error:", e);
 			}
-		}
-		else if(message.getType() == 0x21) { //链上链下回包
+		} else if (message.getType() == 0x21) { //链上链下回包
 			logger.debug("channel response:{}", message.getSeq());
-			if(callback != null) {
+			if (callback != null) {
 				logger.debug("found callback response");
 
 				ChannelResponse response = new ChannelResponse();
-				if(message.getResult() != 0) {
+				if (message.getResult() != 0) {
 					response.setErrorCode(message.getResult());
 					response.setErrorMessage("response error");
 				}
 
 				response.setErrorCode(message.getResult());
 				response.setMessageID(message.getSeq());
-				if(message.getData() != null) {
+				if (message.getData() != null) {
 					response.setContent(new String(message.getData()));
 				}
 
 				callback.onResponse(response);
-			}
-			else {
+			} else {
 				logger.error("can not found response callback，timeout:{}", message.getData());
 				return;
 			}
@@ -770,18 +759,18 @@ public class Service {
 	}
 
 	public void onReceiveEthereumMessage(ChannelHandlerContext ctx, EthereumMessage message) {
-		EthereumResponseCallback callback = (EthereumResponseCallback)seq2Callback.get(message.getSeq());
+		EthereumResponseCallback callback = (EthereumResponseCallback) seq2Callback.get(message.getSeq());
 		logger.debug("EthereumResponse seq:{}", message.getSeq());
 
-		if(callback != null) {
+		if (callback != null) {
 			logger.debug("found callback EthereumResponse");
 
-			if(callback.getTimeout() != null) {
+			if (callback.getTimeout() != null) {
 				callback.getTimeout().cancel();
 			}
 
 			EthereumResponse response = new EthereumResponse();
-			if(message.getResult() != 0) {
+			if (message.getResult() != 0) {
 				response.setErrorMessage("EthereumResponse error");
 			}
 
@@ -792,19 +781,18 @@ public class Service {
 			callback.onResponse(response);
 
 			seq2Callback.remove(message.getSeq());
-		}
-		else {
+		} else {
 			logger.debug("no callback push message");
 		}
 	}
 
 	public void onReceiveChannelMessage2(ChannelHandlerContext ctx, ChannelMessage2 message) {
-		ChannelResponseCallback2 callback = (ChannelResponseCallback2)seq2Callback.get(message.getSeq());
+		ChannelResponseCallback2 callback = (ChannelResponseCallback2) seq2Callback.get(message.getSeq());
 		logger.debug("ChannelResponse seq:{}", message.getSeq());
 
-		if(message.getType() == 0x30) { //链上链下请求
+		if (message.getType() == 0x30) { //链上链下请求
 			logger.debug("channel PUSH");
-			if(callback != null) {
+			if (callback != null) {
 				//清空callback再处理
 				logger.debug("seq already existed，clear:{}", message.getSeq());
 				seq2Callback.remove(message.getSeq());
@@ -813,7 +801,7 @@ public class Service {
 			try {
 				ChannelPush2 push = new ChannelPush2();
 
-				if(pushCallback != null) {
+				if (pushCallback != null) {
 					//pushCallback.setInfo(info);
 					push.setSeq(message.getSeq());
 					push.setService(this);
@@ -825,35 +813,31 @@ public class Service {
 					push.setContent(new String(message.getData(), 0, message.getData().length));
 
 					pushCallback.onPush(push);
-				}
-				else {
+				} else {
 					logger.error("can not push，unset push callback");
 				}
-			}
-			catch(Exception e) {
+			} catch (Exception e) {
 				logger.error("push error:", e);
 			}
-		}
-		else if(message.getType() == 0x31) { //链上链下回包
+		} else if (message.getType() == 0x31) { //链上链下回包
 			logger.debug("channel message:{}", message.getSeq());
-			if(callback != null) {
+			if (callback != null) {
 				logger.debug("found callback response");
 
 				ChannelResponse response = new ChannelResponse();
-				if(message.getResult() != 0) {
+				if (message.getResult() != 0) {
 					response.setErrorCode(message.getResult());
 					response.setErrorMessage("response errors");
 				}
 
 				response.setErrorCode(message.getResult());
 				response.setMessageID(message.getSeq());
-				if(message.getData() != null) {
+				if (message.getData() != null) {
 					response.setContent(new String(message.getData()));
 				}
 
 				callback.onResponse(response);
-			}
-			else {
+			} else {
 				logger.error("can not found response callback，timeout:{}", message.getData());
 				return;
 			}
@@ -861,39 +845,38 @@ public class Service {
 	}
 
 	public void onReceiveTransactionMessage(ChannelHandlerContext ctx, EthereumMessage message) {
-        TransactionSucCallback callback = (TransactionSucCallback)seq2TransactionCallback.get(message.getSeq());
-        logger.info("receive transaction success seq:{}", message.getSeq());
+		TransactionSucCallback callback = (TransactionSucCallback) seq2TransactionCallback.get(message.getSeq());
+		logger.info("receive transaction success seq:{}", message.getSeq());
 
-        if(callback != null) {
-            logger.info("found callback transaction callback");
+		if (callback != null) {
+			logger.info("found callback transaction callback");
 
-            if(callback.getTimeout() != null) {
-                //停止定时器，防止多响应一次
-                callback.getTimeout().cancel();
-            }
+			if (callback.getTimeout() != null) {
+				//停止定时器，防止多响应一次
+				callback.getTimeout().cancel();
+			}
 
-            EthereumResponse response = new EthereumResponse();
-            if(message.getResult() != 0) {
-                response.setErrorMessage("EthereumResponse error");
-            }
+			EthereumResponse response = new EthereumResponse();
+			if (message.getResult() != 0) {
+				response.setErrorMessage("EthereumResponse error");
+			}
 
-            response.setErrorCode(message.getResult());
-            response.setMessageID(message.getSeq());
-            response.setContent(new String(message.getData()));
-            try {
-                response.setTransactionReceipt(gson.fromJson(response.getContent(), TransactionReceipt.class));
-            } catch (Exception e) {
-                logger.warn(String.format("response content transformation to TransactionReceipt error, content:%s", response.getContent()));
-            }
+			response.setErrorCode(message.getResult());
+			response.setMessageID(message.getSeq());
+			response.setContent(new String(message.getData()));
+			try {
+				response.setTransactionReceipt(gson.fromJson(response.getContent(), TransactionReceipt.class));
+			} catch (Exception e) {
+				logger.warn(String.format("response content transformation to TransactionReceipt error, content:%s", response.getContent()));
+			}
 
-            callback.onResponse(response);
+			callback.onResponse(response);
 
-            seq2TransactionCallback.remove(message.getSeq());
-        }
-        else {
-            logger.info("callback is null");
-        }
-    }
+			seq2TransactionCallback.remove(message.getSeq());
+		} else {
+			logger.info("callback is null");
+		}
+	}
 
 	public String newSeq() {
 		return UUID.randomUUID().toString().replaceAll("-", "");
@@ -922,12 +905,11 @@ public class Service {
 	private ChannelPushCallback pushCallback;
 	private Map<String, Object> seq2Callback = new ConcurrentHashMap<String, Object>();
 	/**
-     * add transaction seq callback
-     */
-    private Map<String, Object> seq2TransactionCallback = new ConcurrentHashMap<String, Object>();
+	 * add transaction seq callback
+	 */
+	private Map<String, Object> seq2TransactionCallback = new ConcurrentHashMap<String, Object>();
 	private Timer timeoutHandler = new HashedWheelTimer();
 	private ThreadPoolTaskExecutor threadPool;
 	private List<String> topics = new ArrayList<String>();
 	private ObjectMapper objectMapper = new ObjectMapper();
-
 }

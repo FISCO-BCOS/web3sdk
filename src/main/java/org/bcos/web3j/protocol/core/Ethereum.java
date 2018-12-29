@@ -3,57 +3,10 @@ package org.bcos.web3j.protocol.core;
 import java.math.BigInteger;
 
 import org.bcos.web3j.protocol.core.methods.request.ShhFilter;
-import org.bcos.web3j.protocol.core.methods.response.DbGetHex;
-import org.bcos.web3j.protocol.core.methods.response.DbGetString;
-import org.bcos.web3j.protocol.core.methods.response.DbPutHex;
-import org.bcos.web3j.protocol.core.methods.response.DbPutString;
-import org.bcos.web3j.protocol.core.methods.response.EthAccounts;
-import org.bcos.web3j.protocol.core.methods.response.EthBlock;
-import org.bcos.web3j.protocol.core.methods.response.EthBlockNumber;
+import org.bcos.web3j.protocol.core.methods.response.*;
 
 //增加eth_pbftView接口
-import org.bcos.web3j.protocol.core.methods.response.EthPbftView;
-import org.bcos.web3j.protocol.core.methods.response.EthCoinbase;
-import org.bcos.web3j.protocol.core.methods.response.EthCompileLLL;
-import org.bcos.web3j.protocol.core.methods.response.EthCompileSerpent;
-import org.bcos.web3j.protocol.core.methods.response.EthCompileSolidity;
-import org.bcos.web3j.protocol.core.methods.response.EthEstimateGas;
-import org.bcos.web3j.protocol.core.methods.response.EthFilter;
-import org.bcos.web3j.protocol.core.methods.response.EthGasPrice;
-import org.bcos.web3j.protocol.core.methods.response.EthGetBalance;
-import org.bcos.web3j.protocol.core.methods.response.EthGetBlockTransactionCountByHash;
-import org.bcos.web3j.protocol.core.methods.response.EthGetBlockTransactionCountByNumber;
-import org.bcos.web3j.protocol.core.methods.response.EthGetCode;
-import org.bcos.web3j.protocol.core.methods.response.EthGetCompilers;
-import org.bcos.web3j.protocol.core.methods.response.EthGetStorageAt;
-import org.bcos.web3j.protocol.core.methods.response.EthGetTransactionCount;
-import org.bcos.web3j.protocol.core.methods.response.EthGetTransactionReceipt;
-import org.bcos.web3j.protocol.core.methods.response.EthGetUncleCountByBlockHash;
-import org.bcos.web3j.protocol.core.methods.response.EthGetUncleCountByBlockNumber;
-import org.bcos.web3j.protocol.core.methods.response.EthGetWork;
-import org.bcos.web3j.protocol.core.methods.response.EthHashrate;
-import org.bcos.web3j.protocol.core.methods.response.EthLog;
-import org.bcos.web3j.protocol.core.methods.response.EthMining;
-import org.bcos.web3j.protocol.core.methods.response.EthProtocolVersion;
-import org.bcos.web3j.protocol.core.methods.response.EthSign;
-import org.bcos.web3j.protocol.core.methods.response.EthSubmitHashrate;
-import org.bcos.web3j.protocol.core.methods.response.EthSubmitWork;
-import org.bcos.web3j.protocol.core.methods.response.EthSyncing;
-import org.bcos.web3j.protocol.core.methods.response.EthTransaction;
-import org.bcos.web3j.protocol.core.methods.response.EthUninstallFilter;
-import org.bcos.web3j.protocol.core.methods.response.NetListening;
-import org.bcos.web3j.protocol.core.methods.response.NetPeerCount;
-import org.bcos.web3j.protocol.core.methods.response.NetVersion;
-import org.bcos.web3j.protocol.core.methods.response.ShhAddToGroup;
-import org.bcos.web3j.protocol.core.methods.response.ShhHasIdentity;
-import org.bcos.web3j.protocol.core.methods.response.ShhMessages;
-import org.bcos.web3j.protocol.core.methods.response.ShhNewFilter;
-import org.bcos.web3j.protocol.core.methods.response.ShhNewGroup;
-import org.bcos.web3j.protocol.core.methods.response.ShhNewIdentity;
-import org.bcos.web3j.protocol.core.methods.response.ShhUninstallFilter;
-import org.bcos.web3j.protocol.core.methods.response.ShhVersion;
-import org.bcos.web3j.protocol.core.methods.response.Web3ClientVersion;
-import org.bcos.web3j.protocol.core.methods.response.Web3Sha3;
+
 
 /**
  * Core Ethereum JSON-RPC API.
@@ -225,6 +178,8 @@ public interface Ethereum {
     Request<?, ShhMessages> shhGetFilterChanges(BigInteger filterId);
 
     Request<?, ShhMessages> shhGetMessages(BigInteger filterId);
+
+    Request<?, EthPeers> getAdminPeers();
 
     BigInteger getBlockNumberCache();
 
