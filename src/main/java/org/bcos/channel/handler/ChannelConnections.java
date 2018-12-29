@@ -201,6 +201,23 @@ public class ChannelConnections {
 		
 		networkConnections.remove(endpoint);
 	}
+
+	private void checkeCallBackThreadPool(){
+		if (null == this.threadPool) {
+
+			int poolCoreSize = Runtime.getRuntime().availableProcessors() * 2;
+			int queueCapacity = Integer.MAX_VALUE;
+			String threadNamePrefix = "callback-";
+
+			ThreadPoolTaskExecutor pool = new ThreadPoolTaskExecutor();
+			pool.setCorePoolSize(poolCoreSize);
+			pool.setMaxPoolSize(poolCoreSize);
+			pool.setQueueCapacity(queueCapacity);
+			pool.setThreadNamePrefix(threadNamePrefix);
+			pool.initialize();
+			this.threadPool = pool;
+		}
+	}
 	
 	public void startListen(Integer port) {
 		if(running) {
@@ -212,7 +229,9 @@ public class ChannelConnections {
 		
 		EventLoopGroup bossGroup = new NioEventLoopGroup();
 		EventLoopGroup workerGroup = new NioEventLoopGroup();
-		
+
+		checkeCallBackThreadPool();
+
 		final ChannelConnections selfService = this;
 		final ThreadPoolTaskExecutor selfThreadPool = threadPool;
 		
