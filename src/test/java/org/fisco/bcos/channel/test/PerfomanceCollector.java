@@ -10,6 +10,13 @@ import org.fisco.bcos.channel.dto.ChannelResponse;
 
 public class PerfomanceCollector {
 	static Logger logger = LoggerFactory.getLogger(PerfomanceCollector.class);
+	public Map<Integer, RequestTimer> resultMap;
+	public Integer total;
+	public AtomicInteger received = new AtomicInteger(0);
+	public AtomicInteger error = new AtomicInteger(0);
+	public Long startTimestamp = (long)0;
+	public Integer tps = 0;
+	public Integer packageSize = 0;
 	
 	public void onMessage(ChannelResponse response) {
 		try {
@@ -113,12 +120,5 @@ public class PerfomanceCollector {
 			logger.error("error:", e);
 		}
 	}
-	
-	public Map<Integer, RequestTimer> resultMap;
-	public Integer total;
-	public AtomicInteger received = new AtomicInteger(0);
-	public AtomicInteger error = new AtomicInteger(0);
-	public Long startTimestamp = (long)0;
-	public Integer tps = 0;
-	public Integer packageSize = 0;
+
 }
