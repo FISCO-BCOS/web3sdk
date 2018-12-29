@@ -5,6 +5,7 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.junit.Test;
 
 import java.math.BigInteger;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertTrue;
@@ -24,12 +25,15 @@ public class OkTest extends TestBase {
         if (okDemo != null) {
                 System.out.println("####contract address is: " + okDemo.getContractAddress());
                 TransactionReceipt receipt = okDemo.trans(new BigInteger("4")).send();
+            List<Ok.TransEventEventResponse> ilist =  okDemo.getTransEventEvents(receipt);
+            System.out.println(ilist.get(0).log);
             assertTrue( receipt.getBlockNumber().intValue()>0);
             assertTrue( receipt.getTransactionIndex().intValue()>=0);
             assertTrue( receipt.getGasUsed().intValue()>0);
             BigInteger oldBalance = okDemo.get().sendAsync().get(60000, TimeUnit.MILLISECONDS);
             okDemo.trans(new BigInteger("4")).sendAsync().get(60000, TimeUnit.MILLISECONDS);
             BigInteger newBalance = okDemo.get().sendAsync().get(60000, TimeUnit.MILLISECONDS);
+            System.out.println("####newBalance is: " + oldBalance.intValue());
            assertTrue(newBalance.intValue() == oldBalance.intValue() + 4);
             }
         }
