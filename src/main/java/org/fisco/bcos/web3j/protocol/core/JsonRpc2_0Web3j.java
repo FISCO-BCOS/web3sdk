@@ -39,7 +39,7 @@ public class JsonRpc2_0Web3j implements Web3j {
     private final ScheduledExecutorService scheduledExecutorService;
     private  int groupId = 1;
 
-    synchronized public BigInteger getBlockNumber() {
+     public BigInteger getBlockNumber() {
         return blockNumber;
     }
 
