@@ -11,6 +11,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
+import com.google.gson.Gson;
+import org.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -38,6 +40,9 @@ import io.netty.util.Timer;
 import io.netty.util.TimerTask;
 
 public class Service {
+
+	private Gson gson = new Gson();
+
 	public Integer getConnectSeconds() {
 		return connectSeconds;
 	}
@@ -875,6 +880,11 @@ public class Service {
             response.setErrorCode(message.getResult());
             response.setMessageID(message.getSeq());
             response.setContent(new String(message.getData()));
+            try {
+                response.setTransactionReceipt(gson.fromJson(response.getContent(), TransactionReceipt.class));
+            } catch (Exception e) {
+                logger.warn(String.format("response content transformation to TransactionReceipt error, content:%s", response.getContent()));
+            }
 
             callback.onResponse(response);
 
@@ -919,4 +929,5 @@ public class Service {
 	private ThreadPoolTaskExecutor threadPool;
 	private List<String> topics = new ArrayList<String>();
 	private ObjectMapper objectMapper = new ObjectMapper();
+
 }
