@@ -620,7 +620,6 @@ public class ConsoleImpl implements ConsoleFace {
 		} else {
 			UpdatePBFTNode pbft = new UpdatePBFTNode();
 			int result = pbft.AddNodeToMiner(nodeID, web3j, credentials);
-			System.out.println("result = "+result);
 			if (result == 1) {
 				System.out.println("Add " + nodeID.substring(0, 8) + "..." + " to a miner of group " + service.getGroupId()
 				+ " successful.");
@@ -650,15 +649,16 @@ public class ConsoleImpl implements ConsoleFace {
 		} else {
 			UpdatePBFTNode pbft = new UpdatePBFTNode();
 			int result = pbft.AddNodeToObserver(nodeID, web3j, credentials);
-			System.out.println("result = "+result);
 			if (result == 1) {
 				System.out.println("Add " + nodeID.substring(0, 8) + "..." + " to an observer of group "
 						+ service.getGroupId() + " successful.");
 			} 
-			else {
+			if(result == 0){
+				System.out.println("This is the last miner, can not be changed to an observer.");
+			}
+			if(result == -1){
 				System.out.println(Common.NOAUTHORITY);
 			}
-
 			System.out.println();
 		}
 
@@ -679,9 +679,17 @@ public class ConsoleImpl implements ConsoleFace {
 			System.out.println("This is an invalid nodeID.");
 		} else {
 			UpdatePBFTNode pbft = new UpdatePBFTNode();
-			pbft.RemoveNode(nodeID, web3j, credentials);
-			System.out.println(
-					"Remove " + nodeID.substring(0, 8) + "..." + " of group " + service.getGroupId() + " successful.");
+			int result = pbft.RemoveNode(nodeID, web3j, credentials);
+			if (result == 1) {
+				System.out.println(
+						"Remove " + nodeID.substring(0, 8) + "..." + " of group " + service.getGroupId() + " successful.");
+			}
+			if(result == 0){
+				System.out.println("Remove the node failded.");
+			}
+			if(result == -1){
+				System.out.println(Common.NOAUTHORITY);
+			}
 			System.out.println();
 		}
 
