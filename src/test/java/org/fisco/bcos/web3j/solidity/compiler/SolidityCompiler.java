@@ -294,7 +294,7 @@ public class SolidityCompiler {
         // No input files given. If you wish to use the standard input please specify "-" explicitly.
         //
         // For older solc version "-" is not an issue as it is accepet as well
-        commandParts.add("-");
+   //     commandParts.add("-");
 
         return commandParts;
     }
