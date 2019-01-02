@@ -5,6 +5,7 @@ import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
+import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -12,7 +13,11 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -56,9 +61,9 @@ public class PerfomanceOk {
 		Integer startNum = 0;
 		
 		ThreadPoolTaskExecutor threadPool = new ThreadPoolTaskExecutor();
-		threadPool.setCorePoolSize(500);
-		threadPool.setMaxPoolSize(500);
-		threadPool.setQueueCapacity(10000);
+		threadPool.setCorePoolSize(2000);
+		threadPool.setMaxPoolSize(2000);
+		threadPool.setQueueCapacity(50000);
 		
 		threadPool.initialize();
 		
@@ -66,12 +71,12 @@ public class PerfomanceOk {
 		Ok ok = Ok.deploy(web3, credentials, gasPrice, gasLimit, initialWeiValue).send();
 
 		switch (command) {
-		case "trans":
-			count = Integer.parseInt(args[1]);
-			qps = Integer.parseInt(args[2]);
-			break;
-		default:
-			System.out.println("参数: <trans> <请求总数> <QPS>");
+			case "trans":
+				count = Integer.parseInt(args[1]);
+				qps = Integer.parseInt(args[2]);
+				break;
+			default:
+				System.out.println("参数: <trans> <请求总数> <QPS>");
 		}
 
 		PerfomanceOkCallback callback = new PerfomanceOkCallback();
@@ -81,6 +86,9 @@ public class PerfomanceOk {
 		Integer area = count / 10;
 
 		System.out.println("开始压测，总交易量：" + count);
+		List<CompletableFuture> threadArray = Collections.synchronizedList(new ArrayList<CompletableFuture>());
+		Long currentTime = System.currentTimeMillis();
+
 		for (Integer i = 0; i < count; ++i) {
 			final Integer seq = i;
 			final Integer total = count;
@@ -92,29 +100,49 @@ public class PerfomanceOk {
 					limiter.acquire();
 
 					Long currentTime = System.currentTimeMillis();
-					switch (command) {
-					case "trans":
-						String userName = String.valueOf("User " + String.valueOf(seq + start));
-						try {
-							ok.trans(new BigInteger("4")).send();
-							System.out.println("耗时 ms" + Long.toString(System.currentTimeMillis() - currentTime));
-						} catch (Exception e) {
-							logger.info(e.getMessage());
-						}
 
-						break;
+							String userName = String.valueOf("User " + String.valueOf(seq + start));
+							try {
+								CompletableFuture<TransactionReceipt> future = ok.trans(new BigInteger("4")).sendAsync();
+								threadArray.add(future);
+							} catch (Exception e) {
+								logger.info(e.getMessage());
+							}
+
+							int current = sended.incrementAndGet();
+
+							if (current >= area && ((current % area) == 0)) {
+								System.out.println("已发送: " + current + "/" + total + " 交易");
+								//	System.out.println("耗时 ms" + Long.toString(System.currentTimeMillis() - currentTime));
+							}
 					}
 
-					int current = sended.incrementAndGet();
-
-					if (current >= area && ((current % area) == 0)) {
-						System.out.println("已发送: " + current + "/" + total + " 交易");
-					}
-				}
 
 			});
-
 		}
+	int count1 = 1;
+
+		while(threadArray.size()>0) {
+			for (int i = 0; i < threadArray.size(); i++) {
+
+				if (threadArray.get(i).isDone()) {
+					threadArray.remove(threadArray.get(i));
+					count1++;
+				}
+
+			if(count1 %2000 ==0) {
+				Long time = System.currentTimeMillis() - currentTime;
+				System.out.println("2000笔交易耗时 ms" + Long.toString(System.currentTimeMillis() - currentTime));
+				double tps = 2000.0/(time/1000.0);
+				System.out.println("tps 是" + (double)Math.round(tps*100)/100);
+				currentTime= System.currentTimeMillis();
+			}
+
+			}
+			Thread.sleep(500);
+		}
+
+
 		exit(1);
 
 
