@@ -3,6 +3,8 @@ package org.fisco.bcos.channel.test.contract;
 import org.fisco.bcos.channel.test.TestBase;
 import org.fisco.bcos.web3j.console.ContractClassFactory;
 import org.fisco.bcos.web3j.crypto.Credentials;
+import org.fisco.bcos.web3j.crypto.EncryptType;
+import org.fisco.bcos.web3j.crypto.gm.GenCredential;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.RemoteCall;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
@@ -44,7 +46,7 @@ public class OkTest extends TestBase {
             BigInteger oldBalance = okDemo.get().sendAsync().get(60000, TimeUnit.MILLISECONDS);
             okDemo.trans(new BigInteger("4")).sendAsync().get(60000, TimeUnit.MILLISECONDS);
             BigInteger newBalance = okDemo.get().sendAsync().get(60000, TimeUnit.MILLISECONDS);
-//           assertTrue(newBalance.intValue() == oldBalance.intValue() + 4);
+           assertTrue(newBalance.intValue() == oldBalance.intValue() + 4);
         }
     }
 
