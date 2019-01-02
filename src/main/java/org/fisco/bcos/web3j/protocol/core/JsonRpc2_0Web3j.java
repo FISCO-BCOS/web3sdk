@@ -70,14 +70,14 @@ public class JsonRpc2_0Web3j implements Web3j {
         Runnable runnable = new Runnable() {
             public void run() {
                 try {
-                    EthBlockNumber ethBlockNumber = ethBlockNumber().sendAsync().get(10000, TimeUnit.MILLISECONDS);
+                    EthBlockNumber ethBlockNumber = ethBlockNumber().sendAsync().get(100000, TimeUnit.MILLISECONDS);
                     setBlockNumber(ethBlockNumber.getBlockNumber());
                 } catch (Exception e) {
                     logger.error("Exception: get blocknumber request fail "  + e);
                 }
             }
         };
-        scheduleService.scheduleAtFixedRate(runnable,1,5,TimeUnit.SECONDS);
+        scheduleService.scheduleAtFixedRate(runnable,1,500,TimeUnit.SECONDS);
 
     }
 
