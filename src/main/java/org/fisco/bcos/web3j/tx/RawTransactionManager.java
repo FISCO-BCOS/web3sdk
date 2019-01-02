@@ -91,7 +91,6 @@ public class RawTransactionManager extends TransactionManager {
 			Random r = new Random();
 			BigInteger randomid = new BigInteger(250,r);
             BigInteger blockLimit = getBlockLimit();
-            logger.info("sendTransaction randomid: {} blockLimit:{}", randomid,blockLimit);
             RawTransaction rawTransaction = RawTransaction.createTransaction(
                     randomid,
                     gasPrice,
