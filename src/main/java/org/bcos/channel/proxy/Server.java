@@ -166,27 +166,9 @@ public class Server {
 	}
 
 
-	private void checkeCallBackThreadPool(){
-		if (null == this.threadPool) {
-
-			int poolCoreSize = Runtime.getRuntime().availableProcessors() * 2;
-			int queueCapacity = Integer.MAX_VALUE;
-			String threadNamePrefix = "callback-";
-
-			ThreadPoolTaskExecutor pool = new ThreadPoolTaskExecutor();
-			pool.setCorePoolSize(poolCoreSize);
-			pool.setMaxPoolSize(poolCoreSize);
-			pool.setQueueCapacity(queueCapacity);
-			pool.setThreadNamePrefix(threadNamePrefix);
-			pool.initialize();
-			this.threadPool = pool;
-		}
-	}
 
 	public void run() {
 		logger.debug("init ProxyServer");
-
-		checkeCallBackThreadPool();
 
 		try {
 			ConnectionCallback localConnectionCallback = new ConnectionCallback();
