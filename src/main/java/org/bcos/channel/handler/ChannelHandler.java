@@ -97,7 +97,7 @@ public class ChannelHandler extends SimpleChannelInboundHandler<ByteBuf> {
 
                 //移除该networkConnection
                 connections.removeNetworkConnectionByHost(host, port);
-            } else {
+//            } else {
                 //无需将连接置为null
                 //connections.setNetworkConnection(host, port, null);
             }
