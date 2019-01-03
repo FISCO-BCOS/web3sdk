@@ -13,21 +13,17 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.System.exit;
-import static java.lang.System.setOut;
 
-public class PerfomanceOk1 {
-	static Logger logger = LoggerFactory.getLogger(PerfomanceOk1.class);
+public class PerfomanceOk2 {
+	static Logger logger = LoggerFactory.getLogger(PerfomanceOk2.class);
 	private static AtomicInteger sended = new AtomicInteger(0);
-	
+
 	public static void main(String[] args) throws Exception {
 		String groupId = args[3];
 		//初始化Service
@@ -37,12 +33,11 @@ public class PerfomanceOk1 {
 
 		System.out.println("开始测试...");
 		System.out.println("===================================================================");
-		
+
 		ChannelEthereumService channelEthereumService = new ChannelEthereumService();
 		channelEthereumService.setChannelService(service);
 
-		ScheduledExecutorService scheduledExecutorService =
-				Executors.newScheduledThreadPool(500);
+		ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(500);
 		Web3j web3 = Web3j.build(channelEthereumService,  15 * 100, scheduledExecutorService);
 
 		//初始化交易签名私钥
@@ -53,20 +48,20 @@ public class PerfomanceOk1 {
 		BigInteger gasPrice = new BigInteger("30000000");
 		BigInteger gasLimit = new BigInteger("30000000");
 		BigInteger initialWeiValue = new BigInteger("0");
-		
+
 		//解析参数
 		String command = args[0];
 		Integer count = 0;
 		Integer qps = 0;
 		Integer startNum = 0;
-		
+
 		ThreadPoolTaskExecutor threadPool = new ThreadPoolTaskExecutor();
 		threadPool.setCorePoolSize(2000);
 		threadPool.setMaxPoolSize(2000);
-		threadPool.setQueueCapacity(50000);
-		
+		threadPool.setQueueCapacity(100000);
+
 		threadPool.initialize();
-		
+
 		System.out.println("部署合约");
 		Ok ok = Ok.deploy(web3, credentials, gasPrice, gasLimit, initialWeiValue).send();
 
@@ -81,12 +76,11 @@ public class PerfomanceOk1 {
 
 		PerfomanceOkCallback callback = new PerfomanceOkCallback();
 		callback.setTotal(count);
-		
+
 		RateLimiter limiter = RateLimiter.create(qps);
 		Integer area = count / 10;
 
 		System.out.println("开始压测，总交易量：" + count);
-		List<CompletableFuture> threadArray = Collections.synchronizedList(new ArrayList<CompletableFuture>());
 		Long currentTime = System.currentTimeMillis();
 
 		for (Integer i = 0; i < count; ++i) {
@@ -101,56 +95,29 @@ public class PerfomanceOk1 {
 
 					Long currentTime = System.currentTimeMillis();
 
-							String userName = String.valueOf("User " + String.valueOf(seq + start));
-							try {
-								CompletableFuture<TransactionReceipt> future = ok.trans(new BigInteger("4")).sendAsync();
-								threadArray.add(future);
-							} catch (Exception e) {
-								logger.info(e.getMessage());
-							}
-
-							int current = sended.incrementAndGet();
-
-							if (current >= area && ((current % area) == 0)) {
-								System.out.println("已发送: " + current + "/" + total + " 交易");
-								//	System.out.println("耗时 ms" + Long.toString(System.currentTimeMillis() - currentTime));
-							}
+					String userName = String.valueOf("User " + String.valueOf(seq + start));
+					try {
+						CompletableFuture<TransactionReceipt> future = ok.trans(new BigInteger("4")).sendAsync();
+						TransactionReceipt transactionReceipt = future.get();
+						callback.onResponse(System.currentTimeMillis() - currentTime);
+					} catch (Exception e) {
+						logger.info(e.getMessage());
 					}
 
+					int current = sended.incrementAndGet();
+
+					if (current >= area && ((current % area) == 0)) {
+						System.out.println("已发送: " + current + "/" + total + " 交易");
+						//	System.out.println("耗时 ms" + Long.toString(System.currentTimeMillis() - currentTime));
+					}
+				}
 
 			});
 		}
-	int count1 = 1;
-	int sum =0 ;
-	int j=0;
-		while(threadArray.size()>0) {
-			for (int i = 0; i < threadArray.size(); i++) {
 
-				if (threadArray.get(i).isDone()) {
-					threadArray.remove(threadArray.get(i));
-					count1++;
-				}
-
-			if(count1 %2000 ==0) {
-				Long time = System.currentTimeMillis() - currentTime;
-				System.out.println("2000笔交易耗时 ms" + Long.toString(System.currentTimeMillis() - currentTime));
-				double tps = 2000.0/(time/1000.0);
-				if(tps<2000) {
-					sum+=tps;
-					j++;
-				}
-				System.out.println("tps 是" + (double)Math.round(tps*100)/100);
-				currentTime= System.currentTimeMillis();
-			}
-
-			}
-			Thread.sleep(500);
-		}
-
-		System.out.println("已收到交易 " + (count1-1));
-		System.out.println("平均tps 是 " + sum/j);
-		System.out.println("总耗时是" + (System.currentTimeMillis()-currentTime));
-		exit(1);
+		Thread.sleep(5000);
+		System.out.println("全部交易已发送: " + count);
+		exit(0);
 
 	}
 }
