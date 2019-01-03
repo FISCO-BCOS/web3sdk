@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -69,10 +70,15 @@ public class JsonRpc2_0Web3j implements Web3j {
         ScheduledExecutorService scheduleService = Executors.newSingleThreadScheduledExecutor();
         Runnable runnable = new Runnable() {
             public void run() {
+                Request irequest = ethBlockNumber();
                 try {
-                    EthBlockNumber ethBlockNumber = ethBlockNumber().sendAsync().get(100000, TimeUnit.MILLISECONDS);
+
+                    CompletableFuture<EthBlockNumber> ifuture = ethBlockNumber().sendAsync();
+
+                    EthBlockNumber ethBlockNumber = ifuture.get(100000, TimeUnit.MILLISECONDS);
                     setBlockNumber(ethBlockNumber.getBlockNumber());
                 } catch (Exception e) {
+                    logger.error("getblocknumber's request id is : " +  irequest.getId() );
                     logger.error("Exception: get blocknumber request fail "  + e);
                 }
             }
