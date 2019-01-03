@@ -2,12 +2,10 @@ package org.fisco.bcos.channel.test.contract;
 
 import com.google.common.util.concurrent.RateLimiter;
 import org.fisco.bcos.channel.client.Service;
-import org.fisco.bcos.channel.test.TestBase;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
-import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -15,101 +13,136 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.math.BigInteger;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.junit.Assert.assertTrue;
+import static java.lang.System.exit;
 
-public class PerfomanceOk1 extends TestBase {
+public class PerfomanceOk1 {
 	static Logger logger = LoggerFactory.getLogger(PerfomanceOk1.class);
 	private static AtomicInteger sended = new AtomicInteger(0);
+	
+	public static void main(String[] args) throws Exception {
+		String groupId = args[3];
+		//初始化Service
+		ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
+		Service service = context.getBean(Service.class);
+		service.run();
 
-	public  static ThreadPoolTaskExecutor threadPool = new ThreadPoolTaskExecutor();
+		System.out.println("开始测试...");
+		System.out.println("===================================================================");
+		
+		ChannelEthereumService channelEthereumService = new ChannelEthereumService();
+		channelEthereumService.setChannelService(service);
 
-//	public static void main(String[] args) throws Exception {
-//		String groupId = args[3];
-//		//初始化Service
-//		ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
-//		Service service = context.getBean(Service.class);
-//		service.run();
-//
-//		System.out.println("开始测试...");
-//		System.out.println("===================================================================");
-//
-//		ChannelEthereumService channelEthereumService = new ChannelEthereumService();
-//		channelEthereumService.setChannelService(service);
-//
-//		Web3j web3 = Web3j.build(channelEthereumService,Integer.parseInt(groupId));
-//
-//		//初始化交易签名私钥
-//		Credentials credentials = Credentials.create("b83261efa42895c38c6c2364ca878f43e77f3cddbc922bf57d0d48070f79feb6");
-//
-//		//ECKeyPair keyPair = Keys.createEcKeyPair();
-//		//Credentials credentials = Credentials.create(keyPair);
-//
-//		//初始化交易参数
-//		BigInteger gasPrice = new BigInteger("30000000");
-//		BigInteger gasLimit = new BigInteger("30000000");
-//		BigInteger initialWeiValue = new BigInteger("0");
-//
-//		//解析参数
-//		String command = args[0];
-//		Integer count = 0;
-//		Integer qps = 0;
-//		Integer startNum = 0;
-//		threadPool.setCorePoolSize(100);
-//		threadPool.setMaxPoolSize(500);
-//		threadPool.setQueueCapacity(1000000);
-//
-//		threadPool.initialize();
-//
-//
-//		System.out.println("部署合约");
-//		Ok ok = Ok.deploy(web3, credentials, gasPrice, gasLimit, initialWeiValue).send();
-//
-//
-//		PerfomanceOkCallback callback = new PerfomanceOkCallback();
-//		callback.setTotal(count);
-//
-//		RateLimiter limiter = RateLimiter.create(qps);
-//		Integer area = count / 10;
-//
-//		System.out.println("开始压测，总交易量：" + count);
-//		System.out.println("begin " + System.currentTimeMillis());
-//         for (int i=0 ;i <1000000;i++ ) {
-//         	ok.trans(new BigInteger("4")).sendAsync();
-//		}
-//		System.out.println("end " + System.currentTimeMillis());
-//	}
+		ScheduledExecutorService scheduledExecutorService =
+				Executors.newScheduledThreadPool(500);
+		Web3j web3 = Web3j.build(channelEthereumService,  15 * 100, scheduledExecutorService);
 
-	@Test
-	public void testOkContract() throws Exception {
+		//初始化交易签名私钥
+		Credentials credentials = Credentials.create("b83261efa42895c38c6c2364ca878f43e77f3cddbc922bf57d0d48070f79feb6");
 
-		java.math.BigInteger gasPrice = new BigInteger("300000000");
-		java.math.BigInteger gasLimit = new BigInteger("300000000");
-		java.math.BigInteger initialWeiValue = new BigInteger("0");
-		threadPool.setCorePoolSize(500);
-		threadPool.setMaxPoolSize(500);
-		threadPool.setQueueCapacity(1000000);
 
+		//初始化交易参数
+		BigInteger gasPrice = new BigInteger("30000000");
+		BigInteger gasLimit = new BigInteger("30000000");
+		BigInteger initialWeiValue = new BigInteger("0");
+		
+		//解析参数
+		String command = args[0];
+		Integer count = 0;
+		Integer qps = 0;
+		Integer startNum = 0;
+		
+		ThreadPoolTaskExecutor threadPool = new ThreadPoolTaskExecutor();
+		threadPool.setCorePoolSize(2000);
+		threadPool.setMaxPoolSize(2000);
+		threadPool.setQueueCapacity(50000);
+		
 		threadPool.initialize();
+		
+		System.out.println("部署合约");
+		Ok ok = Ok.deploy(web3, credentials, gasPrice, gasLimit, initialWeiValue).send();
 
-		Ok okDemo = Ok.deploy(web3j, credentials, gasPrice, gasLimit, initialWeiValue).send();
+		switch (command) {
+			case "trans":
+				count = Integer.parseInt(args[1]);
+				qps = Integer.parseInt(args[2]);
+				break;
+			default:
+				System.out.println("参数: <trans> <请求总数> <QPS>");
+		}
 
-		//System.out.println("开始压测，总交易量：" + count);
-		System.out.println("begin " + System.currentTimeMillis());
-		for (int i=0 ;i <100000;i++ ) {
+		PerfomanceOkCallback callback = new PerfomanceOkCallback();
+		callback.setTotal(count);
+		
+		RateLimiter limiter = RateLimiter.create(qps);
+		Integer area = count / 10;
 
-			threadPool.execute(()-> {
-				try {
-					okDemo.trans(new BigInteger("4")).send();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+		System.out.println("开始压测，总交易量：" + count);
+		List<CompletableFuture> threadArray = Collections.synchronizedList(new ArrayList<CompletableFuture>());
+		Long currentTime = System.currentTimeMillis();
+
+		for (Integer i = 0; i < count; ++i) {
+			final Integer seq = i;
+			final Integer total = count;
+			final Integer start = startNum;
+
+			threadPool.execute(new Runnable() {
+				@Override
+				public void run() {
+					limiter.acquire();
+
+					Long currentTime = System.currentTimeMillis();
+
+							String userName = String.valueOf("User " + String.valueOf(seq + start));
+							try {
+								CompletableFuture<TransactionReceipt> future = ok.trans(new BigInteger("4")).sendAsync();
+								threadArray.add(future);
+							} catch (Exception e) {
+								logger.info(e.getMessage());
+							}
+
+							int current = sended.incrementAndGet();
+
+							if (current >= area && ((current % area) == 0)) {
+								System.out.println("已发送: " + current + "/" + total + " 交易");
+								//	System.out.println("耗时 ms" + Long.toString(System.currentTimeMillis() - currentTime));
+							}
+					}
+
+
 			});
 		}
-		System.out.println("**********end " + System.currentTimeMillis());
-		Thread.sleep(10000);
+	int count1 = 1;
+
+		while(threadArray.size()>0) {
+			for (int i = 0; i < threadArray.size(); i++) {
+
+				if (threadArray.get(i).isDone()) {
+					threadArray.remove(threadArray.get(i));
+					count1++;
+				}
+
+			if(count1 %2000 ==0) {
+				Long time = System.currentTimeMillis() - currentTime;
+				System.out.println("2000笔交易耗时 ms" + Long.toString(System.currentTimeMillis() - currentTime));
+				double tps = 2000.0/(time/1000.0);
+				System.out.println("tps 是" + (double)Math.round(tps*100)/100);
+				currentTime= System.currentTimeMillis();
+			}
+
+			}
+			Thread.sleep(500);
+		}
+
+		System.out.println("已收到交易 " + (count1-1));
+		exit(1);
+
 	}
 }
