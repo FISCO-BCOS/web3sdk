@@ -142,9 +142,8 @@ public class PerfomanceOk {
 			Thread.sleep(500);
 		}
 
-
+		System.out.println("已收到交易 " + (count1-1));
 		exit(1);
-
 
 	}
 }
