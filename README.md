@@ -24,7 +24,7 @@
       *压力测试*  gradle test --tests  org.fisco.bcos.channel.test.contract.PressureTest
       *基本测试*  gradle test --tests org.fisco.bcos.channel.test.BasicTest
       *token测试*  gradle test --tests org.fisco.bcos.channel.test.contract.Erc20Test
-      *tps测试*  gradle run -Dexec.mainClass=org.fisco.bcos.channel.test.contract.PerfomanceOk --args='trans 100 100 1'
+      *tps测试*  gradle run -Dexec.mainClass=org.fisco.bcos.channel.test.contract.PerfomanceOk2 --args='trans 100 100 1'
 
 ---
   目前你也可以gradle build (确保gradle 版本在4.10.1以上) 之后到dist目录去执行java -cp命令:
