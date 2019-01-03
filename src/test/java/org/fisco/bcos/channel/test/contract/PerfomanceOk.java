@@ -84,7 +84,6 @@ public class PerfomanceOk {
 		Integer area = count / 10;
 
 		System.out.println("开始压测，总交易量：" + count);
-		List<CompletableFuture> threadArray = Collections.synchronizedList(new ArrayList<CompletableFuture>());
 		Long currentTime = System.currentTimeMillis();
 
 		for (Integer i = 0; i < count; ++i) {
@@ -115,7 +114,6 @@ public class PerfomanceOk {
 						//	System.out.println("耗时 ms" + Long.toString(System.currentTimeMillis() - currentTime));
 					}
 				}
-
 
 			});
 		}

@@ -22,6 +22,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.System.exit;
+import static java.lang.System.setOut;
 
 public class PerfomanceOk1 {
 	static Logger logger = LoggerFactory.getLogger(PerfomanceOk1.class);
@@ -120,7 +121,8 @@ public class PerfomanceOk1 {
 			});
 		}
 	int count1 = 1;
-
+	int sum =0 ;
+	int j=0;
 		while(threadArray.size()>0) {
 			for (int i = 0; i < threadArray.size(); i++) {
 
@@ -133,6 +135,10 @@ public class PerfomanceOk1 {
 				Long time = System.currentTimeMillis() - currentTime;
 				System.out.println("2000笔交易耗时 ms" + Long.toString(System.currentTimeMillis() - currentTime));
 				double tps = 2000.0/(time/1000.0);
+				if(tps<2000) {
+					sum+=tps;
+					j++;
+				}
 				System.out.println("tps 是" + (double)Math.round(tps*100)/100);
 				currentTime= System.currentTimeMillis();
 			}
@@ -142,6 +148,8 @@ public class PerfomanceOk1 {
 		}
 
 		System.out.println("已收到交易 " + (count1-1));
+		System.out.println("平均tps 是 " + sum/j);
+		System.out.println("总耗时是" + (System.currentTimeMillis()-currentTime));
 		exit(1);
 
 	}
