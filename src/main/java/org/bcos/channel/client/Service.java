@@ -151,7 +151,7 @@ public class Service {
 						response.writeExtra(out);
 
 						ctx.writeAndFlush(out);
-					} else if (content.equals("1")) {
+					} else {
 						logger.trace("heartbeat response");
 					}
 				} else if (msg.getType() == 0x1000) {

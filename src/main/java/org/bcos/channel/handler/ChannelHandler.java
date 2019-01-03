@@ -142,7 +142,7 @@ public class ChannelHandler extends SimpleChannelInboundHandler<ByteBuf> {
         if (isServer) {
             //server模式下，移除该connection
             connections.removeNetworkConnectionByHost(host, port);
-        } else {
+//        } else {
             //将该连接置为不可用
             //connections.setNetworkConnection(host, port, null);
         }
