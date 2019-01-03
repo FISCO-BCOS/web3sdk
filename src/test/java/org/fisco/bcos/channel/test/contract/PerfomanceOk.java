@@ -131,23 +131,28 @@ public class PerfomanceOk {
 				}
 
 			if(count1 % qps == 0 &&  previous != count1) {
+				System.out.println("count1: " + count1);
 				Long time = System.currentTimeMillis() - currentTime;
-				System.out.println(qps+"笔交易耗时 ms" + Long.toString(System.currentTimeMillis() - currentTime));
+
 				double tps = qps/(time/1000.0);
 				if(tps<2000 && tps>200) {
 					sum+=tps;
-					j++;
+					j=j+1;
+					System.out.println(qps+"笔交易耗时 ms" + time.toString());
+					System.out.println("此阶段tps 是" + (double)Math.round(tps*100)/100);
 				}
-				System.out.println("此阶段tps 是" + (double)Math.round(tps*100)/100);
+
 				currentTime= System.currentTimeMillis();
 			}
 
 			}
-			Thread.sleep(100);
+
 		}
 
 		System.out.println("已收到交易 " + (count1-1));
-		System.out.println("***平均tps*** 是 " + sum/j);
+		Long time1 = System.currentTimeMillis() - begintime;
+		double finaltps =  count/(time1/1000.0);
+		System.out.println("***平均tps*** 是 " +(double)Math.round(finaltps*100)/100);
 		System.out.println("***总耗时是***" + (System.currentTimeMillis()-begintime));
 		exit(0);
 
