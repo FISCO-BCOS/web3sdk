@@ -6,6 +6,7 @@ import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.fisco.bcos.web3j.utils.Web3AsyncThreadPoolSize;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -33,7 +34,8 @@ public class PerfomanceOk3 {
 		ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
 		Service service = context.getBean(Service.class);
 		service.run();
-
+		Web3AsyncThreadPoolSize.web3AsyncCorePoolSize = 2000;
+		Web3AsyncThreadPoolSize.web3AsyncPoolSize=2000;
 		System.out.println("开始测试...");
 		System.out.println("===================================================================");
 		
