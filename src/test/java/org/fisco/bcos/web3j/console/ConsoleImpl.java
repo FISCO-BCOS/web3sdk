@@ -619,7 +619,7 @@ public class ConsoleImpl implements ConsoleFace {
 			return;
 		}
 		if (nodeID.length() != 128) {
-			System.out.println(Common.INVALIDNODEID);
+			ConsoleUtils.printJson(org.fisco.bcos.channel.test.precompile.Common.transferToJson(-40));
 		} else {
 			UpdatePBFTNode pbft = new UpdatePBFTNode();
 			String result = pbft.AddNodeToMiner(nodeID, web3j, credentials);
@@ -642,7 +642,7 @@ public class ConsoleImpl implements ConsoleFace {
 			return;
 		}
 		if (nodeID.length() != 128) {
-			System.out.println(Common.INVALIDNODEID);
+			ConsoleUtils.printJson(org.fisco.bcos.channel.test.precompile.Common.transferToJson(-40));
 		} else {
 			UpdatePBFTNode pbft = new UpdatePBFTNode();
 			String result = pbft.AddNodeToObserver(nodeID, web3j, credentials);
@@ -664,7 +664,7 @@ public class ConsoleImpl implements ConsoleFace {
 			return;
 		}
 		if (nodeID.length() != 128) {
-			System.out.println(Common.INVALIDNODEID);
+			ConsoleUtils.printJson(org.fisco.bcos.channel.test.precompile.Common.transferToJson(-40));
 		} else {
 			UpdatePBFTNode pbft = new UpdatePBFTNode();
 			String result = pbft.RemoveNode(nodeID, web3j, credentials);
