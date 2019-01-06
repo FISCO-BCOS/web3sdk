@@ -53,6 +53,9 @@ public class ConsoleUtils {
 					addIndentBlank(sb, indent);
 				}
 				break;
+			case ' ':
+				sb.append(current);
+				break;
 			default:
 				if(!(current == " ".charAt(0)))
 					sb.append(current);
