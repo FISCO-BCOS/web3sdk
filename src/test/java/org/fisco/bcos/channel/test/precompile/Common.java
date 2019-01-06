@@ -16,20 +16,23 @@ public class Common {
     		case -1:
     			msg = "non-authorized";
     			break;
-    		case -33:
+    		case -30:
     			msg = "table name and address exist";
     			break;
-    		case -34:
+    		case -31:
     			msg = "table name and address does not exist";
     			break;
     		case -40:
-    			msg = "invalid configuration values";
+    			msg = "invalid nodeID";
     			break;
     		case -41:
-    			msg = "invalid nodeID";
+    			msg = "last miner cannot be removed";
     			break;
     		case -50:
     			msg = "address and version exist";
+    			break;
+    		case -60:
+    			msg = "invalid configuration value";
     			break;
     		default:
     			msg = "success";
@@ -40,16 +43,20 @@ public class Common {
     }
     
 	public static String getJsonStr(String output) throws JsonProcessingException {
-		int code = 0;
-		if ("f".equals(output.substring(2, 3))) {
-			code = -1;
-		} else {
-			code = new BigInteger(output.substring(2, output.length()), 16).intValue() - 256;
-			if(code < -200)
-			{
-				code = Integer.valueOf(output.substring(2), 16).intValue();
+		try {
+			int code = 0;
+			if ("f".equals(output.substring(2, 3))) {
+				code = -1;
+			} else {
+				code = new BigInteger(output.substring(2, output.length()), 16).intValue() - 256;
+				if(code < -200)
+				{
+					code = Integer.valueOf(output.substring(2), 16).intValue();
+				}
 			}
+			return transferToJson(code);
+		} catch (NumberFormatException e) {
+			return "The call function does not exist.";
 		}
-		return transferToJson(code);
 	}
 }
