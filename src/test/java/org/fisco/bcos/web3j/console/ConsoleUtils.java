@@ -13,6 +13,7 @@ public class ConsoleUtils {
 	public static String formatJson(String jsonStr) {
 		if (null == jsonStr || "".equals(jsonStr))
 			return "";
+		jsonStr = jsonStr.replace("\\n", "");
 		StringBuilder sb = new StringBuilder();
 		char last = '\0';
 		char current = '\0';
@@ -55,6 +56,8 @@ public class ConsoleUtils {
 				break;
 			case ' ':
 				sb.append(current);
+				break;
+			case '\\':
 				break;
 			default:
 				if(!(current == " ".charAt(0)))
