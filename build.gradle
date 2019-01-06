@@ -67,7 +67,8 @@ dependencies {
 			'org.ethereum:solcJ-all:0.4.25',
 	 		"org.apache.commons:commons-collections4:4.0",
 			"commons-io:commons-io:2.4",
-			'com.github.stefanbirkner:system-rules:1.18.0'
+			'com.github.stefanbirkner:system-rules:1.18.0',
+			'io.bretty:console-table-builder:1.2'
 			
 
 }
