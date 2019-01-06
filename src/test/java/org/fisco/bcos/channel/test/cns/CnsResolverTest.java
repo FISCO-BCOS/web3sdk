@@ -34,7 +34,7 @@ public class CnsResolverTest extends TestBase {
         System.out.println("okdemo contract address " + okDemo.getContractAddress());
         int random = new Random().nextInt(1000);
         String name = "hello world" + random;
-        TransactionReceipt receipt = cnsResolver.registerCns(name , "10.0", okDemo.getContractAddress(),"[\n" +
+        String result = cnsResolver.registerCns(name , "10.0", okDemo.getContractAddress(),"[\n" +
             "\t{\n" +
             "\t\t\"constant\": false,\n" +
             "\t\t\"inputs\": [\n" +
@@ -70,14 +70,12 @@ public class CnsResolverTest extends TestBase {
             "\t\t\"stateMutability\": \"payable\"\n" +
             "\t}\n" +
             "]");
-        System.out.println("receipt" + receipt.getTransactionHash());
+        System.out.println("result:" +result);
         System.out.println("CNS NAME   " + name+":9.0" );
         System.out.println("CNS register SUCCESSFULLY");
         System.out.println( "cnsResolver address" + cnsResolver.resolve(name +":10.0"));
         System.out.println( "cnsResolver address" + cnsResolver.resolve(name ));
         System.out.println( "cnsResolver address" + cnsResolver.resolve(okDemo.getContractAddress() ));
-//       BigInteger balance =  Ok.load(name,web3j, credentials, gasPrice, gasLimit).get().send();
-     //   System.out.println("balance = "  + balance );
         assertEquals(cnsResolver.resolve(name +":10.0"),okDemo.getContractAddress());
 
     }
