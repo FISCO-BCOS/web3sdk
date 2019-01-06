@@ -543,7 +543,7 @@ public class ConsoleImpl implements ConsoleFace {
 		}
 		if(!flag)
 		{
-			System.out.println(Common.NOAUTHORITY);
+			ConsoleUtils.printJson(org.fisco.bcos.channel.test.precompile.Common.transferToJson(-1));
 			System.out.println();
 			return;
 		}
@@ -557,8 +557,9 @@ public class ConsoleImpl implements ConsoleFace {
 		contractVersion = params[2];
 		// register cns
 		CnsResolver cnsResolver = new CnsResolver(web3j, credentials);
-		TransactionReceipt registerCns = cnsResolver.registerCns(params[1], contractVersion, contractAddress,
+		String result = cnsResolver.registerCns(params[1], contractVersion, contractAddress,
 				contract.getContractBinary());
+		ConsoleUtils.printJson(result);
 		System.out.println(contractAddress);
 		System.out.println();
 	}
@@ -616,19 +617,13 @@ public class ConsoleImpl implements ConsoleFace {
 			return;
 		}
 		if (nodeID.length() != 128) {
-			System.out.println("This is an invalid nodeID.");
+			System.out.println(Common.INVALIDNODEID);
 		} else {
 			UpdatePBFTNode pbft = new UpdatePBFTNode();
-			int result = pbft.AddNodeToMiner(nodeID, web3j, credentials);
-			if (result == 1) {
-				System.out.println("Add " + nodeID.substring(0, 8) + "..." + " to a miner of group " + service.getGroupId()
-				+ " successful.");
-			} 
-			else {
-				System.out.println(Common.NOAUTHORITY);
-			}
-			System.out.println();
+			String result = pbft.AddNodeToMiner(nodeID, web3j, credentials);
+			ConsoleUtils.printJson(result);
 		}
+		System.out.println();
 
 	}
 
@@ -645,22 +640,13 @@ public class ConsoleImpl implements ConsoleFace {
 			return;
 		}
 		if (nodeID.length() != 128) {
-			System.out.println("This is an invalid nodeID.");
+			System.out.println(Common.INVALIDNODEID);
 		} else {
 			UpdatePBFTNode pbft = new UpdatePBFTNode();
-			int result = pbft.AddNodeToObserver(nodeID, web3j, credentials);
-			if (result == 1) {
-				System.out.println("Add " + nodeID.substring(0, 8) + "..." + " to an observer of group "
-						+ service.getGroupId() + " successful.");
-			} 
-			if(result == 0){
-				System.out.println("This is the last miner, can not be changed to an observer.");
-			}
-			if(result == -1){
-				System.out.println(Common.NOAUTHORITY);
-			}
-			System.out.println();
+			String result = pbft.AddNodeToObserver(nodeID, web3j, credentials);
+			ConsoleUtils.printJson(result);
 		}
+		System.out.println();
 
 	}
 
@@ -676,22 +662,13 @@ public class ConsoleImpl implements ConsoleFace {
 			return;
 		}
 		if (nodeID.length() != 128) {
-			System.out.println("This is an invalid nodeID.");
+			System.out.println(Common.INVALIDNODEID);
 		} else {
 			UpdatePBFTNode pbft = new UpdatePBFTNode();
-			int result = pbft.RemoveNode(nodeID, web3j, credentials);
-			if (result == 1) {
-				System.out.println(
-						"Remove " + nodeID.substring(0, 8) + "..." + " of group " + service.getGroupId() + " successful.");
-			}
-			if(result == 0){
-				System.out.println("Remove the node failded.");
-			}
-			if(result == -1){
-				System.out.println(Common.NOAUTHORITY);
-			}
-			System.out.println();
+			String result = pbft.RemoveNode(nodeID, web3j, credentials);
+			ConsoleUtils.printJson(result);
 		}
+		System.out.println();
 
 	}
 
@@ -715,16 +692,8 @@ public class ConsoleImpl implements ConsoleFace {
 			return;
 		}
 		AuthorityTableService authority = new AuthorityTableService();
-		int result = authority.add(tableName, addr, web3j, credentials);
-		if (result == 1) {
-			System.out.println("add " + "tableName:" + tableName + " address:" + addr + " of group "
-					+ service.getGroupId() + " successful.");
-		} else if (result == 0) {
-			System.out.println("tableName:" + tableName + " address:" + addr + " of group " + service.getGroupId()
-					+ " already exist.");
-		} else {
-			System.out.println(Common.NOAUTHORITY);
-		}
+		String result = authority.add(tableName, addr, web3j, credentials);
+		ConsoleUtils.printJson(result);
 		System.out.println();
 
 	}
@@ -749,16 +718,8 @@ public class ConsoleImpl implements ConsoleFace {
 			return;
 		}
 		AuthorityTableService authority = new AuthorityTableService();
-		int result = authority.remove(tableName, addr, web3j, credentials);
-		if (result == 1) {
-			System.out.println("remove " + "tableName:" + tableName + " address:" + addr + " of group "
-					+ service.getGroupId() + " successful.");
-		} else if (result == 0) {
-			System.out.println("tableName:" + tableName + " address:" + addr + " of group " + service.getGroupId()
-					+ " does not exist.");
-		} else {
-			System.out.println(Common.NOAUTHORITY);
-		}
+		String result = authority.remove(tableName, addr, web3j, credentials);
+		ConsoleUtils.printJson(result);
 		System.out.println();
 
 	}
@@ -818,18 +779,8 @@ public class ConsoleImpl implements ConsoleFace {
 
 		String[] args = { "setSystemConfig", key, value };
 		SetSystemConfig config = new SetSystemConfig();
-		int result = config.SetValueByKey(key, value, web3j, credentials);
-		if(result == -1){
-			System.out.println(Common.NOAUTHORITY);
-		}
-		else if(result == 0)
-		{
-			System.out.println("Set " + key + " by value " + value + " of group " + service.getGroupId() + " failed.");
-		}
-		else
-		{
-			System.out.println("Set " + key + " by value " + value + " of group " + service.getGroupId() + " successful.");
-		}
+		String result = config.SetValueByKey(key, value, web3j, credentials);
+		ConsoleUtils.printJson(result);
 		System.out.println();
 	}
 	

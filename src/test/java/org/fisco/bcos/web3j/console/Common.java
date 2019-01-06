@@ -1,5 +1,6 @@
 package org.fisco.bcos.web3j.console;
 
+
 public class Common {
 	
 	// system table for authority control
@@ -9,7 +10,7 @@ public class Common {
 	public static final String SYS_CONFIG = "_sys_config_";
 	public static final String SYS_CNS = "_sys_cns_";
 	
-	public static final String NOAUTHORITY = "This account is not authorized.";
+	public static final String INVALIDNODEID = "This is an invalid nodeID.";
 	
 	// test tx.origin for authority control
 	public static final String PRIVITEKEY1 = "3bed914595c159cbce70ec5fb6aff3d6797e0c5ee5a7a9224a21cae8932d84a4";
@@ -18,4 +19,5 @@ public class Common {
 	public static final String ORIGIN2 = "0xc0d0e6ccc0b44c12196266548bec4a3616160e7d";
 	public static final String PRIVITEKEY3 = "d0fee0a4e3c545a9394965042f8f891b6e5482c212a7428ec175d6aed121353a";
 	public static final String ORIGIN3 = "0x1600e34312edea101d8b41a3465f2e381b66baed";
+	
 }
