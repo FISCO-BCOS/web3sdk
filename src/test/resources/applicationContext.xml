@@ -12,31 +12,27 @@
     http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
 
 
-	<bean id="ChannelConnections1"  class="org.fisco.bcos.channel.handler.ChannelConnections">
-		<property name="groupId" value="1" />
-		<property name="connectionsStr">
-			<list>
-				<value>10.107.105.138:30901</value>
-				<value>10.107.105.138:30904</value>
-			</list>
-		</property>
-	</bean>
-
-	<bean id="ChannelConnections2" class="org.fisco.bcos.channel.handler.ChannelConnections">
-		<property name="groupId" value="2" />
-		<property name="connectionsStr">
-			<list>
-				<value>10.107.105.138:30901</value>
-				<value>10.107.105.138:30904</value>
-			</list>
-		</property>
-	</bean>
-
 	<bean id="groupChannelConnectionsConfig" class="org.fisco.bcos.channel.handler.GroupChannelConnectionsConfig">
 		<property name="allChannelConnections">
 			<list>
-				<ref bean="ChannelConnections1"/>
-				<ref bean="ChannelConnections2"/>
+				<bean id="ChannelConnections1"  class="org.fisco.bcos.channel.handler.ChannelConnections">
+					<property name="groupId" value="1" />
+					<property name="connectionsStr">
+						<list>
+							<value>10.107.105.138:30901</value>
+							<value>10.107.105.138:30904</value>
+						</list>
+					</property>
+				</bean>
+				<bean id="ChannelConnections2" class="org.fisco.bcos.channel.handler.ChannelConnections">
+					<property name="groupId" value="2" />
+					<property name="connectionsStr">
+						<list>
+							<value>10.107.105.138:30901</value>
+							<value>10.107.105.138:30904</value>
+						</list>
+					</property>
+				</bean>
 			</list>
 		</property>
 	</bean>
