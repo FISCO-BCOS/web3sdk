@@ -1,5 +1,6 @@
 package org.bcos.channel.proxy;
 
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -95,7 +96,7 @@ class ConnectionPair {
 
 			remoteConnectionInfo = null;
 			if (remoteConnectionInfos.size() > 0) {
-				Random random = new Random();
+				Random random = new SecureRandom();
 				Integer index = random.nextInt(remoteConnectionInfos.size());
 
 				logger.debug("selected:{}", index);

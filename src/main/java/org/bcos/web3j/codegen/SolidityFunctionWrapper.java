@@ -141,7 +141,7 @@ public class SolidityFunctionWrapper {
 
 	private TypeSpec.Builder createClassBuilder(String className, String binary, String abi) {
 
-		String javadoc = CODEGEN_WARNING + getWeb3jVersion();
+		String javadoc = CODEGEN_WARNING ;
 		try {
 			TypeSpec.Builder classBuilder = TypeSpec.classBuilder(className)
 					.addModifiers(Modifier.PUBLIC, Modifier.FINAL).addJavadoc(javadoc).superclass(Contract.class)
@@ -163,18 +163,7 @@ public class SolidityFunctionWrapper {
 		}
 	}
 
-    private String getWeb3jVersion() {
-        String version;
 
-        try {
-            // This only works if run as part of the web3j command line tools which contains
-            // a version.properties file
-            version = Version.getVersion();
-        } catch (IOException | NullPointerException e) {
-            version = Version.DEFAULT;
-        }
-        return "\n<p>Generated with web3j version " + version + ".\n";
-    }
 
     private FieldSpec createBinaryDefinition(String binary) {
         return FieldSpec.builder(String.class, BINARY)
