@@ -52,9 +52,9 @@
 				<entry key="fisco"> <!-- 配置本机构的区块链节点列表（如有DMZ，则为区块链前置）-->
 					<bean class="org.bcos.channel.handler.ChannelConnections">
 						<!--CA证书路径-->
-						<property name="caCertPath" value="classpath:ca.crt" />
+						<property name="caCertPath" value="classpath*:ca.crt" />
 						<!--client.keystore证书路径-->
-						<property name="clientKeystorePath" value="classpath:client.keystore" />
+						<property name="clientKeystorePath" value="classpath*:client.keystore" />
  						<!--【生成client.keystore时对应的keystore密码】-->
 						<property name="keystorePassWord" value="123456" />
 						<!--【生成client.keystore时对应的证书密码】-->
