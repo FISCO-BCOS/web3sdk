@@ -1,6 +1,6 @@
 
 contract DBFactory {
-    function openDB(string) public constant returns (DB);
+    function openTable(string) public constant returns (Table);
     function createTable(string,string,string) public constant returns(int);
 }
 
@@ -40,7 +40,7 @@ contract Entries {
 }
 
 //DB主类
-contract DB {
+contract Table {
     function select(string, Condition) public constant returns(Entries);
     
     function insert(string, Entry) public returns(int);
@@ -69,12 +69,12 @@ contract DBTest {
 
     function read(string name) public constant returns(bytes32[], int[], bytes32[]){
         DBFactory df = DBFactory(0x1001);
-        DB db = df.openDB("t_test");
+        Table table = df.openTable("t_test");
         
-        Condition condition = db.newCondition();
+        Condition condition = table.newCondition();
         //condition.EQ("name", name);
         
-        Entries entries = db.select(name, condition);
+        Entries entries = table.select(name, condition);
         bytes32[] memory user_name_bytes_list = new bytes32[](uint256(entries.size()));
         int[] memory item_id_list = new int[](uint256(entries.size()));
         bytes32[] memory item_name_bytes_list = new bytes32[](uint256(entries.size()));
@@ -92,14 +92,14 @@ contract DBTest {
     
     function insert(string name, int item_id, string item_name) public returns(int) {
         DBFactory df = DBFactory(0x1001);
-        DB db = df.openDB("t_test");
+        Table table = df.openTable("t_test");
         
-        Entry entry = db.newEntry();
+        Entry entry = table.newEntry();
         entry.set("name", name);
         entry.set("item_id", item_id);
         entry.set("item_name", item_name);
         
-        int count = db.insert(name, entry);
+        int count = table.insert(name, entry);
         insertResult(count);
         
         return count;
@@ -107,16 +107,16 @@ contract DBTest {
     
     function update(string name, int item_id, string item_name) public returns(int) {
         DBFactory df = DBFactory(0x1001);
-        DB db = df.openDB("t_test");
+        Table table = df.openTable("t_test");
         
-        Entry entry = db.newEntry();
+        Entry entry = table.newEntry();
         entry.set("item_name", item_name);
         
-        Condition condition = db.newCondition();
+        Condition condition = table.newCondition();
         condition.EQ("name", name);
         condition.EQ("item_id", item_id);
         
-        int count = db.update(name, entry, condition);
+        int count = table.update(name, entry, condition);
         updateResult(count);
         
         return count;
@@ -124,13 +124,13 @@ contract DBTest {
 
     function remove(string name, int item_id) public returns(int){
         DBFactory df = DBFactory(0x1001);
-        DB db = df.openDB("t_test");
+        Table table = df.openTable("t_test");
         
-        Condition condition = db.newCondition();
+        Condition condition = table.newCondition();
         condition.EQ("name", name);
         condition.EQ("item_id", item_id);
         
-        int count = db.remove(name, condition);
+        int count = table.remove(name, condition);
         removeResult(count);
         
         return count;

@@ -1,15 +1,23 @@
 package org.fisco.bcos.channel.test.precompile;
 
+import org.fisco.bcos.web3j.abi.FunctionReturnDecoder;
+import org.fisco.bcos.web3j.abi.TypeDecoder;
+import org.fisco.bcos.web3j.abi.datatypes.Utf8String;
+import org.fisco.bcos.web3j.abi.datatypes.generated.Bytes32;
+import org.fisco.bcos.web3j.abi.datatypes.generated.Uint256;
 import org.fisco.bcos.web3j.cns.Contracts;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
-
+import org.fisco.bcos.web3j.utils.Numeric;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
+import org.fisco.bcos.web3j.abi.datatypes.Type;
+import org.fisco.bcos.web3j.abi.TypeReference;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class AuthorityTableService {
@@ -59,11 +67,11 @@ public class AuthorityTableService {
 		System.exit(0);
 	}
 
-	public int add(String tableName, String addr, Web3j web3j, Credentials credentials) throws Exception {
+	public String add(String tableName, String addr, Web3j web3j, Credentials credentials) throws Exception {
 		return add(AuthorityPrecompileAddress, web3j, credentials, tableName, addr);
 	}
 
-	public int remove(String tableName, String addr, Web3j web3j, Credentials credentials) throws Exception {
+	public String remove(String tableName, String addr, Web3j web3j, Credentials credentials) throws Exception {
 		return remove(AuthorityPrecompileAddress, web3j, credentials, tableName, addr);
 	}
 
@@ -71,32 +79,20 @@ public class AuthorityTableService {
 		return query(AuthorityPrecompileAddress, web3j, credentials, tableName);
 	}
 
-	private int add(String address, Web3j web3j, Credentials credentials, String tableName, String addr)
+	private String add(String address, Web3j web3j, Credentials credentials, String tableName, String addr)
 			throws Exception {
 		@SuppressWarnings("deprecation")
 		AuthorityTable authority = AuthorityTable.load(address, web3j, credentials, gasPrice, gasLimit);
 		TransactionReceipt receipt = authority.insert(tableName, addr).send();
-		int result = 0;
-		if ("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff".equals(receipt.getOutput())) {
-			result = -1;
-		} else {
-			result = Integer.valueOf(receipt.getOutput().substring(2), 16).intValue();
-		}
-		return result;
+		return Common.getJsonStr(receipt.getOutput());
 	}
 
-	private int remove(String address, Web3j web3j, Credentials credentials, String tableName, String addr)
+	private String remove(String address, Web3j web3j, Credentials credentials, String tableName, String addr)
 			throws Exception {
 		@SuppressWarnings("deprecation")
 		AuthorityTable authority = AuthorityTable.load(address, web3j, credentials, gasPrice, gasLimit);
 		TransactionReceipt receipt = authority.remove(tableName, addr).send();
-		int result = 0;
-		if ("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff".equals(receipt.getOutput())) {
-			result = -1;
-		} else {
-			result = Integer.valueOf(receipt.getOutput().substring(2), 16).intValue();
-		}
-		return result;
+		return Common.getJsonStr(receipt.getOutput());
 	}
 
 	private List<Authority> query(String address, Web3j web3j, Credentials credentials, String tableName)
