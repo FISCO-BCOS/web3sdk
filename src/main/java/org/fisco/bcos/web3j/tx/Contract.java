@@ -287,12 +287,11 @@ public abstract class Contract extends ManagedTransaction {
                 gasProvider.getGasLimit(funcName));
 
         if (!receipt.isStatusOK()) {
-            throw new TransactionException(
-                    String.format(
-                            "Transaction has failed with status: %s. "
-                                    + "Gas used: %d. (not-enough gas?)",
-                            receipt.getStatus(),
-                            receipt.getGasUsed()));
+            String status = receipt.getStatus();
+			BigInteger gasUsed = receipt.getGasUsed();
+			String message = String.format("Transaction has failed with status: %s. "
+			                + "Gas used: %d. (not-enough gas?)", status, gasUsed);
+			throw new TransactionException(message, status, gasUsed, receipt.getTransactionHash());
         }
 
         return receipt;

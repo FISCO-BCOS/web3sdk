@@ -5,7 +5,6 @@ import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.util.List;
 
-import org.apache.http.util.Args;
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.channel.test.precompile.Authority;
 import org.fisco.bcos.channel.test.precompile.AuthorityTableService;
@@ -20,13 +19,16 @@ import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameterName;
 import org.fisco.bcos.web3j.protocol.core.RemoteCall;
-import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.tx.Contract;
 import org.fisco.bcos.web3j.utils.Numeric;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.alibaba.fastjson.JSONObject;
+
+import io.bretty.console.table.Alignment;
+import io.bretty.console.table.ColumnFormatter;
+import io.bretty.console.table.Table;
 
 public class ConsoleImpl implements ConsoleFace {
 
@@ -215,7 +217,7 @@ public class ConsoleImpl implements ConsoleFace {
 	@Override
 	public void getClientVersion() throws IOException {
 		String clientVersion = web3j.web3ClientVersion().sendForReturnString();
-		System.out.println(clientVersion);
+		ConsoleUtils.printJson(clientVersion);
 		System.out.println();
 	}
 
@@ -617,7 +619,7 @@ public class ConsoleImpl implements ConsoleFace {
 			return;
 		}
 		if (nodeID.length() != 128) {
-			System.out.println(Common.INVALIDNODEID);
+			ConsoleUtils.printJson(org.fisco.bcos.channel.test.precompile.Common.transferToJson(-40));
 		} else {
 			UpdatePBFTNode pbft = new UpdatePBFTNode();
 			String result = pbft.AddNodeToMiner(nodeID, web3j, credentials);
@@ -640,7 +642,7 @@ public class ConsoleImpl implements ConsoleFace {
 			return;
 		}
 		if (nodeID.length() != 128) {
-			System.out.println(Common.INVALIDNODEID);
+			ConsoleUtils.printJson(org.fisco.bcos.channel.test.precompile.Common.transferToJson(-40));
 		} else {
 			UpdatePBFTNode pbft = new UpdatePBFTNode();
 			String result = pbft.AddNodeToObserver(nodeID, web3j, credentials);
@@ -662,7 +664,7 @@ public class ConsoleImpl implements ConsoleFace {
 			return;
 		}
 		if (nodeID.length() != 128) {
-			System.out.println(Common.INVALIDNODEID);
+			ConsoleUtils.printJson(org.fisco.bcos.channel.test.precompile.Common.transferToJson(-40));
 		} else {
 			UpdatePBFTNode pbft = new UpdatePBFTNode();
 			String result = pbft.RemoveNode(nodeID, web3j, credentials);
@@ -743,21 +745,18 @@ public class ConsoleImpl implements ConsoleFace {
 			return;
 		}
 		ConsoleUtils.singleLine();
-		System.out.println("table_name" + "\t\t\t" + "address" + "\t\t\t\t" + "enable_num");
-		ConsoleUtils.singleLine();
-		for (Authority authority : authoritys) {
-			if (Common.SYS_TABLES.equals(tableName) || Common.SYS_ACCESS_TABLE.equals(tableName)
-					|| Common.SYS_MINERS.equals(tableName) || Common.SYS_CNS.equals(tableName) || Common.SYS_CONFIG.equals(tableName)) {
-				System.out.println(
-						authority.getTable_name() + "\t\t" + authority.getAddress() + "\t" + authority.getEnable_num());
-			} else {
-				System.out.println(authority.getTable_name().substring(6) + "\t\t" + authority.getAddress() + "\t"
-						+ authority.getEnable_num());
-			}
+		String[] headers = {"address", "enable_num"};
+		int size = authoritys.size();
+		String[][] data = new String[size][2];
+		for (int i = 0; i < size; i++) {
+			data[i][0] = authoritys.get(i).getAddress();
+			data[i][1] = authoritys.get(i).getEnable_num();
 		}
+		ColumnFormatter<String> cf = ColumnFormatter.text(Alignment.CENTER, 45);
+		Table table = Table.of(headers, data, cf);
+		System.out.println(table);
 		ConsoleUtils.singleLine();
 		System.out.println();
-
 	}
 
 	@Override
