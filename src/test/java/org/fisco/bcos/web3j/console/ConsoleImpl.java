@@ -5,7 +5,6 @@ import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.util.List;
 
-import org.apache.http.util.Args;
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.channel.test.precompile.Authority;
 import org.fisco.bcos.channel.test.precompile.AuthorityTableService;
@@ -20,13 +19,16 @@ import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameterName;
 import org.fisco.bcos.web3j.protocol.core.RemoteCall;
-import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.tx.Contract;
 import org.fisco.bcos.web3j.utils.Numeric;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.alibaba.fastjson.JSONObject;
+
+import io.bretty.console.table.Alignment;
+import io.bretty.console.table.ColumnFormatter;
+import io.bretty.console.table.Table;
 
 public class ConsoleImpl implements ConsoleFace {
 
@@ -215,7 +217,7 @@ public class ConsoleImpl implements ConsoleFace {
 	@Override
 	public void getClientVersion() throws IOException {
 		String clientVersion = web3j.web3ClientVersion().sendForReturnString();
-		System.out.println(clientVersion);
+		ConsoleUtils.printJson(clientVersion);
 		System.out.println();
 	}
 
@@ -543,7 +545,7 @@ public class ConsoleImpl implements ConsoleFace {
 		}
 		if(!flag)
 		{
-			System.out.println(Common.NOAUTHORITY);
+			ConsoleUtils.printJson(org.fisco.bcos.channel.test.precompile.Common.transferToJson(-1));
 			System.out.println();
 			return;
 		}
@@ -557,8 +559,9 @@ public class ConsoleImpl implements ConsoleFace {
 		contractVersion = params[2];
 		// register cns
 		CnsResolver cnsResolver = new CnsResolver(web3j, credentials);
-		TransactionReceipt registerCns = cnsResolver.registerCns(params[1], contractVersion, contractAddress,
+		String result = cnsResolver.registerCns(params[1], contractVersion, contractAddress,
 				contract.getContractBinary());
+		ConsoleUtils.printJson(result);
 		System.out.println(contractAddress);
 		System.out.println();
 	}
@@ -616,20 +619,13 @@ public class ConsoleImpl implements ConsoleFace {
 			return;
 		}
 		if (nodeID.length() != 128) {
-			System.out.println("This is an invalid nodeID.");
+			ConsoleUtils.printJson(org.fisco.bcos.channel.test.precompile.Common.transferToJson(-40));
 		} else {
 			UpdatePBFTNode pbft = new UpdatePBFTNode();
-			int result = pbft.AddNodeToMiner(nodeID, web3j, credentials);
-			System.out.println("result = "+result);
-			if (result == 1) {
-				System.out.println("Add " + nodeID.substring(0, 8) + "..." + " to a miner of group " + service.getGroupId()
-				+ " successful.");
-			} 
-			else {
-				System.out.println(Common.NOAUTHORITY);
-			}
-			System.out.println();
+			String result = pbft.AddNodeToMiner(nodeID, web3j, credentials);
+			ConsoleUtils.printJson(result);
 		}
+		System.out.println();
 
 	}
 
@@ -646,21 +642,13 @@ public class ConsoleImpl implements ConsoleFace {
 			return;
 		}
 		if (nodeID.length() != 128) {
-			System.out.println("This is an invalid nodeID.");
+			ConsoleUtils.printJson(org.fisco.bcos.channel.test.precompile.Common.transferToJson(-40));
 		} else {
 			UpdatePBFTNode pbft = new UpdatePBFTNode();
-			int result = pbft.AddNodeToObserver(nodeID, web3j, credentials);
-			System.out.println("result = "+result);
-			if (result == 1) {
-				System.out.println("Add " + nodeID.substring(0, 8) + "..." + " to an observer of group "
-						+ service.getGroupId() + " successful.");
-			} 
-			else {
-				System.out.println(Common.NOAUTHORITY);
-			}
-
-			System.out.println();
+			String result = pbft.AddNodeToObserver(nodeID, web3j, credentials);
+			ConsoleUtils.printJson(result);
 		}
+		System.out.println();
 
 	}
 
@@ -676,14 +664,13 @@ public class ConsoleImpl implements ConsoleFace {
 			return;
 		}
 		if (nodeID.length() != 128) {
-			System.out.println("This is an invalid nodeID.");
+			ConsoleUtils.printJson(org.fisco.bcos.channel.test.precompile.Common.transferToJson(-40));
 		} else {
 			UpdatePBFTNode pbft = new UpdatePBFTNode();
-			pbft.RemoveNode(nodeID, web3j, credentials);
-			System.out.println(
-					"Remove " + nodeID.substring(0, 8) + "..." + " of group " + service.getGroupId() + " successful.");
-			System.out.println();
+			String result = pbft.RemoveNode(nodeID, web3j, credentials);
+			ConsoleUtils.printJson(result);
 		}
+		System.out.println();
 
 	}
 
@@ -707,16 +694,8 @@ public class ConsoleImpl implements ConsoleFace {
 			return;
 		}
 		AuthorityTableService authority = new AuthorityTableService();
-		int result = authority.add(tableName, addr, web3j, credentials);
-		if (result == 1) {
-			System.out.println("add " + "tableName:" + tableName + " address:" + addr + " of group "
-					+ service.getGroupId() + " successful.");
-		} else if (result == 0) {
-			System.out.println("tableName:" + tableName + " address:" + addr + " of group " + service.getGroupId()
-					+ " already exist.");
-		} else {
-			System.out.println(Common.NOAUTHORITY);
-		}
+		String result = authority.add(tableName, addr, web3j, credentials);
+		ConsoleUtils.printJson(result);
 		System.out.println();
 
 	}
@@ -741,16 +720,8 @@ public class ConsoleImpl implements ConsoleFace {
 			return;
 		}
 		AuthorityTableService authority = new AuthorityTableService();
-		int result = authority.remove(tableName, addr, web3j, credentials);
-		if (result == 1) {
-			System.out.println("remove " + "tableName:" + tableName + " address:" + addr + " of group "
-					+ service.getGroupId() + " successful.");
-		} else if (result == 0) {
-			System.out.println("tableName:" + tableName + " address:" + addr + " of group " + service.getGroupId()
-					+ " does not exist.");
-		} else {
-			System.out.println(Common.NOAUTHORITY);
-		}
+		String result = authority.remove(tableName, addr, web3j, credentials);
+		ConsoleUtils.printJson(result);
 		System.out.println();
 
 	}
@@ -774,21 +745,18 @@ public class ConsoleImpl implements ConsoleFace {
 			return;
 		}
 		ConsoleUtils.singleLine();
-		System.out.println("table_name" + "\t\t\t" + "address" + "\t\t\t\t" + "enable_num");
-		ConsoleUtils.singleLine();
-		for (Authority authority : authoritys) {
-			if (Common.SYS_TABLES.equals(tableName) || Common.SYS_ACCESS_TABLE.equals(tableName)
-					|| Common.SYS_MINERS.equals(tableName) || Common.SYS_CNS.equals(tableName) || Common.SYS_CONFIG.equals(tableName)) {
-				System.out.println(
-						authority.getTable_name() + "\t\t" + authority.getAddress() + "\t" + authority.getEnable_num());
-			} else {
-				System.out.println(authority.getTable_name().substring(6) + "\t\t" + authority.getAddress() + "\t"
-						+ authority.getEnable_num());
-			}
+		String[] headers = {"address", "enable_num"};
+		int size = authoritys.size();
+		String[][] data = new String[size][2];
+		for (int i = 0; i < size; i++) {
+			data[i][0] = authoritys.get(i).getAddress();
+			data[i][1] = authoritys.get(i).getEnable_num();
 		}
+		ColumnFormatter<String> cf = ColumnFormatter.text(Alignment.CENTER, 45);
+		Table table = Table.of(headers, data, cf);
+		System.out.println(table);
 		ConsoleUtils.singleLine();
 		System.out.println();
-
 	}
 
 	@Override
@@ -810,14 +778,8 @@ public class ConsoleImpl implements ConsoleFace {
 
 		String[] args = { "setSystemConfig", key, value };
 		SetSystemConfig config = new SetSystemConfig();
-		int result = config.SetValueByKey(key, value, web3j, credentials);
-		if(result == -1){
-			System.out.println(Common.NOAUTHORITY);
-		}
-		else
-		{
-			System.out.println("Set " + key + " by value " + value + " of group " + service.getGroupId() + " successful.");
-		}
+		String result = config.SetValueByKey(key, value, web3j, credentials);
+		ConsoleUtils.printJson(result);
 		System.out.println();
 	}
 	
