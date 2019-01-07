@@ -2,6 +2,8 @@ package org.fisco.bcos.web3j.cns;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.fisco.bcos.channel.test.precompile.Common;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.crypto.WalletUtils;
 import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
@@ -18,7 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -115,13 +116,10 @@ public class CnsResolver {
         }
     }
 
-    public TransactionReceipt registerCns(String name, String version, String addr, String abi) throws Exception {
+    public String registerCns(String name, String version, String addr, String abi) throws Exception {
         Cns cns = lookupResolver();
         TransactionReceipt receipt = cns.insert(name, version, addr, abi).send();
-        if("0x0000000000000000000000000000000000000000000000000000000000000000".equals(receipt.getOutput())) {
-            throw new CnsResolutionException("Cannot register: " + name + ":" + version );
-        }
-        return receipt;
+        return Common.getJsonStr(receipt.getOutput());
     }
 
 

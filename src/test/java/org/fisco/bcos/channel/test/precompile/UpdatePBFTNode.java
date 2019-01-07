@@ -48,47 +48,33 @@ public class UpdatePBFTNode {
         System.exit(0);
     }
 
-    public int AddNodeToMiner(String nodeId, Web3j web3j, Credentials credentials) throws Exception {
+    public String AddNodeToMiner(String nodeId, Web3j web3j, Credentials credentials) throws Exception {
         return AddMiner(MinerPrecompileAddress, web3j, credentials, nodeId);
     }
 
-    public int AddNodeToObserver(String nodeId, Web3j web3j, Credentials credentials) throws Exception {
+    public String AddNodeToObserver(String nodeId, Web3j web3j, Credentials credentials) throws Exception {
         return AddObserver(MinerPrecompileAddress, web3j, credentials, nodeId);
     }
 	
-	public void RemoveNode(String nodeId, Web3j web3j, Credentials credentials) throws Exception {
-        Remove(MinerPrecompileAddress, web3j, credentials, nodeId);
+	public String RemoveNode(String nodeId, Web3j web3j, Credentials credentials) throws Exception {
+       return Remove(MinerPrecompileAddress, web3j, credentials, nodeId);
     }
 
-    private int AddMiner(String address, Web3j web3j, Credentials credentials, String nodeId) throws Exception {
+    private String AddMiner(String address, Web3j web3j, Credentials credentials, String nodeId) throws Exception {
         ConsensusSystemTable consensus = ConsensusSystemTable.load(address, web3j, credentials, gasPrice, gasLimit);
         TransactionReceipt receipt = consensus.addMiner(nodeId).send();
-		int result = 0;
-		if ("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff".equals(receipt.getOutput())) {
-			result = -1;
-		} else {
-			result = Integer.valueOf(receipt.getOutput().substring(2), 16).intValue();
-		}
-		return result;
+        return Common.getJsonStr(receipt.getOutput());
     }
 
-	private int AddObserver(String address, Web3j web3j, Credentials credentials, String nodeId) throws Exception {
+	private String AddObserver(String address, Web3j web3j, Credentials credentials, String nodeId) throws Exception {
         ConsensusSystemTable consensus = ConsensusSystemTable.load(address, web3j, credentials, gasPrice, gasLimit);
         TransactionReceipt receipt = consensus.addObserver(nodeId).send();
-		int result = 0;
-		if ("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff".equals(receipt.getOutput())) {
-			result = -1;
-		} else {
-			result = Integer.valueOf(receipt.getOutput().substring(2), 16).intValue();
-		}
-		return result;
+        return Common.getJsonStr(receipt.getOutput());
     }
 	
-	private void Remove(String address, Web3j web3j, Credentials credentials, String nodeId) throws Exception {
+	private String Remove(String address, Web3j web3j, Credentials credentials, String nodeId) throws Exception {
         ConsensusSystemTable consensus = ConsensusSystemTable.load(address, web3j, credentials, gasPrice, gasLimit);
         TransactionReceipt receipt = consensus.remove(nodeId).send();
-        System.out.println("####get block number from TransactionReceipt: " + receipt.getBlockNumber());
-        System.out.println("####get transaction index from TransactionReceipt: " + receipt.getTransactionIndex());
-        System.out.println("####get gas used from TransactionReceipt: " + receipt.getGasUsed());
+        return Common.getJsonStr(receipt.getOutput());
     }
 }
