@@ -26,7 +26,6 @@ def spring_version="4.3.18.RELEASE"
 
 List logger = [
 		 'org.slf4j:slf4j-log4j12:1.7.25'
-		//'org.slf4j:slf4j-api:1.7.25'
 ]
 
 List spring =[ 
