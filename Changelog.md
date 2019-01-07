@@ -1,3 +1,11 @@
+### V1.2.5 (2019-1-7)
+* Updates
+
+1. 部分代码优化。删除无用代码
+2. add ethereum message timeout log
+3. add jsonrpc interface for getadminpeer
+4. Polling time is configurable
+
 ### V1.2.4 (2018-10-17)
 * Updates
 
