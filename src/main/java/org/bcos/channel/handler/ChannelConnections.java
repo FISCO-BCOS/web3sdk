@@ -3,6 +3,7 @@ package org.bcos.channel.handler;
 import java.io.InputStream;
 import java.security.KeyStore;
 import java.security.PrivateKey;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -162,7 +163,7 @@ public class ChannelConnections {
 			throw new Exception("activeConnections isEmpty");
 		}
 		
-		Random random = new Random();
+		Random random = new SecureRandom();
 		Integer index = random.nextInt(activeConnections.size());
 		
 		logger.debug("selected:{}", index);
