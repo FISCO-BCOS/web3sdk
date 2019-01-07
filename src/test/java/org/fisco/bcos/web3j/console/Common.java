@@ -10,8 +10,6 @@ public class Common {
 	public static final String SYS_CONFIG = "_sys_config_";
 	public static final String SYS_CNS = "_sys_cns_";
 	
-	public static final String INVALIDNODEID = "This is an invalid nodeID.";
-	
 	// test tx.origin for authority control
 	public static final String PRIVITEKEY1 = "3bed914595c159cbce70ec5fb6aff3d6797e0c5ee5a7a9224a21cae8932d84a4";
 	public static final String ORIGIN1 = "0xf1585b8d0e08a0a00fff662e24d67ba95a438256";

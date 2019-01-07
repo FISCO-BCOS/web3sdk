@@ -43,8 +43,9 @@ public class BasicTest extends TestBase {
 
     @Test
     public void  versionTest() throws Exception {
-        System.out.println(web3j.web3ClientVersion().send().getWeb3ClientVersion());
-        assertNotNull(web3j.web3ClientVersion().send().getWeb3ClientVersion());
+        String web3ClientVersion = web3j.web3ClientVersion().sendForReturnString();
+		System.out.println(web3ClientVersion);
+        assertNotNull(web3ClientVersion);
     }
 
     //getPeers
