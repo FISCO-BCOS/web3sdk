@@ -1,37 +1,9 @@
 package org.bcos.channel.handler;
 
-import java.io.InputStream;
-import java.security.KeyStore;
-import java.security.PrivateKey;
-import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Random;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-import java.security.cert.X509Certificate;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.core.io.support.ResourcePatternResolver;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-
-import org.bcos.channel.dto.EthereumMessage;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -42,6 +14,25 @@ import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.timeout.IdleStateHandler;
+import org.bcos.channel.dto.EthereumMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.KeyStore;
+import java.security.PrivateKey;
+import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 
 public class ChannelConnections {
 	private static Logger logger = LoggerFactory.getLogger(ChannelConnections.class);
@@ -53,6 +44,21 @@ public class ChannelConnections {
 	public void setCaCertPath(String caCertPath) {
 		this.caCertPath = caCertPath;
 	}
+	
+	public InputStream getInputStream(String filePath) throws IOException {
+        if (filePath.startsWith("classpath:") || filePath.startsWith("file:")) {
+            ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+            Resource caResource = resolver.getResource(filePath);
+            try (InputStream inputStream = caResource.getInputStream()) {
+                return inputStream;
+            }
+        } else {
+            File file = new File(filePath);
+            try (InputStream inputStream = new FileInputStream(file)) {
+                return inputStream;
+            }
+        }
+    }
 
 	public String getClientKeystorePath() {
 		return clientKeystorePath;
@@ -226,13 +232,7 @@ public class ChannelConnections {
                 @Override
                 public void initChannel(SocketChannel ch) throws Exception {
                     KeyStore ks = KeyStore.getInstance("JKS");
-                    
-                    ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-                    
-                    Resource keystoreResource = resolver.getResource(getClientKeystorePath());
-                    Resource caResource = resolver.getResource(getCaCertPath());
-
-					ks.load(keystoreResource.getInputStream(), getKeystorePassWord().toCharArray());
+					ks.load(getInputStream(getClientKeystorePath()), getKeystorePassWord().toCharArray());
                 	
                 	/*
                 	 * 每次连接使用新的handler
@@ -244,7 +244,7 @@ public class ChannelConnections {
                 	handler.setThreadPool(selfThreadPool);
                 	
                 	SslContext sslCtx = SslContextBuilder.forServer((PrivateKey)ks.getKey("client", getClientCertPassWord().toCharArray()), (X509Certificate)ks.getCertificate("client"))
-                			.trustManager(caResource.getFile())
+                			.trustManager(getInputStream(getCaCertPath()))
                 			.build();
                 	
                 	ch.pipeline().addLast(
@@ -316,15 +316,13 @@ public class ChannelConnections {
 		final ThreadPoolTaskExecutor selfThreadPool = threadPool;
 		
 		ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-		final Resource keystoreResource = resolver.getResource(getClientKeystorePath());
-        final Resource caResource = resolver.getResource(getCaCertPath());
         
 		bootstrap.handler(new ChannelInitializer<SocketChannel>() {
             @Override
             public void initChannel(SocketChannel ch) throws Exception {
             	KeyStore ks = KeyStore.getInstance("JKS");
-            	InputStream ksInputStream = keystoreResource.getInputStream();
-            	ks.load(ksInputStream, 	getKeystorePassWord().toCharArray());
+
+            	ks.load(getInputStream(getClientKeystorePath()), 	getKeystorePassWord().toCharArray());
 				/*
 				 * 每次连接使用新的handler 连接信息从socketChannel中获取
 				 */
@@ -333,7 +331,7 @@ public class ChannelConnections {
 				handler.setIsServer(false);
 				handler.setThreadPool(selfThreadPool);
 
-				SslContext sslCtx = SslContextBuilder.forClient().trustManager(caResource.getFile())
+				SslContext sslCtx = SslContextBuilder.forClient().trustManager(getInputStream(getCaCertPath()))
 						.keyManager((PrivateKey) ks.getKey("client", getClientCertPassWord().toCharArray()),
 								(X509Certificate) ks.getCertificate("client"))
 						.build();
