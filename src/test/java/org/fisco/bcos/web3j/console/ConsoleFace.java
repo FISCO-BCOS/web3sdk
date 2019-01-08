@@ -57,6 +57,8 @@ public interface ConsoleFace {
 	void deployByCNS(String[] params) throws Exception;
 
 	void callByCNS(String[] params) throws Exception;
+	
+	void queryCNS(String[] params) throws Exception;
 
 	void addMiner(String[] params) throws Exception;
 
