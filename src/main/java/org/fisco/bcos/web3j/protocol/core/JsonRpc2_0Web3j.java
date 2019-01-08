@@ -650,6 +650,15 @@ public class JsonRpc2_0Web3j implements Web3j {
                 web3jService,
                 EthPendingTransactions.class);
     }
+    
+    @Override
+    public Request<?, PendingTxSize> getPendingTxSize() {
+    	return new Request<>(
+    			"getPendingTxSize",
+    			Arrays.asList(groupId),
+    			web3jService,
+    			PendingTxSize.class);
+    }
 
     @Override
     public Request<?, EthPeerList> ethGroupPeers() {

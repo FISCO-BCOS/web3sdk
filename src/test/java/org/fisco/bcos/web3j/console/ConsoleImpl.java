@@ -139,6 +139,7 @@ public class ConsoleImpl implements ConsoleFace {
 		sb.append(
 				"getTransactionReceipt(gtr)                    Query the receipt of a transaction by transaction hash.\n");
 		sb.append("getPendingTransactions(gpt)                   Query pending transactions.\n");
+		sb.append("getPendingTxSize(gpts)                         Query pending transactions size.\n");
 		sb.append("getCode(gc)                                   Query code at a given address.\n");
 		sb.append("getTotalTransactionCount(gtc)                 Query total transaction count.\n");
 		sb.append("deploy(d)                                     Deploy a contract on blockchain.\n");
@@ -409,6 +410,13 @@ public class ConsoleImpl implements ConsoleFace {
 		System.out.println();
 	}
 
+	@Override
+	public void getPendingTxSize() throws IOException {
+		String size = web3j.getPendingTxSize().sendForReturnString();
+		System.out.println(Numeric.decodeQuantity(size));
+		System.out.println();
+	}
+	
 	@Override
 	public void getPendingTransactions() throws IOException {
 		String pendingTransactions = web3j.ethPendingTransaction().sendForReturnString();
