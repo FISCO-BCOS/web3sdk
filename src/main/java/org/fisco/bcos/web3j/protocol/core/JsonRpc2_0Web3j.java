@@ -129,12 +129,11 @@ public class JsonRpc2_0Web3j implements Web3j {
                     EthBlockNumber ethBlockNumber = ethBlockNumber().sendAsync().get(10000, TimeUnit.MILLISECONDS);
                     setBlockNumber(ethBlockNumber.getBlockNumber());
                 } catch (Exception e) {
-                    logger.error("Exception: " + e);
+                    logger.error("Exception: get blocknumber request fail "  + e);
                 }
             }
         };
-// 第二个参数为首次执行的延时时间，第三个参数为定时执行的间隔时间  
-        scheduleService.scheduleAtFixedRate(runnable,1,1,TimeUnit.SECONDS);
+        scheduleService.scheduleAtFixedRate(runnable,1,5,TimeUnit.SECONDS);
 
     }
 
