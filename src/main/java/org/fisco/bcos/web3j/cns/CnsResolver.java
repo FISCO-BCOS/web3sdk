@@ -3,6 +3,8 @@ package org.fisco.bcos.web3j.cns;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.fisco.bcos.channel.test.precompile.Authority;
+import org.fisco.bcos.channel.test.precompile.CNSInfo;
 import org.fisco.bcos.channel.test.precompile.Common;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.crypto.WalletUtils;
@@ -121,7 +123,22 @@ public class CnsResolver {
         TransactionReceipt receipt = cns.insert(name, version, addr, abi).send();
         return Common.getJsonStr(receipt.getOutput());
     }
-
+    
+    public List<CNSInfo> queryCnsByName(String name) throws Exception {
+    	Cns cns = lookupResolver();
+    	String cnsInfo = cns.selectByName(name).send();
+    	ObjectMapper objectMapper = ObjectMapperFactory.getObjectMapper();
+		return objectMapper.readValue(cnsInfo,
+				objectMapper.getTypeFactory().constructCollectionType(List.class, CNSInfo.class));
+    }
+    
+    public List<CNSInfo> queryCnsByNameAndVersion(String name, String version) throws Exception {
+    	Cns cns = lookupResolver();
+    	String cnsInfo = cns.selectByNameAndVersion(name, version).send();
+    	ObjectMapper objectMapper = ObjectMapperFactory.getObjectMapper();
+    	return objectMapper.readValue(cnsInfo,
+    			objectMapper.getTypeFactory().constructCollectionType(List.class, CNSInfo.class));
+    }
 
     private List<Contracts> jsonToContracts(String contractAddressInfo) throws IOException {
 

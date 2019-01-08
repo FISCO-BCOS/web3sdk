@@ -13,7 +13,7 @@ public class HelpInfo {
 		System.out.println("Query information about a block by hash.");
 		System.out.println("Usage: gbbh blockHash [boolean]");
 		System.out.println("blockHash -- 32 Bytes - Hash of a block.");
-		System.out.println("boolean -- If true it returns the full transaction objects, if false only the hashes of the transactions.");
+		System.out.println("boolean -- (optional) If true it returns the full transaction objects, if false only the hashes of the transactions.");
 		System.out.println();
 	}
 	public static void getBlockByNumberHelp()
@@ -21,7 +21,7 @@ public class HelpInfo {
 		System.out.println("Query information about a block by block number.");
 		System.out.println("Usage: gbbn blockNumber [boolean]");
 		System.out.println("blockNumber -- Integer of a block number.");
-		System.out.println("boolean -- If true it returns the full transaction objects, if false only the hashes of the transactions.");
+		System.out.println("boolean -- (optional) If true it returns the full transaction objects, if false only the hashes of the transactions.");
 		System.out.println();
 	}
 	public static void getBlockHashByNumberHelp() 
@@ -175,6 +175,15 @@ public class HelpInfo {
 		System.out.println("Query a system config value by key.");
 		System.out.println("Usage: gsc key");
 		System.out.println("key -- the name of system config(tx_count_limit/tx_gas_limit supported currently).");
+		System.out.println();
+	}
+
+	public static void queryCNSHelp() 
+	{
+		System.out.println("Query cns information by contract name and contract version.");
+		System.out.println("Usage: qcs contractName [contractVersion]");
+		System.out.println("contractName -- A name for a contract.");
+		System.out.println("contractVersion -- (optional) A version for a contract.");
 		System.out.println();
 	}
 }

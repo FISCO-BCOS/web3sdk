@@ -472,4 +472,33 @@ public class ConsoleTest{
     	assertTrue(!"".equals(log.getLog()));
     }
     
+    @Test
+    public void getPendingTxSizeTest() throws Exception {
+    	String[] params1 = {};
+    	console.getPendingTxSize();
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    }
+    
+    @Test
+    public void queryCNSTest() throws Exception {
+    	String[] params1 = {};
+    	console.queryCNS(params1);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+    	String[] params2 = {"qcs", "-h"};
+    	console.queryCNS(params2);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+    	String[] params3 = {"qcs", "Ok"};
+    	console.getSystemConfigByKey(params3);
+    	assertTrue(!"".equals(log.getLog()));
+    	
+    	String[] params4 = {"qcs", "Ok", "1.0"};
+    	console.getSystemConfigByKey(params4);
+    	assertTrue(!"".equals(log.getLog()));
+    }
+    
 }
