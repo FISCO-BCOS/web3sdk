@@ -6,11 +6,13 @@ import java.math.BigInteger;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.channel.test.precompile.Authority;
 import org.fisco.bcos.channel.test.precompile.AuthorityTableService;
+import org.fisco.bcos.channel.test.precompile.CNSInfo;
 import org.fisco.bcos.channel.test.precompile.UpdatePBFTNode;
 import org.fisco.bcos.channel.test.precompile.SetSystemConfig;
 import org.fisco.bcos.web3j.cns.CnsResolver;
@@ -60,14 +62,14 @@ public class ConsoleImpl implements ConsoleFace {
 		}
 		ChannelEthereumService channelEthereumService = new ChannelEthereumService();
 		channelEthereumService.setChannelService(service);
-		
+
 		int groupID = 1;
 		try {
 			keyPair = Keys.createEcKeyPair();
 			credentials = Credentials.create(keyPair);
 		} catch (Exception e) {
 			e.printStackTrace();
-		} 
+		}
 		switch (args.length) {
 		case 0:
 			break;
@@ -87,7 +89,7 @@ public class ConsoleImpl implements ConsoleFace {
 		}
 
 		web3j = Web3j.build(channelEthereumService, groupID);
-		
+
 	}
 
 	private int setGroupID(String[] args, int groupID) {
@@ -147,7 +149,7 @@ public class ConsoleImpl implements ConsoleFace {
 		sb.append(
 				"getTransactionReceipt(gtr)                    Query the receipt of a transaction by transaction hash.\n");
 		sb.append("getPendingTransactions(gpt)                   Query pending transactions.\n");
-		sb.append("getPendingTxSize(gpts)                         Query pending transactions size.\n");
+		sb.append("getPendingTxSize(gpts)                        Query pending transactions size.\n");
 		sb.append("getCode(gc)                                   Query code at a given address.\n");
 		sb.append("getTotalTransactionCount(gtc)                 Query total transaction count.\n");
 		sb.append("deploy(d)                                     Deploy a contract on blockchain.\n");
@@ -155,6 +157,8 @@ public class ConsoleImpl implements ConsoleFace {
 		sb.append("deployByCNS(dbc)                              Deploy a contract on blockchain by CNS.\n");
 		sb.append(
 				"callByCNS(cbc)                                Call a contract by a function and paramters by CNS.\n");
+		sb.append(
+				"queryCNS(qcs)                                 Query cns information by contract name and contract version.\n");
 		sb.append("addMiner(am)                                  Add a miner node.\n");
 		sb.append("addObserver(ao)                               Add an observer node.\n");
 		sb.append("removeNode(rn)                                Remove a node.\n");
@@ -424,7 +428,7 @@ public class ConsoleImpl implements ConsoleFace {
 		System.out.println(Numeric.decodeQuantity(size));
 		System.out.println();
 	}
-	
+
 	@Override
 	public void getPendingTransactions() throws IOException {
 		String pendingTransactions = web3j.ethPendingTransaction().sendForReturnString();
@@ -544,23 +548,17 @@ public class ConsoleImpl implements ConsoleFace {
 		AuthorityTableService authorityTableService = new AuthorityTableService();
 		List<Authority> authoritys = authorityTableService.query(Common.SYS_CNS, web3j, credentials);
 		boolean flag = false;
-		if(authoritys.size() == 0)
-		{
+		if (authoritys.size() == 0) {
 			flag = true;
-		}
-		else
-		{
-			for (Authority authority: authoritys) 
-			{	
-				if((credentials.getAddress()).equals(authority.getAddress()))
-				{
+		} else {
+			for (Authority authority : authoritys) {
+				if ((credentials.getAddress()).equals(authority.getAddress())) {
 					flag = true;
 					break;
 				}
 			}
 		}
-		if(!flag)
-		{
+		if (!flag) {
 			ConsoleUtils.printJson(org.fisco.bcos.channel.test.precompile.Common.transferToJson(-1));
 			System.out.println();
 			return;
@@ -620,6 +618,48 @@ public class ConsoleImpl implements ConsoleFace {
 		String resultStr;
 		resultStr = ContractClassFactory.getReturnObject(returnType, result);
 		System.out.println(resultStr);
+		System.out.println();
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	public void queryCNS(String[] params) throws Exception {
+		if (params.length < 2) {
+			HelpInfo.promptHelp("qcs");
+			return;
+		}
+		if ("-h".equals(params[1]) || "--help".equals(params[1])) {
+			HelpInfo.queryCNSHelp();
+			return;
+		}
+
+		CnsResolver cnsResolver = new CnsResolver(web3j, credentials);
+		List<CNSInfo> cnsInfos = new ArrayList<>();
+		contractName = params[1];
+		if (params.length == 3) {
+			contractVersion = params[2];
+			cnsInfos = cnsResolver.queryCnsByNameAndVersion(contractName, contractVersion);
+		} else {
+			cnsInfos = cnsResolver.queryCnsByName(contractName);
+		}
+
+		if (cnsInfos.isEmpty()) {
+			System.out.println("Empty set.");
+			System.out.println();
+			return;
+		}
+		ConsoleUtils.singleLine();
+		String[] headers = { "version", "address" };
+		int size = cnsInfos.size();
+		String[][] data = new String[size][2];
+		for (int i = 0; i < size; i++) {
+			data[i][0] = cnsInfos.get(i).getVersion();
+			data[i][1] = cnsInfos.get(i).getAddress();
+		}
+		ColumnFormatter<String> cf = ColumnFormatter.text(Alignment.CENTER, 45);
+		Table table = Table.of(headers, data, cf);
+		System.out.println(table);
+		ConsoleUtils.singleLine();
 		System.out.println();
 	}
 
@@ -761,7 +801,7 @@ public class ConsoleImpl implements ConsoleFace {
 			return;
 		}
 		ConsoleUtils.singleLine();
-		String[] headers = {"address", "enable_num"};
+		String[] headers = { "address", "enable_num" };
 		int size = authoritys.size();
 		String[][] data = new String[size][2];
 		for (int i = 0; i < size; i++) {
@@ -798,7 +838,7 @@ public class ConsoleImpl implements ConsoleFace {
 		ConsoleUtils.printJson(result);
 		System.out.println();
 	}
-	
+
 	@Override
 	public void getSystemConfigByKey(String[] params) throws Exception {
 		if (params.length < 2) {
@@ -810,7 +850,7 @@ public class ConsoleImpl implements ConsoleFace {
 			HelpInfo.getSystemConfigByKeyHelp();
 			return;
 		}
-		String[] args = { "getSystemConfigByKey", key};
+		String[] args = { "getSystemConfigByKey", key };
 		String value = web3j.getSystemConfigByKey(key).sendForReturnString();
 		System.out.println(value);
 		System.out.println();

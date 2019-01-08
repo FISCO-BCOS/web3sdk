@@ -134,6 +134,10 @@ public class ConsoleClient {
 				case "cbc":
 					console.callByCNS(params);
 					break;
+				case "queryCNS":
+				case "qcs":
+					console.queryCNS(params);
+					break;
 				case "addMiner":
 				case "am":
 					console.addMiner(params);
