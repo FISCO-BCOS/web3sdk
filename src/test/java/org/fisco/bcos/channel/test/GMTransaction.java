@@ -3,6 +3,7 @@ package org.fisco.bcos.channel.test;
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.channel.test.contract.NewSolTest;
 import org.fisco.bcos.web3j.crypto.Credentials;
+import org.fisco.bcos.web3j.crypto.EncryptType;
 import org.fisco.bcos.web3j.crypto.gm.GenCredential;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
@@ -16,7 +17,7 @@ import java.math.BigInteger;
 
 public class GMTransaction {
     public static void main(String[] args) throws Exception {
-
+        EncryptType encryptType = new EncryptType(1);
         String groupId = "1";
         ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
         Service service = context.getBean(Service.class);
@@ -35,13 +36,15 @@ public class GMTransaction {
         ContractGasProvider contractGasProvider = new StaticGasProvider(gasPrice, gasLimit);
         NewSolTest erc20 = NewSolTest.deploy(web3, credentials1, contractGasProvider).send();
 
-        for (int i = 0; i < Integer.getInteger(args[0]); i++) {
+        for (int i = 0; i < 1; i++) {
             System.out.println("####contract address is: " + erc20.getContractAddress());
             TransactionReceipt receipt = erc20.transfer("0x0f49a17d17f82da2a7d92ecf19268274150eaf5e", new BigInteger("100")).send();
 
             BigInteger oldBalance = erc20.balanceOf("0x0f49a17d17f82da2a7d92ecf19268274150eaf5e").send();
             System.out.println("0x0f49a17d17f82da2a7d92ecf19268274150eaf5e balance" + oldBalance.intValue());
         }
+        System.exit(0);
+
     }
 
 }
