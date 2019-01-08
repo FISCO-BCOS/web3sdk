@@ -3,6 +3,9 @@ package org.fisco.bcos.web3j.console;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.util.List;
 
 import org.fisco.bcos.channel.client.Service;
@@ -52,44 +55,49 @@ public class ConsoleImpl implements ConsoleFace {
 		try {
 			service.run();
 		} catch (Exception e) {
-			System.out.println("Failed to initialize the client-side SSLContext, please checkout ca.crt File!");
+			System.out.println("Failed to initialize the client-side SSLContext, please check ca.crt file");
 			System.exit(1);
 		}
 		ChannelEthereumService channelEthereumService = new ChannelEthereumService();
 		channelEthereumService.setChannelService(service);
+		
+		int groupID = 1;
 		try {
-			if (args.length < 1) {
-				keyPair = Keys.createEcKeyPair();
-				credentials = Credentials.create(keyPair);
-			} else {
-				String privateKeyFlag = args[0];
-				switch (privateKeyFlag) {
-				case "1":
-					privateKey = Common.PRIVITEKEY1;
-					origin = Common.ORIGIN1;
-					break;
-				case "2":
-					privateKey = Common.PRIVITEKEY2;
-					origin = Common.ORIGIN2;
-					break;
-				case "3":
-					privateKey = Common.PRIVITEKEY3;
-					origin = Common.ORIGIN3;
-					break;
-				default:
-					System.out.println("Please provide 1 or 2 or 3 for specifying priviteKey.");
-					System.exit(0);
-					;
-				}
-				credentials = Credentials.create(privateKey);
-				System.out.println("tx.origin = " + origin);
-			}
-
+			keyPair = Keys.createEcKeyPair();
+			credentials = Credentials.create(keyPair);
 		} catch (Exception e) {
 			e.printStackTrace();
+		} 
+		switch (args.length) {
+		case 0:
+			break;
+		case 1:
+			groupID = setGroupID(args, groupID);
+			break;
+		default:
+			groupID = setGroupID(args, groupID);
+			privateKey = args[1];
+			try {
+				credentials = Credentials.create(privateKey);
+			} catch (NumberFormatException e) {
+				System.out.println("Please provide private key by hex format");
+				System.exit(0);
+			}
+			break;
 		}
 
-		web3j = Web3j.build(channelEthereumService, service.getGroupId());
+		web3j = Web3j.build(channelEthereumService, groupID);
+		
+	}
+
+	private int setGroupID(String[] args, int groupID) {
+		try {
+			groupID = Integer.parseInt(args[0]);
+		} catch (NumberFormatException e) {
+			System.out.println("Please provide groupID by decimal format (default 1).");
+			System.exit(0);
+		}
+		return groupID;
 	}
 
 	@Override
