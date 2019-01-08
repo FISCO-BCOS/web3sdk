@@ -106,6 +106,10 @@ public class ConsoleClient {
 				case "gpt":
 					console.getPendingTransactions();
 					break;
+				case "getPendingTxSize":
+				case "gpts":
+					console.getPendingTxSize();
+					break;
 				case "getCode":
 				case "gc":
 					console.getCode(params);

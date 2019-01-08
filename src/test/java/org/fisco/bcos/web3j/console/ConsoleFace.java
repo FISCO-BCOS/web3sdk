@@ -42,6 +42,8 @@ public interface ConsoleFace {
 
 	void getTransactionReceipt(String[] params) throws IOException;
 
+	void getPendingTxSize() throws IOException;
+	
 	void getPendingTransactions() throws IOException;
 
 	void getCode(String[] params) throws IOException;
