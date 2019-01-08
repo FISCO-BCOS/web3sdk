@@ -106,6 +106,10 @@ public class ConsoleClient {
 				case "gpt":
 					console.getPendingTransactions();
 					break;
+				case "getPendingTxSize":
+				case "gpts":
+					console.getPendingTxSize();
+					break;
 				case "getCode":
 				case "gc":
 					console.getCode(params);
@@ -129,6 +133,10 @@ public class ConsoleClient {
 				case "callByCNS":
 				case "cbc":
 					console.callByCNS(params);
+					break;
+				case "queryCNS":
+				case "qcs":
+					console.queryCNS(params);
 					break;
 				case "addMiner":
 				case "am":
@@ -172,8 +180,8 @@ public class ConsoleClient {
 				}
 
 			} catch (ResponseExcepiton e) {
-				System.out.println(
-						"{\"error\":{\"code\":" + e.getCode() + ", \"message:\"" + "\"" + e.getMessage() + "\"}}");
+				ConsoleUtils.printJson(
+						"{\"code\":" + e.getCode() + ", \"msg\":" + "\"" + e.getMessage() + "\"}");
 				System.out.println();
 			} catch (ClassNotFoundException e) {
 				System.out.println(e.getMessage()+" does not exist.");

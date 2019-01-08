@@ -55,7 +55,10 @@ public class ConsoleUtils {
 				}
 				break;
 			case ' ':
-				sb.append(current);
+				if(!(',' == jsonStr.charAt(i-1)))
+				{
+					sb.append(current);
+				}
 				break;
 			case '\\':
 				break;

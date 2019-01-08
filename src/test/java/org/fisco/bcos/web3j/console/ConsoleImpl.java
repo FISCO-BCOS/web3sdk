@@ -3,11 +3,16 @@ package org.fisco.bcos.web3j.console;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.channel.test.precompile.Authority;
 import org.fisco.bcos.channel.test.precompile.AuthorityTableService;
+import org.fisco.bcos.channel.test.precompile.CNSInfo;
 import org.fisco.bcos.channel.test.precompile.UpdatePBFTNode;
 import org.fisco.bcos.channel.test.precompile.SetSystemConfig;
 import org.fisco.bcos.web3j.cns.CnsResolver;
@@ -52,44 +57,49 @@ public class ConsoleImpl implements ConsoleFace {
 		try {
 			service.run();
 		} catch (Exception e) {
-			System.out.println("Failed to initialize the client-side SSLContext, please checkout ca.crt File!");
+			System.out.println("Failed to initialize the client-side SSLContext, please check ca.crt file");
 			System.exit(1);
 		}
 		ChannelEthereumService channelEthereumService = new ChannelEthereumService();
 		channelEthereumService.setChannelService(service);
-		try {
-			if (args.length < 1) {
-				keyPair = Keys.createEcKeyPair();
-				credentials = Credentials.create(keyPair);
-			} else {
-				String privateKeyFlag = args[0];
-				switch (privateKeyFlag) {
-				case "1":
-					privateKey = Common.PRIVITEKEY1;
-					origin = Common.ORIGIN1;
-					break;
-				case "2":
-					privateKey = Common.PRIVITEKEY2;
-					origin = Common.ORIGIN2;
-					break;
-				case "3":
-					privateKey = Common.PRIVITEKEY3;
-					origin = Common.ORIGIN3;
-					break;
-				default:
-					System.out.println("Please provide 1 or 2 or 3 for specifying priviteKey.");
-					System.exit(0);
-					;
-				}
-				credentials = Credentials.create(privateKey);
-				System.out.println("tx.origin = " + origin);
-			}
 
+		int groupID = 1;
+		try {
+			keyPair = Keys.createEcKeyPair();
+			credentials = Credentials.create(keyPair);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		switch (args.length) {
+		case 0:
+			break;
+		case 1:
+			groupID = setGroupID(args, groupID);
+			break;
+		default:
+			groupID = setGroupID(args, groupID);
+			privateKey = args[1];
+			try {
+				credentials = Credentials.create(privateKey);
+			} catch (NumberFormatException e) {
+				System.out.println("Please provide private key by hex format");
+				System.exit(0);
+			}
+			break;
+		}
 
-		web3j = Web3j.build(channelEthereumService, service.getGroupId());
+		web3j = Web3j.build(channelEthereumService, groupID);
+
+	}
+
+	private int setGroupID(String[] args, int groupID) {
+		try {
+			groupID = Integer.parseInt(args[0]);
+		} catch (NumberFormatException e) {
+			System.out.println("Please provide groupID by decimal format (default 1).");
+			System.exit(0);
+		}
+		return groupID;
 	}
 
 	@Override
@@ -139,6 +149,7 @@ public class ConsoleImpl implements ConsoleFace {
 		sb.append(
 				"getTransactionReceipt(gtr)                    Query the receipt of a transaction by transaction hash.\n");
 		sb.append("getPendingTransactions(gpt)                   Query pending transactions.\n");
+		sb.append("getPendingTxSize(gpts)                        Query pending transactions size.\n");
 		sb.append("getCode(gc)                                   Query code at a given address.\n");
 		sb.append("getTotalTransactionCount(gtc)                 Query total transaction count.\n");
 		sb.append("deploy(d)                                     Deploy a contract on blockchain.\n");
@@ -146,6 +157,8 @@ public class ConsoleImpl implements ConsoleFace {
 		sb.append("deployByCNS(dbc)                              Deploy a contract on blockchain by CNS.\n");
 		sb.append(
 				"callByCNS(cbc)                                Call a contract by a function and paramters by CNS.\n");
+		sb.append(
+				"queryCNS(qcs)                                 Query cns information by contract name and contract version.\n");
 		sb.append("addMiner(am)                                  Add a miner node.\n");
 		sb.append("addObserver(ao)                               Add an observer node.\n");
 		sb.append("removeNode(rn)                                Remove a node.\n");
@@ -410,6 +423,13 @@ public class ConsoleImpl implements ConsoleFace {
 	}
 
 	@Override
+	public void getPendingTxSize() throws IOException {
+		String size = web3j.getPendingTxSize().sendForReturnString();
+		System.out.println(Numeric.decodeQuantity(size));
+		System.out.println();
+	}
+
+	@Override
 	public void getPendingTransactions() throws IOException {
 		String pendingTransactions = web3j.ethPendingTransaction().sendForReturnString();
 		if ("[]".equals(pendingTransactions))
@@ -528,23 +548,17 @@ public class ConsoleImpl implements ConsoleFace {
 		AuthorityTableService authorityTableService = new AuthorityTableService();
 		List<Authority> authoritys = authorityTableService.query(Common.SYS_CNS, web3j, credentials);
 		boolean flag = false;
-		if(authoritys.size() == 0)
-		{
+		if (authoritys.size() == 0) {
 			flag = true;
-		}
-		else
-		{
-			for (Authority authority: authoritys) 
-			{	
-				if((credentials.getAddress()).equals(authority.getAddress()))
-				{
+		} else {
+			for (Authority authority : authoritys) {
+				if ((credentials.getAddress()).equals(authority.getAddress())) {
 					flag = true;
 					break;
 				}
 			}
 		}
-		if(!flag)
-		{
+		if (!flag) {
 			ConsoleUtils.printJson(org.fisco.bcos.channel.test.precompile.Common.transferToJson(-1));
 			System.out.println();
 			return;
@@ -604,6 +618,48 @@ public class ConsoleImpl implements ConsoleFace {
 		String resultStr;
 		resultStr = ContractClassFactory.getReturnObject(returnType, result);
 		System.out.println(resultStr);
+		System.out.println();
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	public void queryCNS(String[] params) throws Exception {
+		if (params.length < 2) {
+			HelpInfo.promptHelp("qcs");
+			return;
+		}
+		if ("-h".equals(params[1]) || "--help".equals(params[1])) {
+			HelpInfo.queryCNSHelp();
+			return;
+		}
+
+		CnsResolver cnsResolver = new CnsResolver(web3j, credentials);
+		List<CNSInfo> cnsInfos = new ArrayList<>();
+		contractName = params[1];
+		if (params.length == 3) {
+			contractVersion = params[2];
+			cnsInfos = cnsResolver.queryCnsByNameAndVersion(contractName, contractVersion);
+		} else {
+			cnsInfos = cnsResolver.queryCnsByName(contractName);
+		}
+
+		if (cnsInfos.isEmpty()) {
+			System.out.println("Empty set.");
+			System.out.println();
+			return;
+		}
+		ConsoleUtils.singleLine();
+		String[] headers = { "version", "address" };
+		int size = cnsInfos.size();
+		String[][] data = new String[size][2];
+		for (int i = 0; i < size; i++) {
+			data[i][0] = cnsInfos.get(i).getVersion();
+			data[i][1] = cnsInfos.get(i).getAddress();
+		}
+		ColumnFormatter<String> cf = ColumnFormatter.text(Alignment.CENTER, 45);
+		Table table = Table.of(headers, data, cf);
+		System.out.println(table);
+		ConsoleUtils.singleLine();
 		System.out.println();
 	}
 
@@ -745,7 +801,7 @@ public class ConsoleImpl implements ConsoleFace {
 			return;
 		}
 		ConsoleUtils.singleLine();
-		String[] headers = {"address", "enable_num"};
+		String[] headers = { "address", "enable_num" };
 		int size = authoritys.size();
 		String[][] data = new String[size][2];
 		for (int i = 0; i < size; i++) {
@@ -782,7 +838,7 @@ public class ConsoleImpl implements ConsoleFace {
 		ConsoleUtils.printJson(result);
 		System.out.println();
 	}
-	
+
 	@Override
 	public void getSystemConfigByKey(String[] params) throws Exception {
 		if (params.length < 2) {
@@ -794,7 +850,7 @@ public class ConsoleImpl implements ConsoleFace {
 			HelpInfo.getSystemConfigByKeyHelp();
 			return;
 		}
-		String[] args = { "getSystemConfigByKey", key};
+		String[] args = { "getSystemConfigByKey", key };
 		String value = web3j.getSystemConfigByKey(key).sendForReturnString();
 		System.out.println(value);
 		System.out.println();
