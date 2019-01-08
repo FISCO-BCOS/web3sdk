@@ -76,8 +76,10 @@ public class CnsResolverTest extends TestBase {
         System.out.println( "cnsResolver address" + cnsResolver.resolve(name +":10.0"));
         System.out.println( "cnsResolver address" + cnsResolver.resolve(name ));
         System.out.println( "cnsResolver address" + cnsResolver.resolve(okDemo.getContractAddress() ));
-//       BigInteger balance =  Ok.load(name,web3j, credentials, gasPrice, gasLimit).get().send();
-     //   System.out.println("balance = "  + balance );
+        Ok okLoaded =  Ok.load(name,web3j, credentials, gasPrice, gasLimit);
+        System.out.println(okLoaded.isValid());
+        BigInteger balance = okLoaded.get().send();
+        System.out.println("balance = "  + balance );
         assertEquals(cnsResolver.resolve(name +":10.0"),okDemo.getContractAddress());
 
     }

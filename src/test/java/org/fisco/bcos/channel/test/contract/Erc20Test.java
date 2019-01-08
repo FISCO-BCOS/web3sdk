@@ -7,6 +7,7 @@ import org.fisco.bcos.web3j.crypto.gm.GenCredential;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.tx.gas.ContractGasProvider;
 import org.fisco.bcos.web3j.tx.gas.StaticGasProvider;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.math.BigInteger;
@@ -15,6 +16,7 @@ import static org.junit.Assert.assertTrue;
 
 public class Erc20Test extends TestBase {
 
+    @Ignore
     @Test
     public void testOkContract() throws Exception {
         EncryptType encryptType = new EncryptType(1);
