@@ -42,6 +42,8 @@ public interface ConsoleFace {
 
 	void getTransactionReceipt(String[] params) throws IOException;
 
+	void getPendingTxSize() throws IOException;
+	
 	void getPendingTransactions() throws IOException;
 
 	void getCode(String[] params) throws IOException;
@@ -55,6 +57,8 @@ public interface ConsoleFace {
 	void deployByCNS(String[] params) throws Exception;
 
 	void callByCNS(String[] params) throws Exception;
+	
+	void queryCNS(String[] params) throws Exception;
 
 	void addMiner(String[] params) throws Exception;
 
