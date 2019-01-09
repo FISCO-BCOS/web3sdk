@@ -122,7 +122,11 @@ public class ConsoleImpl implements ConsoleFace {
 	}
 
 	@Override
-	public void help() {
+	public void help(String[] params) {
+		if(promptNoParams(params, "h"))
+		{
+			return;
+		}
 		ConsoleUtils.singleLine();
 		StringBuilder sb = new StringBuilder();
 		sb.append("help(h)                                       Provide help information.\n");
@@ -173,22 +177,54 @@ public class ConsoleImpl implements ConsoleFace {
 		System.out.println();
 	}
 
+	private boolean promptNoParams(String[] params, String funcName) {
+		if(params.length >= 2)
+		{
+			if("-h".equals(params[1]) || "--help".equals(params[1]))
+			{
+				HelpInfo.helpNoParams(funcName);
+				return true;
+			}
+			else 
+			{
+				HelpInfo.promptHelp(funcName);
+				return true;
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
+
 	@Override
-	public void getBlockNumber() throws IOException {
+	public void getBlockNumber(String[] params) throws IOException {
+		if(promptNoParams(params, "gbn"))
+		{
+			return;
+		}
 		String blockNumber = web3j.ethBlockNumber().sendForReturnString();
 		System.out.println(Numeric.decodeQuantity(blockNumber));
 		System.out.println();
 	}
 
 	@Override
-	public void getPbftView() throws IOException {
+	public void getPbftView(String[] params) throws IOException {
+		if(promptNoParams(params, "gpv"))
+		{
+			return;
+		}
 		String pbftView = web3j.ethPbftView().sendForReturnString();
 		System.out.println(Numeric.decodeQuantity(pbftView));
 		System.out.println();
 	}
 
 	@Override
-	public void getObserverList() throws IOException {
+	public void getObserverList(String[] params) throws IOException {
+		if(promptNoParams(params, "gol"))
+		{
+			return;
+		}
 		List<String> observerList = web3j.getObserverList().send().getResult();
 		String observers = observerList.toString();
 		if ("[]".equals(observers)) {
@@ -201,7 +237,11 @@ public class ConsoleImpl implements ConsoleFace {
 	}
 
 	@Override
-	public void getMinerList() throws IOException {
+	public void getMinerList(String[] params) throws IOException {
+		if(promptNoParams(params, "gml"))
+		{
+			return;
+		}
 		List<String> minerList = web3j.getMinerList().send().getResult();
 		String miners = minerList.toString();
 		if ("[]".equals(miners)) {
@@ -214,42 +254,66 @@ public class ConsoleImpl implements ConsoleFace {
 	}
 
 	@Override
-	public void getConsensusStatus() throws IOException {
+	public void getConsensusStatus(String[] params) throws IOException {
+		if(promptNoParams(params, "gcs"))
+		{
+			return;
+		}
 		String consensusStatus = web3j.consensusStatus().sendForReturnString();
 		ConsoleUtils.printJson(consensusStatus);
 		System.out.println();
 	}
 
 	@Override
-	public void getSyncStatus() throws IOException {
+	public void getSyncStatus(String[] params) throws IOException {
+		if(promptNoParams(params, "gss"))
+		{
+			return;
+		}
 		String syncStatus = web3j.ethSyncing().sendForReturnString();
 		ConsoleUtils.printJson(syncStatus);
 		System.out.println();
 	}
 
 	@Override
-	public void getClientVersion() throws IOException {
+	public void getClientVersion(String[] params) throws IOException {
+		if(promptNoParams(params, "gcv"))
+		{
+			return;
+		}
 		String clientVersion = web3j.web3ClientVersion().sendForReturnString();
 		ConsoleUtils.printJson(clientVersion);
 		System.out.println();
 	}
 
 	@Override
-	public void getPeers() throws IOException {
+	public void getPeers(String[] params) throws IOException {
+		if(promptNoParams(params, "gps"))
+		{
+			return;
+		}
 		String peers = web3j.ethPeersInfo().sendForReturnString();
 		ConsoleUtils.printJson(peers);
 		System.out.println();
 	}
 
 	@Override
-	public void getGroupPeers() throws IOException {
+	public void getGroupPeers(String[] params) throws IOException {
+		if(promptNoParams(params, "ggp"))
+		{
+			return;
+		}
 		List<String> groupPeers = web3j.ethGroupPeers().send().getResult();
 		ConsoleUtils.printJson(groupPeers.toString());
 		System.out.println();
 	}
 
 	@Override
-	public void getGroupList() throws IOException {
+	public void getGroupList(String[] params) throws IOException {
+		if(promptNoParams(params, "ggl"))
+		{
+			return;
+		}
 		List<String> groupList = web3j.ethGroupList().send().getResult();
 		System.out.println(groupList);
 		System.out.println();
@@ -423,14 +487,22 @@ public class ConsoleImpl implements ConsoleFace {
 	}
 
 	@Override
-	public void getPendingTxSize() throws IOException {
+	public void getPendingTxSize(String[] params) throws IOException {
+		if(promptNoParams(params, "gpts"))
+		{
+			return;
+		}
 		String size = web3j.getPendingTxSize().sendForReturnString();
 		System.out.println(Numeric.decodeQuantity(size));
 		System.out.println();
 	}
 
 	@Override
-	public void getPendingTransactions() throws IOException {
+	public void getPendingTransactions(String[] params) throws IOException {
+		if(promptNoParams(params, "gpt"))
+		{
+			return;
+		}
 		String pendingTransactions = web3j.ethPendingTransaction().sendForReturnString();
 		if ("[]".equals(pendingTransactions))
 			System.out.println(pendingTransactions);
@@ -463,7 +535,11 @@ public class ConsoleImpl implements ConsoleFace {
 	}
 
 	@Override
-	public void getTotalTransactionCount() throws IOException {
+	public void getTotalTransactionCount(String[] params) throws IOException {
+		if(promptNoParams(params, "gtc"))
+		{
+			return;
+		}
 		String transactionCount = web3j.getTotalTransactionCount().sendForReturnString();
 		JSONObject jo = JSONObject.parseObject(transactionCount);
 		jo.put("txSum", Numeric.decodeQuantity(jo.get("txSum").toString()));
@@ -854,5 +930,14 @@ public class ConsoleImpl implements ConsoleFace {
 		String value = web3j.getSystemConfigByKey(key).sendForReturnString();
 		System.out.println(value);
 		System.out.println();
+	}
+	
+	@Override
+	public void quit(String[] params) throws IOException {
+		if(promptNoParams(params, "q"))
+		{
+			return;
+		}
+		System.exit(0);
 	}
 }
