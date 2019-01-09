@@ -53,6 +53,9 @@ public class HelpInfo {
 		case "gtc":
 			getTotalTransactionCountHelp();
 			break;
+		case "q":
+			quitHelp();
+			break;
 
 		default:
 			break;
@@ -124,6 +127,12 @@ public class HelpInfo {
 	{
 		System.out.println("Query group list.");
 		System.out.println("Usage: ggl");
+	}
+	
+	public static void quitHelp() 
+	{
+		System.out.println("Quit console.");
+		System.out.println("Usage: q");
 	}
 	
 	public static void getBlockByHashHelp()
