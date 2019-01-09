@@ -1,8 +1,6 @@
-package org.fisco.bcos.channel.test;
+package org.fisco.bcos.channel.test.guomi;
 
 import org.fisco.bcos.channel.client.Service;
-import org.fisco.bcos.channel.test.contract.NewSolTest;
-import org.fisco.bcos.channel.test.contract.Ok;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.crypto.EncryptType;
 import org.fisco.bcos.web3j.crypto.gm.GenCredential;
@@ -30,12 +28,12 @@ public class GMOkTransaction {
         channelEthereumService.setTimeout(10000);
         Web3j web3 = Web3j.build(channelEthereumService, Integer.parseInt(groupId));
         BigInteger gasPrice = new BigInteger("300000000");
-        BigInteger gasLimit = new BigInteger("300000000");
+        BigInteger gasLimit = new BigInteger("3000000000");
 
         Credentials credentials1 = GenCredential.create("a392604efc2fad9c0b3da43b5f698a2e3f270f170d859912be0d54742275c5f6");
 
         ContractGasProvider contractGasProvider = new StaticGasProvider(gasPrice, gasLimit);
-        final Ok okDemo = Ok.deploy(web3, credentials1, contractGasProvider,new BigInteger("0")).send();
+        final Ok okDemo = Ok.deploy(web3, credentials1, contractGasProvider).send();
 
         for (int i = 0; i < 1; i++) {
             System.out.println("####contract address is: " + okDemo.getContractAddress());
