@@ -44,7 +44,7 @@ List alibaba = [
 
 // In this section you declare the dependencies for your production and test code
 dependencies {
-   // compile files('lib/solcJ-all-0.5.1.jar'),
+   // compile files('lib/solcJ-all-0.4.25-gm.jar')
 	compile	'org.ethereum:solcJ-all:0.4.25'
     compile logger,spring,alibaba
     compile 'org.apache.commons:commons-lang3:3.1'
@@ -115,7 +115,9 @@ jar {
 	}
 }
 //
-
+test {
+	testLogging.showStandardStreams = true
+}
 
 //signing {
 //	required { gradle.taskGraph.hasTask("uploadArchives") }
