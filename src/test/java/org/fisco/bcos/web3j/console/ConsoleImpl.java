@@ -931,4 +931,13 @@ public class ConsoleImpl implements ConsoleFace {
 		System.out.println(value);
 		System.out.println();
 	}
+	
+	@Override
+	public void quit(String[] params) throws IOException {
+		if(promptNoParams(params, "q"))
+		{
+			return;
+		}
+		System.exit(0);
+	}
 }

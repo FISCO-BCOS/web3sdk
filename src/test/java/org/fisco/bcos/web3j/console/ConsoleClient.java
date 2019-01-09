@@ -172,7 +172,8 @@ public class ConsoleClient {
 					break;
 				case "quit":
 				case "q":
-					System.exit(0);
+					console.quit(params);
+					break;
 				default:
 					System.out.println("Undefined command: \"" + params[0] + "\".  Try \"help\".\n");
 					break;

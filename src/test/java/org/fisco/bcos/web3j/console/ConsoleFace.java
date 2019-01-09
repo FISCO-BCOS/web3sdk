@@ -75,6 +75,8 @@ public interface ConsoleFace {
 	void setSystemConfigByKey(String[] params) throws Exception;
 
 	void getSystemConfigByKey(String[] params) throws Exception;
+	
+	void quit(String[] params) throws Exception;
 
 	void init(String[] args);
 }
