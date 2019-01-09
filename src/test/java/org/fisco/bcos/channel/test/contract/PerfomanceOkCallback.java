@@ -39,10 +39,10 @@ public class PerfomanceOkCallback {
 		timeArea.put(6, 0);
 	}
 	
-	public void onResponse(Long cost, EthereumResponse response) {
+	public void onResponse(Long cost) {
 		TransactionReceipt transactionReceipt;
 		try {
-			transactionReceipt = objectMapper.readValue(response.getContent(), TransactionReceipt.class);
+		//	transactionReceipt = objectMapper.readValue(response.getContent(), TransactionReceipt.class);
 
 			// 检查执行结果
 			//List<ResultCodeEventResponse> code = SeekFunBook.getResultCodeEvents(transactionReceipt);
