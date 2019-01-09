@@ -14,6 +14,8 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import java.math.BigInteger;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static java.lang.System.exit;
+
 public class PerfomanceOk {
 	static Logger logger = LoggerFactory.getLogger(PerfomanceOk.class);
 	private static AtomicInteger sended = new AtomicInteger(0);
@@ -111,6 +113,7 @@ public class PerfomanceOk {
 			});
 
 		}
-
+		Thread.sleep(4000);
+		exit(0);
 	}
 }

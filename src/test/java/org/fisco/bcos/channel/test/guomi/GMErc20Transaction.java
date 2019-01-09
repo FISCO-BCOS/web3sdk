@@ -1,7 +1,6 @@
-package org.fisco.bcos.channel.test;
+package org.fisco.bcos.channel.test.guomi;
 
 import org.fisco.bcos.channel.client.Service;
-import org.fisco.bcos.channel.test.contract.NewSolTest;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.crypto.EncryptType;
 import org.fisco.bcos.web3j.crypto.gm.GenCredential;
