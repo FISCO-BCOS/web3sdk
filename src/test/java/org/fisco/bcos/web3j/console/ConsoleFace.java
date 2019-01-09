@@ -6,27 +6,27 @@ public interface ConsoleFace {
 	
 	void welcome();
 
-	void help();
+	void help(String[] params);
 
-	void getBlockNumber() throws IOException;
+	void getBlockNumber(String[] params) throws IOException;
 
-	void getPbftView() throws IOException;
+	void getPbftView(String[] params) throws IOException;
 
-	void getObserverList() throws IOException;
+	void getObserverList(String[] params) throws IOException;
 
-	void getMinerList() throws IOException;
+	void getMinerList(String[] params) throws IOException;
 
-	void getConsensusStatus() throws IOException;
+	void getConsensusStatus(String[] params) throws IOException;
 
-	void getSyncStatus() throws IOException;
+	void getSyncStatus(String[] params) throws IOException;
 
-	void getClientVersion() throws IOException;
+	void getClientVersion(String[] params) throws IOException;
 
-	void getPeers() throws IOException;
+	void getPeers(String[] params) throws IOException;
 
-	void getGroupPeers() throws IOException;
+	void getGroupPeers(String[] params) throws IOException;
 
-	void getGroupList() throws IOException;
+	void getGroupList(String[] params) throws IOException;
 
 	void getBlockByHash(String[] params) throws IOException;
 
@@ -42,13 +42,13 @@ public interface ConsoleFace {
 
 	void getTransactionReceipt(String[] params) throws IOException;
 
-	void getPendingTxSize() throws IOException;
+	void getPendingTxSize(String[] params) throws IOException;
 	
-	void getPendingTransactions() throws IOException;
+	void getPendingTransactions(String[] params) throws IOException;
 
 	void getCode(String[] params) throws IOException;
 
-	void getTotalTransactionCount() throws IOException;
+	void getTotalTransactionCount(String[] params) throws IOException;
 
 	void deploy(String[] params) throws Exception;
 	
@@ -75,6 +75,8 @@ public interface ConsoleFace {
 	void setSystemConfigByKey(String[] params) throws Exception;
 
 	void getSystemConfigByKey(String[] params) throws Exception;
+	
+	void quit(String[] params) throws Exception;
 
 	void init(String[] args);
 }

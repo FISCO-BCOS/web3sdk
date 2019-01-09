@@ -16,7 +16,7 @@ public class ConsoleClient {
 		Scanner sc = new Scanner(System.in);
 		while (true) {
 			System.out.print("> ");
-			String request = sc.nextLine();
+			String request = sc.nextLine().trim().replaceAll(" +", " ");
 			String[] params = request.split(" ");
 			if (params.length < 1) {
 				System.out.print("");
@@ -32,47 +32,47 @@ public class ConsoleClient {
 
 				case "help":
 				case "h":
-					console.help();
+					console.help(params);
 					break;
 				case "getBlockNumber":
 				case "gbn":
-					console.getBlockNumber();
+					console.getBlockNumber(params);
 					break;
 				case "getPbftView":
 				case "gpv":
-					console.getPbftView();
+					console.getPbftView(params);
 					break;
 				case "getMinerList":
 				case "gml":
-					console.getMinerList();
+					console.getMinerList(params);
 					break;
 				case "getObserverList":
 				case "gol":
-					console.getObserverList();
+					console.getObserverList(params);
 					break;
 				case "getConsensusStatus":
 				case "gcs":
-					console.getConsensusStatus();
+					console.getConsensusStatus(params);
 					break;
 				case "getSyncStatus":
 				case "gss":
-					console.getSyncStatus();
+					console.getSyncStatus(params);
 					break;
 				case "getClientVersion":
 				case "gcv":
-					console.getClientVersion();
+					console.getClientVersion(params);
 					break;
 				case "getPeers":
 				case "gps":
-					console.getPeers();
+					console.getPeers(params);
 					break;
 				case "getGroupPeers":
 				case "ggp":
-					console.getGroupPeers();
+					console.getGroupPeers(params);
 					break;
 				case "getGroupList":
 				case "ggl":
-					console.getGroupList();
+					console.getGroupList(params);
 					break;
 				case "getBlockByHash":
 				case "gbbh":
@@ -104,11 +104,11 @@ public class ConsoleClient {
 					break;
 				case "getPendingTransactions":
 				case "gpt":
-					console.getPendingTransactions();
+					console.getPendingTransactions(params);
 					break;
 				case "getPendingTxSize":
 				case "gpts":
-					console.getPendingTxSize();
+					console.getPendingTxSize(params);
 					break;
 				case "getCode":
 				case "gc":
@@ -116,7 +116,7 @@ public class ConsoleClient {
 					break;
 				case "getTotalTransactionCount":
 				case "gtc":
-					console.getTotalTransactionCount();
+					console.getTotalTransactionCount(params);
 					break;
 				case "deploy":
 				case "d":
@@ -172,7 +172,8 @@ public class ConsoleClient {
 					break;
 				case "quit":
 				case "q":
-					System.exit(0);
+					console.quit(params);
+					break;
 				default:
 					System.out.println("Undefined command: \"" + params[0] + "\".  Try \"help\".\n");
 					break;
