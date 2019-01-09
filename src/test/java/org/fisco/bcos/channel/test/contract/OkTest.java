@@ -15,6 +15,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.math.BigInteger;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static org.fisco.bcos.web3j.console.ConsoleClient.*;
@@ -46,6 +47,7 @@ public class OkTest extends TestBase {
             BigInteger oldBalance = okDemo.get().sendAsync().get(60000, TimeUnit.MILLISECONDS);
             okDemo.trans(new BigInteger("4")).sendAsync().get(60000, TimeUnit.MILLISECONDS);
             BigInteger newBalance = okDemo.get().sendAsync().get(60000, TimeUnit.MILLISECONDS);
+            System.out.println("####newBalance is: " + oldBalance.intValue());
            assertTrue(newBalance.intValue() == oldBalance.intValue() + 4);
         }
     }
