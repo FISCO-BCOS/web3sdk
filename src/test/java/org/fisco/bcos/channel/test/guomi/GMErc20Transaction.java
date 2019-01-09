@@ -15,7 +15,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.math.BigInteger;
 
-public class GMTransaction {
+public class GMErc20Transaction {
     public static void main(String[] args) throws Exception {
         EncryptType encryptType = new EncryptType(1);
         String groupId = "1";
