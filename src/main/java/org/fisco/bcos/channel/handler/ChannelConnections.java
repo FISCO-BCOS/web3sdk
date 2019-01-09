@@ -61,6 +61,16 @@ public class ChannelConnections {
 	private long heartBeatDelay = (long)2000;
 	public Map<String, ChannelHandlerContext> networkConnections = new HashMap<String, ChannelHandlerContext>();
 
+	public int getGroupId() {
+		return groupId;
+	}
+
+	public void setGroupId(int groupId) {
+		this.groupId = groupId;
+	}
+
+	private int groupId;
+
 	public interface Callback {
 		void onConnect(ChannelHandlerContext ctx);
 		void onDisconnect(ChannelHandlerContext ctx);
