@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/yanyanho/web3sdk.svg?branch=sdk-2.0)](https://travis-ci.org/yanyanho/web3sdk)
 web3jsdk:  JAVA FISCO-BCOS API
 ==================================
 
