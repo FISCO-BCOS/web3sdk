@@ -177,7 +177,6 @@ public class ChannelConnections {
 			logger.error("activeConnections isEmpty");
 			throw new Exception("activeConnections isEmpty");
 		}
-
 		Random random = new SecureRandom();
 		Integer index = random.nextInt(activeConnections.size());
 
@@ -217,6 +216,8 @@ public class ChannelConnections {
 
 		networkConnections.remove(endpoint);
 	}
+
+
 
 	public void startListen(Integer port) {
 		if(running) {
@@ -351,6 +352,7 @@ public class ChannelConnections {
 				ch.pipeline().addLast(sslCtx.newHandler(ch.alloc()),
 						new LengthFieldBasedFrameDecoder(1024 * 1024 * 4, 0, 4, -4, 0),
 						new IdleStateHandler(idleTimeout, idleTimeout, idleTimeout, TimeUnit.MILLISECONDS), handler);
+
 			}
 		});
 
