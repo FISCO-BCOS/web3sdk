@@ -8,6 +8,7 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.EthPeerList;
 import org.fisco.bcos.web3j.protocol.core.methods.response.GroupList;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -22,6 +23,7 @@ public class BasicTest extends TestBase {
     private static BigInteger gasLimit = new BigInteger("300000000");
     private static BigInteger initialWeiValue = new BigInteger("0");
 
+    @Ignore
     @Test
     public void  pbftViewTest() throws Exception {
        int i =  web3j.ethPbftView().send().getEthPbftView().intValue();
@@ -81,6 +83,7 @@ public class BasicTest extends TestBase {
         assertTrue(transactions.size()>=0);
     }
 
+    @Ignore
     @Test
     public void getTransactionByBlockNumberAndIndexTest() throws IOException {
        Transaction transaction =  web3j.ethGetTransactionByBlockNumberAndIndex(DefaultBlockParameter.valueOf(new BigInteger("1")),new BigInteger("0")).send().getTransaction().get();
