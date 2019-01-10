@@ -19,7 +19,7 @@
 					<property name="groupId" value="1" />
 					<property name="connectionsStr">
 						<list>
-							<value>***REMOVED***:30901</value>
+							<value>127.0.0.1:30301</value>
 						</list>
 					</property>
 				</bean>
@@ -27,7 +27,7 @@
 					<property name="groupId" value="2" />
 					<property name="connectionsStr">
 						<list>
-							<value>***REMOVED***:30901</value>
+							<value>127.0.0.1:30301</value>
 							<value>***REMOVED***:30904</value>
 						</list>
 					</property>

@@ -49,7 +49,6 @@ public class ConsoleImpl implements ConsoleFace {
 	private Class<?> contractClass;
 	private RemoteCall<?> remoteCall;
 	private String privateKey = "";
-	private String origin = "";
 	private ChannelEthereumService channelEthereumService = new ChannelEthereumService();
 
 	public void init(String[] args) {
