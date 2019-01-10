@@ -13,6 +13,7 @@ import org.bcos.contract.source.ContractAbiMgr;
 import org.bcos.contract.source.ContractBase;
 import org.bcos.web3j.crypto.Credentials;
 import org.bcos.web3j.protocol.Web3j;
+import org.bcos.web3j.utils.Files;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,28 +47,14 @@ public class CNSCmdTool {
 		if(!abiPath.endsWith(".abi")) {
 			abiPath += ".abi";
 		}
-		File f = null;
-		FileInputStream in = null;
 		try {
-			f = new File(abiPath);
-			Long length = f.length();
-			byte[] bs = new byte[length.intValue()];
-			in = new FileInputStream(f);
-			int rdsize = in.read(bs);
-			
-			logger.debug("read size => " + rdsize);
-			
-			String s = new String(bs);
-			logger.debug("read abi file content ,path = " + abiPath  + " ,abi = " + s);
+			byte[] bytes = Files.readBytes(new File(abiPath));
+			String s = new String(bytes);
 			return s.trim();
 			
 		} catch (IOException e) {
 			logger.error("read abi file content failed, abi path = " + abiPath);
 			throw e;
-		} finally {
-			if(in != null) {
-				in.close();
-			}
 		}
 	}
 	
@@ -80,29 +67,13 @@ public class CNSCmdTool {
 		if(!addrPath.endsWith(".address")) {
 			addrPath += ".address";
 		}
-		
-		File f = null;
-		FileInputStream in = null;
 		try {
-			f = new File(addrPath);
-			Long length = f.length();
-			byte[] bs = new byte[length.intValue()];
-			in = new FileInputStream(f);
-			int rdsize = in.read(bs);
-			
-			logger.debug("read size => " + rdsize);
-			
-			String s = new String(bs);
-			logger.debug("read address file content ,path = " + addrPath  + " ,address = " + s);
+			byte[] bytes = Files.readBytes(new File(addrPath));
+			String s = new String(bytes);
 			return s.trim();
-			
 		} catch (IOException e) {
 			logger.error("read address file content failed, addr path = " + addrPath);
 			throw e;
-		} finally {
-			if(in != null) {
-				in.close();
-			}
 		}
 	}
 	

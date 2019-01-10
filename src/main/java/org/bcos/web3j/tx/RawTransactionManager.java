@@ -2,8 +2,10 @@ package org.bcos.web3j.tx;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
+
 import org.bcos.channel.client.TransactionSucCallback;
 import org.bcos.web3j.protocol.core.Request;
 import org.bcos.web3j.crypto.Credentials;
@@ -66,7 +68,7 @@ public class RawTransactionManager extends TransactionManager {
     }
 
     BigInteger getBlockLimit() throws IOException {
-        return  web3j.getBlockNumberCache();
+        return web3j.getBlockNumberCache();
     }
 
     @Override
@@ -74,28 +76,28 @@ public class RawTransactionManager extends TransactionManager {
             BigInteger gasPrice, BigInteger gasLimit, String to,
             String data, BigInteger value, BigInteger type, boolean isInitByName) throws IOException {
 
-			Random r = new Random();
-			BigInteger randomid = new BigInteger(250,r);
-            BigInteger blockLimit = getBlockLimit();
-            logger.info("sendTransaction randomid: {} blockLimit:{}", randomid,blockLimit);
-            RawTransaction rawTransaction = RawTransaction.createTransaction(
-                    randomid,
-                    gasPrice,
-                    gasLimit,
-                    blockLimit,
-                    to,
-                    value,
-                    data,
-                    type,
-                    isInitByName);
+        Random r = new SecureRandom();
+        BigInteger randomid = new BigInteger(250, r);
+        BigInteger blockLimit = getBlockLimit();
+        logger.info("sendTransaction randomid: {} blockLimit:{}", randomid, blockLimit);
+        RawTransaction rawTransaction = RawTransaction.createTransaction(
+                randomid,
+                gasPrice,
+                gasLimit,
+                blockLimit,
+                to,
+                value,
+                data,
+                type,
+                isInitByName);
 
         return signAndSend(rawTransaction);
     }
 
     @Override
     public EthSendTransaction sendTransaction(BigInteger gasPrice, BigInteger gasLimit, String to, String data, BigInteger value, BigInteger type, boolean isInitByName, TransactionSucCallback callback) throws IOException {
-        Random r = new Random();
-        BigInteger randomid = new BigInteger(250,r);
+        Random r = new SecureRandom();
+        BigInteger randomid = new BigInteger(250, r);
         BigInteger blockLimit = getBlockLimit();
         RawTransaction rawTransaction = RawTransaction.createTransaction(
 
@@ -146,7 +148,7 @@ public class RawTransactionManager extends TransactionManager {
         request.setTransactionSucCallback(callback);
         return request.send();
     }
-    
+
     @Override
     public String getFromAddress() {
         return credentials.getAddress();
