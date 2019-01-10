@@ -590,9 +590,6 @@ public class ConsoleTest{
     	assertTrue(!"".equals(log.getLog()));
     	log.clearLog();
     	
-    	String[] params3 = {"aa", "t_test","0xf1585b8d0e08a0a00fff662e24d67ba95a438256"};
-    	console.addAuthority(params3);
-    	assertTrue(!"".equals(log.getLog()));
     }
     @Test
     public void removeAuthorityTest() throws Exception {
@@ -606,24 +603,21 @@ public class ConsoleTest{
     	assertTrue(!"".equals(log.getLog()));
     	log.clearLog();
     	
-    	String[] params3 = {"ra", "t_test", "0xf1585b8d0e08a0a00fff662e24d67ba95a438256"};
-    	console.removeAuthority(params3);
-    	assertTrue(!"".equals(log.getLog()));
     }
     @Test
     public void queryAuthorityTest() throws Exception {
     	String[] params1 = {};
-    	console.removeAuthority(params1);
+    	console.queryAuthority(params1);
     	assertTrue(!"".equals(log.getLog()));
     	log.clearLog();
     	
     	String[] params2 = {"qa", "-h"};
-    	console.removeAuthority(params2);
+    	console.queryAuthority(params2);
     	assertTrue(!"".equals(log.getLog()));
     	log.clearLog();
     	
-    	String[] params3 = {"qa", "t_test", "0xf1585b8d0e08a0a00fff662e24d67ba95a438256"};
-    	console.removeAuthority(params3);
+    	String[] params3 = {"qa", "t_test"};
+    	console.queryAuthority(params3);
     	assertTrue(!"".equals(log.getLog()));
     }
     
