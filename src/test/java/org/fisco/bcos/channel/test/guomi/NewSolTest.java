@@ -1,4 +1,4 @@
-package org.fisco.bcos.channel.test.contract;
+package org.fisco.bcos.channel.test.guomi;
 
 import io.reactivex.Flowable;
 import org.fisco.bcos.web3j.abi.EventEncoder;

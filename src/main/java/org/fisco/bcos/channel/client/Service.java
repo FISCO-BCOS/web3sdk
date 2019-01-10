@@ -9,6 +9,7 @@ import io.netty.util.Timer;
 import io.netty.util.TimerTask;
 import org.fisco.bcos.channel.dto.*;
 import org.fisco.bcos.channel.handler.ChannelConnections;
+import org.fisco.bcos.channel.handler.GroupChannelConnectionsConfig;
 import org.fisco.bcos.channel.handler.ConnectionCallback;
 import org.fisco.bcos.channel.handler.ConnectionInfo;
 import org.slf4j.Logger;
@@ -28,7 +29,16 @@ public class Service {
 	private Integer connectSeconds = 30;
 	private Integer connectSleepPerMillis = 1;
 	private String orgID;
-	private ChannelConnections allChannelConnections;
+
+	public GroupChannelConnectionsConfig getAllChannelConnections() {
+		return allChannelConnections;
+	}
+
+	public void setAllChannelConnections(GroupChannelConnectionsConfig allChannelConnections) {
+		this.allChannelConnections = allChannelConnections;
+	}
+
+	private GroupChannelConnectionsConfig allChannelConnections;
 	private ChannelPushCallback pushCallback;
 	private Map<String, Object> seq2Callback = new ConcurrentHashMap<String, Object>();
 	private int groupId;
@@ -81,30 +91,28 @@ public class Service {
 	}
 
 
-	public ChannelConnections getAllChannelConnections() {
-		return allChannelConnections;
-	}
 
-	public void setAllChannelConnections(ChannelConnections allChannelConnections) {
-		this.allChannelConnections = allChannelConnections;
-	}
 
 
 	public void run() throws Exception {
 		logger.debug("init ChannelService");
 
-		try {
-			ConnectionCallback connectionCallback = new ConnectionCallback(topics);
-			connectionCallback.setChannelService(this);
-			allChannelConnections.setCallback(connectionCallback);
-			allChannelConnections.init();
-			allChannelConnections.setThreadPool(threadPool);
-			allChannelConnections.startConnect();
+		for(ChannelConnections channelConnections :allChannelConnections.getAllChannelConnections()) {
+			if (channelConnections.getGroupId() == groupId) {
+
+				try {
+					ConnectionCallback connectionCallback = new ConnectionCallback(topics);
+					connectionCallback.setChannelService(this);
+
+					channelConnections.setCallback(connectionCallback);
+					channelConnections.init();
+					channelConnections.setThreadPool(threadPool);
+					channelConnections.startConnect();
 
 					int sleepTime = 0;
 					boolean running = false;
 					while (true) {
-						Map<String, ChannelHandlerContext> networkConnection = allChannelConnections.getNetworkConnections();
+						Map<String, ChannelHandlerContext> networkConnection = allChannelConnections.getAllChannelConnections().stream().filter(x->x.getGroupId()==groupId).findFirst().get().getNetworkConnections();
 						for (String key : networkConnection.keySet()) {
 							if (networkConnection.get(key) != null && networkConnection.get(key).channel().isActive()) {
 								running = true;
@@ -112,33 +120,29 @@ public class Service {
 							}
 						}
 
-						if (running || sleepTime > connectSeconds*1000)
-						{
+						if (running || sleepTime > connectSeconds * 1000) {
 							break;
-						}
-						else
-						{
+						} else {
 							Thread.sleep(connectSleepPerMillis);
 							sleepTime += connectSleepPerMillis;
 						}
 					}
 
-					if(!running)
-					{
+					if (!running) {
 						logger.error("connectSeconds = " + connectSeconds);
 						logger.error("init ChannelService fail!");
 						throw new Exception("Init ChannelService fail!Please Refer To Link Below:https://github.com/FISCO-BCOS/web3sdk/wiki/web3sdk-debug");
 					}
+				} catch (InterruptedException e) {
+					logger.error("system error ", e);
+					Thread.currentThread().interrupt();
+				} catch (Exception e) {
+					logger.error("system error ", e);
+					throw e;
 				}
-		catch (InterruptedException e) {
-			logger.error("system error ", e);
-			Thread.currentThread().interrupt();
-		}
-		catch (Exception e) {
-			logger.error("system error ", e);
-			throw e;
-		}
 
+			}
+		}
 	}
 
 	public EthereumResponse sendEthereumMessage(EthereumRequest request) {
@@ -294,7 +298,8 @@ public class Service {
 
 		// 选取发送节点
 		try {
-			ChannelConnections fromChannelConnections = allChannelConnections;
+
+			ChannelConnections fromChannelConnections = allChannelConnections.getAllChannelConnections().stream().filter(x->x.getGroupId()==groupId).findFirst().get();
 
 			if (fromChannelConnections == null) {
 				// 没有找到对应的链
@@ -367,7 +372,7 @@ public class Service {
 				List<ConnectionInfo> fromConnectionInfos = new ArrayList<ConnectionInfo>();
 
 				// 设置发送节点
-				ChannelConnections fromChannelConnections = allChannelConnections;
+				ChannelConnections fromChannelConnections = allChannelConnections.getAllChannelConnections().stream().filter(x->x.getGroupId()==groupId).findFirst().get();
 				if (fromChannelConnections == null) {
 					// 没有找到对应的链
 					// 返回错误

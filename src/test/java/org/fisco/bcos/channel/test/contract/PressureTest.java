@@ -2,6 +2,7 @@ package org.fisco.bcos.channel.test.contract;
 
 import org.fisco.bcos.channel.test.TestBase;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.math.BigInteger;
@@ -10,6 +11,7 @@ import java.util.concurrent.ExecutionException;
 
 public class PressureTest extends TestBase {
 
+    @Ignore
 	@Test
 	public  void pressureTest() throws InterruptedException, ExecutionException {
             int threadNum = 500;

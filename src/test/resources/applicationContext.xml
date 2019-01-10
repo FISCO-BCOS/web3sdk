@@ -1,28 +1,46 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
-	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:aop="http://www.springframework.org/schema/aop"
-	xmlns:context="http://www.springframework.org/schema/context"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans   
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	   xmlns:tx="http://www.springframework.org/schema/tx" xmlns:aop="http://www.springframework.org/schema/aop"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
     http://www.springframework.org/schema/beans/spring-beans-2.5.xsd  
          http://www.springframework.org/schema/tx   
     http://www.springframework.org/schema/tx/spring-tx-2.5.xsd  
          http://www.springframework.org/schema/aop   
     http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
 
-	<bean id="channelService" class="org.fisco.bcos.channel.client.Service">
-		<property name="groupId" value="1" />
-		<property name="orgID" value="fisco" />
+
+	<bean id="groupChannelConnectionsConfig" class="org.fisco.bcos.channel.handler.GroupChannelConnectionsConfig">
 		<property name="allChannelConnections">
-				<bean class="org.fisco.bcos.channel.handler.ChannelConnections">
-                    <property name="connectionsStr">
+			<list>
+				<bean id="ChannelConnections1"  class="org.fisco.bcos.channel.handler.ChannelConnections">
+					<property name="groupId" value="1" />
+					<property name="connectionsStr">
 						<list>
 							<value>10.107.105.138:30901</value>
 						</list>
-				</property>
-                </bean>
+					</property>
+				</bean>
+				<bean id="ChannelConnections2" class="org.fisco.bcos.channel.handler.ChannelConnections">
+					<property name="groupId" value="2" />
+					<property name="connectionsStr">
+						<list>
+							<value>10.107.105.138:30901</value>
+							<value>10.107.105.138:30904</value>
+						</list>
+					</property>
+				</bean>
+			</list>
 		</property>
+	</bean>
+
+
+	<bean id="channelService" class="org.fisco.bcos.channel.client.Service" depends-on="groupChannelConnectionsConfig">
+		<property name="groupId" value="1" />
+		<property name="orgID" value="fisco" />
+		<property name="allChannelConnections" ref="groupChannelConnectionsConfig"></property>
 	</bean>
 
 </beans>
