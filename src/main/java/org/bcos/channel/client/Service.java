@@ -352,62 +352,63 @@ public class Service {
 		return callback.channelResponse;
 	}
 
-	public EthereumResponse sendEthereumMessage(EthereumRequest request, TransactionSucCallback transactionSucCallback) {
-		class Callback extends EthereumResponseCallback {
-			Callback() {
-				try {
-					semaphore.acquire(1);
+	public EthereumResponse sendEthereumMessage(EthereumRequest request, TransactionSucCallback transactionSucCallback,
+												int txCallbackTimeout) {
+        class Callback extends EthereumResponseCallback  {
+            Callback() {
+                try {
+                    semaphore.acquire(1);
 
-				} catch (InterruptedException e) {
-					logger.error("error:", e);
-					Thread.currentThread().interrupt();
-				}
-			}
+                } catch (InterruptedException e) {
+                    logger.error("error:", e);
+                    Thread.currentThread().interrupt();
+                }
+            }
 
-			@Override
-			public void onResponse(EthereumResponse response) {
-				ethereumResponse = response;
+            @Override
+            public void onResponse(EthereumResponse response) {
+                ethereumResponse = response;
 
-				logger.info("response: {}", response.getContent());
+                logger.info("response: {}", response.getContent());
 
-				semaphore.release();
-			}
+                semaphore.release();
+            }
 
-			public EthereumResponse ethereumResponse;
-			public Semaphore semaphore = new Semaphore(1, true);
-		}
+            public EthereumResponse ethereumResponse;
+            public Semaphore semaphore = new Semaphore(1, true);
+        }
 
-		Callback callback = new Callback();
-		asyncSendEthereumMessage(request, callback, transactionSucCallback);
-		try {
-			callback.semaphore.acquire(1);
-		} catch (InterruptedException e) {
-			logger.error("system error:", e);
-			Thread.currentThread().interrupt();
-		}
+        Callback callback = new Callback();
+        asyncSendEthereumMessage(request, callback, transactionSucCallback, txCallbackTimeout);
+        try {
+            callback.semaphore.acquire(1);
+        } catch (InterruptedException e) {
+            logger.error("system error:", e);
+            Thread.currentThread().interrupt();
+        }
 
-		return callback.ethereumResponse;
-	}
+        return callback.ethereumResponse;
+    }
 
-	public void asyncSendEthereumMessage(EthereumRequest request, EthereumResponseCallback ethereumResponseCallback, TransactionSucCallback transactionSucCallback) {
-		this.asyncSendEthereumMessage(request, ethereumResponseCallback);
-		if (request.getTimeout() > 0) {
-			final TransactionSucCallback callbackInner = transactionSucCallback;
-			callbackInner.setTimeout(timeoutHandler.newTimeout(new TimerTask() {
-				@Override
-				public void run(Timeout timeout) throws Exception {
-					logger.info("asyncSendEthereumMessage timeout:seq ", request.getMessageID());
-					//处理超时逻辑
-					callbackInner.onTimeout();
-					//timeout时清除map的数据,所以尽管后面有回包数据，也会找不到seq->callback的关系
-					seq2TransactionCallback.remove(request.getMessageID());
-				}
-			}, request.getTimeout(), TimeUnit.MILLISECONDS));
-			this.seq2TransactionCallback.put(request.getMessageID(), callbackInner);
-		} else {
-			this.seq2TransactionCallback.put(request.getMessageID(), transactionSucCallback);
-		}
-	}
+    public void asyncSendEthereumMessage(EthereumRequest request, EthereumResponseCallback ethereumResponseCallback,
+										 TransactionSucCallback transactionSucCallback, int txCallbackTimeout) {
+        this.asyncSendEthereumMessage(request, ethereumResponseCallback);
+        if(txCallbackTimeout > 0) {
+            final TransactionSucCallback callbackInner = transactionSucCallback;
+            callbackInner.setTimeout(timeoutHandler.newTimeout(new TimerTask() {
+                @Override
+                public void run(Timeout timeout) throws Exception {
+                    //处理超时逻辑
+                    callbackInner.onTimeout();
+                    //timeout时清除map的数据,所以尽管后面有回包数据，也会找不到seq->callback的关系
+                    seq2TransactionCallback.remove(request.getMessageID());
+                }
+            }, txCallbackTimeout, TimeUnit.MILLISECONDS));
+            this.seq2TransactionCallback.put(request.getMessageID(), callbackInner);
+        } else {
+            this.seq2TransactionCallback.put(request.getMessageID(), transactionSucCallback);
+        }
+    }
 
 	public ChannelResponse sendChannelMessage2(ChannelRequest request) {
 		class Callback extends ChannelResponseCallback2 {
