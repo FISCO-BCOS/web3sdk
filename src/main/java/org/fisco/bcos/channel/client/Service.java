@@ -29,15 +29,6 @@ public class Service {
 	private Integer connectSeconds = 30;
 	private Integer connectSleepPerMillis = 1;
 	private String orgID;
-
-	public GroupChannelConnectionsConfig getAllChannelConnections() {
-		return allChannelConnections;
-	}
-
-	public void setAllChannelConnections(GroupChannelConnectionsConfig allChannelConnections) {
-		this.allChannelConnections = allChannelConnections;
-	}
-
 	private GroupChannelConnectionsConfig allChannelConnections;
 	private ChannelPushCallback pushCallback;
 	private Map<String, Object> seq2Callback = new ConcurrentHashMap<String, Object>();
@@ -90,9 +81,13 @@ public class Service {
 		this.pushCallback = pushCallback;
 	}
 
+	public GroupChannelConnectionsConfig getAllChannelConnections() {
+		return allChannelConnections;
+	}
 
-
-
+	public void setAllChannelConnections(GroupChannelConnectionsConfig allChannelConnections) {
+		this.allChannelConnections = allChannelConnections;
+	}
 
 	public void run() throws Exception {
 		logger.debug("init ChannelService");
