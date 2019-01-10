@@ -45,6 +45,7 @@ public class TestOkTransaction {
             Ok okDemo = Ok.load(address, web3, credentials, gasPrice, gasLimit);
             TransactionReceipt receipt = okDemo.trans(new BigInteger("4")).send();
             System.out.println("transaction success , receipt is " + receipt.getTransactionHash());
+       System.exit(0);
         }
     }
 }
