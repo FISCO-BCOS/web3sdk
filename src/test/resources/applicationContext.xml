@@ -42,5 +42,4 @@
 		<property name="orgID" value="fisco" />
 		<property name="allChannelConnections" ref="groupChannelConnectionsConfig"></property>
 	</bean>
-
 </beans>
