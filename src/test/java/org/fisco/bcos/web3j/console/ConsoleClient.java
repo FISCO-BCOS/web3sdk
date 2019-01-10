@@ -1,5 +1,6 @@
 package org.fisco.bcos.web3j.console;
 
+import java.io.IOException;
 import java.util.Scanner;
 
 import org.fisco.bcos.web3j.protocol.channel.ResponseExcepiton;
@@ -187,7 +188,17 @@ public class ConsoleClient {
 			} catch (ClassNotFoundException e) {
 				System.out.println(e.getMessage()+" does not exist.");
 				System.out.println();
-			}catch (Exception e) {
+			} catch (IOException e) {
+				if(e.getMessage().startsWith("activeConnections"))
+				{
+					System.out.println("Please check the connection between sdk to node.");
+				}
+				else
+				{
+					System.out.println(e.getMessage());
+				}
+				System.out.println();
+			} catch (Exception e) {
 				System.out.println(e.getMessage());
 				System.out.println();
 			}
