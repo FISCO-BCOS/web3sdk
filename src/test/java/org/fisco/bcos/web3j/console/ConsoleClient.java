@@ -193,6 +193,10 @@ public class ConsoleClient {
 				{
 					System.out.println("Please check the connection between sdk to node.");
 				}
+				else if(e.getMessage().startsWith("No value"))
+				{
+					System.out.println("The groupID is not configured in dist/conf/applicationContext.xml file.");
+				}
 				else
 				{
 					System.out.println(e.getMessage());
