@@ -1,6 +1,7 @@
 package org.bcos.channel.dto;
 
 public class EthereumResponse {
+
 	public Integer getErrorCode() {
 		return errorCode;
 	}
