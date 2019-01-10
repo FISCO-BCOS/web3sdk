@@ -1,36 +1,7 @@
 package org.bcos.channel.client;
 
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
-
-import com.google.gson.Gson;
-import org.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-
+import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import org.bcos.channel.dto.ChannelMessage;
-import org.bcos.channel.dto.ChannelMessage2;
-import org.bcos.channel.dto.ChannelPush;
-import org.bcos.channel.dto.ChannelPush2;
-import org.bcos.channel.dto.ChannelRequest;
-import org.bcos.channel.dto.ChannelResponse;
-import org.bcos.channel.dto.EthereumMessage;
-import org.bcos.channel.dto.EthereumRequest;
-import org.bcos.channel.dto.EthereumResponse;
-import org.bcos.channel.handler.ChannelConnections;
-import org.bcos.channel.handler.ConnectionInfo;
-import org.bcos.channel.handler.Message;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.SocketChannel;
@@ -38,10 +9,25 @@ import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import io.netty.util.Timer;
 import io.netty.util.TimerTask;
+import org.bcos.channel.dto.*;
+import org.bcos.channel.handler.ChannelConnections;
+import org.bcos.channel.handler.ConnectionInfo;
+import org.bcos.channel.handler.Message;
+import org.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 public class Service {
-
-	private Gson gson = new Gson();
 
 	public Integer getConnectSeconds() {
 		return connectSeconds;
@@ -885,11 +871,6 @@ public class Service {
 			response.setErrorCode(message.getResult());
 			response.setMessageID(message.getSeq());
 			response.setContent(new String(message.getData()));
-			try {
-				response.setTransactionReceipt(gson.fromJson(response.getContent(), TransactionReceipt.class));
-			} catch (Exception e) {
-				logger.warn(String.format("response content transformation to TransactionReceipt error, content:%s", response.getContent()));
-			}
 
 			callback.onResponse(response);
 
