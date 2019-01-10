@@ -64,29 +64,7 @@ public class ConsoleTest{
         
     	assertTrue(!"".equals(log.getLog()));
     }
-    @Test
-    public void getPbftViewTest() throws IOException {
 
-    	String[] params1 = {};
-        console.getPbftView(params1);
-    	assertTrue(!"".equals(log.getLog()));
-    	log.clearLog();
-    	
-    	String[] params2 = {"-h"};
-        console.getPbftView(params2);
-    	assertTrue(!"".equals(log.getLog()));
-    	log.clearLog();
-        
-        String[] params3 = {"--help"};
-        console.getPbftView(params3);
-    	assertTrue(!"".equals(log.getLog()));
-    	log.clearLog();
-    	
-        String[] params4 = {"k"};
-        console.getPbftView(params4);
-        
-    	assertTrue(!"".equals(log.getLog()));
-    }
     @Test
     public void getMinerListTest() throws IOException {
     	String[] params1 = {};
