@@ -1,6 +1,6 @@
-[![Build Status](https://travis-ci.org/yanyanho/web3sdk.svg?branch=sdk-2.0)](https://travis-ci.org/yanyanho/web3sdk)
 web3jsdk:  JAVA FISCO-BCOS API
 ==================================
+[![Build Status](https://travis-ci.org/yanyanho/web3sdk.svg?branch=sdk-2.0)](https://travis-ci.org/yanyanho/web3sdk)
 
 Web3sdk provides the java API for fisco-bcos nodes, the project forks from web3j of Ethereum and adds  the corresponding modification according to the FISCO-BCOS characteristics.
 This allows you to work with the  FISCO-BCOS blockchain, without  additional overhead of having to write your own integration code for the platform.
