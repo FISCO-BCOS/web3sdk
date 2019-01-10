@@ -52,21 +52,22 @@ public class JsonRpc2_0Web3j implements Web3j {
     }
 
     public JsonRpc2_0Web3j(Web3jService web3jService) {
-        this(web3jService, DEFAULT_BLOCK_TIME, Async.defaultExecutorService());
+        this(web3jService, DEFAULT_BLOCK_TIME, Async.defaultExecutorService(),1);
     }
 
     public JsonRpc2_0Web3j(Web3jService web3jService, int groupId) {
-        this(web3jService, DEFAULT_BLOCK_TIME, Async.defaultExecutorService());
+        this(web3jService, DEFAULT_BLOCK_TIME, Async.defaultExecutorService(), groupId);
         this.groupId = groupId;
     }
 
     public JsonRpc2_0Web3j(
             Web3jService web3jService, long pollingInterval,
-            ScheduledExecutorService scheduledExecutorService) {
+            ScheduledExecutorService scheduledExecutorService, int groupId) {
         this.web3jService = web3jService;
         this.web3jRx = new JsonRpc2_0Rx(this, scheduledExecutorService);
         this.blockTime = pollingInterval;
         this.scheduledExecutorService = scheduledExecutorService;
+        this.groupId= groupId;
 
         ScheduledExecutorService scheduleService = Executors.newSingleThreadScheduledExecutor();
         Runnable runnable = new Runnable() {
