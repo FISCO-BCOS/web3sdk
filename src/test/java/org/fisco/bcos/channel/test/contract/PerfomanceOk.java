@@ -35,6 +35,7 @@ public class PerfomanceOk {
 		//初始化Service
 		ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
 		Service service = context.getBean(Service.class);
+		service.setGroupId(Integer.parseInt(groupId));
 		service.run();
 
 		System.out.println("开始测试...");
@@ -48,7 +49,7 @@ public class PerfomanceOk {
 
 		ScheduledExecutorService scheduledExecutorService =
 				Executors.newScheduledThreadPool(500);
-		Web3j web3 = Web3j.build(channelEthereumService,  15 * 100, scheduledExecutorService);
+		Web3j web3 = Web3j.build(channelEthereumService,  15 * 100, scheduledExecutorService,Integer.parseInt(groupId));
 
 		//初始化交易签名私钥
 		Credentials credentials = Credentials.create("b83261efa42895c38c6c2364ca878f43e77f3cddbc922bf57d0d48070f79feb6");
