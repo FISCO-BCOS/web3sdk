@@ -50,19 +50,11 @@ public class ConsoleImpl implements ConsoleFace {
 	private RemoteCall<?> remoteCall;
 	private String privateKey = "";
 	private String origin = "";
+	private ChannelEthereumService channelEthereumService = new ChannelEthereumService();
 
 	public void init(String[] args) {
 		ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
 		service = context.getBean(Service.class);
-		try {
-			service.run();
-		} catch (Exception e) {
-			System.out.println("Failed to initialize the client-side SSLContext, please check ca.crt file");
-			System.exit(1);
-		}
-		ChannelEthereumService channelEthereumService = new ChannelEthereumService();
-		channelEthereumService.setChannelService(service);
-
 		int groupID = 1;
 		try {
 			keyPair = Keys.createEcKeyPair();
@@ -82,12 +74,19 @@ public class ConsoleImpl implements ConsoleFace {
 			try {
 				credentials = Credentials.create(privateKey);
 			} catch (NumberFormatException e) {
-				System.out.println("Please provide private key by hex format");
+				System.out.println("Please provide private key by hex format.");
 				System.exit(0);
 			}
 			break;
 		}
-
+		service.setGroupId(groupID);
+		try {
+			service.run();
+		} catch (Exception e) {
+			System.out.println("Failed to connect blockchain. Please check running status for blockchain and configruation for console.");
+			System.exit(1);
+		}
+		channelEthereumService.setChannelService(service);
 		web3j = Web3j.build(channelEthereumService, groupID);
 
 	}
@@ -938,6 +937,7 @@ public class ConsoleImpl implements ConsoleFace {
 		{
 			return;
 		}
+		channelEthereumService.close();
 		System.exit(0);
 	}
 }
