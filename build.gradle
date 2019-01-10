@@ -1,8 +1,6 @@
 apply plugin: 'maven'
 apply plugin: 'java'
 apply plugin: 'eclipse'
-apply plugin: "maven-publish"
-
 
 version = 
 //指定JDK版本,改成系统中版本
@@ -19,24 +17,6 @@ repositories {
 
     mavenLocal()
     mavenCentral()
-}
-
-
-task sourceJar(type: Jar) {
-	from "sourceSets.main.allJava"
-	classifier "sources"
-}
-
-publishing {
-	publications {
-		maven(MavenPublication) {
-			from components.java
-			groupId 'org.bcos'
-			artifactId 'web3sdk'
-			version '1.2.5-SNAPSHOT'
-			artifact sourceJar
-		}
-	}
 }
 
 
