@@ -23,8 +23,8 @@
 						</list>
 					</property>
 				</bean>
-				<bean id="ChannelConnections2" class="org.fisco.bcos.channel.handler.ChannelConnections">
-					<property name="groupId" value="2" />
+				<bean id="ChannelConnections3" class="org.fisco.bcos.channel.handler.ChannelConnections">
+					<property name="groupId" value="3" />
 					<property name="connectionsStr">
 						<list>
 							<value>10.107.105.138:30901</value>

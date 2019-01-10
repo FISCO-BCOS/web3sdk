@@ -14,10 +14,11 @@ import java.math.BigInteger;
 public class TestOkTransaction {
     public static void main(String[] args) throws Exception {
 
-        String groupId = "1";
-        String method = "deploy";
+        String groupId = args[0];
+        String method = args[1];
         ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
         Service service = context.getBean(Service.class);
+        service.setGroupId(Integer.parseInt(groupId));
         service.run();
         System.out.println("===================================================================");
 
