@@ -27,7 +27,7 @@ import static java.lang.System.exit;
 
 
 public class PerfomanceOk {
-	static Logger logger = LoggerFactory.getLogger(PerfomanceOk.class);
+	private static Logger logger = LoggerFactory.getLogger(PerfomanceOk.class);
 	private static AtomicInteger sended = new AtomicInteger(0);
 	
 	public static void main(String[] args) throws Exception {

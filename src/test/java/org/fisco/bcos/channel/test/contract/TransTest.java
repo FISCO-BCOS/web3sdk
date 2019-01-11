@@ -7,7 +7,6 @@ import org.junit.Test;
 
 import java.math.BigInteger;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertTrue;
@@ -16,9 +15,8 @@ public class TransTest extends TestBase {
     @Test
     public void testOkContract() throws Exception {
 
-        java.math.BigInteger gasPrice = new BigInteger("300000000");
-        java.math.BigInteger gasLimit = new BigInteger("300000000");
-        java.math.BigInteger initialWeiValue = new BigInteger("0");
+        BigInteger gasPrice = new BigInteger("300000000");
+        BigInteger gasLimit = new BigInteger("300000000");
 
         Trans okDemo = Trans.deploy(web3j, credentials, gasPrice, gasLimit).send();
 

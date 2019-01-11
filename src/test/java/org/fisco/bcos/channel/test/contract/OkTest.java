@@ -3,8 +3,6 @@ package org.fisco.bcos.channel.test.contract;
 import org.fisco.bcos.channel.test.TestBase;
 import org.fisco.bcos.web3j.console.ContractClassFactory;
 import org.fisco.bcos.web3j.crypto.Credentials;
-import org.fisco.bcos.web3j.crypto.EncryptType;
-import org.fisco.bcos.web3j.crypto.gm.GenCredential;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.RemoteCall;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
@@ -15,10 +13,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.math.BigInteger;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static org.fisco.bcos.web3j.console.ConsoleClient.*;
 import static org.junit.Assert.assertTrue;
 
 

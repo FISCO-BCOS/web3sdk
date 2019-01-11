@@ -26,8 +26,6 @@ import java.util.concurrent.TimeUnit;
 
 //增加eth_pbftView接口
 
-import static java.util.concurrent.Executors.newSingleThreadScheduledExecutor;
-
 /**
  * JSON-RPC 2.0 factory implementation.
  */

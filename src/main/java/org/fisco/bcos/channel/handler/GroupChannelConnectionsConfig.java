@@ -3,6 +3,7 @@ package org.fisco.bcos.channel.handler;
 import java.util.List;
 
 public class GroupChannelConnectionsConfig {
+	private List<ChannelConnections> allChannelConnections;
 
 	public List<ChannelConnections> getAllChannelConnections() {
 		return allChannelConnections;
@@ -12,5 +13,4 @@ public class GroupChannelConnectionsConfig {
 		this.allChannelConnections = allChannelConnections;
 	}
 
-	private List<ChannelConnections> allChannelConnections;
 }
