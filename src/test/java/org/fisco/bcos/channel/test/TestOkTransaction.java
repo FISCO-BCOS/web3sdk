@@ -11,6 +11,8 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.math.BigInteger;
 
+import static java.lang.System.exit;
+
 public class TestOkTransaction {
     public static void main(String[] args) throws Exception {
 
@@ -46,7 +48,7 @@ public class TestOkTransaction {
             TransactionReceipt receipt = okDemo.trans(new BigInteger("4")).send();
             System.out.println("transaction success , receipt is " + receipt.getTransactionHash());
         }
-        System.exit(0);
+        exit(0);
     }
 }
 

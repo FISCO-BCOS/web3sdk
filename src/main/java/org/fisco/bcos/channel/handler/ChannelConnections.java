@@ -60,6 +60,10 @@ public class ChannelConnections {
 	private long idleTimeout = (long)10000;
 	private long heartBeatDelay = (long)2000;
 	public Map<String, ChannelHandlerContext> networkConnections = new HashMap<String, ChannelHandlerContext>();
+	private int groupId;
+
+	private Bootstrap bootstrap = new Bootstrap();
+	ServerBootstrap serverBootstrap = new ServerBootstrap();
 
 	public int getGroupId() {
 		return groupId;
@@ -69,7 +73,7 @@ public class ChannelConnections {
 		this.groupId = groupId;
 	}
 
-	private int groupId;
+
 
 	public interface Callback {
 		void onConnect(ChannelHandlerContext ctx);
@@ -127,8 +131,6 @@ public class ChannelConnections {
 		this.heartBeatDelay = heartBeatDelay;
 	}
 
-	private Bootstrap bootstrap = new Bootstrap();
-	ServerBootstrap serverBootstrap = new ServerBootstrap();
 
 	public ChannelHandlerContext randomNetworkConnection() throws Exception {
 		List<ChannelHandlerContext> activeConnections = new ArrayList<ChannelHandlerContext>();

@@ -17,6 +17,7 @@ import java.math.BigInteger;
 public class GMErc20Transaction {
     public static void main(String[] args) throws Exception {
         EncryptType encryptType = new EncryptType(1);
+        System.out.println(encryptType.getEncryptType());
         String groupId = "1";
         ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
         Service service = context.getBean(Service.class);
@@ -37,7 +38,7 @@ public class GMErc20Transaction {
 
         for (int i = 0; i < 1; i++) {
             System.out.println("####contract address is: " + erc20.getContractAddress());
-            TransactionReceipt receipt = erc20.transfer("0x0f49a17d17f82da2a7d92ecf19268274150eaf5e", new BigInteger("100")).send();
+            erc20.transfer("0x0f49a17d17f82da2a7d92ecf19268274150eaf5e", new BigInteger("100")).send();
 
             BigInteger oldBalance = erc20.balanceOf("0x0f49a17d17f82da2a7d92ecf19268274150eaf5e").send();
             System.out.println("0x0f49a17d17f82da2a7d92ecf19268274150eaf5e balance" + oldBalance.intValue());

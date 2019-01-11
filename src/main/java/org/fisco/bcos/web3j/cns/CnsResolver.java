@@ -2,8 +2,6 @@ package org.fisco.bcos.web3j.cns;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import org.fisco.bcos.channel.test.precompile.Authority;
 import org.fisco.bcos.channel.test.precompile.CNSInfo;
 import org.fisco.bcos.channel.test.precompile.Common;
 import org.fisco.bcos.web3j.crypto.Credentials;
