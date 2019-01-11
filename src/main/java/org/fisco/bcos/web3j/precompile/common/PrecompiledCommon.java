@@ -13,9 +13,6 @@ public class PrecompiledCommon {
     	String msg = "";
     	switch (code)
     	{
-    		case 5:
-    			msg = "BlockNumber does not exist";
-    			break;
     		case -1:
     			msg = "non-authorized";
     			break;
