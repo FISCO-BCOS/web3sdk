@@ -1,12 +1,14 @@
-package org.fisco.bcos.channel.test.precompile;
+package org.fisco.bcos.web3j.precompile.consensus;
 
 import org.fisco.bcos.web3j.crypto.Credentials;
+import org.fisco.bcos.web3j.precompile.common.PrecompiledCommon;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 
 import java.math.BigInteger;
+import java.util.List;
 
-public class UpdatePBFTNode {
+public class ConsensusService {
     private static BigInteger gasPrice = new BigInteger("300000000");
     private static BigInteger gasLimit = new BigInteger("300000000");
     private static BigInteger initialWeiValue = new BigInteger("0");
@@ -22,19 +24,19 @@ public class UpdatePBFTNode {
         String nodeId = args[2];
         if (operation.equals("addMiner")) {
             System.out.println("==== addMiner " + nodeId + " of " + groupId);
-            AddNodeToMiner(nodeId, web3j, credentials);
+            addMiner(nodeId, web3j, credentials);
             System.out.println("==== addMiner " + nodeId + " of " + groupId + " END ====");
             System.exit(0);
         }
         if (operation.equals("addObserver")) {
             System.out.println("==== addObserver " + nodeId + " of " + groupId);
-            AddNodeToObserver(nodeId, web3j, credentials);
+            addObserver(nodeId, web3j, credentials);
             System.out.println("==== addObserver " + nodeId + " of " + groupId + " END ====");
             System.exit(0);
         }
         if (operation.equals("remove")) {
             System.out.println("==== remove " + nodeId + " of " + groupId);
-            RemoveNode(nodeId, web3j, credentials);
+            removeNode(nodeId, web3j, credentials);
             System.out.println("==== remove " + nodeId + " of " + groupId + " END ====");
             System.exit(0);
         }
@@ -48,33 +50,48 @@ public class UpdatePBFTNode {
         System.exit(0);
     }
 
-    public String AddNodeToMiner(String nodeId, Web3j web3j, Credentials credentials) throws Exception {
-        return AddMiner(MinerPrecompileAddress, web3j, credentials, nodeId);
+    public String addMiner(String nodeId, Web3j web3j, Credentials credentials) throws Exception {
+    	return addMiner(MinerPrecompileAddress, web3j, credentials, nodeId);
     }
 
-    public String AddNodeToObserver(String nodeId, Web3j web3j, Credentials credentials) throws Exception {
-        return AddObserver(MinerPrecompileAddress, web3j, credentials, nodeId);
+    public String addObserver(String nodeId, Web3j web3j, Credentials credentials) throws Exception {
+        return addObserver(MinerPrecompileAddress, web3j, credentials, nodeId);
     }
 	
-	public String RemoveNode(String nodeId, Web3j web3j, Credentials credentials) throws Exception {
-       return Remove(MinerPrecompileAddress, web3j, credentials, nodeId);
+	public String removeNode(String nodeId, Web3j web3j, Credentials credentials) throws Exception {
+       return removeNode(MinerPrecompileAddress, web3j, credentials, nodeId);
     }
 
-    private String AddMiner(String address, Web3j web3j, Credentials credentials, String nodeId) throws Exception {
-        ConsensusSystemTable consensus = ConsensusSystemTable.load(address, web3j, credentials, gasPrice, gasLimit);
+    private String addMiner(String address, Web3j web3j, Credentials credentials, String nodeId) throws Exception {
+    	String peersInfo = web3j.ethPeersInfo().sendForReturnString();
+    	if(peersInfo.indexOf(nodeId) == -1)
+    	{
+    		return PrecompiledCommon.transferToJson(-42);
+    	}
+    	ConsensusTable consensus = ConsensusTable.load(address, web3j, credentials, gasPrice, gasLimit);
         TransactionReceipt receipt = consensus.addMiner(nodeId).send();
-        return Common.getJsonStr(receipt.getOutput());
+        return PrecompiledCommon.getJsonStr(receipt.getOutput());
     }
 
-	private String AddObserver(String address, Web3j web3j, Credentials credentials, String nodeId) throws Exception {
-        ConsensusSystemTable consensus = ConsensusSystemTable.load(address, web3j, credentials, gasPrice, gasLimit);
+	private String addObserver(String address, Web3j web3j, Credentials credentials, String nodeId) throws Exception {
+    	String peersInfo = web3j.ethPeersInfo().sendForReturnString();
+    	if(peersInfo.indexOf(nodeId) == -1)
+    	{
+    		return PrecompiledCommon.transferToJson(-42);
+    	}
+		ConsensusTable consensus = ConsensusTable.load(address, web3j, credentials, gasPrice, gasLimit);
         TransactionReceipt receipt = consensus.addObserver(nodeId).send();
-        return Common.getJsonStr(receipt.getOutput());
+        return PrecompiledCommon.getJsonStr(receipt.getOutput());
     }
 	
-	private String Remove(String address, Web3j web3j, Credentials credentials, String nodeId) throws Exception {
-        ConsensusSystemTable consensus = ConsensusSystemTable.load(address, web3j, credentials, gasPrice, gasLimit);
+	private String removeNode(String address, Web3j web3j, Credentials credentials, String nodeId) throws Exception {
+		List<String> groupPeers = web3j.ethGroupPeers().send().getResult();
+		if(!groupPeers.contains(nodeId))
+		{
+			return PrecompiledCommon.transferToJson(-43);
+		}
+		ConsensusTable consensus = ConsensusTable.load(address, web3j, credentials, gasPrice, gasLimit);
         TransactionReceipt receipt = consensus.remove(nodeId).send();
-        return Common.getJsonStr(receipt.getOutput());
+        return PrecompiledCommon.getJsonStr(receipt.getOutput());
     }
 }

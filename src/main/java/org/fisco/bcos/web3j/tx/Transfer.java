@@ -60,7 +60,7 @@ public class Transfer extends ManagedTransaction {
                     "Non decimal Wei value provided: " + value + " " + unit.toString()
                             + " = " + weiValue + " Wei");
         }
-        String resolvedAddress = cnsResolver.resolve(toAddress);
+        String resolvedAddress = cnsService.resolve(toAddress);
 
         return send(resolvedAddress, "", weiValue.toBigIntegerExact(), gasPrice, gasLimit);
     }

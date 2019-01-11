@@ -1,12 +1,13 @@
-package org.fisco.bcos.channel.test.precompile;
+package org.fisco.bcos.web3j.precompile.config;
 
 import org.fisco.bcos.web3j.crypto.Credentials;
+import org.fisco.bcos.web3j.precompile.common.PrecompiledCommon;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 
 import java.math.BigInteger;
 
-public class SetSystemConfig {
+public class SystemConfigSerivce {
     private static BigInteger gasPrice = new BigInteger("300000000");
     private static BigInteger gasLimit = new BigInteger("300000000");
     private static BigInteger initialWeiValue = new BigInteger("0");
@@ -38,6 +39,6 @@ public class SetSystemConfig {
     private String SetValue(String address, Web3j web3j, Credentials credentials, String key, String value) throws Exception {
         SystemConfigTable systemConfig = SystemConfigTable.load(address, web3j, credentials, gasPrice, gasLimit);
         TransactionReceipt receipt = systemConfig.setValueByKey(key, value).send();
-        return Common.getJsonStr(receipt.getOutput());
+        return PrecompiledCommon.getJsonStr(receipt.getOutput());
     }
 }

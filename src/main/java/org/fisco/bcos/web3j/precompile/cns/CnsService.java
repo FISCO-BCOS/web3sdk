@@ -1,13 +1,11 @@
-package org.fisco.bcos.web3j.cns;
+package org.fisco.bcos.web3j.precompile.cns;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.fisco.bcos.channel.test.precompile.Authority;
-import org.fisco.bcos.channel.test.precompile.CNSInfo;
-import org.fisco.bcos.channel.test.precompile.Common;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.crypto.WalletUtils;
+import org.fisco.bcos.web3j.precompile.common.PrecompiledCommon;
 import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameterName;
@@ -27,8 +25,8 @@ import java.util.List;
 /**
  * Resolution logic for contract addresses.
  */
-public class CnsResolver {
-    static Logger logger = LoggerFactory.getLogger(CnsResolver.class);
+public class CnsService {
+    static Logger logger = LoggerFactory.getLogger(CnsService.class);
     static final long DEFAULT_SYNC_THRESHOLD = 1000 * 60 * 3;
     static final String REVERSE_NAME_SUFFIX = ".addr.reverse";
 
@@ -37,15 +35,15 @@ public class CnsResolver {
     private long syncThreshold;  // non-final in case this value needs to be tweaked
     private static String registryContract = "0x0000000000000000000000000000000000001004";
 
-    private Cns cnsRegistry;
+    private CnsTable cnsRegistry;
 
-    public CnsResolver(Web3j web3j, long syncThreshold, Credentials credentials) {
+    public CnsService(Web3j web3j, long syncThreshold, Credentials credentials) {
         this.web3j = web3j;
         transactionManager = new ClientTransactionManager(web3j, credentials);  // don't use empty string
         this.syncThreshold = syncThreshold;
     }
 
-    public CnsResolver(Web3j web3j,Credentials credentials) {
+    public CnsService(Web3j web3j,Credentials credentials) {
         this(web3j, DEFAULT_SYNC_THRESHOLD,credentials);
     }
 
@@ -57,34 +55,12 @@ public class CnsResolver {
         return syncThreshold;
     }
 
-//    /**
-//     * Provides an access to a valid public resolver in order to access other API methods.
-//     * @param ensName our user input ENS name
-//     * @return PublicResolver
-//     */
-//    public PublicResolver obtainPublicResolver(String ensName) {
-//        if (isValidCnsName(ensName)) {
-//            try {
-//                if (!isSynced()) {
-//                    throw new CnsResolutionException("Node is not currently synced");
-//                } else {
-//                    return lookupResolver(ensName);
-//                }
-//            } catch (Exception e) {
-//                throw new CnsResolutionException("Unable to determine sync status of node", e);
-//            }
-//
-//        } else {
-//            throw new CnsResolutionException("EnsName is invalid: " + ensName);
-//        }
-//    }
-
     public String resolve(String contractNameAndVersion) {
 
         if (!isValidCnsName(contractNameAndVersion)) {
              return contractNameAndVersion;
         }
-            Cns cns;
+            CnsTable cns;
             cns = lookupResolver();
             String contractAddressInfo;
             String address;
@@ -97,14 +73,14 @@ public class CnsResolver {
 
                     contractAddressInfo = cns.selectByNameAndVersion(contractName, contractVersion).send();
                     logger.debug("get contractName ", contractAddressInfo);
-                    List<Contracts> contracts = jsonToContracts(contractAddressInfo);
-                    address = contracts.get(0).getAddress();
+                    List<CNSInfo> cNSInfos = jsonToCNSInfos(contractAddressInfo);
+                    address = cNSInfos.get(0).getAddress();
                 } else {
                     // only contract name
                     contractAddressInfo = cns.selectByName(contractNameAndVersion).send();
                     logger.debug("get contractName ", contractAddressInfo);
-                    List<Contracts> contracts = jsonToContracts(contractAddressInfo);
-                    Contracts c = contracts.get(contracts.size() - 1);
+                    List<CNSInfo> CNSInfos = jsonToCNSInfos(contractAddressInfo);
+                    CNSInfo c = CNSInfos.get(CNSInfos.size() - 1);
                     address = c.getAddress();
                 }
             } catch (Exception e) {
@@ -119,13 +95,13 @@ public class CnsResolver {
     }
 
     public String registerCns(String name, String version, String addr, String abi) throws Exception {
-        Cns cns = lookupResolver();
+        CnsTable cns = lookupResolver();
         TransactionReceipt receipt = cns.insert(name, version, addr, abi).send();
-        return Common.getJsonStr(receipt.getOutput());
+        return PrecompiledCommon.getJsonStr(receipt.getOutput());
     }
     
     public List<CNSInfo> queryCnsByName(String name) throws Exception {
-    	Cns cns = lookupResolver();
+    	CnsTable cns = lookupResolver();
     	String cnsInfo = cns.selectByName(name).send();
     	ObjectMapper objectMapper = ObjectMapperFactory.getObjectMapper();
 		return objectMapper.readValue(cnsInfo,
@@ -133,53 +109,24 @@ public class CnsResolver {
     }
     
     public List<CNSInfo> queryCnsByNameAndVersion(String name, String version) throws Exception {
-    	Cns cns = lookupResolver();
+    	CnsTable cns = lookupResolver();
     	String cnsInfo = cns.selectByNameAndVersion(name, version).send();
     	ObjectMapper objectMapper = ObjectMapperFactory.getObjectMapper();
     	return objectMapper.readValue(cnsInfo,
     			objectMapper.getTypeFactory().constructCollectionType(List.class, CNSInfo.class));
     }
 
-    private List<Contracts> jsonToContracts(String contractAddressInfo) throws IOException {
+    private List<CNSInfo> jsonToCNSInfos(String contractAddressInfo) throws IOException {
 
         ObjectMapper objectMapper = ObjectMapperFactory.getObjectMapper();
-        List<Contracts> contracts = objectMapper.readValue(contractAddressInfo, objectMapper.getTypeFactory().constructCollectionType(List.class, Contracts.class));
-        return contracts;
+        List<CNSInfo> cNSInfo = objectMapper.readValue(contractAddressInfo, objectMapper.getTypeFactory().constructCollectionType(List.class, CNSInfo.class));
+        return cNSInfo;
     }
 
-//    /**
-//     * Reverse name resolution as documented in the
-//     * <a href="https://docs.ens.domains/en/latest/userguide.html#reverse-name-resolution">specification</a>.
-//     * @param address an ethereum address, example: "0x314159265dd8dbb310642f98f50c066173c1259b"
-//     * @return a EnsName registered for provided address
-//     */
-//    public String reverseResolve(String address) {
-//        if (WalletUtils.isValidAddress(address)) {
-//            String reverseName = Numeric.cleanHexPrefix(address) + REVERSE_NAME_SUFFIX;
-//            PublicResolver resolver = obtainPublicResolver(reverseName);
-//
-//            byte[] nameHash = NameHash.nameHashAsBytes(reverseName);
-//            String name = null;
-//            try {
-//                name = resolver.name(nameHash).send();
-//            } catch (Exception e) {
-//                throw new RuntimeException("Unable to execute Ethereum request", e);
-//            }
-//
-//            if (!isValidCnsName(name)) {
-//                throw new RuntimeException("Unable to resolve name for address: " + address);
-//            } else {
-//                return name;
-//            }
-//        } else {
-//            throw new CnsResolutionException("Address is invalid: " + address);
-//        }
-//    }
-
-    public Cns lookupResolver() {
+    public CnsTable lookupResolver() {
 
         if (this.cnsRegistry == null) {
-            Cns cnsRegistry = Cns.load(
+            CnsTable cnsRegistry = CnsTable.load(
                     registryContract, web3j, transactionManager,
                     new StaticGasProvider(DefaultGasProvider.GAS_PRICE, DefaultGasProvider.GAS_LIMIT));
             this.cnsRegistry = cnsRegistry;

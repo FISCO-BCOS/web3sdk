@@ -19,27 +19,29 @@ public class EthPeers extends Response<List<EthPeers.Peer>> {
 
 
     public class Peer {
-        @JsonProperty("IP & Port")
-        private String IPAndPort;
+        @JsonProperty("IPAndPort")
+        private String iPAndPort;
+        @JsonProperty("NodeID")
         private String nodeID;
+        @JsonProperty("Topic")
         private List<String> topic;
 
         public Peer() {
         }
 
-        public Peer(String IPAndPort, String nodeID, List<String> topic) {
-            this.IPAndPort = IPAndPort;
+        public Peer(String iPAndPort, String nodeID, List<String> topic) {
+            this.iPAndPort = iPAndPort;
             this.nodeID = nodeID;
             this.topic = topic;
 
         }
 
         public String getIPAndPort() {
-            return IPAndPort;
+            return iPAndPort;
         }
 
-        public void setIPAndPort(String IPAndPort) {
-            this.IPAndPort = IPAndPort;
+        public void setIPAndPort(String iPAndPort) {
+            this.iPAndPort = iPAndPort;
         }
 
         public String getNodeID() {
