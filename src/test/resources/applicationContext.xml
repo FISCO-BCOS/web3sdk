@@ -15,7 +15,7 @@
 	<bean id="groupChannelConnectionsConfig" class="org.fisco.bcos.channel.handler.GroupChannelConnectionsConfig">
 		<property name="allChannelConnections">
 			<list>
-				<bean id="ChannelConnections1"  class="org.fisco.bcos.channel.handler.ChannelConnections">
+				<bean id="group1"  class="org.fisco.bcos.channel.handler.ChannelConnections">
 					<property name="groupId" value="1" />
 					<property name="connectionsStr">
 						<list>
@@ -23,7 +23,7 @@
 						</list>
 					</property>
 				</bean>
-				<bean id="ChannelConnections3" class="org.fisco.bcos.channel.handler.ChannelConnections">
+				<bean id="group3" class="org.fisco.bcos.channel.handler.ChannelConnections">
 					<property name="groupId" value="3" />
 					<property name="connectionsStr">
 						<list>
@@ -38,8 +38,9 @@
 
 
 	<bean id="channelService" class="org.fisco.bcos.channel.client.Service" depends-on="groupChannelConnectionsConfig">
-		<property name="groupId" value="1" />
+		<property name="groupId" value="3" />
 		<property name="orgID" value="fisco" />
 		<property name="allChannelConnections" ref="groupChannelConnectionsConfig"></property>
 	</bean>
+
 </beans>
