@@ -1,4 +1,4 @@
-package org.fisco.bcos.channel.test.precompile;
+package org.fisco.bcos.web3j.precompile.common;
 
 import java.math.BigInteger;
 
@@ -7,12 +7,15 @@ import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class Common {
+public class PrecompiledCommon {
 	
     public static String transferToJson(int code) throws JsonProcessingException{
     	String msg = "";
     	switch (code)
     	{
+    		case 5:
+    			msg = "BlockNumber does not exist";
+    			break;
     		case -1:
     			msg = "non-authorized";
     			break;
@@ -28,6 +31,12 @@ public class Common {
     		case -41:
     			msg = "last miner cannot be removed";
     			break;
+    		case -42:
+    			msg = "nodeID is not in peers";
+    			break;
+    		case -43:
+    			msg = "nodeID is not in group peers";
+    			break;
     		case -50:
     			msg = "address and version exist";
     			break;
@@ -39,7 +48,7 @@ public class Common {
     			break;	
     	}
     	ObjectMapper mapper = ObjectMapperFactory.getObjectMapper();
-        return mapper.writeValueAsString(new OutJson(code, msg));
+        return mapper.writeValueAsString(new PrecompiledResponse(code, msg));
     }
     
 	public static String getJsonStr(String output) throws JsonProcessingException {
