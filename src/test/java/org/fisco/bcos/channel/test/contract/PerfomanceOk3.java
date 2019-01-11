@@ -33,6 +33,7 @@ public class PerfomanceOk3 {
 		//初始化Service
 		ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
 		Service service = context.getBean(Service.class);
+		service.setGroupId(Integer.parseInt(groupId));
 		service.run();
 		Web3AsyncThreadPoolSize.web3AsyncCorePoolSize = 2000;
 		Web3AsyncThreadPoolSize.web3AsyncPoolSize=2000;
@@ -44,7 +45,7 @@ public class PerfomanceOk3 {
 
 		ScheduledExecutorService scheduledExecutorService =
 				Executors.newScheduledThreadPool(500);
-		Web3j web3 = Web3j.build(channelEthereumService,  15 * 100, scheduledExecutorService,1);
+		Web3j web3 = Web3j.build(channelEthereumService,  15 * 100, scheduledExecutorService,Integer.parseInt(groupId));
 
 		//初始化交易签名私钥
 		Credentials credentials = Credentials.create("b83261efa42895c38c6c2364ca878f43e77f3cddbc922bf57d0d48070f79feb6");
@@ -59,8 +60,7 @@ public class PerfomanceOk3 {
 		String command = args[0];
 		Integer count = 0;
 		Integer qps = 0;
-		Integer startNum = 0;
-		
+
 		ThreadPoolTaskExecutor threadPool = new ThreadPoolTaskExecutor();
 		threadPool.setCorePoolSize(2000);
 		threadPool.setMaxPoolSize(2000);
