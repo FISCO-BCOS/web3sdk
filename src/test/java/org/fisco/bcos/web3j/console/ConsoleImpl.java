@@ -355,7 +355,8 @@ public class ConsoleImpl implements ConsoleFace {
 		BigInteger blockNumber2 = Numeric.decodeQuantity(blockNumberStr2);
 		if(blockNumber1.compareTo(blockNumber2) == 1)
 		{
-			ConsoleUtils.printJson(PrecompiledCommon.transferToJson(5));
+			ConsoleUtils.printJson(
+					"{\"code\":" + 4 + ", \"msg\":" + "\"BlockNumber does not exist\"}");
 			System.out.println();
 			return;
 		}
