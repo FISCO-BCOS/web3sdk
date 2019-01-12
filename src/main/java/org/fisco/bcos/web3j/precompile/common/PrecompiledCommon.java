@@ -34,6 +34,12 @@ public class PrecompiledCommon {
     		case -43:
     			msg = "nodeID is not in group peers";
     			break;
+    		case -44:
+    			msg = "nodeID is already in miner list";
+    			break;
+    		case -45:
+    			msg = "nodeID is already in observer list";
+    			break;
     		case -50:
     			msg = "address and version exist";
     			break;
