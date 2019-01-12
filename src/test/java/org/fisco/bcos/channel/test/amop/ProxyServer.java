@@ -1,4 +1,4 @@
-package org.fisco.bcos.channel.test;
+package org.fisco.bcos.channel.test.amop;
 
 import org.junit.Ignore;
 import org.junit.Test;

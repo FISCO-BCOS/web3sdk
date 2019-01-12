@@ -1,4 +1,4 @@
-package org.fisco.bcos.channel.test;
+package org.fisco.bcos.channel.test.amop;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
