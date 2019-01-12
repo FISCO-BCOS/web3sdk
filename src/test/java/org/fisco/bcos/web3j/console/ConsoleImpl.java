@@ -887,7 +887,7 @@ public class ConsoleImpl implements ConsoleFace {
 		String[][] data = new String[size][2];
 		for (int i = 0; i < size; i++) {
 			data[i][0] = authoritys.get(i).getAddress();
-			data[i][1] = authoritys.get(i).getEnable_num();
+			data[i][1] = authoritys.get(i).getEnableNum();
 		}
 		ColumnFormatter<String> cf = ColumnFormatter.text(Alignment.CENTER, 45);
 		Table table = Table.of(headers, data, cf);
