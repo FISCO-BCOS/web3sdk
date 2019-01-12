@@ -32,7 +32,7 @@ public class Service {
 	private GroupChannelConnectionsConfig allChannelConnections;
 	private ChannelPushCallback pushCallback;
 	private Map<String, Object> seq2Callback = new ConcurrentHashMap<String, Object>();
-	private int groupId;
+	private static int groupId;
 	/**
 	 * add transaction seq callback
 	 */
