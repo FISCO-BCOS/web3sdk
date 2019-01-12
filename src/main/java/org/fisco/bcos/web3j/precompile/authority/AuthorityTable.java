@@ -54,15 +54,15 @@ public class AuthorityTable extends Contract {
     public RemoteCall<TransactionReceipt> insert(String table_name, String addr) {
         final Function function = new Function(
                 FUNC_INSERT, 
-                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(table_name), 
-                new org.fisco.bcos.web3j.abi.datatypes.Utf8String(addr)), 
+                Arrays.<Type>asList(new Utf8String(table_name), 
+                new Utf8String(addr)), 
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
 
     public RemoteCall<String> queryByName(String table_name) {
         final Function function = new Function(FUNC_QUERYBYNAME, 
-                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(table_name)), 
+                Arrays.<Type>asList(new Utf8String(table_name)), 
                 Arrays.<TypeReference<?>>asList(new TypeReference<Utf8String>() {}));
         return executeRemoteCallSingleValueReturn(function, String.class);
     }
@@ -70,8 +70,8 @@ public class AuthorityTable extends Contract {
     public RemoteCall<TransactionReceipt> remove(String table_name, String addr) {
         final Function function = new Function(
                 FUNC_REMOVE, 
-                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(table_name), 
-                new org.fisco.bcos.web3j.abi.datatypes.Utf8String(addr)), 
+                Arrays.<Type>asList(new Utf8String(table_name), 
+                new Utf8String(addr)), 
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
