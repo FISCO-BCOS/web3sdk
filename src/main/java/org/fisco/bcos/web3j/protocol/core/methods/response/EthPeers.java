@@ -18,10 +18,12 @@ public class EthPeers extends Response<List<EthPeers.Peer>> {
     }
 
 
-    public class Peer {
-        @JsonProperty("IP & Port")
+    public static class Peer {
+        @JsonProperty("IPAndPort")
         private String IPAndPort;
+        @JsonProperty("NodeID")
         private String nodeID;
+        @JsonProperty("Topic")
         private List<String> topic;
 
         public Peer() {
