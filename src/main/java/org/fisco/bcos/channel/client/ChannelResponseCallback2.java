@@ -16,6 +16,12 @@ import io.netty.util.Timeout;
 
 public abstract class ChannelResponseCallback2 {
 	private static Logger logger = LoggerFactory.getLogger(ChannelResponseCallback2.class);
+	private ConnectionInfo fromConnection;
+	private List<ConnectionInfo> fromConnectionInfos;
+	private ChannelConnections fromChannelConnections;
+	private ChannelMessage2 message;
+	private Service service;
+	private Timeout timeout;
 	
 	public abstract void onResponseMessage(ChannelResponse response);
 	
@@ -180,10 +186,4 @@ public abstract class ChannelResponseCallback2 {
 		this.timeout = timeout;
 	}
 
-	private ConnectionInfo fromConnection;
-	private List<ConnectionInfo> fromConnectionInfos;
-	private ChannelConnections fromChannelConnections;
-	private ChannelMessage2 message;
-	private Service service;
-	private Timeout timeout;
 }
