@@ -1,4 +1,4 @@
-package org.fisco.bcos.channel.test;
+package org.fisco.bcos.channel.test.amop;
 
 import org.fisco.bcos.channel.client.ChannelResponseCallback;
 import org.fisco.bcos.channel.dto.ChannelResponse;
