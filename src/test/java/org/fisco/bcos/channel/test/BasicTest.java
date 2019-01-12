@@ -4,10 +4,7 @@ import org.fisco.bcos.channel.test.contract.Ok;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthPeerList;
-import org.fisco.bcos.web3j.protocol.core.methods.response.GroupList;
-import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
-import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.fisco.bcos.web3j.protocol.core.methods.response.*;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -51,10 +48,11 @@ public class BasicTest extends TestBase {
     }
 
     //getPeers
+    @Ignore
     @Test
     public void  peersTest() throws Exception {
-        String ethPeers = web3j.ethPeersInfo().sendForReturnString();
-        System.out.println(ethPeers);
+        EthPeers ethPeers = web3j.ethPeersInfo().send();
+        System.out.println(ethPeers.getValue().get(0).getNodeID());
         assertNotNull(ethPeers);
     }
 
