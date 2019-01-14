@@ -27,11 +27,10 @@ public class TestOkTransaction {
         ChannelEthereumService channelEthereumService = new ChannelEthereumService();
         channelEthereumService.setChannelService(service);
         channelEthereumService.setTimeout(10000);
-        Web3j web3 = Web3j.build(channelEthereumService, Integer.parseInt(groupId));
+        Web3j web3 = Web3j.build(channelEthereumService, service.getGroupId());
         BigInteger gasPrice = new BigInteger("300000000");
         BigInteger gasLimit = new BigInteger("300000000");
         BigInteger initialWeiValue = new BigInteger("0");
-        Thread.sleep(2000);
         Credentials credentials = Credentials.create("b83261efa42895c38c6c2364ca878f43e77f3cddbc922bf57d0d48070f79feb6");
 
         if ("deploy".equals(method)) {
