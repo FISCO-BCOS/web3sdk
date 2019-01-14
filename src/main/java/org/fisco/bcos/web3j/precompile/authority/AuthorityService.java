@@ -1,26 +1,15 @@
-package org.fisco.bcos.channel.test.precompile;
+package org.fisco.bcos.web3j.precompile.authority;
 
-import org.fisco.bcos.web3j.abi.FunctionReturnDecoder;
-import org.fisco.bcos.web3j.abi.TypeDecoder;
-import org.fisco.bcos.web3j.abi.datatypes.Utf8String;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Bytes32;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Uint256;
-import org.fisco.bcos.web3j.cns.Contracts;
 import org.fisco.bcos.web3j.crypto.Credentials;
+import org.fisco.bcos.web3j.precompile.common.PrecompiledCommon;
 import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
-import org.fisco.bcos.web3j.utils.Numeric;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.fisco.bcos.web3j.abi.datatypes.Type;
-import org.fisco.bcos.web3j.abi.TypeReference;
-import java.io.IOException;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-public class AuthorityTableService {
+public class AuthorityService {
 	private static BigInteger gasPrice = new BigInteger("300000000");
 	private static BigInteger gasLimit = new BigInteger("300000000");
 	private static String AuthorityPrecompileAddress = "0x0000000000000000000000000000000000001005";
@@ -84,7 +73,7 @@ public class AuthorityTableService {
 		@SuppressWarnings("deprecation")
 		AuthorityTable authority = AuthorityTable.load(address, web3j, credentials, gasPrice, gasLimit);
 		TransactionReceipt receipt = authority.insert(tableName, addr).send();
-		return Common.getJsonStr(receipt.getOutput());
+		return PrecompiledCommon.getJsonStr(receipt.getOutput());
 	}
 
 	private String remove(String address, Web3j web3j, Credentials credentials, String tableName, String addr)
@@ -92,7 +81,7 @@ public class AuthorityTableService {
 		@SuppressWarnings("deprecation")
 		AuthorityTable authority = AuthorityTable.load(address, web3j, credentials, gasPrice, gasLimit);
 		TransactionReceipt receipt = authority.remove(tableName, addr).send();
-		return Common.getJsonStr(receipt.getOutput());
+		return PrecompiledCommon.getJsonStr(receipt.getOutput());
 	}
 
 	private List<Authority> query(String address, Web3j web3j, Credentials credentials, String tableName)

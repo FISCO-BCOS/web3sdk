@@ -1,4 +1,4 @@
-package org.fisco.bcos.web3j.cns;
+package org.fisco.bcos.web3j.precompile.cns;
 
 /**
  * ENS resolution exception.

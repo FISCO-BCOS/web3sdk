@@ -11,6 +11,11 @@
          http://www.springframework.org/schema/aop   
     http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
 
+	
+	<!-- 国密开关--> 
+	<bean id="encryptType" class="org.fisco.bcos.web3j.crypto.EncryptType">
+		<constructor-arg value="0"/>  <!-- 0：非国密   1：国密 -->
+	</bean>
 
 	<bean id="groupChannelConnectionsConfig" class="org.fisco.bcos.channel.handler.GroupChannelConnectionsConfig">
 		<property name="allChannelConnections">
@@ -19,19 +24,19 @@
 					<property name="groupId" value="1" />
 					<property name="connectionsStr">
 						<list>
-							<value>***REMOVED***:30901</value>
+							<value>127.0.0.1:30304</value>
 						</list>
 					</property>
 				</bean>
-				<bean id="group3" class="org.fisco.bcos.channel.handler.ChannelConnections">
-					<property name="groupId" value="3" />
+<!-- 				<bean id="ChannelConnections2" class="org.fisco.bcos.channel.handler.ChannelConnections">
+					<property name="groupId" value="2" />
 					<property name="connectionsStr">
 						<list>
 							<value>***REMOVED***:30901</value>
 							<value>***REMOVED***:30904</value>
 						</list>
 					</property>
-				</bean>
+				</bean> -->
 			</list>
 		</property>
 	</bean>
