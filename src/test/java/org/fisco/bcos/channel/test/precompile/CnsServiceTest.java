@@ -1,27 +1,21 @@
-package org.fisco.bcos.channel.test.cns;
+package org.fisco.bcos.channel.test.precompile;
 
 import org.fisco.bcos.channel.test.TestBase;
 import org.fisco.bcos.channel.test.contract.Ok;
-import org.fisco.bcos.web3j.cns.CnsResolver;
 import org.fisco.bcos.web3j.crypto.Credentials;
-import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthBlock;
-import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.fisco.bcos.web3j.precompile.cns.CnsService;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.math.BigInteger;
-import java.time.LocalDateTime;
 import java.util.Random;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
-public class CnsResolverTest extends TestBase {
+public class CnsServiceTest extends TestBase {
 
     public Credentials credentials = Credentials.create("b83261efa42895c38c6c2364ca878f43e77f3cddbc922bf57d0d48070f79feb6");
 
-    CnsResolver cnsResolver = new CnsResolver(web3j, credentials);
+    CnsService cnsService = new CnsService(web3j, credentials);
 
     java.math.BigInteger gasPrice = new BigInteger("300000000");
     java.math.BigInteger gasLimit = new BigInteger("300000000");
@@ -34,7 +28,7 @@ public class CnsResolverTest extends TestBase {
         System.out.println("okdemo contract address " + okDemo.getContractAddress());
         int random = new Random().nextInt(1000);
         String name = "hello world" + random;
-        String result = cnsResolver.registerCns(name , "10.0", okDemo.getContractAddress(),"[\n" +
+        String result = cnsService.registerCns(name , "10.0", okDemo.getContractAddress(),"[\n" +
             "\t{\n" +
             "\t\t\"constant\": false,\n" +
             "\t\t\"inputs\": [\n" +
@@ -73,15 +67,15 @@ public class CnsResolverTest extends TestBase {
         System.out.println("result:" +result);
         System.out.println("CNS NAME   " + name+":9.0" );
         System.out.println("CNS register SUCCESSFULLY");
-        System.out.println( "cnsResolver address" + cnsResolver.resolve(name +":10.0"));
-        System.out.println( "cnsResolver address" + cnsResolver.resolve(name ));
-        System.out.println( "cnsResolver address" + cnsResolver.resolve(okDemo.getContractAddress() ));
+        System.out.println( "cnsResolver address" + cnsService.resolve(name +":10.0"));
+        System.out.println( "cnsResolver address" + cnsService.resolve(name ));
+        System.out.println( "cnsResolver address" + cnsService.resolve(okDemo.getContractAddress() ));
 
         Ok okLoaded =  Ok.load(name,web3j, credentials, gasPrice, gasLimit);
         System.out.println(okLoaded.isValid());
         BigInteger balance = okLoaded.get().send();
         System.out.println("balance = "  + balance );
-        assertEquals(cnsResolver.resolve(name +":10.0"),okDemo.getContractAddress());
+        assertEquals(cnsService.resolve(name +":10.0"),okDemo.getContractAddress());
 
     }
 

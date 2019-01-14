@@ -55,7 +55,7 @@ public class ConsoleUtils {
 				}
 				break;
 			case ' ':
-				if(!(',' == jsonStr.charAt(i-1)))
+				if(',' != jsonStr.charAt(i-1))
 				{
 					sb.append(current);
 				}
@@ -104,7 +104,7 @@ public class ConsoleUtils {
 		
 	}
 	public static boolean isInvalidAddress(String address) {
-		 if(!address.startsWith("0x") || !(address.length() == 42))
+		 if(!address.startsWith("0x") || (address.length() != 42))
 		 {
 			 System.out.println("Please provide a valid address.");
 			 System.out.println();
