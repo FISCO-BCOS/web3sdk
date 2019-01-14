@@ -1,15 +1,15 @@
-package org.fisco.bcos.channel.test.precompile;
+package org.fisco.bcos.web3j.precompile.common;
 
-public class OutJson {
+public class PrecompiledResponse {
 	
 	private int code;
 	private String msg;
 	
-	public OutJson() {
+	public PrecompiledResponse() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public OutJson(int code, String msg) {
+	public PrecompiledResponse(int code, String msg) {
 		super();
 		this.code = code;
 		this.msg = msg;

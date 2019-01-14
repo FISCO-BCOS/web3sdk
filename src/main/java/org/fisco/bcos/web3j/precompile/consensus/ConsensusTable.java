@@ -1,4 +1,4 @@
-package org.fisco.bcos.channel.test.precompile;
+package org.fisco.bcos.web3j.precompile.consensus;
 
 import org.fisco.bcos.web3j.abi.TypeReference;
 import org.fisco.bcos.web3j.abi.datatypes.Function;
@@ -24,7 +24,7 @@ import java.util.Collections;
  *
  * <p>Generated with web3j version none.
  */
-public class ConsensusSystemTable extends Contract {
+public class ConsensusTable extends Contract {
     private static final String BINARY = "";
 
     public static final String FUNC_ADDMINER = "addMiner";
@@ -34,20 +34,20 @@ public class ConsensusSystemTable extends Contract {
     public static final String FUNC_ADDOBSERVER = "addObserver";
 
     @Deprecated
-    protected ConsensusSystemTable(String contractAddress, Web3j web3j, Credentials credentials, BigInteger gasPrice, BigInteger gasLimit) {
+    protected ConsensusTable(String contractAddress, Web3j web3j, Credentials credentials, BigInteger gasPrice, BigInteger gasLimit) {
         super(BINARY, contractAddress, web3j, credentials, gasPrice, gasLimit);
     }
 
-    protected ConsensusSystemTable(String contractAddress, Web3j web3j, Credentials credentials, ContractGasProvider contractGasProvider) {
+    protected ConsensusTable(String contractAddress, Web3j web3j, Credentials credentials, ContractGasProvider contractGasProvider) {
         super(BINARY, contractAddress, web3j, credentials, contractGasProvider);
     }
 
     @Deprecated
-    protected ConsensusSystemTable(String contractAddress, Web3j web3j, TransactionManager transactionManager, BigInteger gasPrice, BigInteger gasLimit) {
+    protected ConsensusTable(String contractAddress, Web3j web3j, TransactionManager transactionManager, BigInteger gasPrice, BigInteger gasLimit) {
         super(BINARY, contractAddress, web3j, transactionManager, gasPrice, gasLimit);
     }
 
-    protected ConsensusSystemTable(String contractAddress, Web3j web3j, TransactionManager transactionManager, ContractGasProvider contractGasProvider) {
+    protected ConsensusTable(String contractAddress, Web3j web3j, TransactionManager transactionManager, ContractGasProvider contractGasProvider) {
         super(BINARY, contractAddress, web3j, transactionManager, contractGasProvider);
     }
 
@@ -76,38 +76,38 @@ public class ConsensusSystemTable extends Contract {
     }
 
     @Deprecated
-    public static ConsensusSystemTable load(String contractAddress, Web3j web3j, Credentials credentials, BigInteger gasPrice, BigInteger gasLimit) {
-        return new ConsensusSystemTable(contractAddress, web3j, credentials, gasPrice, gasLimit);
+    public static ConsensusTable load(String contractAddress, Web3j web3j, Credentials credentials, BigInteger gasPrice, BigInteger gasLimit) {
+        return new ConsensusTable(contractAddress, web3j, credentials, gasPrice, gasLimit);
     }
 
     @Deprecated
-    public static ConsensusSystemTable load(String contractAddress, Web3j web3j, TransactionManager transactionManager, BigInteger gasPrice, BigInteger gasLimit) {
-        return new ConsensusSystemTable(contractAddress, web3j, transactionManager, gasPrice, gasLimit);
+    public static ConsensusTable load(String contractAddress, Web3j web3j, TransactionManager transactionManager, BigInteger gasPrice, BigInteger gasLimit) {
+        return new ConsensusTable(contractAddress, web3j, transactionManager, gasPrice, gasLimit);
     }
 
-    public static ConsensusSystemTable load(String contractAddress, Web3j web3j, Credentials credentials, ContractGasProvider contractGasProvider) {
-        return new ConsensusSystemTable(contractAddress, web3j, credentials, contractGasProvider);
+    public static ConsensusTable load(String contractAddress, Web3j web3j, Credentials credentials, ContractGasProvider contractGasProvider) {
+        return new ConsensusTable(contractAddress, web3j, credentials, contractGasProvider);
     }
 
-    public static ConsensusSystemTable load(String contractAddress, Web3j web3j, TransactionManager transactionManager, ContractGasProvider contractGasProvider) {
-        return new ConsensusSystemTable(contractAddress, web3j, transactionManager, contractGasProvider);
+    public static ConsensusTable load(String contractAddress, Web3j web3j, TransactionManager transactionManager, ContractGasProvider contractGasProvider) {
+        return new ConsensusTable(contractAddress, web3j, transactionManager, contractGasProvider);
     }
 
-    public static RemoteCall<ConsensusSystemTable> deploy(Web3j web3j, Credentials credentials, ContractGasProvider contractGasProvider) {
-        return deployRemoteCall(ConsensusSystemTable.class, web3j, credentials, contractGasProvider, BINARY, "");
-    }
-
-    @Deprecated
-    public static RemoteCall<ConsensusSystemTable> deploy(Web3j web3j, Credentials credentials, BigInteger gasPrice, BigInteger gasLimit) {
-        return deployRemoteCall(ConsensusSystemTable.class, web3j, credentials, gasPrice, gasLimit, BINARY, "");
-    }
-
-    public static RemoteCall<ConsensusSystemTable> deploy(Web3j web3j, TransactionManager transactionManager, ContractGasProvider contractGasProvider) {
-        return deployRemoteCall(ConsensusSystemTable.class, web3j, transactionManager, contractGasProvider, BINARY, "");
+    public static RemoteCall<ConsensusTable> deploy(Web3j web3j, Credentials credentials, ContractGasProvider contractGasProvider) {
+        return deployRemoteCall(ConsensusTable.class, web3j, credentials, contractGasProvider, BINARY, "");
     }
 
     @Deprecated
-    public static RemoteCall<ConsensusSystemTable> deploy(Web3j web3j, TransactionManager transactionManager, BigInteger gasPrice, BigInteger gasLimit) {
-        return deployRemoteCall(ConsensusSystemTable.class, web3j, transactionManager, gasPrice, gasLimit, BINARY, "");
+    public static RemoteCall<ConsensusTable> deploy(Web3j web3j, Credentials credentials, BigInteger gasPrice, BigInteger gasLimit) {
+        return deployRemoteCall(ConsensusTable.class, web3j, credentials, gasPrice, gasLimit, BINARY, "");
+    }
+
+    public static RemoteCall<ConsensusTable> deploy(Web3j web3j, TransactionManager transactionManager, ContractGasProvider contractGasProvider) {
+        return deployRemoteCall(ConsensusTable.class, web3j, transactionManager, contractGasProvider, BINARY, "");
+    }
+
+    @Deprecated
+    public static RemoteCall<ConsensusTable> deploy(Web3j web3j, TransactionManager transactionManager, BigInteger gasPrice, BigInteger gasLimit) {
+        return deployRemoteCall(ConsensusTable.class, web3j, transactionManager, gasPrice, gasLimit, BINARY, "");
     }
 }
