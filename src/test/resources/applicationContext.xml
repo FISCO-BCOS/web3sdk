@@ -12,6 +12,10 @@
     http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
 
 
+	<bean id="encryptType" class="org.fisco.bcos.web3j.crypto.EncryptType">
+		<constructor-arg value="0"/>  <!-- 0：feiguomi   1：guomi -->
+	</bean>
+
 	<bean id="groupChannelConnectionsConfig" class="org.fisco.bcos.channel.handler.GroupChannelConnectionsConfig">
 		<property name="allChannelConnections">
 			<list>
@@ -38,7 +42,7 @@
 
 
 	<bean id="channelService" class="org.fisco.bcos.channel.client.Service" depends-on="groupChannelConnectionsConfig">
-		<property name="groupId" value="3" />
+		<property name="groupId" value="1" />
 		<property name="orgID" value="fisco" />
 		<property name="allChannelConnections" ref="groupChannelConnectionsConfig"></property>
 	</bean>

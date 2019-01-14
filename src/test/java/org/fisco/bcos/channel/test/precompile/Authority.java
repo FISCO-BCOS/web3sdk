@@ -1,7 +1,5 @@
 package org.fisco.bcos.channel.test.precompile;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public class Authority {
 
     private String table_name;
