@@ -20,13 +20,15 @@ class PrecompileManager {
         /// init application context from xml
         ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
         /// init service
+        String groupId = args[3];
         Service service = context.getBean(Service.class);
+        service.setGroupId(Integer.parseInt(groupId));
         service.run();
         System.out.println("==== start ... ");
         ChannelEthereumService channelEthereumService = new ChannelEthereumService();
         channelEthereumService.setChannelService(service);
         /// init web3j of specified group according to configuration file
-        web3j = Web3j.build(channelEthereumService, Integer.parseInt(args[3]));
+        web3j = Web3j.build(channelEthereumService, service.getGroupId());
         if (args[0].equals("pbft")) {
         	ConsensusService consensusService = new ConsensusService();
         	consensusService.call(args, web3j, credentials, service.getGroupId());
