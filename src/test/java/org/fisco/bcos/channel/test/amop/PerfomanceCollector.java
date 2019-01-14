@@ -1,4 +1,4 @@
-package org.fisco.bcos.channel.test;
+package org.fisco.bcos.channel.test.amop;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
