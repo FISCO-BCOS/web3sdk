@@ -124,6 +124,11 @@ public class ConsoleImpl implements ConsoleFace {
 		{
 			return;
 		}
+		else if(params.length > 2)
+		{
+			HelpInfo.promptHelp("h");
+			return;
+		}
 		ConsoleUtils.singleLine();
 		StringBuilder sb = new StringBuilder();
 		sb.append("help(h)                                       Provide help information.\n");
@@ -175,7 +180,7 @@ public class ConsoleImpl implements ConsoleFace {
 	}
 
 	private boolean promptNoParams(String[] params, String funcName) {
-		if(params.length >= 2)
+		if(params.length == 2)
 		{
 			if("-h".equals(params[1]) || "--help".equals(params[1]))
 			{
@@ -187,6 +192,11 @@ public class ConsoleImpl implements ConsoleFace {
 				HelpInfo.promptHelp(funcName);
 				return true;
 			}
+		}
+		else if(params.length > 2)
+		{
+			HelpInfo.promptHelp(funcName);
+			return true;
 		}
 		else
 		{
@@ -322,6 +332,11 @@ public class ConsoleImpl implements ConsoleFace {
 			HelpInfo.promptHelp("gbbh");
 			return;
 		}
+		else if(params.length > 3)
+		{
+			HelpInfo.promptHelp("gbbh");
+			return;
+		}
 		String blockHash = params[1];
 		if ("-h".equals(blockHash) || "--help".equals(blockHash)) {
 			HelpInfo.getBlockByHashHelp();
@@ -341,6 +356,11 @@ public class ConsoleImpl implements ConsoleFace {
 	@Override
 	public void getBlockByNumber(String[] params) throws IOException {
 		if (params.length < 2) {
+			HelpInfo.promptHelp("gbbn");
+			return;
+		}
+		else if(params.length > 3)
+		{
 			HelpInfo.promptHelp("gbbn");
 			return;
 		}
@@ -376,6 +396,11 @@ public class ConsoleImpl implements ConsoleFace {
 			HelpInfo.promptHelp("ghbn");
 			return;
 		}
+		else if(params.length > 2)
+		{
+			HelpInfo.promptHelp("ghbn");
+			return;
+		}
 		String blockNumberStr = params[1];
 		if ("-h".equals(blockNumberStr) || "--help".equals(blockNumberStr)) {
 			HelpInfo.getBlockHashByNumberHelp();
@@ -399,6 +424,11 @@ public class ConsoleImpl implements ConsoleFace {
 			HelpInfo.promptHelp("gtbh");
 			return;
 		}
+		else if(params.length > 2)
+		{
+			HelpInfo.promptHelp("gtbh");
+			return;
+		}
 		String transactionHash = params[1];
 		if ("-h".equals(transactionHash) || "--help".equals(transactionHash)) {
 			HelpInfo.getTransactionByHashHelp();
@@ -418,6 +448,11 @@ public class ConsoleImpl implements ConsoleFace {
 	@Override
 	public void getTransactionByBlockHashAndIndex(String[] params) throws IOException {
 		if (params.length < 2) {
+			HelpInfo.promptHelp("gthi");
+			return;
+		}
+		else if(params.length > 3)
+		{
 			HelpInfo.promptHelp("gthi");
 			return;
 		}
@@ -447,6 +482,11 @@ public class ConsoleImpl implements ConsoleFace {
 			HelpInfo.promptHelp("gtni");
 			return;
 		}
+		else if(params.length > 3)
+		{
+			HelpInfo.promptHelp("gtni");
+			return;
+		}
 		String blockNumberStr = params[1];
 		if ("-h".equals(blockNumberStr) || "--help".equals(blockNumberStr)) {
 			HelpInfo.getTransactionByBlockNumberAndIndexHelp();
@@ -473,6 +513,11 @@ public class ConsoleImpl implements ConsoleFace {
 	@Override
 	public void getTransactionReceipt(String[] params) throws IOException {
 		if (params.length < 2) {
+			HelpInfo.promptHelp("gtr");
+			return;
+		}
+		else if(params.length > 2)
+		{
 			HelpInfo.promptHelp("gtr");
 			return;
 		}
@@ -523,6 +568,11 @@ public class ConsoleImpl implements ConsoleFace {
 			HelpInfo.promptHelp("gc");
 			return;
 		}
+		else if(params.length > 2)
+		{
+			HelpInfo.promptHelp("gc");
+			return;
+		}
 		String address = params[1];
 		if ("-h".equals(address) || "--help".equals(address)) {
 			HelpInfo.getCodeHelp();
@@ -558,6 +608,11 @@ public class ConsoleImpl implements ConsoleFace {
 	@Override
 	public void deploy(String[] params) throws Exception {
 		if (params.length < 2) {
+			HelpInfo.promptHelp("d");
+			return;
+		}
+		else if(params.length > 2)
+		{
 			HelpInfo.promptHelp("d");
 			return;
 		}
@@ -601,22 +656,50 @@ public class ConsoleImpl implements ConsoleFace {
 			return;
 		}
 		contractObject = load.invoke(null, contractAddress, web3j, credentials, gasPrice, gasLimit);
-		Class[] parameterType = ContractClassFactory.getParameterType(contractClass, params[3]);
-		String returnType = ContractClassFactory.getReturnType(contractClass, params[3]);
-		Method func = contractClass.getMethod(params[3], parameterType);
-		Object[] argobj = ContractClassFactory.getPrametersObject(parameterType, params);
-		remoteCall = (RemoteCall<?>) func.invoke(contractObject, argobj);
-		Object result;
-		result = remoteCall.send();
-		String resultStr;
-		resultStr = ContractClassFactory.getReturnObject(returnType, result);
-		System.out.println(resultStr);
-		System.out.println();
+		Method[] methods = contractClass.getMethods();
+		String funcName = params[3];
+		boolean funcFlag = true;
+		for (Method method : methods) {
+			if(funcName.equals(method.getName()))
+			{
+				Class[] parameterType = ContractClassFactory.getParameterType(contractClass, funcName);
+				if(parameterType.length != params.length - 4)
+				{
+					continue;
+				}
+				else
+				{
+					funcFlag = false;
+					Method func = contractClass.getMethod(funcName, parameterType);
+					Object[] argobj = ContractClassFactory.getPrametersObject(parameterType, params);
+					String returnType = ContractClassFactory.getReturnType(contractClass, funcName);
+					remoteCall = (RemoteCall<?>) func.invoke(contractObject, argobj);
+					Object result;
+					result = remoteCall.send();
+					String resultStr;
+					resultStr = ContractClassFactory.getReturnObject(returnType, result);
+					System.out.println(resultStr);
+					System.out.println();
+					break;
+				}
+			}
+		}
+		if(funcFlag)
+		{
+			HelpInfo.promptNoFunc(params[1], funcName, params.length - 4);
+			return;
+		}
+
 	}
 
 	@Override
 	public void deployByCNS(String[] params) throws Exception {
 		if (params.length < 2) {
+			HelpInfo.promptHelp("dbc");
+			return;
+		}
+		else if(params.length > 3)
+		{
 			HelpInfo.promptHelp("dbc");
 			return;
 		}
@@ -689,25 +772,53 @@ public class ConsoleImpl implements ConsoleFace {
 		contractVersion = params[2];
 		CnsService cnsResolver = new CnsService(web3j, credentials);
 		contractAddress = cnsResolver.resolve(contractName + ":" + contractVersion);
-
 		contractObject = load.invoke(null, contractAddress, web3j, credentials, gasPrice, gasLimit);
-		Class[] parameterType = ContractClassFactory.getParameterType(contractClass, params[3]);
-		String returnType = ContractClassFactory.getReturnType(contractClass, params[3]);
-		Method func = contractClass.getMethod(params[3], parameterType);
-		Object[] argobj = ContractClassFactory.getPrametersObject(parameterType, params);
-		remoteCall = (RemoteCall<?>) func.invoke(contractObject, argobj);
-		Object result;
-		result = remoteCall.send();
-		String resultStr;
-		resultStr = ContractClassFactory.getReturnObject(returnType, result);
-		System.out.println(resultStr);
-		System.out.println();
+		
+		Method[] methods = contractClass.getMethods();
+		String funcName = params[3];
+		boolean funcFlag = true;
+		for (Method method : methods) {
+			if(funcName.equals(method.getName()))
+			{
+				Class[] parameterType = ContractClassFactory.getParameterType(contractClass, funcName);
+				if(parameterType.length != params.length - 4)
+				{
+					continue;
+				}
+				else
+				{
+					funcFlag = false;
+					Method func = contractClass.getMethod(funcName, parameterType);
+					Object[] argobj = ContractClassFactory.getPrametersObject(parameterType, params);
+					String returnType = ContractClassFactory.getReturnType(contractClass, funcName);
+					remoteCall = (RemoteCall<?>) func.invoke(contractObject, argobj);
+					Object result;
+					result = remoteCall.send();
+					String resultStr;
+					resultStr = ContractClassFactory.getReturnObject(returnType, result);
+					System.out.println(resultStr);
+					System.out.println();
+					break;
+				}
+			}
+		}
+		if(funcFlag)
+		{
+			HelpInfo.promptNoFunc(params[1], funcName, params.length - 4);
+			return;
+		}
+		
 	}
 
 	@SuppressWarnings("rawtypes")
 	@Override
 	public void queryCNS(String[] params) throws Exception {
 		if (params.length < 2) {
+			HelpInfo.promptHelp("qcs");
+			return;
+		}
+		else if(params.length > 3)
+		{
 			HelpInfo.promptHelp("qcs");
 			return;
 		}
@@ -752,6 +863,11 @@ public class ConsoleImpl implements ConsoleFace {
 			HelpInfo.promptHelp("am");
 			return;
 		}
+		else if(params.length > 2)
+		{
+			HelpInfo.promptHelp("am");
+			return;
+		}
 		String nodeID = params[1];
 		if ("-h".equals(nodeID) || "--help".equals(nodeID)) {
 			HelpInfo.addMinerHelp();
@@ -772,6 +888,11 @@ public class ConsoleImpl implements ConsoleFace {
 	public void addObserver(String[] params) throws Exception {
 
 		if (params.length < 2) {
+			HelpInfo.promptHelp("ao");
+			return;
+		}
+		else if(params.length > 2)
+		{
 			HelpInfo.promptHelp("ao");
 			return;
 		}
@@ -797,6 +918,11 @@ public class ConsoleImpl implements ConsoleFace {
 			HelpInfo.promptHelp("rn");
 			return;
 		}
+		else if(params.length > 2)
+		{
+			HelpInfo.promptHelp("rn");
+			return;
+		}
 		String nodeID = params[1];
 		if ("-h".equals(nodeID) || "--help".equals(nodeID)) {
 			HelpInfo.removeNodeHelp();
@@ -816,6 +942,11 @@ public class ConsoleImpl implements ConsoleFace {
 	@Override
 	public void addAuthority(String[] params) throws Exception {
 		if (params.length < 2) {
+			HelpInfo.promptHelp("aa");
+			return;
+		}
+		else if(params.length > 3)
+		{
 			HelpInfo.promptHelp("aa");
 			return;
 		}
@@ -845,6 +976,11 @@ public class ConsoleImpl implements ConsoleFace {
 			HelpInfo.promptHelp("ra");
 			return;
 		}
+		else if(params.length > 3)
+		{
+			HelpInfo.promptHelp("ra");
+			return;
+		}
 		String tableName = params[1];
 		if ("-h".equals(tableName) || "--help".equals(tableName)) {
 			HelpInfo.removeAuthorityHelp();
@@ -868,6 +1004,11 @@ public class ConsoleImpl implements ConsoleFace {
 	@Override
 	public void queryAuthority(String[] params) throws Exception {
 		if (params.length < 2) {
+			HelpInfo.promptHelp("qa");
+			return;
+		}
+		else if(params.length > 3)
+		{
 			HelpInfo.promptHelp("qa");
 			return;
 		}
@@ -904,6 +1045,11 @@ public class ConsoleImpl implements ConsoleFace {
 			HelpInfo.promptHelp("ssc");
 			return;
 		}
+		else if(params.length > 3)
+		{
+			HelpInfo.promptHelp("ssc");
+			return;
+		}
 		String key = params[1];
 		if ("-h".equals(key) || "--help".equals(key)) {
 			HelpInfo.setSystemConfigByKeyHelp();
@@ -928,6 +1074,11 @@ public class ConsoleImpl implements ConsoleFace {
 			HelpInfo.promptHelp("gsc");
 			return;
 		}
+		else if(params.length > 2)
+		{
+			HelpInfo.promptHelp("gsc");
+			return;
+		}
 		String key = params[1];
 		if ("-h".equals(key) || "--help".equals(key)) {
 			HelpInfo.getSystemConfigByKeyHelp();
@@ -943,6 +1094,11 @@ public class ConsoleImpl implements ConsoleFace {
 	public void quit(String[] params) throws IOException {
 		if(promptNoParams(params, "q"))
 		{
+			return;
+		}
+		else if(params.length > 2)
+		{
+			HelpInfo.promptHelp("q");
 			return;
 		}
 		channelEthereumService.close();
