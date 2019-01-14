@@ -1,6 +1,5 @@
 package org.bcos.channel.client;
 
-import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -13,7 +12,6 @@ import org.bcos.channel.dto.*;
 import org.bcos.channel.handler.ChannelConnections;
 import org.bcos.channel.handler.ConnectionInfo;
 import org.bcos.channel.handler.Message;
-import org.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
