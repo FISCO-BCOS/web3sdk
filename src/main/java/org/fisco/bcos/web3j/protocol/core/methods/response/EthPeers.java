@@ -1,8 +1,6 @@
 package org.fisco.bcos.web3j.protocol.core.methods.response;
 
-import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonView;
 import org.fisco.bcos.web3j.protocol.core.Response;
 
 import java.util.List;
@@ -18,10 +16,12 @@ public class EthPeers extends Response<List<EthPeers.Peer>> {
     }
 
 
-    public class Peer {
-        @JsonProperty("IP & Port")
+    public static class Peer {
+        @JsonProperty("IPAndPort")
         private String IPAndPort;
+        @JsonProperty("NodeID")
         private String nodeID;
+        @JsonProperty("Topic")
         private List<String> topic;
 
         public Peer() {

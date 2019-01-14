@@ -1,4 +1,4 @@
-package org.fisco.bcos.channel.test.precompile;
+package org.fisco.bcos.web3j.precompile.config;
 
 import java.math.BigInteger;
 import java.util.Arrays;
