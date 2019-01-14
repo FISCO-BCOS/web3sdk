@@ -17,6 +17,7 @@ import org.fisco.bcos.web3j.precompile.consensus.ConsensusService;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.crypto.ECKeyPair;
 import org.fisco.bcos.web3j.crypto.Keys;
+import org.fisco.bcos.web3j.crypto.gm.GenCredential;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
@@ -55,7 +56,7 @@ public class ConsoleImpl implements ConsoleFace {
 		int groupID = 1;
 		try {
 			keyPair = Keys.createEcKeyPair();
-			credentials = Credentials.create(keyPair);
+			credentials = GenCredential.create(keyPair.getPrivateKey().toString(16));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -69,7 +70,7 @@ public class ConsoleImpl implements ConsoleFace {
 			groupID = setGroupID(args, groupID);
 			privateKey = args[1];
 			try {
-				credentials = Credentials.create(privateKey);
+				credentials = GenCredential.create(privateKey);
 			} catch (NumberFormatException e) {
 				System.out.println("Please provide private key by hex format.");
 				System.exit(0);
@@ -533,6 +534,7 @@ public class ConsoleImpl implements ConsoleFace {
 		String code = web3j.ethGetCode(address, DefaultBlockParameterName.LATEST).sendForReturnString();
 		if ("0x".equals(code)) {
 			System.out.println("This address doesn't exist.");
+			System.out.println();
 			return;
 		}
 		ConsoleUtils.printJson(code);
