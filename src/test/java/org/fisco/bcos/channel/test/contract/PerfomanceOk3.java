@@ -54,7 +54,6 @@ public class PerfomanceOk3 {
 		//初始化交易参数
 		BigInteger gasPrice = new BigInteger("30000000");
 		BigInteger gasLimit = new BigInteger("30000000");
-		BigInteger initialWeiValue = new BigInteger("0");
 		
 		//解析参数
 		String command = args[0];
@@ -69,7 +68,7 @@ public class PerfomanceOk3 {
 		threadPool.initialize();
 		
 		System.out.println("部署合约");
-		Ok ok = Ok.deploy(web3, credentials, gasPrice, gasLimit, initialWeiValue).send();
+		Ok ok = Ok.deploy(web3, credentials, gasPrice, gasLimit).send();
 
 		switch (command) {
 			case "trans":

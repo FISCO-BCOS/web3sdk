@@ -1,4 +1,4 @@
-pragma solidity ^0.4.5;
+pragma solidity ^0.4.24;
 contract Ok{
     
     struct Account{
@@ -15,7 +15,7 @@ contract Ok{
     
     Account from;
     Account to;
-    
+    event TransEvent(uint num);
     Translog[] log;
 
     function Ok(){
@@ -36,7 +36,7 @@ contract Ok{
 
     	from.balance=from.balance-num;
     	to.balance+=num;
-    
+        TransEvent(num);
     	log.push(Translog("20170413",from.account,to.account,num));
     }
 }
