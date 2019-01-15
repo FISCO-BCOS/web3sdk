@@ -2,6 +2,7 @@ package org.fisco.bcos.channel.test.contract;
 
 import org.fisco.bcos.channel.test.TestBase;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.math.BigInteger;
@@ -10,14 +11,14 @@ import java.util.concurrent.ExecutionException;
 
 public class PressureTest extends TestBase {
 
+    @Ignore
 	@Test
 	public  void pressureTest() throws InterruptedException, ExecutionException {
             int threadNum = 500;
 				System.out.println("####create credential succ, begin deploy contract");
 				java.math.BigInteger gasPrice = new BigInteger("300000000");
 				java.math.BigInteger gasLimit = new BigInteger("300000000");
-				java.math.BigInteger initialWeiValue = new BigInteger("0");
-				final Ok okDemo = Ok.deploy(web3j, credentials, gasPrice, gasLimit, initialWeiValue).sendAsync().get();
+				final Ok okDemo = Ok.deploy(web3j, credentials, gasPrice, gasLimit).sendAsync().get();
 				if (okDemo != null) {
                         ArrayList<Thread> threadArray = new ArrayList<Thread>();
                         for(int threadIndex = 0; threadIndex < threadNum; threadIndex++ ) {

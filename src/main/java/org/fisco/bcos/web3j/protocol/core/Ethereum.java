@@ -4,58 +4,8 @@ import java.math.BigInteger;
 import java.util.List;
 
 import org.fisco.bcos.web3j.protocol.core.methods.request.ShhFilter;
-import org.fisco.bcos.web3j.protocol.core.methods.response.DbGetHex;
-import org.fisco.bcos.web3j.protocol.core.methods.response.DbGetString;
-import org.fisco.bcos.web3j.protocol.core.methods.response.DbPutHex;
-import org.fisco.bcos.web3j.protocol.core.methods.response.DbPutString;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthAccounts;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthBlock;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthBlockNumber;
-
-//增加eth_pbftView接口
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthPbftView;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthCoinbase;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthCompileLLL;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthCompileSerpent;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthCompileSolidity;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthEstimateGas;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthFilter;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthGasPrice;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthGetBalance;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthGetBlockTransactionCountByHash;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthGetBlockTransactionCountByNumber;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthGetCode;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthGetCompilers;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthGetStorageAt;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthGetTransactionCount;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthGetTransactionReceipt;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthGetUncleCountByBlockHash;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthGetUncleCountByBlockNumber;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthGetWork;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthHashrate;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthLog;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthMining;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthProtocolVersion;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthSign;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthSubmitHashrate;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthSubmitWork;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthSyncing;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthTransaction;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthUninstallFilter;
-import org.fisco.bcos.web3j.protocol.core.methods.response.NetListening;
-import org.fisco.bcos.web3j.protocol.core.methods.response.NetPeerCount;
-import org.fisco.bcos.web3j.protocol.core.methods.response.NetVersion;
-import org.fisco.bcos.web3j.protocol.core.methods.response.ShhAddToGroup;
-import org.fisco.bcos.web3j.protocol.core.methods.response.ShhHasIdentity;
-import org.fisco.bcos.web3j.protocol.core.methods.response.ShhMessages;
-import org.fisco.bcos.web3j.protocol.core.methods.response.ShhNewFilter;
-import org.fisco.bcos.web3j.protocol.core.methods.response.ShhNewGroup;
-import org.fisco.bcos.web3j.protocol.core.methods.response.ShhNewIdentity;
-import org.fisco.bcos.web3j.protocol.core.methods.response.ShhUninstallFilter;
-import org.fisco.bcos.web3j.protocol.core.methods.response.ShhVersion;
-import org.fisco.bcos.web3j.protocol.core.methods.response.Web3ClientVersion;
-import org.fisco.bcos.web3j.protocol.core.methods.response.Web3Sha3;
 import org.fisco.bcos.web3j.protocol.core.methods.request.ProofMerkle;
+//增加eth_pbftView接口
 import org.fisco.bcos.web3j.protocol.core.methods.response.*;
 
 /**
@@ -108,6 +58,9 @@ public interface Ethereum {
 
     //增加peers接口
     Request<?, EthPeers> ethPeersInfo();
+    
+    //增加getSystemConfigByKey接口
+    Request<?, SystemConfig> getSystemConfigByKey(String key);
 
     Request<?, EthGetBalance> ethGetBalance(
             String address, DefaultBlockParameter defaultBlockParameter);
@@ -258,4 +211,6 @@ public interface Ethereum {
 
     Request<?, EthGetProofMerkle> ethGetProofMerkle(
             ProofMerkle proofMerkle);
+
+	Request<?, PendingTxSize> getPendingTxSize();
 }
