@@ -1,9 +1,9 @@
 package org.fisco.bcos.web3j.console;
 
+import java.io.IOException;
 import java.util.Scanner;
 
 import org.fisco.bcos.web3j.protocol.channel.ResponseExcepiton;
-
 
 public class ConsoleClient {
 
@@ -11,12 +11,13 @@ public class ConsoleClient {
 	public static void main(String[] args) {
 
 		ConsoleFace console = new ConsoleImpl();
+		console.init(args);
 		console.welcome();
-		
+
 		Scanner sc = new Scanner(System.in);
 		while (true) {
 			System.out.print("> ");
-			String request = sc.nextLine();
+			String request = sc.nextLine().trim().replaceAll(" +", " ");
 			String[] params = request.split(" ");
 			if (params.length < 1) {
 				System.out.print("");
@@ -32,47 +33,47 @@ public class ConsoleClient {
 
 				case "help":
 				case "h":
-					console.help();
+					console.help(params);
 					break;
 				case "getBlockNumber":
 				case "gbn":
-					console.getBlockNumber();
+					console.getBlockNumber(params);
 					break;
 				case "getPbftView":
 				case "gpv":
-					console.getPbftView();
+					console.getPbftView(params);
 					break;
 				case "getMinerList":
 				case "gml":
-					console.getMinerList();
+					console.getMinerList(params);
 					break;
 				case "getObserverList":
 				case "gol":
-					console.getObserverList();
+					console.getObserverList(params);
 					break;
 				case "getConsensusStatus":
 				case "gcs":
-					console.getConsensusStatus();
+					console.getConsensusStatus(params);
 					break;
 				case "getSyncStatus":
 				case "gss":
-					console.getSyncStatus();
+					console.getSyncStatus(params);
 					break;
 				case "getClientVersion":
 				case "gcv":
-					console.getClientVersion();
+					console.getClientVersion(params);
 					break;
 				case "getPeers":
 				case "gps":
-					console.getPeers();
+					console.getPeers(params);
 					break;
 				case "getGroupPeers":
 				case "ggp":
-					console.getGroupPeers();
+					console.getGroupPeers(params);
 					break;
 				case "getGroupList":
 				case "ggl":
-					console.getGroupList();
+					console.getGroupList(params);
 					break;
 				case "getBlockByHash":
 				case "gbbh":
@@ -104,7 +105,11 @@ public class ConsoleClient {
 					break;
 				case "getPendingTransactions":
 				case "gpt":
-					console.getPendingTransactions();
+					console.getPendingTransactions(params);
+					break;
+				case "getPendingTxSize":
+				case "gpts":
+					console.getPendingTxSize(params);
 					break;
 				case "getCode":
 				case "gc":
@@ -112,7 +117,7 @@ public class ConsoleClient {
 					break;
 				case "getTotalTransactionCount":
 				case "gtc":
-					console.getTotalTransactionCount();
+					console.getTotalTransactionCount(params);
 					break;
 				case "deploy":
 				case "d":
@@ -122,26 +127,80 @@ public class ConsoleClient {
 				case "c":
 					console.call(params);
 					break;
-				case "addPbft":
-				case "ap":
-					console.addPbft(params);
+				case "deployByCNS":
+				case "dbc":
+					console.deployByCNS(params);
 					break;
-				case "removePbft":
-				case "rp":
-					console.removePbft(params);
+				case "callByCNS":
+				case "cbc":
+					console.callByCNS(params);
+					break;
+				case "queryCNS":
+				case "qcs":
+					console.queryCNS(params);
+					break;
+				case "addMiner":
+				case "am":
+					console.addMiner(params);
+					break;
+				case "addObserver":
+				case "ao":
+					console.addObserver(params);
+					break;
+				case "removeNode":
+				case "rn":
+					console.removeNode(params);
+					break;
+				case "addAuthority":
+				case "aa":
+					console.addAuthority(params);
+					break;
+				case "removeAuthority":
+				case "ra":
+					console.removeAuthority(params);
+					break;
+				case "queryAuthority":
+				case "qa":
+					console.queryAuthority(params);
+					break;
+				case "setSystemConfigByKey":
+				case "ssc":
+					console.setSystemConfigByKey(params);
+					break;
+				case "getSystemConfigByKey":
+				case "gsc":
+					console.getSystemConfigByKey(params);
 					break;
 				case "quit":
 				case "q":
-					System.exit(0);
+					console.quit(params);
+					break;
 				default:
-					System.out.println("Undefined command: \""+params[0]+"\".  Try \"help\".\n");
+					System.out.println("Undefined command: \"" + params[0] + "\".  Try \"help\".\n");
 					break;
 
 				}
 
 			} catch (ResponseExcepiton e) {
-				System.out.println(
-						"{\"error\":{\"code\":" + e.getCode() + ", \"message:\"" + "\"" + e.getMessage() + "\"}}");
+				ConsoleUtils.printJson(
+						"{\"code\":" + e.getCode() + ", \"msg\":" + "\"" + e.getMessage() + "\"}");
+				System.out.println();
+			} catch (ClassNotFoundException e) {
+				System.out.println(e.getMessage()+" does not exist.");
+				System.out.println();
+			} catch (IOException e) {
+				if(e.getMessage().startsWith("activeConnections"))
+				{
+					System.out.println("Please check the connection between sdk to node.");
+				}
+				else if(e.getMessage().startsWith("No value"))
+				{
+					System.out.println("The groupID is not configured in dist/conf/applicationContext.xml file.");
+				}
+				else
+				{
+					System.out.println(e.getMessage());
+				}
 				System.out.println();
 			} catch (Exception e) {
 				System.out.println(e.getMessage());

@@ -3,14 +3,22 @@ package org.fisco.bcos.web3j.console;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.fisco.bcos.channel.client.Service;
-import org.fisco.bcos.channel.test.precompile.UpdatePBFTNode;
-import org.fisco.bcos.web3j.cns.CnsResolver;
+import org.fisco.bcos.web3j.precompile.authority.Authority;
+import org.fisco.bcos.web3j.precompile.authority.AuthorityService;
+import org.fisco.bcos.web3j.precompile.cns.CNSInfo;
+import org.fisco.bcos.web3j.precompile.cns.CnsService;
+import org.fisco.bcos.web3j.precompile.common.PrecompiledCommon;
+import org.fisco.bcos.web3j.precompile.config.SystemConfigSerivce;
+import org.fisco.bcos.web3j.precompile.consensus.ConsensusService;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.crypto.ECKeyPair;
+import org.fisco.bcos.web3j.crypto.EncryptType;
 import org.fisco.bcos.web3j.crypto.Keys;
+import org.fisco.bcos.web3j.crypto.gm.GenCredential;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
@@ -23,42 +31,75 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.alibaba.fastjson.JSONObject;
 
-public class ConsoleImpl implements ConsoleFace{
-	
-	private static Service service = null;
-	private static Web3j web3j = null;
-	private static java.math.BigInteger gasPrice = new BigInteger("1");
-	private static java.math.BigInteger gasLimit = new BigInteger("30000000");
-	private static ECKeyPair keyPair;
-	private static Credentials credentials;
-	private static String contractAddress;
-	private static String contractName;
-	private static String contractVersion;
-	private static Class<?> contractClass;
-	private static RemoteCall<?> remoteCall;
+import io.bretty.console.table.Alignment;
+import io.bretty.console.table.ColumnFormatter;
+import io.bretty.console.table.Table;
 
-	@SuppressWarnings("resource")
-	public ConsoleImpl(){
+public class ConsoleImpl implements ConsoleFace {
+
+	private Service service = null;
+	private Web3j web3j = null;
+	private java.math.BigInteger gasPrice = new BigInteger("1");
+	private java.math.BigInteger gasLimit = new BigInteger("30000000");
+	private ECKeyPair keyPair;
+	private Credentials credentials;
+	private String contractAddress;
+	private String contractName;
+	private String contractVersion;
+	private Class<?> contractClass;
+	private RemoteCall<?> remoteCall;
+	private String privateKey = "";
+	private ChannelEthereumService channelEthereumService = new ChannelEthereumService();
+
+	public void init(String[] args) {
 		ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
 		service = context.getBean(Service.class);
+		int groupID = 1;
+		try {
+			keyPair = Keys.createEcKeyPair();
+			credentials = GenCredential.create(keyPair.getPrivateKey().toString(16));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		switch (args.length) {
+		case 0:
+			break;
+		case 1:
+			groupID = setGroupID(args, groupID);
+			break;
+		default:
+			groupID = setGroupID(args, groupID);
+			privateKey = args[1];
+			try {
+				credentials = GenCredential.create(privateKey);
+			} catch (NumberFormatException e) {
+				System.out.println("Please provide private key by hex format.");
+				System.exit(0);
+			}
+			break;
+		}
+		service.setGroupId(groupID);
 		try {
 			service.run();
 		} catch (Exception e) {
-			System.out.println("Failed to initialize the client-side SSLContext, please checkout ca.crt File!");
+			System.out.println("Failed to connect blockchain. Please check running status for blockchain and configruation for console.");
 			System.exit(1);
 		}
-		ChannelEthereumService channelEthereumService = new ChannelEthereumService();
 		channelEthereumService.setChannelService(service);
-		try {
-			keyPair = Keys.createEcKeyPair();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} 
-		credentials = Credentials.create(keyPair);
+		web3j = Web3j.build(channelEthereumService, groupID);
 
-		web3j = Web3j.build(channelEthereumService, service.getGroupId());
 	}
-	
+
+	private int setGroupID(String[] args, int groupID) {
+		try {
+			groupID = Integer.parseInt(args[0]);
+		} catch (NumberFormatException e) {
+			System.out.println("Please provide groupID by decimal format (default 1).");
+			System.exit(0);
+		}
+		return groupID;
+	}
+
 	@Override
 	public void welcome() {
 		ConsoleUtils.doubleLine();
@@ -77,9 +118,18 @@ public class ConsoleImpl implements ConsoleFace{
 		System.out.println();
 		ConsoleUtils.doubleLine();
 	}
-	
+
 	@Override
-	public void help() {
+	public void help(String[] params) {
+		if(promptNoParams(params, "h"))
+		{
+			return;
+		}
+		else if(params.length > 2)
+		{
+			HelpInfo.promptHelp("h");
+			return;
+		}
 		ConsoleUtils.singleLine();
 		StringBuilder sb = new StringBuilder();
 		sb.append("help(h)                                       Provide help information.\n");
@@ -106,98 +156,190 @@ public class ConsoleImpl implements ConsoleFace{
 		sb.append(
 				"getTransactionReceipt(gtr)                    Query the receipt of a transaction by transaction hash.\n");
 		sb.append("getPendingTransactions(gpt)                   Query pending transactions.\n");
+		sb.append("getPendingTxSize(gpts)                        Query pending transactions size.\n");
 		sb.append("getCode(gc)                                   Query code at a given address.\n");
 		sb.append("getTotalTransactionCount(gtc)                 Query total transaction count.\n");
 		sb.append("deploy(d)                                     Deploy a contract on blockchain.\n");
 		sb.append("call(c)                                       Call a contract by a function and paramters.\n");
-		sb.append("addPbft(ap)                                   Add a pbft node.\n");
-		sb.append("removePbft(rp)                                Remove a pbft nodes.\n");
+		sb.append("deployByCNS(dbc)                              Deploy a contract on blockchain by CNS.\n");
+		sb.append(
+				"callByCNS(cbc)                                Call a contract by a function and paramters by CNS.\n");
+		sb.append(
+				"queryCNS(qcs)                                 Query cns information by contract name and contract version.\n");
+		sb.append("addMiner(am)                                  Add a miner node.\n");
+		sb.append("addObserver(ao)                               Add an observer node.\n");
+		sb.append("removeNode(rn)                                Remove a node.\n");
+		sb.append("addAuthority(aa)                              Add authority for table by address.\n");
+		sb.append("removeAuthority(ra)                           Remove authority for table by address.\n");
+		sb.append("queryAuthority(qa)                            Query authority information.\n");
+		sb.append("setSystemConfigByKey(ssc)                     Set a system config.\n");
+		sb.append("getSystemConfigByKey(gsc)                     Query a system config value by key.\n");
 		sb.append("quit(q)                                       Quit console.");
 		System.out.println(sb.toString());
 		ConsoleUtils.singleLine();
+		System.out.println();
 	}
-	
+
+	private boolean promptNoParams(String[] params, String funcName) {
+		if(params.length == 2)
+		{
+			if("-h".equals(params[1]) || "--help".equals(params[1]))
+			{
+				HelpInfo.helpNoParams(funcName);
+				return true;
+			}
+			else 
+			{
+				HelpInfo.promptHelp(funcName);
+				return true;
+			}
+		}
+		else if(params.length > 2)
+		{
+			HelpInfo.promptHelp(funcName);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
 	@Override
-	public void getBlockNumber() throws IOException {
+	public void getBlockNumber(String[] params) throws IOException {
+		if(promptNoParams(params, "gbn"))
+		{
+			return;
+		}
 		String blockNumber = web3j.ethBlockNumber().sendForReturnString();
 		System.out.println(Numeric.decodeQuantity(blockNumber));
 		System.out.println();
 	}
-	
+
 	@Override
-	public void getPbftView() throws IOException {
+	public void getPbftView(String[] params) throws IOException {
+		if(promptNoParams(params, "gpv"))
+		{
+			return;
+		}
 		String pbftView = web3j.ethPbftView().sendForReturnString();
 		System.out.println(Numeric.decodeQuantity(pbftView));
 		System.out.println();
 	}
-	
+
 	@Override
-	public void getObserverList() throws IOException {
+	public void getObserverList(String[] params) throws IOException {
+		if(promptNoParams(params, "gol"))
+		{
+			return;
+		}
 		List<String> observerList = web3j.getObserverList().send().getResult();
-		ConsoleUtils.printJson(observerList.toString());
+		String observers = observerList.toString();
+		if ("[]".equals(observers)) {
+			System.out.println("[]");
+		} else {
+			ConsoleUtils.printJson(observers);
+		}
 		System.out.println();
 
 	}
-	
+
 	@Override
-	public void getMinerList() throws IOException {
+	public void getMinerList(String[] params) throws IOException {
+		if(promptNoParams(params, "gml"))
+		{
+			return;
+		}
 		List<String> minerList = web3j.getMinerList().send().getResult();
-		ConsoleUtils.printJson(minerList.toString());
+		String miners = minerList.toString();
+		if ("[]".equals(miners)) {
+			System.out.println("[]");
+		} else {
+			ConsoleUtils.printJson(miners);
+		}
 		System.out.println();
 
 	}
-	
+
 	@Override
-	public void getConsensusStatus() throws IOException {
+	public void getConsensusStatus(String[] params) throws IOException {
+		if(promptNoParams(params, "gcs"))
+		{
+			return;
+		}
 		String consensusStatus = web3j.consensusStatus().sendForReturnString();
 		ConsoleUtils.printJson(consensusStatus);
 		System.out.println();
 	}
-	
+
 	@Override
-	public void getSyncStatus() throws IOException {
+	public void getSyncStatus(String[] params) throws IOException {
+		if(promptNoParams(params, "gss"))
+		{
+			return;
+		}
 		String syncStatus = web3j.ethSyncing().sendForReturnString();
 		ConsoleUtils.printJson(syncStatus);
 		System.out.println();
 	}
-	
+
 	@Override
-	public void getClientVersion() throws IOException {
+	public void getClientVersion(String[] params) throws IOException {
+		if(promptNoParams(params, "gcv"))
+		{
+			return;
+		}
 		String clientVersion = web3j.web3ClientVersion().sendForReturnString();
-		System.out.println(clientVersion);
+		ConsoleUtils.printJson(clientVersion);
 		System.out.println();
 	}
-	
+
 	@Override
-	public void getPeers() throws IOException {
+	public void getPeers(String[] params) throws IOException {
+		if(promptNoParams(params, "gps"))
+		{
+			return;
+		}
 		String peers = web3j.ethPeersInfo().sendForReturnString();
 		ConsoleUtils.printJson(peers);
 		System.out.println();
 	}
-	
+
 	@Override
-	public void getGroupPeers() throws IOException {
+	public void getGroupPeers(String[] params) throws IOException {
+		if(promptNoParams(params, "ggp"))
+		{
+			return;
+		}
 		List<String> groupPeers = web3j.ethGroupPeers().send().getResult();
 		ConsoleUtils.printJson(groupPeers.toString());
 		System.out.println();
 	}
-	
+
 	@Override
-	public void getGroupList() throws IOException {
+	public void getGroupList(String[] params) throws IOException {
+		if(promptNoParams(params, "ggl"))
+		{
+			return;
+		}
 		List<String> groupList = web3j.ethGroupList().send().getResult();
 		System.out.println(groupList);
 		System.out.println();
 	}
-	
+
 	@Override
 	public void getBlockByHash(String[] params) throws IOException {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("gbbh");
 			return;
 		}
-		String blockHash = params[1];
-		if("-h".equals(blockHash) || "--help".equals(blockHash))
+		else if(params.length > 3)
 		{
+			HelpInfo.promptHelp("gbbh");
+			return;
+		}
+		String blockHash = params[1];
+		if ("-h".equals(blockHash) || "--help".equals(blockHash)) {
 			HelpInfo.getBlockByHashHelp();
 			return;
 		}
@@ -211,44 +353,61 @@ public class ConsoleImpl implements ConsoleFace{
 		System.out.println();
 
 	}
-	
+
 	@Override
 	public void getBlockByNumber(String[] params) throws IOException {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("gbbn");
 			return;
 		}
-		String blockNumberStr = params[1];
-		if("-h".equals(blockNumberStr) || "--help".equals(blockNumberStr))
+		else if(params.length > 3)
 		{
+			HelpInfo.promptHelp("gbbn");
+			return;
+		}
+		String blockNumberStr1 = params[1];
+		if ("-h".equals(blockNumberStr1) || "--help".equals(blockNumberStr1)) {
 			HelpInfo.getBlockByNumberHelp();
 			return;
 		}
-		if(ConsoleUtils.isInvalidNumber(blockNumberStr, 0))
+		if (ConsoleUtils.isInvalidNumber(blockNumberStr1, 0))
 			return;
-		BigInteger blockNumber = new BigInteger(blockNumberStr);
+		BigInteger blockNumber1 = new BigInteger(blockNumberStr1);
+		String blockNumberStr2 = web3j.ethBlockNumber().sendForReturnString();
+		BigInteger blockNumber2 = Numeric.decodeQuantity(blockNumberStr2);
+		if(blockNumber1.compareTo(blockNumber2) == 1)
+		{
+			ConsoleUtils.printJson(
+					"{\"code\":" + 4 + ", \"msg\":" + "\"BlockNumber does not exist\"}");
+			System.out.println();
+			return;
+		}
 		boolean flag = false;
 		if (params.length == 3 && "true".equals(params[2]))
 			flag = true;
-		String block = web3j.ethGetBlockByNumber(DefaultBlockParameter.valueOf(blockNumber), flag)
+		String block = web3j.ethGetBlockByNumber(DefaultBlockParameter.valueOf(blockNumber1), flag)
 				.sendForReturnString();
 		ConsoleUtils.printJson(block);
 		System.out.println();
 	}
-	
+
 	@Override
 	public void getBlockHashByNumber(String[] params) throws IOException {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("ghbn");
 			return;
 		}
-		String blockNumberStr = params[1];
-		if("-h".equals(blockNumberStr) || "--help".equals(blockNumberStr))
+		else if(params.length > 2)
 		{
+			HelpInfo.promptHelp("ghbn");
+			return;
+		}
+		String blockNumberStr = params[1];
+		if ("-h".equals(blockNumberStr) || "--help".equals(blockNumberStr)) {
 			HelpInfo.getBlockHashByNumberHelp();
 			return;
 		}
-		if(ConsoleUtils.isInvalidNumber(blockNumberStr, 0))
+		if (ConsoleUtils.isInvalidNumber(blockNumberStr, 0))
 			return;
 		BigInteger blockNumber = new BigInteger(blockNumberStr);
 		if (blockNumber.intValue() > Numeric.decodeQuantity(web3j.ethBlockNumber().sendForReturnString()).intValue()) {
@@ -259,16 +418,20 @@ public class ConsoleImpl implements ConsoleFace{
 		ConsoleUtils.printJson(blockHash);
 		System.out.println();
 	}
-	
+
 	@Override
 	public void getTransactionByHash(String[] params) throws IOException {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("gtbh");
 			return;
 		}
-		String transactionHash = params[1];
-		if("-h".equals(transactionHash) || "--help".equals(transactionHash))
+		else if(params.length > 2)
 		{
+			HelpInfo.promptHelp("gtbh");
+			return;
+		}
+		String transactionHash = params[1];
+		if ("-h".equals(transactionHash) || "--help".equals(transactionHash)) {
 			HelpInfo.getTransactionByHashHelp();
 			return;
 		}
@@ -282,16 +445,20 @@ public class ConsoleImpl implements ConsoleFace{
 		ConsoleUtils.printJson(transaction);
 		System.out.println();
 	}
-	
+
 	@Override
 	public void getTransactionByBlockHashAndIndex(String[] params) throws IOException {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("gthi");
 			return;
 		}
-		String blockHash = params[1];
-		if("-h".equals(blockHash) || "--help".equals(blockHash))
+		else if(params.length > 3)
 		{
+			HelpInfo.promptHelp("gthi");
+			return;
+		}
+		String blockHash = params[1];
+		if ("-h".equals(blockHash) || "--help".equals(blockHash)) {
 			HelpInfo.getTransactionByBlockHashAndIndexHelp();
 			return;
 		}
@@ -302,23 +469,27 @@ public class ConsoleImpl implements ConsoleFace{
 		if (ConsoleUtils.isInvalidHash(blockHash))
 			return;
 		String indexStr = params[2];
-		if(ConsoleUtils.isInvalidNumber(indexStr, 1))
+		if (ConsoleUtils.isInvalidNumber(indexStr, 1))
 			return;
 		BigInteger index = new BigInteger(indexStr);
 		String transaction = web3j.ethGetTransactionByBlockHashAndIndex(blockHash, index).sendForReturnString();
 		ConsoleUtils.printJson(transaction);
 		System.out.println();
 	}
-	
+
 	@Override
 	public void getTransactionByBlockNumberAndIndex(String[] params) throws IOException {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("gtni");
 			return;
 		}
-		String blockNumberStr = params[1];
-		if("-h".equals(blockNumberStr) || "--help".equals(blockNumberStr))
+		else if(params.length > 3)
 		{
+			HelpInfo.promptHelp("gtni");
+			return;
+		}
+		String blockNumberStr = params[1];
+		if ("-h".equals(blockNumberStr) || "--help".equals(blockNumberStr)) {
 			HelpInfo.getTransactionByBlockNumberAndIndexHelp();
 			return;
 		}
@@ -326,11 +497,11 @@ public class ConsoleImpl implements ConsoleFace{
 			HelpInfo.promptHelp("gtni");
 			return;
 		}
-		if(ConsoleUtils.isInvalidNumber(blockNumberStr, 0))
+		if (ConsoleUtils.isInvalidNumber(blockNumberStr, 0))
 			return;
 		BigInteger blockNumber = new BigInteger(blockNumberStr);
 		String indexStr = params[2];
-		if(ConsoleUtils.isInvalidNumber(indexStr, 1))
+		if (ConsoleUtils.isInvalidNumber(indexStr, 1))
 			return;
 		BigInteger index = new BigInteger(indexStr);
 		String transaction = web3j
@@ -339,16 +510,20 @@ public class ConsoleImpl implements ConsoleFace{
 		ConsoleUtils.printJson(transaction);
 		System.out.println();
 	}
-	
+
 	@Override
 	public void getTransactionReceipt(String[] params) throws IOException {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("gtr");
 			return;
 		}
-		String transactionHash = params[1];
-		if("-h".equals(transactionHash) || "--help".equals(transactionHash))
+		else if(params.length > 2)
 		{
+			HelpInfo.promptHelp("gtr");
+			return;
+		}
+		String transactionHash = params[1];
+		if ("-h".equals(transactionHash) || "--help".equals(transactionHash)) {
 			HelpInfo.getTransactionReceiptHelp();
 			return;
 		}
@@ -362,9 +537,24 @@ public class ConsoleImpl implements ConsoleFace{
 		ConsoleUtils.printJson(transactionReceipt);
 		System.out.println();
 	}
-	
+
 	@Override
-	public void getPendingTransactions() throws IOException {
+	public void getPendingTxSize(String[] params) throws IOException {
+		if(promptNoParams(params, "gpts"))
+		{
+			return;
+		}
+		String size = web3j.getPendingTxSize().sendForReturnString();
+		System.out.println(Numeric.decodeQuantity(size));
+		System.out.println();
+	}
+
+	@Override
+	public void getPendingTransactions(String[] params) throws IOException {
+		if(promptNoParams(params, "gpt"))
+		{
+			return;
+		}
 		String pendingTransactions = web3j.ethPendingTransaction().sendForReturnString();
 		if ("[]".equals(pendingTransactions))
 			System.out.println(pendingTransactions);
@@ -379,51 +569,168 @@ public class ConsoleImpl implements ConsoleFace{
 			HelpInfo.promptHelp("gc");
 			return;
 		}
-		String address = params[1];
-		if("-h".equals(address) || "--help".equals(address))
+		else if(params.length > 2)
 		{
+			HelpInfo.promptHelp("gc");
+			return;
+		}
+		String address = params[1];
+		if ("-h".equals(address) || "--help".equals(address)) {
 			HelpInfo.getCodeHelp();
 			return;
 		}
-		if (!address.startsWith("0x") || !(address.length() == 42)) {
-			System.out.println("This is an invalid address.");
+		if (ConsoleUtils.isInvalidAddress(address)) {
 			return;
 		}
 		String code = web3j.ethGetCode(address, DefaultBlockParameterName.LATEST).sendForReturnString();
 		if ("0x".equals(code)) {
 			System.out.println("This address doesn't exist.");
+			System.out.println();
 			return;
 		}
 		ConsoleUtils.printJson(code);
 		System.out.println();
 	}
-	
+
 	@Override
-	public void getTotalTransactionCount() throws IOException {
+	public void getTotalTransactionCount(String[] params) throws IOException {
+		if(promptNoParams(params, "gtc"))
+		{
+			return;
+		}
 		String transactionCount = web3j.getTotalTransactionCount().sendForReturnString();
 		JSONObject jo = JSONObject.parseObject(transactionCount);
-		jo.put("count", Numeric.decodeQuantity(jo.get("count").toString()));
-		jo.put("number", Numeric.decodeQuantity(jo.get("number").toString()));
+		jo.put("txSum", Numeric.decodeQuantity(jo.get("txSum").toString()));
+		jo.put("blockNumber", Numeric.decodeQuantity(jo.get("blockNumber").toString()));
 		ConsoleUtils.printJson(jo.toJSONString());
 		System.out.println();
 	}
-	
+
 	@Override
 	public void deploy(String[] params) throws Exception {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("d");
 			return;
 		}
-		if("-h".equals(params[1]) || "--help".equals(params[1]))
+		else if(params.length > 2)
 		{
-			HelpInfo.deployHelp();
-			return;
-		}
-		if (params.length < 3) {
 			HelpInfo.promptHelp("d");
 			return;
 		}
-		contractName = "org.fisco.bcos.temp." + params[1];
+		if ("-h".equals(params[1]) || "--help".equals(params[1])) {
+			HelpInfo.deployHelp();
+			return;
+		}
+		contractName = ConsoleUtils.getContractFullName(params[1]);
+		contractClass = ContractClassFactory.getContractClass(contractName);
+		Method deploy = contractClass.getMethod("deploy", Web3j.class, Credentials.class, BigInteger.class,
+				BigInteger.class);
+		remoteCall = (RemoteCall<?>) deploy.invoke(null, web3j, credentials, gasPrice, gasLimit);
+		Contract contract = (Contract) remoteCall.send();
+		contractAddress = contract.getContractAddress();
+		System.out.println(contractAddress);
+		System.out.println();
+	}
+
+	@Override
+	public void call(String[] params) throws Exception {
+		if (params.length < 2) {
+			HelpInfo.promptHelp("c");
+			return;
+		}
+		if ("-h".equals(params[1]) || "--help".equals(params[1])) {
+			HelpInfo.callHelp();
+			return;
+		}
+		if (params.length < 4) {
+			HelpInfo.promptHelp("c");
+			return;
+		}
+		contractName = ConsoleUtils.getContractFullName(params[1]);
+		contractClass = ContractClassFactory.getContractClass(contractName);
+		Method load = contractClass.getMethod("load", String.class, Web3j.class, Credentials.class, BigInteger.class,
+				BigInteger.class);
+		Object contractObject;
+
+		contractAddress = params[2];
+		if (ConsoleUtils.isInvalidAddress(contractAddress)) {
+			return;
+		}
+		contractObject = load.invoke(null, contractAddress, web3j, credentials, gasPrice, gasLimit);
+		Method[] methods = contractClass.getMethods();
+		String funcName = params[3];
+		boolean funcFlag = true;
+		for (Method method : methods) {
+			if(funcName.equals(method.getName()))
+			{
+				Class[] parameterType = ContractClassFactory.getParameterType(contractClass, funcName);
+				if(parameterType.length != params.length - 4)
+				{
+					continue;
+				}
+				else
+				{
+					funcFlag = false;
+					Method func = contractClass.getMethod(funcName, parameterType);
+					Object[] argobj = ContractClassFactory.getPrametersObject(parameterType, params);
+					String returnType = ContractClassFactory.getReturnType(contractClass, funcName);
+					remoteCall = (RemoteCall<?>) func.invoke(contractObject, argobj);
+					Object result;
+					result = remoteCall.send();
+					String resultStr;
+					resultStr = ContractClassFactory.getReturnObject(returnType, result);
+					System.out.println(resultStr);
+					System.out.println();
+					break;
+				}
+			}
+		}
+		if(funcFlag)
+		{
+			HelpInfo.promptNoFunc(params[1], funcName, params.length - 4);
+			return;
+		}
+
+	}
+
+	@Override
+	public void deployByCNS(String[] params) throws Exception {
+		if (params.length < 2) {
+			HelpInfo.promptHelp("dbc");
+			return;
+		}
+		else if(params.length > 3)
+		{
+			HelpInfo.promptHelp("dbc");
+			return;
+		}
+		if ("-h".equals(params[1]) || "--help".equals(params[1])) {
+			HelpInfo.deployByCNSHelp();
+			return;
+		}
+		if (params.length < 3) {
+			HelpInfo.promptHelp("dbc");
+			return;
+		}
+		AuthorityService authorityTableService = new AuthorityService();
+		List<Authority> authoritys = authorityTableService.query(Common.SYS_CNS, web3j, credentials);
+		boolean flag = false;
+		if (authoritys.size() == 0) {
+			flag = true;
+		} else {
+			for (Authority authority : authoritys) {
+				if ((credentials.getAddress()).equals(authority.getAddress())) {
+					flag = true;
+					break;
+				}
+			}
+		}
+		if (!flag) {
+			ConsoleUtils.printJson(PrecompiledCommon.transferToJson(-1));
+			System.out.println();
+			return;
+		}
+		contractName = ConsoleUtils.getContractFullName(params[1]);
 		contractClass = ContractClassFactory.getContractClass(contractName);
 		Method deploy = contractClass.getMethod("deploy", Web3j.class, Credentials.class, BigInteger.class,
 				BigInteger.class);
@@ -432,112 +739,370 @@ public class ConsoleImpl implements ConsoleFace{
 		contractAddress = contract.getContractAddress();
 		contractVersion = params[2];
 		// register cns
-		CnsResolver cnsResolver = new CnsResolver(web3j, credentials);
-		cnsResolver.registerCns(params[1], contractVersion, contractAddress, contract.getContractBinary());
-		
+		CnsService cnsService = new CnsService(web3j, credentials);
+		String result = cnsService.registerCns(params[1], contractVersion, contractAddress,
+				contract.getContractBinary());
+		ConsoleUtils.printJson(result);
 		System.out.println(contractAddress);
 		System.out.println();
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	@Override
-	public void call(String[] params) throws Exception {
+	public void callByCNS(String[] params) throws Exception {
 		if (params.length < 2) {
-			HelpInfo.promptHelp("c");
+			HelpInfo.promptHelp("cbc");
 			return;
 		}
-		if("-h".equals(params[1]) || "--help".equals(params[1]))
-		{
-			HelpInfo.callHelp();
+		if ("-h".equals(params[1]) || "--help".equals(params[1])) {
+			HelpInfo.callByCNSHelp();
 			return;
 		}
 		if (params.length < 4) {
-			HelpInfo.promptHelp("c");
+			HelpInfo.promptHelp("cbc");
 			return;
 		}
+		contractName = ConsoleUtils.getContractFullName(params[1]);
+		contractClass = ContractClassFactory.getContractClass(contractName);
 		Method load = contractClass.getMethod("load", String.class, Web3j.class, Credentials.class, BigInteger.class,
 				BigInteger.class);
 		Object contractObject;
-		
-		//get address from cns
+
+		// get address from cns
 		contractName = params[1];
 		contractVersion = params[2];
-		CnsResolver cnsResolver = new CnsResolver(web3j, credentials);
-		contractAddress = cnsResolver.resolve(contractName+":"+contractVersion);
-		
+		CnsService cnsResolver = new CnsService(web3j, credentials);
+		contractAddress = cnsResolver.getAddressByContractNameAndVersion(contractName + ":" + contractVersion);
 		contractObject = load.invoke(null, contractAddress, web3j, credentials, gasPrice, gasLimit);
-		Class[] parameterType = ContractClassFactory.getParameterType(contractClass, params[3]);
-		String returnType = ContractClassFactory.getReturnType(contractClass, params[3]);
-		Method func = contractClass.getMethod(params[1], parameterType);
-		Object[] argobj = ContractClassFactory.getPrametersObject(parameterType, params);
-		remoteCall = (RemoteCall<?>) func.invoke(contractObject, argobj);
-		Object result;
-		result = remoteCall.send();
-		String resultStr;
-		resultStr = ContractClassFactory.getReturnObject(returnType, result);
-		System.out.println(resultStr);
+		
+		Method[] methods = contractClass.getMethods();
+		String funcName = params[3];
+		boolean funcFlag = true;
+		for (Method method : methods) {
+			if(funcName.equals(method.getName()))
+			{
+				Class[] parameterType = ContractClassFactory.getParameterType(contractClass, funcName);
+				if(parameterType.length != params.length - 4)
+				{
+					continue;
+				}
+				else
+				{
+					funcFlag = false;
+					Method func = contractClass.getMethod(funcName, parameterType);
+					Object[] argobj = ContractClassFactory.getPrametersObject(parameterType, params);
+					String returnType = ContractClassFactory.getReturnType(contractClass, funcName);
+					remoteCall = (RemoteCall<?>) func.invoke(contractObject, argobj);
+					Object result;
+					result = remoteCall.send();
+					String resultStr;
+					resultStr = ContractClassFactory.getReturnObject(returnType, result);
+					System.out.println(resultStr);
+					System.out.println();
+					break;
+				}
+			}
+		}
+		if(funcFlag)
+		{
+			HelpInfo.promptNoFunc(params[1], funcName, params.length - 4);
+			return;
+		}
+		
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	public void queryCNS(String[] params) throws Exception {
+		if (params.length < 2) {
+			HelpInfo.promptHelp("qcs");
+			return;
+		}
+		else if(params.length > 3)
+		{
+			HelpInfo.promptHelp("qcs");
+			return;
+		}
+		if ("-h".equals(params[1]) || "--help".equals(params[1])) {
+			HelpInfo.queryCNSHelp();
+			return;
+		}
+
+		CnsService cnsService = new CnsService(web3j, credentials);
+		List<CNSInfo> cnsInfos = new ArrayList<>();
+		contractName = params[1];
+		if (params.length == 3) {
+			contractVersion = params[2];
+			cnsInfos = cnsService.queryCnsByNameAndVersion(contractName, contractVersion);
+		} else {
+			cnsInfos = cnsService.queryCnsByName(contractName);
+		}
+
+		if (cnsInfos.isEmpty()) {
+			System.out.println("Empty set.");
+			System.out.println();
+			return;
+		}
+		ConsoleUtils.singleLine();
+		String[] headers = { "version", "address" };
+		int size = cnsInfos.size();
+		String[][] data = new String[size][2];
+		for (int i = 0; i < size; i++) {
+			data[i][0] = cnsInfos.get(i).getVersion();
+			data[i][1] = cnsInfos.get(i).getAddress();
+		}
+		ColumnFormatter<String> cf = ColumnFormatter.text(Alignment.CENTER, 45);
+		Table table = Table.of(headers, data, cf);
+		System.out.println(table);
+		ConsoleUtils.singleLine();
+		System.out.println();
+	}
+
+	@Override
+	public void addMiner(String[] params) throws Exception {
+		if (params.length < 2) {
+			HelpInfo.promptHelp("am");
+			return;
+		}
+		else if(params.length > 2)
+		{
+			HelpInfo.promptHelp("am");
+			return;
+		}
+		String nodeID = params[1];
+		if ("-h".equals(nodeID) || "--help".equals(nodeID)) {
+			HelpInfo.addMinerHelp();
+			return;
+		}
+		if (nodeID.length() != 128) {
+			ConsoleUtils.printJson(PrecompiledCommon.transferToJson(-40));
+		} else {
+			ConsensusService consensusService = new ConsensusService();
+			String result = consensusService.addMiner(nodeID, web3j, credentials);
+			ConsoleUtils.printJson(result);
+		}
+		System.out.println();
+
+	}
+
+	@Override
+	public void addObserver(String[] params) throws Exception {
+
+		if (params.length < 2) {
+			HelpInfo.promptHelp("ao");
+			return;
+		}
+		else if(params.length > 2)
+		{
+			HelpInfo.promptHelp("ao");
+			return;
+		}
+		String nodeID = params[1];
+		if ("-h".equals(nodeID) || "--help".equals(nodeID)) {
+			HelpInfo.addObserverHelp();
+			return;
+		}
+		if (nodeID.length() != 128) {
+			ConsoleUtils.printJson(PrecompiledCommon.transferToJson(-40));
+		} else {
+			ConsensusService consensusService = new ConsensusService();
+			String result = consensusService.addObserver(nodeID, web3j, credentials);
+			ConsoleUtils.printJson(result);
+		}
+		System.out.println();
+
+	}
+
+	@Override
+	public void removeNode(String[] params) throws Exception {
+		if (params.length < 2) {
+			HelpInfo.promptHelp("rn");
+			return;
+		}
+		else if(params.length > 2)
+		{
+			HelpInfo.promptHelp("rn");
+			return;
+		}
+		String nodeID = params[1];
+		if ("-h".equals(nodeID) || "--help".equals(nodeID)) {
+			HelpInfo.removeNodeHelp();
+			return;
+		}
+		if (nodeID.length() != 128) {
+			ConsoleUtils.printJson(PrecompiledCommon.transferToJson(-40));
+		} else {
+			ConsensusService consensusService = new ConsensusService();
+			String result = consensusService.removeNode(nodeID, web3j, credentials);
+			ConsoleUtils.printJson(result);
+		}
+		System.out.println();
+
+	}
+
+	@Override
+	public void addAuthority(String[] params) throws Exception {
+		if (params.length < 2) {
+			HelpInfo.promptHelp("aa");
+			return;
+		}
+		else if(params.length > 3)
+		{
+			HelpInfo.promptHelp("aa");
+			return;
+		}
+		String tableName = params[1];
+		if ("-h".equals(tableName) || "--help".equals(tableName)) {
+			HelpInfo.addAuthorityHelp();
+			return;
+		}
+		if (params.length < 3) {
+			HelpInfo.promptHelp("aa");
+			return;
+		}
+		String addr = params[2];
+		if (ConsoleUtils.isInvalidAddress(addr)) {
+			return;
+		}
+		AuthorityService authority = new AuthorityService();
+		String result = authority.add(tableName, addr, web3j, credentials);
+		ConsoleUtils.printJson(result);
+		System.out.println();
+
+	}
+
+	@Override
+	public void removeAuthority(String[] params) throws Exception {
+		if (params.length < 2) {
+			HelpInfo.promptHelp("ra");
+			return;
+		}
+		else if(params.length > 3)
+		{
+			HelpInfo.promptHelp("ra");
+			return;
+		}
+		String tableName = params[1];
+		if ("-h".equals(tableName) || "--help".equals(tableName)) {
+			HelpInfo.removeAuthorityHelp();
+			return;
+		}
+		if (params.length < 3) {
+			HelpInfo.promptHelp("ra");
+			return;
+		}
+		String addr = params[2];
+		if (ConsoleUtils.isInvalidAddress(addr)) {
+			return;
+		}
+		AuthorityService authority = new AuthorityService();
+		String result = authority.remove(tableName, addr, web3j, credentials);
+		ConsoleUtils.printJson(result);
+		System.out.println();
+
+	}
+
+	@Override
+	public void queryAuthority(String[] params) throws Exception {
+		if (params.length < 2) {
+			HelpInfo.promptHelp("qa");
+			return;
+		}
+		else if(params.length > 3)
+		{
+			HelpInfo.promptHelp("qa");
+			return;
+		}
+		String tableName = params[1];
+		if ("-h".equals(tableName) || "--help".equals(tableName)) {
+			HelpInfo.queryAuthorityHelp();
+			return;
+		}
+		AuthorityService authorityTableService = new AuthorityService();
+		List<Authority> authoritys = authorityTableService.query(tableName, web3j, credentials);
+		if (authoritys.isEmpty()) {
+			System.out.println("Empty set.");
+			System.out.println();
+			return;
+		}
+		ConsoleUtils.singleLine();
+		String[] headers = { "address", "enable_num" };
+		int size = authoritys.size();
+		String[][] data = new String[size][2];
+		for (int i = 0; i < size; i++) {
+			data[i][0] = authoritys.get(i).getAddress();
+			data[i][1] = authoritys.get(i).getEnableNum();
+		}
+		ColumnFormatter<String> cf = ColumnFormatter.text(Alignment.CENTER, 45);
+		Table table = Table.of(headers, data, cf);
+		System.out.println(table);
+		ConsoleUtils.singleLine();
+		System.out.println();
+	}
+
+	@Override
+	public void setSystemConfigByKey(String[] params) throws Exception {
+		if (params.length < 2) {
+			HelpInfo.promptHelp("ssc");
+			return;
+		}
+		else if(params.length > 3)
+		{
+			HelpInfo.promptHelp("ssc");
+			return;
+		}
+		String key = params[1];
+		if ("-h".equals(key) || "--help".equals(key)) {
+			HelpInfo.setSystemConfigByKeyHelp();
+			return;
+		}
+		if (params.length < 3) {
+			HelpInfo.promptHelp("ssc");
+			return;
+		}
+		String value = params[2];
+
+		String[] args = { "setSystemConfig", key, value };
+		SystemConfigSerivce systemConfigSerivce = new SystemConfigSerivce();
+		String result = systemConfigSerivce.SetValueByKey(key, value, web3j, credentials);
+		ConsoleUtils.printJson(result);
+		System.out.println();
+	}
+
+	@Override
+	public void getSystemConfigByKey(String[] params) throws Exception {
+		if (params.length < 2) {
+			HelpInfo.promptHelp("gsc");
+			return;
+		}
+		else if(params.length > 2)
+		{
+			HelpInfo.promptHelp("gsc");
+			return;
+		}
+		String key = params[1];
+		if ("-h".equals(key) || "--help".equals(key)) {
+			HelpInfo.getSystemConfigByKeyHelp();
+			return;
+		}
+		String[] args = { "getSystemConfigByKey", key };
+		String value = web3j.getSystemConfigByKey(key).sendForReturnString();
+		System.out.println(value);
 		System.out.println();
 	}
 	
 	@Override
-	public void removePbft(String[] params) throws Exception {
-
-		if (params.length < 2) {
-			HelpInfo.promptHelp("rp");
-			return;
-		}
-		String nodeID = params[1];
-		if("-h".equals(nodeID) || "--help".equals(nodeID))
+	public void quit(String[] params) throws IOException {
+		if(promptNoParams(params, "q"))
 		{
-			HelpInfo.removePbftHelp();
 			return;
 		}
-		List<String> minerList = web3j.getMinerList().send().getResult();
-		List<String> observerList = web3j.getObserverList().send().getResult();
-		if (nodeID.length() != 128) {
-			System.out.println("This is an invalid nodeID.");
-		} else if (observerList.contains(nodeID)) {
-			System.out.println("The node is already a pbft observer node.");
-		} else if (!minerList.contains(nodeID)) {
-			System.out.println("This is not a pbft sealer node.");
-		} else {
-			String[] args = { "pbft", "remove", nodeID };
-			UpdatePBFTNode pbft = new UpdatePBFTNode();
-			pbft.call(args, web3j, credentials, service.getGroupId());
-			System.out.println("Remove " + nodeID.substring(0, 8) + "..." + " to a pbft sealer of group "
-					+ service.getGroupId() + " successful.");
-		}
-
-	}
-	
-	@Override
-	public void addPbft(String[] params) throws Exception {
-		if (params.length < 2) {
-			HelpInfo.promptHelp("ap");
-			return;
-		}
-		String nodeID = params[1];
-		if("-h".equals(nodeID) || "--help".equals(nodeID))
+		else if(params.length > 2)
 		{
-			HelpInfo.addPbftHelp();
+			HelpInfo.promptHelp("q");
 			return;
 		}
-		List<String> minerList = web3j.getMinerList().send().getResult();
-		List<String> observerList = web3j.getObserverList().send().getResult();
-		if (nodeID.length() != 128) {
-			System.out.println("This is an invalid nodeID.");
-		} else if (minerList.contains(nodeID)) {
-			System.out.println("The node is already a pbft sealer node.");
-		} else if (!observerList.contains(nodeID)) {
-			System.out.println("This is not a pbft observer node.");
-		} else {
-			String[] args = { "pbft", "add", nodeID };
-			UpdatePBFTNode pbft = new UpdatePBFTNode();
-			pbft.call(args, web3j, credentials, service.getGroupId());
-			System.out.println("Add " + nodeID.substring(0, 8) + "..." + " to a pbft sealer of group "
-					+ service.getGroupId() + " successful.");
-		}
-
+		channelEthereumService.close();
+		System.exit(0);
 	}
-
 }
