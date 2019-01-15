@@ -4,7 +4,7 @@ public class HelpInfo {
 	
 	public static void promptHelp(String command) 
 	{
-		System.out.println("Try '"+ command +" --help' for more information.");
+		System.out.println("Try '"+ command +" -h or --help' for more information.");
 		System.out.println();
 	}
 	
@@ -89,7 +89,7 @@ public class HelpInfo {
 	
 	public static void getMinerListHelp() 
 	{
-		System.out.println(" Query the pbft miner nodes.");
+		System.out.println("Query the pbft miner nodes.");
 		System.out.println("Usage: gml");
 	}
 	
@@ -316,4 +316,17 @@ public class HelpInfo {
 		System.out.println("contractVersion -- (optional) A version for a contract.");
 		System.out.println();
 	}
+
+	public static void promptNoFunc(String contractName, String funcName, int lenParams) {
+		if(lenParams <= 1)
+		{
+			System.out.println("The method "+ funcName + " with " + lenParams + " parameter" + " is undefined for the contract "+ contractName+".");
+		}
+		else
+		{
+			System.out.println("The method "+ funcName + " with " + lenParams + " parameters" + " is undefined for the contract "+ contractName+".");
+		}
+		System.out.println();
+	}
+
 }

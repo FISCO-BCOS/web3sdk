@@ -53,7 +53,7 @@ public class CnsService {
         return syncThreshold;
     }
 
-    public String resolve(String contractNameAndVersion) {
+    public String getAddressByContractNameAndVersion(String contractNameAndVersion) {
 
         if (!isValidCnsName(contractNameAndVersion)) {
              return contractNameAndVersion;
@@ -117,8 +117,8 @@ public class CnsService {
     private List<CNSInfo> jsonToCNSInfos(String contractAddressInfo) throws IOException {
 
         ObjectMapper objectMapper = ObjectMapperFactory.getObjectMapper();
-        List<CNSInfo> cNSInfo = objectMapper.readValue(contractAddressInfo, objectMapper.getTypeFactory().constructCollectionType(List.class, CNSInfo.class));
-        return cNSInfo;
+        List<CNSInfo> cnsInfo = objectMapper.readValue(contractAddressInfo, objectMapper.getTypeFactory().constructCollectionType(List.class, CNSInfo.class));
+        return cnsInfo;
     }
 
     public CnsTable lookupResolver() {
