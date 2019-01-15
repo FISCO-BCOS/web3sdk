@@ -67,15 +67,15 @@ public class CnsServiceTest extends TestBase {
         System.out.println("result:" +result);
         System.out.println("CNS NAME   " + name+":9.0" );
         System.out.println("CNS register SUCCESSFULLY");
-        System.out.println( "cnsResolver address" + cnsService.resolve(name +":10.0"));
-        System.out.println( "cnsResolver address" + cnsService.resolve(name ));
-        System.out.println( "cnsResolver address" + cnsService.resolve(okDemo.getContractAddress() ));
+        System.out.println( "cnsResolver address" + cnsService.getAddressByContractNameAndVersion(name +":10.0"));
+        System.out.println( "cnsResolver address" + cnsService.getAddressByContractNameAndVersion(name ));
+        System.out.println( "cnsResolver address" + cnsService.getAddressByContractNameAndVersion(okDemo.getContractAddress() ));
 
         Ok okLoaded =  Ok.load(name,web3j, credentials, gasPrice, gasLimit);
         System.out.println(okLoaded.isValid());
         BigInteger balance = okLoaded.get().send();
         System.out.println("balance = "  + balance );
-        assertEquals(cnsService.resolve(name +":10.0"),okDemo.getContractAddress());
+        assertEquals(cnsService.getAddressByContractNameAndVersion(name +":10.0"),okDemo.getContractAddress());
 
     }
 
