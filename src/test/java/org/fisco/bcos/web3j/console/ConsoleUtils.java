@@ -1,5 +1,7 @@
 package org.fisco.bcos.web3j.console;
 
+import org.fisco.bcos.web3j.crypto.EncryptType;
+
 public class ConsoleUtils {
 
 	public static void main(String[] args) {
@@ -114,6 +116,26 @@ public class ConsoleUtils {
 		 {
 			 return false;
 		 }
+	}
+	
+	public static String getContractFullName(String contractName) {
+		String contractFullName = "";
+		if("Ok".equals(contractName))
+		{
+			if(EncryptType.encryptType == 0)
+			{
+				contractFullName = "org.fisco.bcos.channel.test.contract.Ok";
+			}
+			else
+			{
+				contractFullName = "org.fisco.bcos.channel.test.guomi.Ok";
+			}
+		}
+		else
+		{
+			contractFullName = "org.fisco.bcos.temp." + contractName;
+		}
+		return contractFullName;
 	}
 	
 	public static void singleLine() {
