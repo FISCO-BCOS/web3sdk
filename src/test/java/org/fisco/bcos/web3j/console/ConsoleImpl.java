@@ -16,6 +16,7 @@ import org.fisco.bcos.web3j.precompile.config.SystemConfigSerivce;
 import org.fisco.bcos.web3j.precompile.consensus.ConsensusService;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.crypto.ECKeyPair;
+import org.fisco.bcos.web3j.crypto.EncryptType;
 import org.fisco.bcos.web3j.crypto.Keys;
 import org.fisco.bcos.web3j.crypto.gm.GenCredential;
 import org.fisco.bcos.web3j.protocol.Web3j;
@@ -620,7 +621,7 @@ public class ConsoleImpl implements ConsoleFace {
 			HelpInfo.deployHelp();
 			return;
 		}
-		contractName = "org.fisco.bcos.temp." + params[1];
+		contractName = ConsoleUtils.getContractFullName(params[1]);
 		contractClass = ContractClassFactory.getContractClass(contractName);
 		Method deploy = contractClass.getMethod("deploy", Web3j.class, Credentials.class, BigInteger.class,
 				BigInteger.class);
@@ -645,7 +646,7 @@ public class ConsoleImpl implements ConsoleFace {
 			HelpInfo.promptHelp("c");
 			return;
 		}
-		contractName = "org.fisco.bcos.temp." + params[1];
+		contractName = ConsoleUtils.getContractFullName(params[1]);
 		contractClass = ContractClassFactory.getContractClass(contractName);
 		Method load = contractClass.getMethod("load", String.class, Web3j.class, Credentials.class, BigInteger.class,
 				BigInteger.class);
@@ -729,7 +730,7 @@ public class ConsoleImpl implements ConsoleFace {
 			System.out.println();
 			return;
 		}
-		contractName = "org.fisco.bcos.temp." + params[1];
+		contractName = ConsoleUtils.getContractFullName(params[1]);
 		contractClass = ContractClassFactory.getContractClass(contractName);
 		Method deploy = contractClass.getMethod("deploy", Web3j.class, Credentials.class, BigInteger.class,
 				BigInteger.class);
@@ -761,7 +762,7 @@ public class ConsoleImpl implements ConsoleFace {
 			HelpInfo.promptHelp("cbc");
 			return;
 		}
-		contractName = "org.fisco.bcos.temp." + params[1];
+		contractName = ConsoleUtils.getContractFullName(params[1]);
 		contractClass = ContractClassFactory.getContractClass(contractName);
 		Method load = contractClass.getMethod("load", String.class, Web3j.class, Credentials.class, BigInteger.class,
 				BigInteger.class);
