@@ -47,7 +47,6 @@ public class PerfomanceOk2 {
 
 		BigInteger gasPrice = new BigInteger("30000000");
 		BigInteger gasLimit = new BigInteger("30000000");
-		BigInteger initialWeiValue = new BigInteger("0");
 
 
 		String command = args[0];
@@ -62,7 +61,7 @@ public class PerfomanceOk2 {
 		threadPool.initialize();
 
 		System.out.println("deploy contract");
-		Ok ok = Ok.deploy(web3, credentials, gasPrice, gasLimit, initialWeiValue).send();
+		Ok ok = Ok.deploy(web3, credentials, gasPrice, gasLimit).send();
 
 		switch (command) {
 			case "trans":

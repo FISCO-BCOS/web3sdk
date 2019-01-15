@@ -19,12 +19,11 @@ public class CnsServiceTest extends TestBase {
 
     java.math.BigInteger gasPrice = new BigInteger("300000000");
     java.math.BigInteger gasLimit = new BigInteger("300000000");
-    java.math.BigInteger initialWeiValue = new BigInteger("0");
 
     @Test
     public void getContractAddressFromNameAndVersion() throws Exception {
 
-        Ok okDemo = Ok.deploy(web3j, credentials, gasPrice, gasLimit, initialWeiValue).send();
+        Ok okDemo = Ok.deploy(web3j, credentials, gasPrice, gasLimit).send();
         System.out.println("okdemo contract address " + okDemo.getContractAddress());
         int random = new Random().nextInt(1000);
         String name = "hello world" + random;
