@@ -1,6 +1,6 @@
 package org.fisco.bcos.web3j.precompile.cns;
 
-public class CNSInfo {
+public class CnsInfo {
 	
 	private String name;
 	private String version;
@@ -8,12 +8,12 @@ public class CNSInfo {
 	private String abi;
 	
 	
-	public CNSInfo() {
+	public CnsInfo() {
 		super();
 	}
 
 
-	public CNSInfo(String name, String version, String address, String abi) {
+	public CnsInfo(String name, String version, String address, String abi) {
 		super();
 		this.name = name;
 		this.version = version;
