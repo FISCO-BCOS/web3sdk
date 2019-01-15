@@ -771,7 +771,7 @@ public class ConsoleImpl implements ConsoleFace {
 		contractName = params[1];
 		contractVersion = params[2];
 		CnsService cnsResolver = new CnsService(web3j, credentials);
-		contractAddress = cnsResolver.resolve(contractName + ":" + contractVersion);
+		contractAddress = cnsResolver.getAddressByContractNameAndVersion(contractName + ":" + contractVersion);
 		contractObject = load.invoke(null, contractAddress, web3j, credentials, gasPrice, gasLimit);
 		
 		Method[] methods = contractClass.getMethods();
