@@ -10,6 +10,8 @@ import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import static java.lang.System.exit;
+
 class PrecompileManager {
 
     //TODO: load from configuration
@@ -44,5 +46,6 @@ class PrecompileManager {
         } else {
             System.out.println("Invalid Param, please provide pbft, authority or setSystemConfig.");
         }
+        exit(0);
     }
 }
