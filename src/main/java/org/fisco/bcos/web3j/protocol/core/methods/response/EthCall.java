@@ -11,15 +11,15 @@ import java.util.List;
 public class EthCall extends Response<EthCall.CallOutput> {
 
     public static class CallOutput {
-        private String number;
+        private String currentBlockNumber;
         private String output;
 
-        public String getNumber() {
-            return number;
+        public String getCurrentBlockNumber() {
+            return currentBlockNumber;
         }
 
-        public void setNumber(String number) {
-            this.number = number;
+        public void setCurrentBlockNumber(String number) {
+            this.currentBlockNumber = number;
         }
 
         public String getOutput() {

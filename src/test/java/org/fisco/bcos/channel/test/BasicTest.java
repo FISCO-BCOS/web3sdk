@@ -4,10 +4,8 @@ import org.fisco.bcos.channel.test.contract.Ok;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthPeerList;
-import org.fisco.bcos.web3j.protocol.core.methods.response.GroupList;
-import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
-import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.fisco.bcos.web3j.protocol.core.methods.response.*;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -20,8 +18,8 @@ import static org.junit.Assert.assertTrue;
 public class BasicTest extends TestBase {
     private static BigInteger gasPrice = new BigInteger("300000000");
     private static BigInteger gasLimit = new BigInteger("300000000");
-    private static BigInteger initialWeiValue = new BigInteger("0");
 
+    @Ignore
     @Test
     public void  pbftViewTest() throws Exception {
        int i =  web3j.ethPbftView().send().getEthPbftView().intValue();
@@ -43,15 +41,17 @@ public class BasicTest extends TestBase {
 
     @Test
     public void  versionTest() throws Exception {
-        System.out.println(web3j.web3ClientVersion().send().getWeb3ClientVersion());
-        assertNotNull(web3j.web3ClientVersion().send().getWeb3ClientVersion());
+        String web3ClientVersion = web3j.web3ClientVersion().sendForReturnString();
+		System.out.println(web3ClientVersion);
+        assertNotNull(web3ClientVersion);
     }
 
     //getPeers
+    @Ignore
     @Test
     public void  peersTest() throws Exception {
-        String ethPeers = web3j.ethPeersInfo().sendForReturnString();
-        System.out.println(ethPeers);
+        EthPeers ethPeers = web3j.ethPeersInfo().send();
+        System.out.println(ethPeers.getValue().get(0).getNodeID());
         assertNotNull(ethPeers);
     }
 
@@ -80,6 +80,7 @@ public class BasicTest extends TestBase {
         assertTrue(transactions.size()>=0);
     }
 
+    @Ignore
     @Test
     public void getTransactionByBlockNumberAndIndexTest() throws IOException {
        Transaction transaction =  web3j.ethGetTransactionByBlockNumberAndIndex(DefaultBlockParameter.valueOf(new BigInteger("1")),new BigInteger("0")).send().getTransaction().get();
@@ -97,7 +98,7 @@ public class BasicTest extends TestBase {
     }
 
     private void testDeployContract(Web3j web3j, Credentials credentials) throws Exception {
-        Ok okDemo = Ok.deploy(web3j, credentials, gasPrice, gasLimit, initialWeiValue).send();
+        Ok okDemo = Ok.deploy(web3j, credentials, gasPrice, gasLimit).send();
         if (okDemo != null) {
             System.out.println("####get nonce from Block: " + web3j.ethGetBlockByNumber(DefaultBlockParameter.valueOf(new BigInteger("0")), true).send().getBlock().getNonce());
             System.out.println("####get block number by index from Block: " + web3j.ethGetBlockByNumber(DefaultBlockParameter.valueOf(new BigInteger("1")), true).send().getBlock().getNumber());

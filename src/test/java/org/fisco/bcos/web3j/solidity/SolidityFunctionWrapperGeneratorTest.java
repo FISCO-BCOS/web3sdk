@@ -62,7 +62,6 @@ public class SolidityFunctionWrapperGeneratorTest {
 
     @Test
     public void compileSolFilesToJavaTest() throws IOException {
-
         File solFileList = new File("src/test/resources/contract");
         File[] solFiles = solFileList.listFiles();
 
