@@ -18,7 +18,6 @@ import static org.junit.Assert.assertTrue;
 public class BasicTest extends TestBase {
     private static BigInteger gasPrice = new BigInteger("300000000");
     private static BigInteger gasLimit = new BigInteger("300000000");
-    private static BigInteger initialWeiValue = new BigInteger("0");
 
     @Ignore
     @Test
@@ -99,7 +98,7 @@ public class BasicTest extends TestBase {
     }
 
     private void testDeployContract(Web3j web3j, Credentials credentials) throws Exception {
-        Ok okDemo = Ok.deploy(web3j, credentials, gasPrice, gasLimit, initialWeiValue).send();
+        Ok okDemo = Ok.deploy(web3j, credentials, gasPrice, gasLimit).send();
         if (okDemo != null) {
             System.out.println("####get nonce from Block: " + web3j.ethGetBlockByNumber(DefaultBlockParameter.valueOf(new BigInteger("0")), true).send().getBlock().getNonce());
             System.out.println("####get block number by index from Block: " + web3j.ethGetBlockByNumber(DefaultBlockParameter.valueOf(new BigInteger("1")), true).send().getBlock().getNumber());

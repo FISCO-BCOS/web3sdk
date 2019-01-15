@@ -26,13 +26,12 @@ public class OkTest extends TestBase {
     public String contractAddress;
     public java.math.BigInteger gasPrice = new BigInteger("300000000");
     public java.math.BigInteger gasLimit = new BigInteger("300000000");
-    public java.math.BigInteger initialWeiValue = new BigInteger("0");
 
     @Test
     public void testOkContract() throws Exception {
 
 
-        Ok okDemo = Ok.deploy(web3j, credentials, gasPrice, gasLimit, initialWeiValue).send();
+        Ok okDemo = Ok.deploy(web3j, credentials, gasPrice, gasLimit).send();
 
         if (okDemo != null) {
             System.out.println("####contract address is: " + okDemo.getContractAddress());
@@ -54,12 +53,12 @@ public class OkTest extends TestBase {
 
         contractName = "org.fisco.bcos.channel.test.contract." + "Ok";
             contractClass = ContractClassFactory.getContractClass(contractName);
-            Method deploy = contractClass.getMethod("deploy", Web3j.class, Credentials.class, BigInteger.class, BigInteger.class, BigInteger.class);
-            Method deploy1 = contractClass.getDeclaredMethod("deploy",Web3j.class, Credentials.class, BigInteger.class, BigInteger.class, BigInteger.class);
+            Method deploy = contractClass.getMethod("deploy", Web3j.class, Credentials.class, BigInteger.class, BigInteger.class);
+            Method deploy1 = contractClass.getDeclaredMethod("deploy",Web3j.class, Credentials.class, BigInteger.class, BigInteger.class);
         //    Object obj = contractClass.newInstance();
             // Method m =  contractClass.getMethod("get",)
             //     m.invoke()
-            remoteCall = (RemoteCall<?>) deploy.invoke(null, web3j, credentials, gasPrice, gasLimit, initialWeiValue);
+            remoteCall = (RemoteCall<?>) deploy.invoke(null, web3j, credentials, gasPrice, gasLimit);
             Contract contract = (Contract) remoteCall.send();
             contractAddress = contract.getContractAddress();
             System.out.println(contractAddress);
