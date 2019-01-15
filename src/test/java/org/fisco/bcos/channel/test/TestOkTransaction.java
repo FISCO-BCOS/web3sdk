@@ -36,7 +36,7 @@ public class TestOkTransaction {
         if ("deploy".equals(method)) {
             System.out.println("####create credential succ, begin deploy contract");
 
-            final Ok okDemo = Ok.deploy(web3, credentials, gasPrice, gasLimit, initialWeiValue).send();
+            final Ok okDemo = Ok.deploy(web3, credentials, gasPrice, gasLimit).send();
             if (okDemo != null) {
                 System.out.println("deploy success , contract address is: " + okDemo.getContractAddress());
             }
