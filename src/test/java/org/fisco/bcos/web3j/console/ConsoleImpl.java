@@ -346,8 +346,23 @@ public class ConsoleImpl implements ConsoleFace {
 		if (ConsoleUtils.isInvalidHash(blockHash))
 			return;
 		boolean flag = false;
-		if (params.length == 3 && "true".equals(params[2]))
-			flag = true;
+		if(params.length == 3)
+		{
+			if("true".equals(params[2]))
+			{
+				flag = true;
+			}
+			else if("false".equals(params[2]))
+			{
+				flag = false;
+			}
+			else
+			{
+				System.out.println("Please provide true or false for the second parameter.");
+				System.out.println();
+				return;
+			}
+		}
 		String block = web3j.ethGetBlockByHash(blockHash, flag).sendForReturnString();
 		ConsoleUtils.printJson(block);
 		System.out.println();
@@ -377,14 +392,28 @@ public class ConsoleImpl implements ConsoleFace {
 		BigInteger blockNumber2 = Numeric.decodeQuantity(blockNumberStr2);
 		if(blockNumber1.compareTo(blockNumber2) == 1)
 		{
-			ConsoleUtils.printJson(
-					"{\"code\":" + 4 + ", \"msg\":" + "\"BlockNumber does not exist\"}");
+			System.out.println("BlockNumber does not exist.");
 			System.out.println();
 			return;
 		}
 		boolean flag = false;
-		if (params.length == 3 && "true".equals(params[2]))
-			flag = true;
+		if(params.length == 3)
+		{
+			if("true".equals(params[2]))
+			{
+				flag = true;
+			}
+			else if("false".equals(params[2]))
+			{
+				flag = false;
+			}
+			else
+			{
+				System.out.println("Please provide true or false for the second parameter.");
+				System.out.println();
+				return;
+			}
+		}
 		String block = web3j.ethGetBlockByNumber(DefaultBlockParameter.valueOf(blockNumber1), flag)
 				.sendForReturnString();
 		ConsoleUtils.printJson(block);
