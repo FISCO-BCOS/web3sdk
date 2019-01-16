@@ -44,7 +44,7 @@ public class DagTransferService {
 	private static BigInteger gasLimit = new BigInteger("300000000");
 	private static String dagTransferPrecompileAddress = "0x000000000000000000000000000000000000ffff";
 	
-	private static jdk.internal.instrumentation.Logger logger = LoggerFactory.getLogger(DagTransferService.class);
+	private static Logger logger = LoggerFactory.getLogger(DagTransferService.class);
 	
 	private DagTransfer dagTransfer;
 
