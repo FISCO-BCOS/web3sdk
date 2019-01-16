@@ -7,9 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.fisco.bcos.channel.client.Service;
-import org.fisco.bcos.web3j.precompile.authority.Authority;
+import org.fisco.bcos.web3j.precompile.authority.AuthorityInfo;
 import org.fisco.bcos.web3j.precompile.authority.AuthorityService;
-import org.fisco.bcos.web3j.precompile.cns.CNSInfo;
+import org.fisco.bcos.web3j.precompile.cns.CnsInfo;
 import org.fisco.bcos.web3j.precompile.cns.CnsService;
 import org.fisco.bcos.web3j.precompile.common.PrecompiledCommon;
 import org.fisco.bcos.web3j.precompile.config.SystemConfigSerivce;
@@ -346,8 +346,23 @@ public class ConsoleImpl implements ConsoleFace {
 		if (ConsoleUtils.isInvalidHash(blockHash))
 			return;
 		boolean flag = false;
-		if (params.length == 3 && "true".equals(params[2]))
-			flag = true;
+		if(params.length == 3)
+		{
+			if("true".equals(params[2]))
+			{
+				flag = true;
+			}
+			else if("false".equals(params[2]))
+			{
+				flag = false;
+			}
+			else
+			{
+				System.out.println("Please provide true or false for the second parameter.");
+				System.out.println();
+				return;
+			}
+		}
 		String block = web3j.ethGetBlockByHash(blockHash, flag).sendForReturnString();
 		ConsoleUtils.printJson(block);
 		System.out.println();
@@ -377,14 +392,28 @@ public class ConsoleImpl implements ConsoleFace {
 		BigInteger blockNumber2 = Numeric.decodeQuantity(blockNumberStr2);
 		if(blockNumber1.compareTo(blockNumber2) == 1)
 		{
-			ConsoleUtils.printJson(
-					"{\"code\":" + 4 + ", \"msg\":" + "\"BlockNumber does not exist\"}");
+			System.out.println("BlockNumber does not exist.");
 			System.out.println();
 			return;
 		}
 		boolean flag = false;
-		if (params.length == 3 && "true".equals(params[2]))
-			flag = true;
+		if(params.length == 3)
+		{
+			if("true".equals(params[2]))
+			{
+				flag = true;
+			}
+			else if("false".equals(params[2]))
+			{
+				flag = false;
+			}
+			else
+			{
+				System.out.println("Please provide true or false for the second parameter.");
+				System.out.println();
+				return;
+			}
+		}
 		String block = web3j.ethGetBlockByNumber(DefaultBlockParameter.valueOf(blockNumber1), flag)
 				.sendForReturnString();
 		ConsoleUtils.printJson(block);
@@ -712,13 +741,13 @@ public class ConsoleImpl implements ConsoleFace {
 			HelpInfo.promptHelp("dbc");
 			return;
 		}
-		AuthorityService authorityTableService = new AuthorityService();
-		List<Authority> authoritys = authorityTableService.query(Common.SYS_CNS, web3j, credentials);
+		AuthorityService authorityTableService = new AuthorityService(web3j, credentials);
+		List<AuthorityInfo> authoritys = authorityTableService.query(Common.SYS_CNS);
 		boolean flag = false;
 		if (authoritys.size() == 0) {
 			flag = true;
 		} else {
-			for (Authority authority : authoritys) {
+			for (AuthorityInfo authority : authoritys) {
 				if ((credentials.getAddress()).equals(authority.getAddress())) {
 					flag = true;
 					break;
@@ -829,7 +858,7 @@ public class ConsoleImpl implements ConsoleFace {
 		}
 
 		CnsService cnsService = new CnsService(web3j, credentials);
-		List<CNSInfo> cnsInfos = new ArrayList<>();
+		List<CnsInfo> cnsInfos = new ArrayList<>();
 		contractName = params[1];
 		if (params.length == 3) {
 			contractVersion = params[2];
@@ -877,8 +906,8 @@ public class ConsoleImpl implements ConsoleFace {
 		if (nodeID.length() != 128) {
 			ConsoleUtils.printJson(PrecompiledCommon.transferToJson(-40));
 		} else {
-			ConsensusService consensusService = new ConsensusService();
-			String result = consensusService.addMiner(nodeID, web3j, credentials);
+			ConsensusService consensusService = new ConsensusService(web3j, credentials);
+			String result = consensusService.addMiner(nodeID);
 			ConsoleUtils.printJson(result);
 		}
 		System.out.println();
@@ -905,8 +934,8 @@ public class ConsoleImpl implements ConsoleFace {
 		if (nodeID.length() != 128) {
 			ConsoleUtils.printJson(PrecompiledCommon.transferToJson(-40));
 		} else {
-			ConsensusService consensusService = new ConsensusService();
-			String result = consensusService.addObserver(nodeID, web3j, credentials);
+			ConsensusService consensusService = new ConsensusService(web3j, credentials);
+			String result = consensusService.addObserver(nodeID);
 			ConsoleUtils.printJson(result);
 		}
 		System.out.println();
@@ -932,8 +961,8 @@ public class ConsoleImpl implements ConsoleFace {
 		if (nodeID.length() != 128) {
 			ConsoleUtils.printJson(PrecompiledCommon.transferToJson(-40));
 		} else {
-			ConsensusService consensusService = new ConsensusService();
-			String result = consensusService.removeNode(nodeID, web3j, credentials);
+			ConsensusService consensusService = new ConsensusService(web3j, credentials);
+			String result = consensusService.removeNode(nodeID);
 			ConsoleUtils.printJson(result);
 		}
 		System.out.println();
@@ -964,8 +993,8 @@ public class ConsoleImpl implements ConsoleFace {
 		if (ConsoleUtils.isInvalidAddress(addr)) {
 			return;
 		}
-		AuthorityService authority = new AuthorityService();
-		String result = authority.add(tableName, addr, web3j, credentials);
+		AuthorityService authority = new AuthorityService(web3j, credentials);
+		String result = authority.add(tableName, addr);
 		ConsoleUtils.printJson(result);
 		System.out.println();
 
@@ -995,8 +1024,8 @@ public class ConsoleImpl implements ConsoleFace {
 		if (ConsoleUtils.isInvalidAddress(addr)) {
 			return;
 		}
-		AuthorityService authority = new AuthorityService();
-		String result = authority.remove(tableName, addr, web3j, credentials);
+		AuthorityService authority = new AuthorityService(web3j, credentials);
+		String result = authority.remove(tableName, addr);
 		ConsoleUtils.printJson(result);
 		System.out.println();
 
@@ -1018,8 +1047,8 @@ public class ConsoleImpl implements ConsoleFace {
 			HelpInfo.queryAuthorityHelp();
 			return;
 		}
-		AuthorityService authorityTableService = new AuthorityService();
-		List<Authority> authoritys = authorityTableService.query(tableName, web3j, credentials);
+		AuthorityService authorityTableService = new AuthorityService(web3j, credentials);
+		List<AuthorityInfo> authoritys = authorityTableService.query(tableName);
 		if (authoritys.isEmpty()) {
 			System.out.println("Empty set.");
 			System.out.println();
@@ -1063,8 +1092,8 @@ public class ConsoleImpl implements ConsoleFace {
 		String value = params[2];
 
 		String[] args = { "setSystemConfig", key, value };
-		SystemConfigSerivce systemConfigSerivce = new SystemConfigSerivce();
-		String result = systemConfigSerivce.SetValueByKey(key, value, web3j, credentials);
+		SystemConfigSerivce systemConfigSerivce = new SystemConfigSerivce(web3j, credentials);
+		String result = systemConfigSerivce.setValueByKey(key, value);
 		ConsoleUtils.printJson(result);
 		System.out.println();
 	}
