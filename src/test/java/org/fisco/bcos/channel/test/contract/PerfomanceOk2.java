@@ -6,6 +6,7 @@ import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.fisco.bcos.web3j.utils.BlockLimit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -25,6 +26,7 @@ public class PerfomanceOk2 {
 	private static AtomicInteger sended = new AtomicInteger(0);
 
 	public static void main(String[] args) throws Exception {
+		BlockLimit.blockLimit = 1000;
 		String groupId = args[3];
 		//初始化Service
 		ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");

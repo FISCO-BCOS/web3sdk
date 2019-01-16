@@ -75,7 +75,7 @@ public class JsonRpc2_0Web3j implements Web3j {
 
                     CompletableFuture<EthBlockNumber> ifuture = ethBlockNumber().sendAsync();
 
-                    EthBlockNumber ethBlockNumber = ifuture.get(100000, TimeUnit.MILLISECONDS);
+                    EthBlockNumber ethBlockNumber = ifuture.get(10000, TimeUnit.MILLISECONDS);
                     setBlockNumber(ethBlockNumber.getBlockNumber());
                 } catch (Exception e) {
                     logger.error("getblocknumber's request id is : " +  irequest.getId() );
@@ -83,7 +83,7 @@ public class JsonRpc2_0Web3j implements Web3j {
                 }
             }
         };
-        scheduleService.scheduleAtFixedRate(runnable,1,500,TimeUnit.SECONDS);
+        scheduleService.scheduleAtFixedRate(runnable,1,100,TimeUnit.SECONDS);
 
     }
 
