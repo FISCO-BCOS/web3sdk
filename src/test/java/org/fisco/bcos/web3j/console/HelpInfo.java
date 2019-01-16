@@ -38,6 +38,9 @@ public class HelpInfo {
 		case "gps":
 			getPeersHelp();
 			break;
+		case "gnl":
+			getNodeIDListHelp();
+			break;
 		case "ggp":
 			getGroupPeersHelp();
 			break;
@@ -83,13 +86,13 @@ public class HelpInfo {
 	
 	public static void getObserverListHelp() 
 	{
-		System.out.println("Query the pbft observer node.");
+		System.out.println("Query nodeID list for observer nodes.");
 		System.out.println("Usage: gol");
 	}
 	
 	public static void getMinerListHelp() 
 	{
-		System.out.println("Query the pbft miner nodes.");
+		System.out.println("Query nodeID list for miner nodes.");
 		System.out.println("Usage: gml");
 	}
 	
@@ -117,9 +120,15 @@ public class HelpInfo {
 		System.out.println("Usage: gps");
 	}
 	
+	public static void getNodeIDListHelp() 
+	{
+		System.out.println("Query nodeID list for all nodes.");
+		System.out.println("Usage: gnd");
+	}
+	
 	public static void getGroupPeersHelp() 
 	{
-		System.out.println("Query peers currently connected to the client in the specified group.");
+		System.out.println("Query nodeID list for miner and observer nodes.");
 		System.out.println("Usage: ggp");
 	}
 	

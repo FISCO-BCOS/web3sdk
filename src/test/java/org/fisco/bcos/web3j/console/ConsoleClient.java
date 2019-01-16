@@ -67,6 +67,10 @@ public class ConsoleClient {
 				case "gps":
 					console.getPeers(params);
 					break;
+				case "getNodeIDList":
+				case "gnl":
+					console.getNodeIDList(params);
+					break;
 				case "getGroupPeers":
 				case "ggp":
 					console.getGroupPeers(params);
