@@ -59,8 +59,7 @@ public abstract class Contract extends ManagedTransaction {
                        Web3j web3j, TransactionManager transactionManager,
                        ContractGasProvider gasProvider) {
         super(web3j, transactionManager);
-        this.contractAddress = cnsResolver.resolve(contractAddress);
-        this.contractAddress = contractAddress;
+        this.contractAddress = cnsService.getAddressByContractNameAndVersion(contractAddress);
         this.contractBinary = contractBinary;
         this.gasProvider = gasProvider;
     }
@@ -287,12 +286,11 @@ public abstract class Contract extends ManagedTransaction {
                 gasProvider.getGasLimit(funcName));
 
         if (!receipt.isStatusOK()) {
-            throw new TransactionException(
-                    String.format(
-                            "Transaction has failed with status: %s. "
-                                    + "Gas used: %d. (not-enough gas?)",
-                            receipt.getStatus(),
-                            receipt.getGasUsed()));
+            String status = receipt.getStatus();
+			BigInteger gasUsed = receipt.getGasUsed();
+			String message = String.format("Transaction has failed with status: %s. "
+			                + "Gas used: %d. (not-enough gas?)", status, gasUsed);
+			throw new TransactionException(message, status, gasUsed, receipt.getTransactionHash());
         }
 
         return receipt;

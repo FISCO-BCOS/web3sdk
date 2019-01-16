@@ -1,84 +1,30 @@
 package org.fisco.bcos.web3j.protocol.core;
 
+import io.reactivex.Flowable;
+import org.fisco.bcos.web3j.protocol.Web3j;
+import org.fisco.bcos.web3j.protocol.Web3jService;
+import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
+import org.fisco.bcos.web3j.protocol.core.methods.request.ProofMerkle;
+import org.fisco.bcos.web3j.protocol.core.methods.request.ShhFilter;
+import org.fisco.bcos.web3j.protocol.core.methods.response.*;
+import org.fisco.bcos.web3j.protocol.rx.JsonRpc2_0Rx;
+import org.fisco.bcos.web3j.protocol.websocket.events.LogNotification;
+import org.fisco.bcos.web3j.protocol.websocket.events.NewHeadsNotification;
+import org.fisco.bcos.web3j.utils.Async;
+import org.fisco.bcos.web3j.utils.BlockLimit;
+import org.fisco.bcos.web3j.utils.Numeric;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import io.reactivex.Flowable;
-import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
-import org.fisco.bcos.web3j.protocol.core.methods.request.ProofMerkle;
-import org.fisco.bcos.web3j.protocol.core.methods.response.*;
-import org.fisco.bcos.web3j.protocol.websocket.events.LogNotification;
-import org.fisco.bcos.web3j.protocol.websocket.events.NewHeadsNotification;
-import org.fisco.bcos.web3j.utils.BlockLimit;
-import org.fisco.bcos.web3j.utils.Web3AsyncThreadPoolSize;
-import org.fisco.bcos.web3j.protocol.core.methods.request.ShhFilter;
-import org.fisco.bcos.web3j.protocol.core.methods.response.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.fisco.bcos.web3j.protocol.Web3j;
-import org.fisco.bcos.web3j.protocol.Web3jService;
-import org.fisco.bcos.web3j.protocol.core.methods.response.DbGetHex;
-import org.fisco.bcos.web3j.protocol.core.methods.response.DbGetString;
-import org.fisco.bcos.web3j.protocol.core.methods.response.DbPutHex;
-import org.fisco.bcos.web3j.protocol.core.methods.response.DbPutString;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthAccounts;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthBlock;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthBlockNumber;
-
 //增加eth_pbftView接口
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthPbftView;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthCall;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthCoinbase;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthCompileLLL;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthCompileSerpent;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthCompileSolidity;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthEstimateGas;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthFilter;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthGasPrice;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthGetBalance;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthGetBlockTransactionCountByHash;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthGetBlockTransactionCountByNumber;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthGetCode;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthGetCompilers;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthGetStorageAt;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthGetTransactionCount;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthGetTransactionReceipt;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthGetUncleCountByBlockHash;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthGetUncleCountByBlockNumber;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthGetWork;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthHashrate;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthLog;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthMining;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthProtocolVersion;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthSign;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthSubmitHashrate;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthSubmitWork;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthSyncing;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthTransaction;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthUninstallFilter;
-import org.fisco.bcos.web3j.protocol.core.methods.response.Log;
-import org.fisco.bcos.web3j.protocol.core.methods.response.NetListening;
-import org.fisco.bcos.web3j.protocol.core.methods.response.NetPeerCount;
-import org.fisco.bcos.web3j.protocol.core.methods.response.NetVersion;
-import org.fisco.bcos.web3j.protocol.core.methods.response.ShhAddToGroup;
-import org.fisco.bcos.web3j.protocol.core.methods.response.ShhHasIdentity;
-import org.fisco.bcos.web3j.protocol.core.methods.response.ShhMessages;
-import org.fisco.bcos.web3j.protocol.core.methods.response.ShhNewFilter;
-import org.fisco.bcos.web3j.protocol.core.methods.response.ShhNewGroup;
-import org.fisco.bcos.web3j.protocol.core.methods.response.ShhNewIdentity;
-import org.fisco.bcos.web3j.protocol.core.methods.response.ShhUninstallFilter;
-import org.fisco.bcos.web3j.protocol.core.methods.response.ShhVersion;
-import org.fisco.bcos.web3j.protocol.core.methods.response.Web3ClientVersion;
-import org.fisco.bcos.web3j.protocol.core.methods.response.Web3Sha3;
-import org.fisco.bcos.web3j.protocol.rx.JsonRpc2_0Rx;
-import org.fisco.bcos.web3j.utils.Async;
-import org.fisco.bcos.web3j.utils.Numeric;
 
 /**
  * JSON-RPC 2.0 factory implementation.
@@ -93,8 +39,9 @@ public class JsonRpc2_0Web3j implements Web3j {
     private final long blockTime;
     private final ScheduledExecutorService scheduledExecutorService;
     private  int groupId = 1;
+    private BigInteger blockNumber = new BigInteger("1");
 
-    synchronized public BigInteger getBlockNumber() {
+     public BigInteger getBlockNumber() {
         return blockNumber;
     }
 
@@ -102,39 +49,41 @@ public class JsonRpc2_0Web3j implements Web3j {
         this.blockNumber = blockNumber;
     }
 
-    private BigInteger blockNumber = new BigInteger("1");
-
     public JsonRpc2_0Web3j(Web3jService web3jService) {
-        this(web3jService, DEFAULT_BLOCK_TIME, Async.defaultExecutorService());
+        this(web3jService, DEFAULT_BLOCK_TIME, Async.defaultExecutorService(),1);
     }
 
     public JsonRpc2_0Web3j(Web3jService web3jService, int groupId) {
-        this(web3jService, DEFAULT_BLOCK_TIME, Async.defaultExecutorService());
+        this(web3jService, DEFAULT_BLOCK_TIME, Async.defaultExecutorService(), groupId);
         this.groupId = groupId;
     }
 
     public JsonRpc2_0Web3j(
             Web3jService web3jService, long pollingInterval,
-            ScheduledExecutorService scheduledExecutorService) {
+            ScheduledExecutorService scheduledExecutorService, int groupId) {
         this.web3jService = web3jService;
         this.web3jRx = new JsonRpc2_0Rx(this, scheduledExecutorService);
         this.blockTime = pollingInterval;
         this.scheduledExecutorService = scheduledExecutorService;
-//        ExecutorService cachedThreadPool = Executors.newFixedThreadPool(Web3AsyncThreadPoolSize.web3AsyncPoolSize);
-//
-//        cachedThreadPool.execute(new Runnable() {
-//            public void run() {
-//                while (true) {
-//                    try {
-//                    	Thread.sleep(10000);
-//                        EthBlockNumber ethBlockNumber = ethBlockNumber().sendAsync().get(10000, TimeUnit.MILLISECONDS);
-//                        setBlockNumber(ethBlockNumber.getBlockNumber());
-//                    } catch (Exception e) {
-//                        logger.error("Exception: " + e);
-//                    }
-//                }
-//            }
-//        });
+        this.groupId= groupId;
+
+        ScheduledExecutorService scheduleService = Executors.newSingleThreadScheduledExecutor();
+        Runnable runnable = new Runnable() {
+            public void run() {
+                Request irequest = ethBlockNumber();
+                try {
+                    CompletableFuture<EthBlockNumber> ifuture = ethBlockNumber().sendAsync();
+
+                    EthBlockNumber ethBlockNumber = ifuture.get(10000, TimeUnit.MILLISECONDS);
+                    setBlockNumber(ethBlockNumber.getBlockNumber());
+                } catch (Exception e) {
+                    logger.error("getblocknumber's request id is : " +  irequest.getId() );
+                    logger.error("Exception: get blocknumber request fail "  + e);
+                }
+            }
+        };
+        scheduleService.scheduleAtFixedRate(runnable,1,5,TimeUnit.SECONDS);
+
     }
 
     @Override
@@ -230,6 +179,15 @@ public class JsonRpc2_0Web3j implements Web3j {
                Arrays.asList(groupId),
                 web3jService,
                 EthPeers.class);
+    }
+    
+    @Override
+    public Request<?, SystemConfig> getSystemConfigByKey(String key) {
+    	return new Request<>(
+    			"getSystemConfigByKey",
+    			Arrays.asList(groupId, key),
+    			web3jService,
+    			SystemConfig.class);
     }
 
     @Override
@@ -639,6 +597,15 @@ public class JsonRpc2_0Web3j implements Web3j {
                Arrays.asList(groupId),
                 web3jService,
                 EthPendingTransactions.class);
+    }
+    
+    @Override
+    public Request<?, PendingTxSize> getPendingTxSize() {
+    	return new Request<>(
+    			"getPendingTxSize",
+    			Arrays.asList(groupId),
+    			web3jService,
+    			PendingTxSize.class);
     }
 
     @Override

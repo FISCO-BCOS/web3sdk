@@ -48,25 +48,25 @@ public class ContractClassFactory {
     	{	
 			if(type[i] == String.class)
 			{
-				if(params[i+2].startsWith("\"") && params[i+2].endsWith("\""))
-					obj[i] = params[i+2].substring(1, params[i+2].length()-1);
+				if(params[i+4].startsWith("\"") && params[i+4].endsWith("\""))
+					obj[i] = params[i+4].substring(1, params[i+4].length()-1);
 				else
 					System.out.println("Please provide double quote for String");
 			}
 			else if(type[i] == Boolean.class)
 			{
-				obj[i] = Boolean.parseBoolean(params[i+2]);
+				obj[i] = Boolean.parseBoolean(params[i+4]);
 			}
 			else if(type[i] == BigInteger.class)
 			{
-				obj[i] = BigInteger.valueOf(Integer.parseInt(params[i+2]));
+				obj[i] = BigInteger.valueOf(Integer.parseInt(params[i+4]));
 			}
 			else if(type[i] == byte[].class)
 			{	
-				if(params[i+2].startsWith("\"") && params[i+2].endsWith("\""))
+				if(params[i+4].startsWith("\"") && params[i+4].endsWith("\""))
 				{
 					byte[] bytes1 = new byte[Type.MAX_BYTE_LENGTH];
-					byte[] bytes2 = params[i+2].substring(1, params[i+2].length()-1).getBytes();
+					byte[] bytes2 = params[i+4].substring(1, params[i+4].length()-1).getBytes();
 					for(int j = 0; j < bytes2.length; j++)
 					{
 						bytes1[j] = bytes2[j];

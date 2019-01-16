@@ -1,5 +1,7 @@
 package org.fisco.bcos.web3j.console;
 
+import org.fisco.bcos.web3j.crypto.EncryptType;
+
 public class ConsoleUtils {
 
 	public static void main(String[] args) {
@@ -13,6 +15,7 @@ public class ConsoleUtils {
 	public static String formatJson(String jsonStr) {
 		if (null == jsonStr || "".equals(jsonStr))
 			return "";
+		jsonStr = jsonStr.replace("\\n", "");
 		StringBuilder sb = new StringBuilder();
 		char last = '\0';
 		char current = '\0';
@@ -53,6 +56,14 @@ public class ConsoleUtils {
 					addIndentBlank(sb, indent);
 				}
 				break;
+			case ' ':
+				if(',' != jsonStr.charAt(i-1))
+				{
+					sb.append(current);
+				}
+				break;
+			case '\\':
+				break;
 			default:
 				if(!(current == " ".charAt(0)))
 					sb.append(current);
@@ -72,7 +83,8 @@ public class ConsoleUtils {
 		if (hash.startsWith("0x") && hash.length() == 66) {
 			return false;
 		} else {
-			System.out.println("This is an invalid hash.");
+			System.out.println("Please provide a valid hash.");
+			System.out.println();
 			return true;
 		}
 	}
@@ -84,6 +96,7 @@ public class ConsoleUtils {
 				System.out.println("Please provide block number by decimal mode.");
 			else
 				System.out.println("Please provide transaction index by decimal mode.");
+			System.out.println();
 			return true;
 		}
 		else
@@ -92,14 +105,46 @@ public class ConsoleUtils {
 		}
 		
 	}
+	public static boolean isInvalidAddress(String address) {
+		 if(!address.startsWith("0x") || (address.length() != 42))
+		 {
+			 System.out.println("Please provide a valid address.");
+			 System.out.println();
+			 return true;
+		 }
+		 else
+		 {
+			 return false;
+		 }
+	}
+	
+	public static String getContractFullName(String contractName) {
+		String contractFullName = "";
+		if("Ok".equals(contractName))
+		{
+			if(EncryptType.encryptType == 0)
+			{
+				contractFullName = "org.fisco.bcos.channel.test.contract.Ok";
+			}
+			else
+			{
+				contractFullName = "org.fisco.bcos.channel.test.guomi.Ok";
+			}
+		}
+		else
+		{
+			contractFullName = "org.fisco.bcos.temp." + contractName;
+		}
+		return contractFullName;
+	}
 	
 	public static void singleLine() {
 		System.out.println(
-				"----------------------------------------------------------------------------------------------");
+				"---------------------------------------------------------------------------------------------");
 	}
 
 	public static void doubleLine() {
 		System.out.println(
-				"==============================================================================================");
+				"=============================================================================================");
 	}
 }
