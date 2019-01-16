@@ -56,7 +56,7 @@ public class DagTransferTools {
 		System.out.println("\t DagTransferTools userTransfer from_user to_user amount");
 	}
 
-	public static void processDT(String[] args, DagTransferTools dtt) {
+	public static void processDT(String[] args, DagTransferTools dtt)throws Exception {
 		String command = args[0];
 
 		switch (command) {
