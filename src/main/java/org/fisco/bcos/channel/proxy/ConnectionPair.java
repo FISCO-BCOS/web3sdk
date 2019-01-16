@@ -19,8 +19,8 @@ import io.netty.util.TimerTask;
 class ConnectionPair {
 	private static Logger logger = LoggerFactory.getLogger(ConnectionPair.class);
 	
-	public ChannelHandlerContext localConnection; //SDK连接
-	public ChannelHandlerContext remoteConnection; //节点连接
+	public ChannelHandlerContext localConnection; //SDK connect
+	public ChannelHandlerContext remoteConnection; //node connect
 	public Timeout timeout;
 	
 	private Message message;

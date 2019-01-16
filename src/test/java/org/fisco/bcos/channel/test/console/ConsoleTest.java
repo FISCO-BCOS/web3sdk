@@ -12,64 +12,225 @@ import org.junit.contrib.java.lang.system.SystemOutRule;
 
 public class ConsoleTest{
 	
-    private static ConsoleFace console = new ConsoleImpl();
+    private ConsoleFace console = new ConsoleImpl();
+    {
+    	console.init(new String[0]);
+    }
     
 	@Rule
 	public final SystemOutRule log = new SystemOutRule().enableLog();
 	
     @Test
     public void helpTest() {
-        console.help();
+    	String[] params1 = {};
+        console.help(params1);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+    	String[] params2 = {"-h"};
+        console.help(params2);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+        
+        String[] params3 = {"--help"};
+        console.help(params3);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+        String[] params4 = {"k"};
+        console.help(params4);
+        
         assertTrue(!"".equals(log.getLog()));
     }
     @Test
     public void getBlockNumberTest() throws IOException {
-    	console.getBlockNumber();
+    	String[] params1 = {};
+        console.getBlockNumber(params1);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+    	String[] params2 = {"-h"};
+        console.getBlockNumber(params2);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+        
+        String[] params3 = {"--help"};
+        console.getBlockNumber(params3);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+        String[] params4 = {"k"};
+        console.getBlockNumber(params4);
+        
     	assertTrue(!"".equals(log.getLog()));
     }
-    @Test
-    public void getPbftViewTest() throws IOException {
-    	console.getPbftView();
-    	assertTrue(!"".equals(log.getLog()));
-    }
+
     @Test
     public void getMinerListTest() throws IOException {
-    	console.getMinerList();
+    	String[] params1 = {};
+        console.getMinerList(params1);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+    	String[] params2 = {"-h"};
+        console.getMinerList(params2);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+        
+        String[] params3 = {"--help"};
+        console.getMinerList(params3);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+        String[] params4 = {"k"};
+        console.getMinerList(params4);
     	assertTrue(!"".equals(log.getLog()));
     }
     @Test
     public void getObserverListTest() throws IOException {
-    	console.getObserverList();
+    	String[] params1 = {};
+        console.getObserverList(params1);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+    	String[] params2 = {"-h"};
+        console.getObserverList(params2);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+        
+        String[] params3 = {"--help"};
+        console.getObserverList(params3);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+        String[] params4 = {"k"};
+        console.getObserverList(params4);
     	assertTrue(!"".equals(log.getLog()));
     }
     @Test
     public void getConsensusStatusTest() throws IOException {
-    	console.getConsensusStatus();
+    	String[] params1 = {};
+        console.getConsensusStatus(params1);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+    	String[] params2 = {"-h"};
+        console.getConsensusStatus(params2);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+        
+        String[] params3 = {"--help"};
+        console.getConsensusStatus(params3);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+        String[] params4 = {"k"};
+        console.getConsensusStatus(params4);
     	assertTrue(!"".equals(log.getLog()));
     }
     @Test
     public void getSyncStatusTest() throws IOException {
-    	console.getSyncStatus();
+    	String[] params1 = {};
+        console.getSyncStatus(params1);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+    	String[] params2 = {"-h"};
+        console.getSyncStatus(params2);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+        
+        String[] params3 = {"--help"};
+        console.getSyncStatus(params3);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+        String[] params4 = {"k"};
+        console.getSyncStatus(params4);
     	assertTrue(!"".equals(log.getLog()));
     }
     @Test
     public void getClientVersionTest() throws IOException {
-    	console.getClientVersion();
+    	String[] params1 = {};
+        console.getClientVersion(params1);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+    	String[] params2 = {"-h"};
+        console.getClientVersion(params2);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+        
+        String[] params3 = {"--help"};
+        console.getClientVersion(params3);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+        String[] params4 = {"k"};
+        console.getClientVersion(params4);
     	assertTrue(!"".equals(log.getLog()));
     }
     @Test
     public void getPeersTest() throws IOException {
-    	console.getPeers();
+    	String[] params1 = {};
+        console.getPeers(params1);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+    	String[] params2 = {"-h"};
+        console.getPeers(params2);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+        
+        String[] params3 = {"--help"};
+        console.getPeers(params3);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+        String[] params4 = {"k"};
+        console.getPeers(params4);
     	assertTrue(!"".equals(log.getLog()));
     }
     @Test
     public void getGroupPeersTest() throws IOException {
-    	console.getGroupPeers();
+    	String[] params1 = {};
+        console.getGroupPeers(params1);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+    	String[] params2 = {"-h"};
+        console.getGroupPeers(params2);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+        
+        String[] params3 = {"--help"};
+        console.getGroupPeers(params3);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+        String[] params4 = {"k"};
+        console.getGroupPeers(params4);
     	assertTrue(!"".equals(log.getLog()));
     }
     @Test
     public void getGroupListTest() throws IOException {
-    	console.getGroupList();
+    	String[] params1 = {};
+        console.getGroupList(params1);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+    	String[] params2 = {"-h"};
+        console.getGroupList(params2);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+        
+        String[] params3 = {"--help"};
+        console.getGroupList(params3);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+        String[] params4 = {"k"};
+        console.getGroupList(params4);
     	assertTrue(!"".equals(log.getLog()));
     }
     @Test
@@ -89,15 +250,8 @@ public class ConsoleTest{
     	assertTrue(!"".equals(log.getLog()));
     	log.clearLog();
     	
-    	String[] params4 = {"gbbh", "0xca0577fa37367e89628e2db0a7adfccdd4b53e5fe781d7e34a3d5edbe29d1961"};
-    	console.getBlockByHash(params4);
-    	assertTrue(!"".equals(log.getLog()));
-    	log.clearLog();
-    	
-    	String[] params5 = {"gbbh", "0xca0577fa37367e89628e2db0a7adfccdd4b53e5fe781d7e34a3d5edbe29d1961", "true"};
-    	console.getBlockByHash(params5);
-    	assertTrue(!"".equals(log.getLog()));
     }
+    
     @Test
     public void getBlockByNumberTest() throws IOException {
     	String[] params1 = {};
@@ -166,6 +320,7 @@ public class ConsoleTest{
     	console.getTransactionByHash(params4);
     	assertTrue(!"".equals(log.getLog()));
     }
+
     @Test
     public void getTransactionByBlockHashAndIndexTest() throws IOException {
     	String[] params1 = {};
@@ -231,7 +386,23 @@ public class ConsoleTest{
     }
     @Test
     public void getPendingTransactionsTest() throws IOException {
-    	console.getPendingTransactions();
+    	String[] params1 = {};
+        console.getPendingTransactions(params1);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+    	String[] params2 = {"-h"};
+        console.getPendingTransactions(params2);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+        
+        String[] params3 = {"--help"};
+        console.getPendingTransactions(params3);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+        String[] params4 = {"k"};
+        console.getPendingTransactions(params4);
     	assertTrue(!"".equals(log.getLog()));
     }
     @Test
@@ -257,13 +428,28 @@ public class ConsoleTest{
     }
     @Test
     public void getTotalTransactionCountTest() throws IOException {
-    	console.getTotalTransactionCount();
+    	String[] params1 = {};
+        console.getTotalTransactionCount(params1);
     	assertTrue(!"".equals(log.getLog()));
     	log.clearLog();
+    	
+    	String[] params2 = {"-h"};
+        console.getTotalTransactionCount(params2);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+        
+        String[] params3 = {"--help"};
+        console.getTotalTransactionCount(params3);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+        String[] params4 = {"k"};
+        console.getTotalTransactionCount(params4);
+    	assertTrue(!"".equals(log.getLog()));
     }
     @Test(expected= ClassNotFoundException.class) 
     public void deployTestException() throws Exception {
-    	String[] params = {"d", "ae", "1.0"};
+    	String[] params = {"d", "ae"};
     	console.deploy(params);
     }
     @Test
@@ -277,13 +463,9 @@ public class ConsoleTest{
     	console.deploy(params2);
     	assertTrue(!"".equals(log.getLog()));
     	log.clearLog();
-        	
+    	
     	String[] params3 = {"d", "Ok"};
     	console.deploy(params3);
-    	assertTrue(!"".equals(log.getLog()));
-    	
-    	String[] params4 = {"d", "Ok", "1.0"};
-    	console.deploy(params4);
     	assertTrue(!"".equals(log.getLog()));
     }
     @Test
@@ -302,49 +484,217 @@ public class ConsoleTest{
     	console.call(params3);
     	assertTrue(!"".equals(log.getLog()));
     	
-    	String[] params4 = {"c", "Ok", "1.0"};
+    	String[] params4 = {"c", "Ok", "0x1"};
     	console.call(params4);
     	assertTrue(!"".equals(log.getLog()));
     	
     }
+
     @Test
-    public void addPbftTest() throws Exception {
+    public void deployByCNSTest() throws Exception {
     	String[] params1 = {};
-    	console.addPbft(params1);
+    	console.deployByCNS(params1);
     	assertTrue(!"".equals(log.getLog()));
     	log.clearLog();
     	
-    	String[] params2 = {"ap", "-h"};
-    	console.addPbft(params2);
+    	String[] params2 = {"dbc", "-h"};
+    	console.deployByCNS(params2);
     	assertTrue(!"".equals(log.getLog()));
     	log.clearLog();
-    	
-    	String[] params3 = {"ap", "ae"};
-    	console.addPbft(params3);
-    	assertTrue(!"".equals(log.getLog()));
-    	
-    	String[] params4 = {"ap", "037c255c06161711b6234b8c0960a6979ef039374ccc8b723afea2107cba3432dbbc837a714b7da20111f74d5a24e91925c773a72158fa066f586055379a1772"};
-    	console.addPbft(params4);
+        	
+    	String[] params3 = {"dbc", "Ok"};
+    	console.deployByCNS(params3);
     	assertTrue(!"".equals(log.getLog()));
     }
     @Test
-    public void removePbftTest() throws Exception {
+    public void callByCNSTest() throws Exception {
     	String[] params1 = {};
-    	console.removePbft(params1);
+    	console.callByCNS(params1);
     	assertTrue(!"".equals(log.getLog()));
     	log.clearLog();
     	
-    	String[] params2 = {"rp", "-h"};
-    	console.removePbft(params2);
+    	String[] params2 = {"cbc", "-h"};
+    	console.callByCNS(params2);
     	assertTrue(!"".equals(log.getLog()));
     	log.clearLog();
     	
-    	String[] params3 = {"rp", "ae"};
-    	console.removePbft(params3);
+    	String[] params3 = {"cbc", "Ok"};
+    	console.callByCNS(params3);
     	assertTrue(!"".equals(log.getLog()));
     	
-    	String[] params4 = {"rp", "037c255c06161711b6234b8c0960a6979ef039374ccc8b723afea2107cba3432dbbc837a714b7da20111f74d5a24e91925c773a72158fa066f586055379a1772"};
-    	console.removePbft(params4);
+    	String[] params4 = {"cbc", "Ok", "1.0"};
+    	console.callByCNS(params4);
+    	assertTrue(!"".equals(log.getLog()));
+    	
+    }
+    @Test
+    public void addMinerTest() throws Exception {
+    	String[] params1 = {};
+    	console.addMiner(params1);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+    	String[] params2 = {"am", "-h"};
+    	console.addMiner(params2);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+    	String[] params3 = {"am", "ae"};
+    	console.addMiner(params3);
+    	assertTrue(!"".equals(log.getLog()));
+    	
+    }
+    @Test
+    public void addObserverTest() throws Exception {
+    	String[] params1 = {};
+    	console.addObserver(params1);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+    	String[] params2 = {"ao", "-h"};
+    	console.addObserver(params2);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+    	String[] params3 = {"ao", "ae"};
+    	console.addObserver(params3);
+    	assertTrue(!"".equals(log.getLog()));
+    	
+    }
+    @Test
+    public void removeNodeTest() throws Exception {
+    	String[] params1 = {};
+    	console.removeNode(params1);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+    	String[] params2 = {"rn", "-h"};
+    	console.removeNode(params2);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+    	String[] params3 = {"rn", "ae"};
+    	console.removeNode(params3);
+    	assertTrue(!"".equals(log.getLog()));
+    	
+    }
+    @Test
+    public void addAuthorityTest() throws Exception {
+    	String[] params1 = {};
+    	console.addAuthority(params1);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+    	String[] params2 = {"aa", "-h"};
+    	console.addAuthority(params2);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+    }
+    @Test
+    public void removeAuthorityTest() throws Exception {
+    	String[] params1 = {};
+    	console.removeAuthority(params1);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+    	String[] params2 = {"ra", "-h"};
+    	console.removeAuthority(params2);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+    }
+    @Test
+    public void queryAuthorityTest() throws Exception {
+    	String[] params1 = {};
+    	console.queryAuthority(params1);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+    	String[] params2 = {"qa", "-h"};
+    	console.queryAuthority(params2);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+    	String[] params3 = {"qa", "t_test"};
+    	console.queryAuthority(params3);
+    	assertTrue(!"".equals(log.getLog()));
+    }
+    
+    @Test
+    public void setSystemConfigByKeyTest() throws Exception {
+    	String[] params1 = {};
+    	console.setSystemConfigByKey(params1);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+    	String[] params2 = {"ssc", "-h"};
+    	console.setSystemConfigByKey(params2);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+    	String[] params3 = {"ssc", "tx_count_limit", "1000"};
+    	console.setSystemConfigByKey(params3);
+    	assertTrue(!"".equals(log.getLog()));
+    }
+    
+    @Test
+    public void getSystemConfigByKeyTest() throws Exception {
+    	String[] params1 = {};
+    	console.getSystemConfigByKey(params1);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+    	String[] params2 = {"gsc", "-h"};
+    	console.getSystemConfigByKey(params2);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+    	String[] params3 = {"gsc", "tx_gas_limit"};
+    	console.getSystemConfigByKey(params3);
+    	assertTrue(!"".equals(log.getLog()));
+    }
+    
+    @Test
+    public void getPendingTxSizeTest() throws Exception {
+    	String[] params1 = {};
+        console.getPendingTxSize(params1);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+    	String[] params2 = {"-h"};
+        console.getPendingTxSize(params2);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+        
+        String[] params3 = {"--help"};
+        console.getPendingTxSize(params3);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+        String[] params4 = {"k"};
+        console.getPendingTxSize(params4);
+    	assertTrue(!"".equals(log.getLog()));
+    }
+    
+    @Test
+    public void queryCNSTest() throws Exception {
+    	String[] params1 = {};
+    	console.queryCNS(params1);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+    	String[] params2 = {"qcs", "-h"};
+    	console.queryCNS(params2);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+    	String[] params3 = {"qcs", "Ok"};
+    	console.getSystemConfigByKey(params3);
+    	assertTrue(!"".equals(log.getLog()));
+    	
+    	String[] params4 = {"qcs", "Ok", "1.0"};
+    	console.getSystemConfigByKey(params4);
     	assertTrue(!"".equals(log.getLog()));
     }
     
