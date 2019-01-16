@@ -3,6 +3,8 @@ package org.fisco.bcos.web3j.codegen;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.squareup.javapoet.*;
 import io.reactivex.Flowable;
+
+import org.fisco.bcos.channel.client.TransactionSucCallback;
 import org.fisco.bcos.web3j.abi.EventEncoder;
 import org.fisco.bcos.web3j.abi.FunctionEncoder;
 import org.fisco.bcos.web3j.abi.TypeReference;
@@ -15,6 +17,7 @@ import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
 import org.fisco.bcos.web3j.protocol.core.RemoteCall;
 import org.fisco.bcos.web3j.protocol.core.methods.request.EthFilter;
 import org.fisco.bcos.web3j.protocol.core.methods.response.AbiDefinition;
+import org.fisco.bcos.web3j.protocol.core.methods.response.AbiDefinition.NamedType;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Log;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.tx.Contract;
@@ -238,7 +241,10 @@ public class SolidityFunctionWrapper extends Generator{
             if (functionDefinition.getType().equals("function")) {
                 MethodSpec ms = buildFunction(functionDefinition);
                 methodSpecs.add(ms);
-
+                
+                MethodSpec msCallback = buildFunctionWithCallback(functionDefinition);
+                //msCallback.parameters.add(ParameterSpec.builder(TransactionSucCallback.class, "callback").build());
+                methodSpecs.add(msCallback);
             } else if (functionDefinition.getType().equals("event")) {
                 methodSpecs.addAll(buildEventFunctions(functionDefinition, classBuilder));
             }
@@ -505,7 +511,7 @@ public class SolidityFunctionWrapper extends Generator{
                     parameterSpec -> parameterSpec.name);
         }
     }
-
+    
     private String createMappedParameterTypes(ParameterSpec parameterSpec) {
         if (parameterSpec.type instanceof ParameterizedTypeName) {
             List<TypeName> typeNames =
@@ -676,6 +682,32 @@ public class SolidityFunctionWrapper extends Generator{
 
         return methodBuilder.build();
     }
+    
+    MethodSpec buildFunctionWithCallback(
+            AbiDefinition functionDefinition) throws ClassNotFoundException {
+        String functionName = functionDefinition.getName();
+
+        MethodSpec.Builder methodBuilder =
+                MethodSpec.methodBuilder(functionName)
+                        .addModifiers(Modifier.PUBLIC);
+
+        List<TypeName> outputParameterTypes = buildTypeNames(functionDefinition.getOutputs());
+        
+        if (functionDefinition.isConstant()) {
+        	String inputParams = addParameters(methodBuilder, functionDefinition.getInputs());
+            buildConstantFunction(
+                    functionDefinition, methodBuilder, outputParameterTypes, inputParams);
+        } else {
+        	//functionDefinition.getInputs().add(new NamedType("callback", "org.fisco.bcos.channel.dto.EthereumResponse.TransactionSucCallback"));
+        	String inputParams = addParameters(methodBuilder, functionDefinition.getInputs());
+        	methodBuilder.addParameter(ParameterSpec.builder(buildTypeName("TransactionSucCallback"), "callback").build());
+        	
+            buildTransactionFunctionWithCallback(
+                    functionDefinition, methodBuilder, inputParams);
+        }
+
+        return methodBuilder.build();
+    }
 
     private void buildConstantFunction(
             AbiDefinition functionDefinition,
@@ -802,6 +834,37 @@ public class SolidityFunctionWrapper extends Generator{
         } else {
             methodBuilder.addStatement("return executeRemoteCallTransaction(function)");
         }
+    }
+    
+    private void buildTransactionFunctionWithCallback(
+            AbiDefinition functionDefinition,
+            MethodSpec.Builder methodBuilder,
+            String inputParams) throws ClassNotFoundException {
+
+        if (functionDefinition.hasOutputs()) {
+            //CHECKSTYLE:OFF
+            reporter.report(String.format(
+                    "Definition of the function %s returns a value but is not defined as a view function. "
+                            + "Please ensure it contains the view modifier if you want to read the return value",
+                    functionDefinition.getName()));
+            //CHECKSTYLE:ON
+        }
+
+        if (functionDefinition.isPayable()) {
+            methodBuilder.addParameter(BigInteger.class, WEI_VALUE);
+        }
+        //methodBuilder.addParameter(TransactionSucCallback.class, "callback");
+
+        String functionName = functionDefinition.getName();
+
+        methodBuilder.returns(TypeName.VOID);
+
+        methodBuilder.addStatement("final $T function = new $T(\n$N, \n$T.<$T>asList($L), \n$T"
+                        + ".<$T<?>>emptyList())",
+                Function.class, Function.class, funcNameToConst(functionName),
+                Arrays.class, Type.class, inputParams, Collections.class,
+                TypeReference.class);
+        methodBuilder.addStatement("asyncExecuteTransaction(function, callback)");
     }
 
     TypeSpec buildEventResponseObject(
