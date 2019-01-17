@@ -241,10 +241,11 @@ public class SolidityFunctionWrapper extends Generator{
             if (functionDefinition.getType().equals("function")) {
                 MethodSpec ms = buildFunction(functionDefinition);
                 methodSpecs.add(ms);
-                
-                MethodSpec msCallback = buildFunctionWithCallback(functionDefinition);
-                //msCallback.parameters.add(ParameterSpec.builder(TransactionSucCallback.class, "callback").build());
-                methodSpecs.add(msCallback);
+
+                if(!functionDefinition.isConstant()) {
+	                MethodSpec msCallback = buildFunctionWithCallback(functionDefinition);
+	                methodSpecs.add(msCallback);
+                }
             } else if (functionDefinition.getType().equals("event")) {
                 methodSpecs.addAll(buildEventFunctions(functionDefinition, classBuilder));
             }
