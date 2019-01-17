@@ -1,3 +1,11 @@
+### V1.2.5 (2019-01-17)
+* Updates
+
+1. 安全考虑，删除InfuraHttpService。
+2. 使用安全随机数。
+3. 增加rpc接口getAdminPeers。
+4. 修复web3sdk作为代理时出现未知消息的日志的问题。
+
 ### V1.2.4 (2018-10-17)
 * Updates
 
