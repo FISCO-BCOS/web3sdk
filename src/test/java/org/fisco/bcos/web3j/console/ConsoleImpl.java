@@ -606,7 +606,7 @@ public class ConsoleImpl implements ConsoleFace {
 			HelpInfo.deployHelp();
 			return;
 		}
-		contractName = ConsoleUtils.getContractFullName(params[1]);
+		contractName = Common.CONTRACT_PACKAGE + params[1];
 		contractClass = ContractClassFactory.getContractClass(contractName);
 		Method deploy = contractClass.getMethod("deploy", Web3j.class, Credentials.class, BigInteger.class,
 				BigInteger.class);
@@ -631,7 +631,7 @@ public class ConsoleImpl implements ConsoleFace {
 			HelpInfo.promptHelp("c");
 			return;
 		}
-		contractName = ConsoleUtils.getContractFullName(params[1]);
+		contractName = Common.CONTRACT_PACKAGE + params[1];
 		contractClass = ContractClassFactory.getContractClass(contractName);
 		Method load = contractClass.getMethod("load", String.class, Web3j.class, Credentials.class, BigInteger.class,
 				BigInteger.class);
@@ -708,7 +708,15 @@ public class ConsoleImpl implements ConsoleFace {
 			System.out.println();
 			return;
 		}
-		contractName = ConsoleUtils.getContractFullName(params[1]);
+		CnsService cnsService = new CnsService(web3j, credentials);
+		List<CnsInfo> qcns = cnsService.queryCnsByNameAndVersion(params[1], params[2]);
+		if(qcns.size() != 0)
+		{
+			ConsoleUtils.printJson(PrecompiledCommon.transferToJson(-50));
+			System.out.println();
+			return;
+		}
+		contractName = Common.CONTRACT_PACKAGE + params[1];
 		contractClass = ContractClassFactory.getContractClass(contractName);
 		Method deploy = contractClass.getMethod("deploy", Web3j.class, Credentials.class, BigInteger.class,
 				BigInteger.class);
@@ -717,10 +725,8 @@ public class ConsoleImpl implements ConsoleFace {
 		contractAddress = contract.getContractAddress();
 		contractVersion = params[2];
 		// register cns
-		CnsService cnsService = new CnsService(web3j, credentials);
 		String result = cnsService.registerCns(params[1], contractVersion, contractAddress,
 				contract.getContractBinary());
-		ConsoleUtils.printJson(result);
 		System.out.println(contractAddress);
 		System.out.println();
 	}
@@ -740,7 +746,7 @@ public class ConsoleImpl implements ConsoleFace {
 			HelpInfo.promptHelp("cbc");
 			return;
 		}
-		contractName = ConsoleUtils.getContractFullName(params[1]);
+		contractName = Common.CONTRACT_PACKAGE + params[1];
 		contractClass = ContractClassFactory.getContractClass(contractName);
 		Method load = contractClass.getMethod("load", String.class, Web3j.class, Credentials.class, BigInteger.class,
 				BigInteger.class);
