@@ -382,6 +382,7 @@ public class Service {
             callbackInner.setTimeout(timeoutHandler.newTimeout(new TimerTask() {
                 @Override
                 public void run(Timeout timeout) throws Exception {
+                    logger.info("asyncSendEthereumMessage timeout:seq ", request.getMessageID());
                     //处理超时逻辑
                     callbackInner.onTimeout();
                     //timeout时清除map的数据,所以尽管后面有回包数据，也会找不到seq->callback的关系
@@ -471,6 +472,7 @@ public class Service {
 
 					@Override
 					public void run(Timeout timeout) throws Exception {
+						logger.info("asyncSendEthereumMessage timeout:seq ", request.getMessageID());
 						//处理超时逻辑
 						_callback.onTimeout();
 					}
@@ -556,6 +558,7 @@ public class Service {
 
 						@Override
 						public void run(Timeout timeout) throws Exception {
+							logger.info("asyncSendChannelMessage timeout:seq ", request.getMessageID());
 							//处理超时逻辑
 							_callback.onTimeout();
 						}
@@ -623,6 +626,7 @@ public class Service {
 
 						@Override
 						public void run(Timeout timeout) throws Exception {
+							logger.info("asyncSendChannelMessage2 timeout:seq ", request.getMessageID());
 							//处理超时逻辑
 							_callback.onTimeout();
 						}

@@ -11,17 +11,9 @@ import static org.bcos.web3j.utils.Collection.tail;
  */
 public class Runner {
 
-    private static String USAGE = "Usage: web3j version|wallet|solidity ...";
+    private static String USAGE = "Usage: web3j version|solidity ...";
 
-    private static String LOGO = "\n" // generated at http://patorjk.com/software/taag
-            + "              _      _____ _     _        \n"
-            + "             | |    |____ (_)   (_)       \n"
-            + "__      _____| |__      / /_     _   ___  \n"
-            + "\\ \\ /\\ / / _ \\ '_ \\     \\ \\ |   | | / _ \\ \n"
-            + " \\ V  V /  __/ |_) |.___/ / | _ | || (_) |\n"
-            + "  \\_/\\_/ \\___|_.__/ \\____/| |(_)|_| \\___/ \n"
-            + "                         _/ |             \n"
-            + "                        |__/              \n";
+    private static String LOGO = "\n";
 
     public static void main(String[] args) throws Exception {
         System.out.println(LOGO);
@@ -30,9 +22,6 @@ public class Runner {
             Console.exitError(USAGE);
         } else {
             switch (args[0]) {
-                case "wallet":
-                    WalletRunner.run(tail(args));
-                    break;
                 case "solidity":
                     SolidityFunctionWrapperGenerator.run(tail(args));
                     break;
