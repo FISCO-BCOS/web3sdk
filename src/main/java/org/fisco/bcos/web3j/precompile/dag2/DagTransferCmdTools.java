@@ -24,19 +24,10 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.utils.Web3AsyncThreadPoolSize;
-/*
-contract DagTransfer{
-    function userAdd(string user, uint256 balance) public returns(bool);
-    function userSave(string user, uint256 balance) public returns(bool);
-    function userDraw(string user, uint256 balance) public returns(bool);
-    function userBalance(string user) public constant returns(bool,uint256);
-    function userTransfer(string user_a, string user_b, uint256 amount) public returns(bool);
-}
-*/
 
-public class DagTransferTools {
+public class DagTransferCmdTools {
 
-	private static Logger logger = LoggerFactory.getLogger(DagTransferTools.class);
+	private static Logger logger = LoggerFactory.getLogger(DagTransferCmdTools.class);
 	private DagTransferService dts;
 
 	public void setDts(DagTransferService dts) {
@@ -48,15 +39,15 @@ public class DagTransferTools {
 	}
 
 	public static void usage() {
-		System.out.println(" DagTransferTools Usage: ");
-		System.out.println("\t DagTransferTools userAdd  user amount");
-		System.out.println("\t DagTransferTools userSave  user amount");
-		System.out.println("\t DagTransferTools userDraw user amount");
-		System.out.println("\t DagTransferTools userBalance user");
-		System.out.println("\t DagTransferTools userTransfer from_user to_user amount");
+		System.out.println(" DagTransferCmdTools Usage: ");
+		System.out.println("\t DagTransferCmdTools userAdd  user amount");
+		System.out.println("\t DagTransferCmdTools userSave  user amount");
+		System.out.println("\t DagTransferCmdTools userDraw user amount");
+		System.out.println("\t DagTransferCmdTools userBalance user");
+		System.out.println("\t DagTransferCmdTools userTransfer from_user to_user amount");
 	}
 
-	public static void processDT(String[] args, DagTransferTools dtt)throws Exception {
+	public void processDT(String[] args) throws Exception {
 		String command = args[0];
 
 		switch (command) {
@@ -69,7 +60,7 @@ public class DagTransferTools {
 
 			String user = args[2];
 			BigInteger amount = new BigInteger(args[3]);
-			dtt.getDtf().userAdd(user, amount);
+			getDtf().userAdd(user, amount);
 			System.out.println(" userAdd end ");
 			break;
 		}
@@ -83,8 +74,8 @@ public class DagTransferTools {
 
 			String user = args[2];
 			BigInteger amount = new BigInteger(args[3]);
-			dtt.getDtf().userSave(user, amount);
-			System.out.println(" userSave end ");
+			getDtf().userSave(user, amount);
+			System.out.println("userSave end ");
 			break;
 		}
 
@@ -97,7 +88,7 @@ public class DagTransferTools {
 
 			String user = args[2];
 			BigInteger amount = new BigInteger(args[3]);
-			dtt.getDtf().userDraw(user, amount);
+			getDtf().userDraw(user, amount);
 			System.out.println(" userDraw end ");
 			break;
 		}
@@ -110,8 +101,8 @@ public class DagTransferTools {
 
 			String user = args[2];
 			BigInteger amount = new BigInteger(args[3]);
-			dtt.getDtf().userDraw(user, amount);
-			System.out.println(" userBalance end ");
+			getDtf().userDraw(user, amount);
+			System.out.println("userBalance end ");
 			break;
 		}
 
@@ -125,8 +116,8 @@ public class DagTransferTools {
 			String from = args[2];
 			String to = args[3];
 			BigInteger amount = new BigInteger(args[4]);
-			dtt.getDtf().userTransfer(from, to, amount);
-			System.out.println(" userTransfer end ");
+			getDtf().userTransfer(from, to, amount);
+			System.out.println("userTransfer end ");
 			break;
 		}
 		default:
@@ -136,6 +127,12 @@ public class DagTransferTools {
 	}
 
 	public static void main(String[] args) throws Exception {
+
+		if (args.length < 3) {
+			System.out.println(" invalid args length.");
+			usage();
+			return;
+		}
 
 		String groupId = "1";
 
@@ -147,13 +144,13 @@ public class DagTransferTools {
 		ChannelEthereumService channelEthereumService = new ChannelEthereumService();
 		channelEthereumService.setChannelService(service);
 
-		Web3j web3 = Web3j.build(channelEthereumService, 15 * 100, Executors.newScheduledThreadPool(500),
-				Integer.parseInt(groupId));
-
-		DagTransferService dts = new DagTransferService(web3, Credentials.create(Keys.createEcKeyPair()));
-		DagTransferTools dtt = new DagTransferTools();
+		DagTransferService dts = new DagTransferService(Web3j.build(channelEthereumService, 15 * 100,
+				Executors.newScheduledThreadPool(500), Integer.parseInt(groupId)),
+				Credentials.create(Keys.createEcKeyPair()));
+		
+		DagTransferCmdTools dtt = new DagTransferCmdTools();
 		dtt.setDts(dts);
-		processDT(args, dtt);
+		dtt.processDT(args);
 
 		exit(0);
 
