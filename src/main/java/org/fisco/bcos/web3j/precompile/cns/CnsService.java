@@ -33,7 +33,7 @@ public class CnsService {
     private long syncThreshold;  // non-final in case this value needs to be tweaked
     private static String registryContract = "0x0000000000000000000000000000000000001004";
 
-    private CnsTable cnsRegistry;
+    private CNS cnsRegistry;
 
     public CnsService(Web3j web3j, long syncThreshold, Credentials credentials) {
         this.web3j = web3j;
@@ -58,7 +58,7 @@ public class CnsService {
         if (!isValidCnsName(contractNameAndVersion)) {
              return contractNameAndVersion;
         }
-            CnsTable cns;
+            CNS cns;
             cns = lookupResolver();
             String contractAddressInfo;
             String address;
@@ -71,14 +71,14 @@ public class CnsService {
 
                     contractAddressInfo = cns.selectByNameAndVersion(contractName, contractVersion).send();
                     logger.debug("get contractName ", contractAddressInfo);
-                    List<CNSInfo> cNSInfos = jsonToCNSInfos(contractAddressInfo);
+                    List<CnsInfo> cNSInfos = jsonToCNSInfos(contractAddressInfo);
                     address = cNSInfos.get(0).getAddress();
                 } else {
                     // only contract name
                     contractAddressInfo = cns.selectByName(contractNameAndVersion).send();
                     logger.debug("get contractName ", contractAddressInfo);
-                    List<CNSInfo> CNSInfos = jsonToCNSInfos(contractAddressInfo);
-                    CNSInfo c = CNSInfos.get(CNSInfos.size() - 1);
+                    List<CnsInfo> CNSInfos = jsonToCNSInfos(contractAddressInfo);
+                    CnsInfo c = CNSInfos.get(CNSInfos.size() - 1);
                     address = c.getAddress();
                 }
             } catch (Exception e) {
@@ -93,38 +93,38 @@ public class CnsService {
     }
 
     public String registerCns(String name, String version, String addr, String abi) throws Exception {
-        CnsTable cns = lookupResolver();
+        CNS cns = lookupResolver();
         TransactionReceipt receipt = cns.insert(name, version, addr, abi).send();
         return PrecompiledCommon.getJsonStr(receipt.getOutput());
     }
     
-    public List<CNSInfo> queryCnsByName(String name) throws Exception {
-    	CnsTable cns = lookupResolver();
+    public List<CnsInfo> queryCnsByName(String name) throws Exception {
+    	CNS cns = lookupResolver();
     	String cnsInfo = cns.selectByName(name).send();
     	ObjectMapper objectMapper = ObjectMapperFactory.getObjectMapper();
 		return objectMapper.readValue(cnsInfo,
-				objectMapper.getTypeFactory().constructCollectionType(List.class, CNSInfo.class));
+				objectMapper.getTypeFactory().constructCollectionType(List.class, CnsInfo.class));
     }
     
-    public List<CNSInfo> queryCnsByNameAndVersion(String name, String version) throws Exception {
-    	CnsTable cns = lookupResolver();
+    public List<CnsInfo> queryCnsByNameAndVersion(String name, String version) throws Exception {
+    	CNS cns = lookupResolver();
     	String cnsInfo = cns.selectByNameAndVersion(name, version).send();
     	ObjectMapper objectMapper = ObjectMapperFactory.getObjectMapper();
     	return objectMapper.readValue(cnsInfo,
-    			objectMapper.getTypeFactory().constructCollectionType(List.class, CNSInfo.class));
+    			objectMapper.getTypeFactory().constructCollectionType(List.class, CnsInfo.class));
     }
 
-    private List<CNSInfo> jsonToCNSInfos(String contractAddressInfo) throws IOException {
+    private List<CnsInfo> jsonToCNSInfos(String contractAddressInfo) throws IOException {
 
         ObjectMapper objectMapper = ObjectMapperFactory.getObjectMapper();
-        List<CNSInfo> cnsInfo = objectMapper.readValue(contractAddressInfo, objectMapper.getTypeFactory().constructCollectionType(List.class, CNSInfo.class));
+        List<CnsInfo> cnsInfo = objectMapper.readValue(contractAddressInfo, objectMapper.getTypeFactory().constructCollectionType(List.class, CnsInfo.class));
         return cnsInfo;
     }
 
-    public CnsTable lookupResolver() {
+    public CNS lookupResolver() {
 
         if (this.cnsRegistry == null) {
-            CnsTable cnsRegistry = CnsTable.load(
+            CNS cnsRegistry = CNS.load(
                     registryContract, web3j, transactionManager,
                     new StaticGasProvider(DefaultGasProvider.GAS_PRICE, DefaultGasProvider.GAS_LIMIT));
             this.cnsRegistry = cnsRegistry;
