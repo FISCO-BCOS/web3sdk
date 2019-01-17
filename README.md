@@ -1,7 +1,7 @@
 
 ## 技术文档
 
-访问[web3sdk的文档](https://fisco-bcos-documentation.readthedocs.io/zh_CN/v1.0.1/docs/web3sdk/index.html )，内容包括：
+访问[web3sdk的文档](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/web3sdk/index.html)，内容包括：
 
 - SDK环境要求
 - SDK编译

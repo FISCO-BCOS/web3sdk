@@ -1,5 +1,6 @@
 package org.bcos.channel.proxy;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -9,7 +10,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
+
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,6 +76,9 @@ public class Server {
 				else if(msg.getType() == 0x13) {
 					onHeartBeat(ctx, msg);
 					return;
+				}
+				else if(msg.getType() == 0x1000) {
+					logger.debug("transaction message call back.");
 				}
 				else {
 					logger.error("unknown message:{}", msg.getType());
@@ -397,7 +401,7 @@ public class Server {
 				}
 				
 				//随机下发
-				Random random = new Random();
+				Random random = new SecureRandom();
 				Integer index = random.nextInt(topicCtxs.size());
 				ChannelHandlerContext target = (ChannelHandlerContext) topicCtxs.toArray()[index];
 				
