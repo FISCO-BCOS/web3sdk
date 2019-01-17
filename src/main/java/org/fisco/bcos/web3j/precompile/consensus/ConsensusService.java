@@ -27,31 +27,31 @@ public class ConsensusService {
 		consensus = Consensus.load(ConsensusPrecompileAddress, web3j, credentials, contractGasProvider);
 	}
 
-	public String addMiner(String nodeId) throws Exception {
-    	if(!isPeer(nodeId))
+	public String addMiner(String nodeID) throws Exception {
+    	if(!isValidNodeID(nodeID))
     	{
     		return PrecompiledCommon.transferToJson(-42);
     	}
     	List<String> minerList = web3j.getMinerList().send().getResult();
-    	if(minerList.contains(nodeId))
+    	if(minerList.contains(nodeID))
     	{
     		return PrecompiledCommon.transferToJson(-44);
     	}
-        TransactionReceipt receipt = consensus.addMiner(nodeId).send();
+        TransactionReceipt receipt = consensus.addMiner(nodeID).send();
         return PrecompiledCommon.getJsonStr(receipt.getOutput());
     }
 
-	public String addObserver(String nodeId) throws Exception {
-    	if(!isPeer(nodeId))
+	public String addObserver(String nodeID) throws Exception {
+    	if(!isValidNodeID(nodeID))
     	{
     		return PrecompiledCommon.transferToJson(-42);
     	}
     	List<String> observerList = web3j.getObserverList().send().getResult();
-    	if(observerList.contains(nodeId))
+    	if(observerList.contains(nodeID))
     	{
     		return PrecompiledCommon.transferToJson(-45);
     	}
-        TransactionReceipt receipt = consensus.addObserver(nodeId).send();
+        TransactionReceipt receipt = consensus.addObserver(nodeID).send();
         return PrecompiledCommon.getJsonStr(receipt.getOutput());
     }
 	
@@ -65,12 +65,12 @@ public class ConsensusService {
         return PrecompiledCommon.getJsonStr(receipt.getOutput());
     }
 	
-	private boolean isPeer(String nodeId) throws IOException, JsonProcessingException {
+	private boolean isValidNodeID(String _nodeID) throws IOException, JsonProcessingException {
 		boolean flag = false;
-		List<Peer> peers = web3j.ethPeersInfo().send().getResult();
-    	for(Peer peer : peers)
+		List<String> nodeIDs = web3j.getNodeIDList().send().getResult();
+    	for(String nodeID : nodeIDs)
     	{
-    		if(nodeId.equals(peer.getNodeID()))
+    		if(_nodeID.equals(nodeID))
     		{
     			flag = true;
     			break;
