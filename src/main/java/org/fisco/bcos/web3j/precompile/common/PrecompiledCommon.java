@@ -29,7 +29,7 @@ public class PrecompiledCommon {
     			msg = "last miner cannot be removed";
     			break;
     		case -42:
-    			msg = "nodeID is not in peers";
+    			msg = "nodeID is not in network";
     			break;
     		case -43:
     			msg = "nodeID is not in group peers";

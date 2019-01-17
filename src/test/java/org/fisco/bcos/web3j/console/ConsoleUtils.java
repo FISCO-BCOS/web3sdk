@@ -118,26 +118,6 @@ public class ConsoleUtils {
 		 }
 	}
 	
-	public static String getContractFullName(String contractName) {
-		String contractFullName = "";
-		if("Ok".equals(contractName))
-		{
-			if(EncryptType.encryptType == 0)
-			{
-				contractFullName = "org.fisco.bcos.channel.test.contract.Ok";
-			}
-			else
-			{
-				contractFullName = "org.fisco.bcos.channel.test.guomi.Ok";
-			}
-		}
-		else
-		{
-			contractFullName = "org.fisco.bcos.temp." + contractName;
-		}
-		return contractFullName;
-	}
-	
 	public static void singleLine() {
 		System.out.println(
 				"---------------------------------------------------------------------------------------------");
