@@ -1,0 +1,1 @@
+[{"constant":true,"inputs":[],"name":"get","outputs":[{"name":"","type":"string"},{"name":"","type":"string"},{"name":"","type":"address"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_first_name","type":"string"},{"name":"_last_name","type":"string"},{"name":"_addr","type":"address"}],"name":"set","outputs":[],"payable":false,"type":"function"}]
