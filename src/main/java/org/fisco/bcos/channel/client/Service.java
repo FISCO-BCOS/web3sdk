@@ -125,7 +125,7 @@ public class Service {
 
 					if (!running) {
 						logger.error("connectSeconds = " + connectSeconds);
-						logger.error("init ChannelService fail!");
+						logger.error("cannot not connect to node success, please checkout the node and the sdk config!");
 						throw new Exception("Init ChannelService fail!Please Refer To Link Below:https://github.com/FISCO-BCOS/web3sdk/wiki/web3sdk-debug");
 					}
 				} catch (InterruptedException e) {
