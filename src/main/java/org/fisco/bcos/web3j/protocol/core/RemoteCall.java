@@ -1,6 +1,8 @@
 package org.fisco.bcos.web3j.protocol.core;
 
 import io.reactivex.Flowable;
+
+import org.fisco.bcos.channel.client.TransactionSucCallback;
 import org.fisco.bcos.web3j.utils.Async;
 
 import java.util.concurrent.Callable;
@@ -37,7 +39,7 @@ public class RemoteCall<T> {
     public CompletableFuture<T> sendAsync() {
         return Async.run(this::send);
     }
-
+    
     /**
      * Provide an flowable to emit result from our function.
      *
