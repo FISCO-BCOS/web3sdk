@@ -17,8 +17,8 @@ import static org.fisco.bcos.web3j.solidity.compiler.SolidityCompiler.Options.*;
 
 public class SolidityFunctionWrapperGeneratorTest {
 
-    private String binFile =  new File("src/test/resources/solidity/Ok.bin").getAbsolutePath();
-    private String abiFile =  new File("src/test/resources/solidity/Ok.abi").getAbsolutePath();
+    private String binFile =  new File("src/test/resources/solidity/HelloWorld.bin").getAbsolutePath();
+    private String abiFile =  new File("src/test/resources/solidity/HelloWorld.abi").getAbsolutePath();
 //     private String binFile =  new ClassPathResource("solidity/Ok.bin").getPath();
 //     private String abiFile =  new ClassPathResource("solidity/Ok.abi").getPath();
     protected String tempDirPath =  new File("src/test/java/").getAbsolutePath();
@@ -28,8 +28,8 @@ public class SolidityFunctionWrapperGeneratorTest {
     @Test
     public void generateClassFromABIForHelloWorld() throws Exception {
 
-        String binFile1 =  new File("src/test/resources/solidity/Ok.bin").getAbsolutePath();
-        String abiFile1 =  new File("src/test/resources/solidity/Ok.abi").getAbsolutePath();
+        String binFile1 =  new File("src/test/resources/solidity/HelloWorld.bin").getAbsolutePath();
+        String abiFile1 =  new File("src/test/resources/solidity/HelloWorld.abi").getAbsolutePath();
         SolidityFunctionWrapperGenerator.main(Arrays.asList(
                 "-a",  abiFile1,
                 "-b",  binFile1,
@@ -61,7 +61,6 @@ public class SolidityFunctionWrapperGeneratorTest {
     public SolidityFunctionWrapperGeneratorTest() throws IOException {
     }
 
-    @Ignore
     @Test
     public void compileSolFilesToJavaTest() throws IOException {
         File solFileList = new File("src/test/resources/contract");
