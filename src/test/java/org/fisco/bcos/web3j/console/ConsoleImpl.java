@@ -135,7 +135,7 @@ public class ConsoleImpl implements ConsoleFace {
 		sb.append("getPbftView(gpv)                              Query the pbft view of node.\n");
 		sb.append("getMinerList(gml)                             Query nodeID list for miner nodes.\n");
 		sb.append("getObserverList(gol)                          Query nodeID list for observer nodes.\n");
-		sb.append("getNodeIDList(gnl)                            Query nodeID list for all nodes.\n");
+		sb.append("getNodeIDList(gnl)                            Query nodeID list for all connected nodes.\n");
 		sb.append("getGroupPeers(ggp)                            Query nodeID list for miner and observer nodes.\n");
 		sb.append("getPeers(gps)                                 Query peers currently connected to the client.\n");
 		sb.append("getConsensusStatus(gcs)                       Query consensus status.\n");
@@ -725,8 +725,7 @@ public class ConsoleImpl implements ConsoleFace {
 		contractAddress = contract.getContractAddress();
 		contractVersion = params[2];
 		// register cns
-		String result = cnsService.registerCns(params[1], contractVersion, contractAddress,
-				contract.getContractBinary());
+		String result = cnsService.registerCns(params[1], contractVersion, contractAddress, "");
 		System.out.println(contractAddress);
 		System.out.println();
 	}
