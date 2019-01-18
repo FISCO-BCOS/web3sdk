@@ -5,7 +5,6 @@ import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
-import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.utils.Web3AsyncThreadPoolSize;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,17 +13,9 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import static java.lang.System.exit;
-
-
 
 public class PerfomanceOk {
 	private static Logger logger = LoggerFactory.getLogger(PerfomanceOk.class);
