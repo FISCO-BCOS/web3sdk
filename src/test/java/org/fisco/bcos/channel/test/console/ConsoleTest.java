@@ -690,11 +690,11 @@ public class ConsoleTest{
     	log.clearLog();
     	
     	String[] params3 = {"qcs", "Ok"};
-    	console.getSystemConfigByKey(params3);
+    	console.queryCNS(params3);
     	assertTrue(!"".equals(log.getLog()));
     	
     	String[] params4 = {"qcs", "Ok", "1.0"};
-    	console.getSystemConfigByKey(params4);
+    	console.queryCNS(params4);
     	assertTrue(!"".equals(log.getLog()));
     }
     
