@@ -19,13 +19,6 @@ public class PerfomanceCollector {
 		this.total = total;
 	}
 	
-	public Ok getOk() {
-		return ok;
-	}
-	public void setOk(Ok ok) {
-		this.ok = ok;
-	}
-
 	public void onMessage(TransactionReceipt receipt, Long cost) {
 		try {
 			if (!receipt.isStatusOK()) {
@@ -33,8 +26,7 @@ public class PerfomanceCollector {
 				error.addAndGet(1);
 			}
 			else {
-				List<TransEventEventResponse> log = ok.getTransEventEvents(receipt);
-				if(!(log.size() > 0 && log.get(0).num.intValue() == 4)) {
+				if(receipt.getLogs().isEmpty()) {
 					System.out.println("receipt log error");
 					error.addAndGet(1);
 				}
@@ -115,5 +107,4 @@ public class PerfomanceCollector {
 	private AtomicInteger received = new AtomicInteger(0);
 	private AtomicInteger error = new AtomicInteger(0);
 	private Long startTimestamp = System.currentTimeMillis();
-	private Ok ok;
 }
