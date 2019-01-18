@@ -4,6 +4,7 @@ import org.apache.commons.io.FileUtils;
 import org.fisco.bcos.web3j.codegen.SolidityFunctionWrapperGenerator;
 import org.fisco.bcos.web3j.solidity.compiler.CompilationResult;
 import org.fisco.bcos.web3j.solidity.compiler.SolidityCompiler;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -27,8 +28,8 @@ public class SolidityFunctionWrapperGeneratorTest {
     @Test
     public void generateClassFromABIForHelloWorld() throws Exception {
 
-        String binFile1 =  new File("src/test/resources/solidity/HelloWorld.bin").getAbsolutePath();
-        String abiFile1 =  new File("src/test/resources/solidity/HelloWorld.abi").getAbsolutePath();
+        String binFile1 =  new File("src/test/resources/solidity/Ok.bin").getAbsolutePath();
+        String abiFile1 =  new File("src/test/resources/solidity/Ok.abi").getAbsolutePath();
         SolidityFunctionWrapperGenerator.main(Arrays.asList(
                 "-a",  abiFile1,
                 "-b",  binFile1,
@@ -60,6 +61,7 @@ public class SolidityFunctionWrapperGeneratorTest {
     public SolidityFunctionWrapperGeneratorTest() throws IOException {
     }
 
+    @Ignore
     @Test
     public void compileSolFilesToJavaTest() throws IOException {
         File solFileList = new File("src/test/resources/contract");
