@@ -5,7 +5,7 @@ apply plugin: 'eclipse'
 apply plugin: 'signing'
 apply plugin:'application'
 
-//指定JDK版本,改成系统中版本
+
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
