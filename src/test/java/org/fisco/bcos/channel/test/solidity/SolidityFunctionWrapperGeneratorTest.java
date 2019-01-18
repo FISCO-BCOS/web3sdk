@@ -1,6 +1,7 @@
 package org.fisco.bcos.channel.test.solidity;
 
 import org.fisco.bcos.web3j.codegen.SolidityFunctionWrapperGenerator;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -18,10 +19,10 @@ public class SolidityFunctionWrapperGeneratorTest {
 
 
     @Test
-    public void generateClassFromABIForHelloWorld() throws Exception {
+    public void generateClassFromABIForOk() throws Exception {
 
-        String binFile1 =  new File("src/test/resources/solidity/HelloWorld.bin").getAbsolutePath();
-        String abiFile1 =  new File("src/test/resources/solidity/HelloWorld.abi").getAbsolutePath();
+        String binFile1 =  new File("src/test/resources/solidity/Ok.bin").getAbsolutePath();
+        String abiFile1 =  new File("src/test/resources/solidity/Ok.abi").getAbsolutePath();
         SolidityFunctionWrapperGenerator.main(Arrays.asList(
                 "-a",  abiFile1,
                 "-b",  binFile1,
