@@ -368,6 +368,7 @@ public class ChannelConnections {
 				logger.debug("try connect to: {}:{}", host, port);
 
 				bootstrap.connect(host, port);
+				logger.debug("connect to: {}:{} success", host, port);
 			}
 			else {
 				logger.trace("send heart beat to {}", ctx.getKey());
