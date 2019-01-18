@@ -6,6 +6,7 @@ import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import org.fisco.bcos.channel.client.TransactionSucCallback;
 import org.fisco.bcos.web3j.abi.EventEncoder;
 import org.fisco.bcos.web3j.abi.EventValues;
 import org.fisco.bcos.web3j.abi.FunctionEncoder;
@@ -295,6 +296,17 @@ public abstract class Contract extends ManagedTransaction {
 
         return receipt;
     }
+    
+    protected void asyncExecuteTransaction(Function function, TransactionSucCallback callback) {
+		try {
+			sendOnly(contractAddress, FunctionEncoder.encode(function), BigInteger.ZERO,
+					gasProvider.getGasPrice(function.getName()), gasProvider.getGasPrice(function.getName()), callback);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (TransactionException e) {
+			e.printStackTrace();
+		}
+	}
 
     protected <T extends Type> RemoteCall<T> executeRemoteCallSingleValueReturn(Function function) {
         return new RemoteCall<>(() -> executeCallSingleValueReturn(function));
