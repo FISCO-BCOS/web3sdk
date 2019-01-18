@@ -34,4 +34,4 @@ gradle.properties
 /dist
 /src/test/resources/ca.crt
 /src/test/resources/keystore.p12
-/src/test/java/org/fisco/bcos/temp
+
