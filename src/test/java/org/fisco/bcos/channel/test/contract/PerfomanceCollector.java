@@ -28,7 +28,7 @@ public class PerfomanceCollector {
 
 	public void onMessage(TransactionReceipt receipt, Long cost) {
 		try {
-			if (receipt == null) {
+			if (!receipt.isStatusOK()) {
 				System.out.println("receipt error");
 				error.addAndGet(1);
 			}
@@ -94,9 +94,9 @@ public class PerfomanceCollector {
 						+ String.valueOf((double) less2000.get() / total * 100) + "%");
 				System.out.println("2000 < time           : " + String.valueOf(timeout2000) + "  : "
 						+ String.valueOf((double) timeout2000.get() / total * 100) + "%");
+				
+				System.exit(0);
 			}
-			
-			System.exit(0);
 		} catch (Exception e) {
 			logger.error("error:", e);
 		}

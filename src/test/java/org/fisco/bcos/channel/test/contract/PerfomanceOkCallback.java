@@ -31,23 +31,13 @@ public class PerfomanceOkCallback extends TransactionSucCallback {
 	}
 	
 	@Override
-	public void onResponse(EthereumResponse response) {
+	public void onResponse(TransactionReceipt receipt) {
 		Long cost = System.currentTimeMillis() - startTime;
 		
-		if(response.getErrorCode() != 0) {
-			logger.error("transactionCallback error: {} {}", response.getErrorCode(), response.getErrorMessage());
-			collector.onMessage(null, cost);
-			return;
-		}
-		
 		try {
-			logger.trace("transactionCallback: {}", response.getContent());
-			TransactionReceipt receipt = objectMapper.readValue(response.getContent().getBytes(), TransactionReceipt.class);
 			collector.onMessage(receipt, cost);
 		} catch (Exception e) {
-			logger.error("decode receipt error: ", e);
-			
-			collector.onMessage(null, cost);
+			logger.error("onMessage error: ", e);
 		}
 	}
 }
