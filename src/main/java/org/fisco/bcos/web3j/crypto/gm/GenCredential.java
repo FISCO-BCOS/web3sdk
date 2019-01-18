@@ -51,18 +51,15 @@ public class GenCredential {
 	}
 
 	private static ECKeyPair createGuomiKeyPair(String privKey) {
-		System.out.println("=====INIT GUOMI KEYPAIR from Private Key");
 		SM2KeyGenerator generator = new SM2KeyGenerator();
 		final KeyPair keyPairData = generator.generateKeyPair(privKey);
         System.out.println("generate keypair data succeed");
 		if (keyPairData != null)
 			return genEcPairFromKeyPair(keyPairData);
-		System.out.println("=====INIT GUOMI KEYPAIR from Private Key FAILED ====");
 		return null;
 	}
 
 	private static ECKeyPair createECDSAKeyPair(String privKey) {
-		System.out.println("=====INIT ECDSA KEYPAIR From private key===");
 		try {
 			BigInteger bigPrivKey = new BigInteger(privKey, 16);
 			ECKeyPair keyPair = ECKeyPair.create(bigPrivKey);
@@ -74,7 +71,6 @@ public class GenCredential {
 	}
 
 	private static ECKeyPair createECDSAKeyPair() {
-		System.out.println("=====INIT ECDSA KEYPAIR");
 		try {
 			ECKeyPair keyPair = Keys.createEcKeyPair();
 			return keyPair;

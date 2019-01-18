@@ -59,6 +59,9 @@ public interface Ethereum {
     //增加peers接口
     Request<?, EthPeers> ethPeersInfo();
     
+    //add getNodeID
+    Request<?, NodeIDList> getNodeIDList();
+    
     //增加getSystemConfigByKey接口
     Request<?, SystemConfig> getSystemConfigByKey(String key);
 

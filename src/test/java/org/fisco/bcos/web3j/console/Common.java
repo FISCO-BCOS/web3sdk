@@ -18,4 +18,7 @@ public class Common {
 	public static final String PRIVITEKEY3 = "d0fee0a4e3c545a9394965042f8f891b6e5482c212a7428ec175d6aed121353a";
 	public static final String ORIGIN3 = "0x1600e34312edea101d8b41a3465f2e381b66baed";
 	
+	public static final String CONTRACT_PACKAGE = "org.fisco.bcos.temp.";
+	
+	
 }
