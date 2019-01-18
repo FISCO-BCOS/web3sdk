@@ -4,9 +4,12 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.math.BigInteger;
 import java.util.*;
+import java.util.concurrent.Semaphore;
 import java.util.stream.Collectors;
 
+import org.fisco.bcos.channel.client.ChannelResponseCallback2;
 import org.fisco.bcos.channel.client.TransactionSucCallback;
+import org.fisco.bcos.channel.dto.ChannelResponse;
 import org.fisco.bcos.web3j.abi.EventEncoder;
 import org.fisco.bcos.web3j.abi.EventValues;
 import org.fisco.bcos.web3j.abi.FunctionEncoder;
@@ -266,7 +269,36 @@ public abstract class Contract extends ManagedTransaction {
     private TransactionReceipt executeTransaction(
             Function function, BigInteger weiValue)
             throws IOException, TransactionException {
-        return executeTransaction(FunctionEncoder.encode(function), weiValue, function.getName());
+        //return executeTransaction(FunctionEncoder.encode(function), weiValue, function.getName());
+        class Callback extends TransactionSucCallback  {
+			Callback() {
+				try {
+					semaphore.acquire(1);
+				} catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+				}
+			}
+
+			@Override
+			public void onResponse(TransactionReceipt receipt) {
+				this.receipt = receipt;
+				semaphore.release();
+			}
+			
+			public TransactionReceipt receipt;
+			public Semaphore semaphore = new Semaphore(1, true);
+		};
+
+		Callback callback = new Callback();
+
+		asyncExecuteTransaction(function, callback);
+		try {
+			callback.semaphore.acquire(1);
+		} catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+		}
+
+		return callback.receipt;
     }
 
     /**
@@ -281,7 +313,6 @@ public abstract class Contract extends ManagedTransaction {
     TransactionReceipt executeTransaction(
             String data, BigInteger weiValue, String funcName)
             throws TransactionException, IOException {
-
         TransactionReceipt receipt = send(contractAddress, data, weiValue,
                 gasProvider.getGasPrice(funcName),
                 gasProvider.getGasLimit(funcName));

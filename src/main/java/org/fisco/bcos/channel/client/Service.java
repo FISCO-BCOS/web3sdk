@@ -10,11 +10,14 @@ import io.netty.util.TimerTask;
 import org.fisco.bcos.channel.dto.*;
 import org.fisco.bcos.channel.handler.ChannelConnections;
 import org.fisco.bcos.channel.handler.GroupChannelConnectionsConfig;
+import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.channel.handler.ConnectionCallback;
 import org.fisco.bcos.channel.handler.ConnectionInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +36,8 @@ public class Service {
 	private ChannelPushCallback pushCallback;
 	private Map<String, Object> seq2Callback = new ConcurrentHashMap<String, Object>();
 	private static int groupId;
+	static private ObjectMapper objectMapper = new ObjectMapper();
+	
 	/**
 	 * add transaction seq callback
 	 */
@@ -628,17 +633,18 @@ public class Service {
                 //停止定时器，防止多响应一次
                 callback.getTimeout().cancel();
             }
-
-            EthereumResponse response = new EthereumResponse();
-            if(message.getResult() != 0) {
-                response.setErrorMessage("EthereumResponse error");
+            
+            try {
+            	TransactionReceipt receipt = objectMapper.readValue(message.getData(), TransactionReceipt.class);
+            	
+            	callback.onResponse(receipt);
             }
-
-            response.setErrorCode(message.getResult());
-            response.setMessageID(message.getSeq());
-            response.setContent(new String(message.getData()));
-
-            callback.onResponse(response);
+            catch(Exception e) {
+            	TransactionReceipt receipt = new TransactionReceipt();
+            	receipt.setStatus("Decode receipt error: " + e.getLocalizedMessage());
+            	
+            	callback.onResponse(receipt);
+            }
 
             seq2TransactionCallback.remove(message.getSeq());
         }
