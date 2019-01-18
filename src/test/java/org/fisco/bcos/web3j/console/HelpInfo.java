@@ -122,8 +122,8 @@ public class HelpInfo {
 	
 	public static void getNodeIDListHelp() 
 	{
-		System.out.println("Query nodeID list for all nodes.");
-		System.out.println("Usage: gnd");
+		System.out.println("Query nodeID list for all connected nodes.");
+		System.out.println("Usage: gnl");
 	}
 	
 	public static void getGroupPeersHelp() 
