@@ -40,6 +40,10 @@ public class JsonRpc2_0Web3j implements Web3j {
     private final ScheduledExecutorService scheduledExecutorService;
     private  int groupId = 1;
     private BigInteger blockNumber = new BigInteger("1");
+    
+    public Web3jService web3jService() {
+    	return web3jService;
+    }
 
      public BigInteger getBlockNumber() {
         return blockNumber;
