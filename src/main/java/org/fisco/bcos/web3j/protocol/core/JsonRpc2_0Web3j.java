@@ -185,7 +185,7 @@ public class JsonRpc2_0Web3j implements Web3j {
     public Request<?, NodeIDList> getNodeIDList() {
         return new Request<>(
                 "getNodeIDList",
-               Arrays.asList(),
+               Arrays.asList(groupId),
                 web3jService,
                 NodeIDList.class);
     }
