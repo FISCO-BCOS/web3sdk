@@ -1,12 +1,14 @@
 package org.fisco.bcos.web3j.console;
 
-import java.io.IOException;
-import java.lang.reflect.Method;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.alibaba.fastjson.JSONObject;
+import io.bretty.console.table.Alignment;
+import io.bretty.console.table.ColumnFormatter;
+import io.bretty.console.table.Table;
 import org.fisco.bcos.channel.client.Service;
+import org.fisco.bcos.web3j.crypto.Credentials;
+import org.fisco.bcos.web3j.crypto.ECKeyPair;
+import org.fisco.bcos.web3j.crypto.Keys;
+import org.fisco.bcos.web3j.crypto.gm.GenCredential;
 import org.fisco.bcos.web3j.precompile.authority.AuthorityInfo;
 import org.fisco.bcos.web3j.precompile.authority.AuthorityService;
 import org.fisco.bcos.web3j.precompile.cns.CnsInfo;
@@ -14,11 +16,6 @@ import org.fisco.bcos.web3j.precompile.cns.CnsService;
 import org.fisco.bcos.web3j.precompile.common.PrecompiledCommon;
 import org.fisco.bcos.web3j.precompile.config.SystemConfigSerivce;
 import org.fisco.bcos.web3j.precompile.consensus.ConsensusService;
-import org.fisco.bcos.web3j.crypto.Credentials;
-import org.fisco.bcos.web3j.crypto.ECKeyPair;
-import org.fisco.bcos.web3j.crypto.EncryptType;
-import org.fisco.bcos.web3j.crypto.Keys;
-import org.fisco.bcos.web3j.crypto.gm.GenCredential;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
@@ -29,11 +26,11 @@ import org.fisco.bcos.web3j.utils.Numeric;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import com.alibaba.fastjson.JSONObject;
-
-import io.bretty.console.table.Alignment;
-import io.bretty.console.table.ColumnFormatter;
-import io.bretty.console.table.Table;
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ConsoleImpl implements ConsoleFace {
 
