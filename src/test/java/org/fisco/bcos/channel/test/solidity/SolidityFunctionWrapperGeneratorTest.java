@@ -1,7 +1,6 @@
 package org.fisco.bcos.channel.test.solidity;
 
 import org.fisco.bcos.web3j.codegen.SolidityFunctionWrapperGenerator;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -10,10 +9,6 @@ import java.util.Arrays;
 
 public class SolidityFunctionWrapperGeneratorTest {
 
-    private String binFile =  new File("src/test/resources/solidity/HelloWorld.bin").getAbsolutePath();
-    private String abiFile =  new File("src/test/resources/solidity/HelloWorld.abi").getAbsolutePath();
-//     private String binFile =  new ClassPathResource("solidity/Ok.bin").getPath();
-//     private String abiFile =  new ClassPathResource("solidity/Ok.abi").getPath();
     protected String tempDirPath =  new File("src/test/java/").getAbsolutePath();
     protected String packageName =  "org.fisco.bcos.temp";
 
@@ -36,6 +31,8 @@ public class SolidityFunctionWrapperGeneratorTest {
     public void generateClassFromABIForGreeter() throws Exception {
         File  fileList = new File("src/test/resources/solidity");
         File[] files = fileList.listFiles();
+        String abiFile = "";
+        String binFile = "";
         for(File file : files) {
             String filename = file.getName();
             String commonName = filename.split("\\.")[0];

@@ -9,8 +9,6 @@ import java.util.Scanner;
 
 public class ConsoleClient {
 
-	private Response t;
-
 	@SuppressWarnings("resource")
 	public static void main(String[] args) {
 
