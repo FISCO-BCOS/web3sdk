@@ -698,4 +698,22 @@ public class ConsoleTest{
     	assertTrue(!"".equals(log.getLog()));
     }
     
+    @Test
+    public void getNodeIDListTest() throws Exception {
+    	String[] params1 = {};
+    	console.getNodeIDList(params1);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+    	String[] params2 = {"gnl", "-h"};
+    	console.getNodeIDList(params2);
+    	assertTrue(!"".equals(log.getLog()));
+    	log.clearLog();
+    	
+    	String[] params3 = {"gnl"};
+    	console.getNodeIDList(params3);
+    	assertTrue(!"".equals(log.getLog()));
+    	
+    }
+    
 }
