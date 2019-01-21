@@ -51,6 +51,7 @@ public class ConnectionCallback implements ChannelConnections.Callback {
 
             logger.debug("connection established，send topic to the connection:{}", message.getSeq());
 
+            topics.add("_block_notify_" + channelService.getGroupId());
             message.setData(objectMapper.writeValueAsBytes(topics.toArray()));
 
             logger.debug("topics: {}", new String(message.getData()));
@@ -128,11 +129,18 @@ public class ConnectionCallback implements ChannelConnections.Callback {
                     logger.trace("heartbeat response");
                 }
             } else if (msg.getType() == 0x1000) {
-                //交易上链成功回调的消息
-                logger.debug("EthereumMessage response");
                 EthereumMessage ethereumMessage = new EthereumMessage(msg);
+                logger.trace("TransactionReceipt notify: {}", ethereumMessage.getSeq());
+                
                 ethereumMessage.readExtra(message);
                 channelService.onReceiveTransactionMessage(ctx, ethereumMessage);
+            } else if(msg.getType() == 0x1001) {
+            	//new block notify
+            	ChannelMessage2 channelMessage = new ChannelMessage2(msg);
+                channelMessage.readExtra(message);
+            	
+            	logger.trace("New block notify");
+            	channelService.onReceiveBlockNotify(ctx, channelMessage);
             } else {
                 logger.error("unknown message type:{}", msg.getType());
             }
