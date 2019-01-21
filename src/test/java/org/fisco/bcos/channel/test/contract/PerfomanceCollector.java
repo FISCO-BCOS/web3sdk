@@ -65,13 +65,13 @@ public class PerfomanceCollector {
 
 				System.out.println("===================================================================");
 
-				System.out.println("总交易数:  " + String.valueOf(total));
-				System.out.println("总耗时: " + String.valueOf(totalTime) + "ms");
+				System.out.println("Total transactions:  " + String.valueOf(total));
+				System.out.println("Total time: " + String.valueOf(totalTime) + "ms");
 				System.out.println("TPS: " + String.valueOf(total / ((double) totalTime / 1000)));
-				System.out.println("平均耗时: " + String.valueOf(totalCost.get() / total) + "ms");
-				System.out.println("错误率: " + String.valueOf((error.get() / received.get()) * 100) + "%");
+				System.out.println("Avg time cost: " + String.valueOf(totalCost.get() / total) + "ms");
+				System.out.println("Error rate: " + String.valueOf((error.get() / received.get()) * 100) + "%");
 
-				System.out.println("时间区间分布:");
+				System.out.println("Time area:");
 				System.out.println("0    < time <  50ms   : " + String.valueOf(less50) + "  : "
 						+ String.valueOf((double) less50.get() / total * 100) + "%");
 				System.out.println("50   < time <  100ms  : " + String.valueOf(less100) + "  : "
