@@ -21,12 +21,6 @@ public abstract class TransactionSucCallback {
         TransactionReceipt receipt = new TransactionReceipt();
         receipt.setStatus("Receipt timeout");
         onResponse(receipt);
-        
-//        EthereumResponse response = new EthereumResponse();
-//        response.setErrorCode(102);
-//        response.setErrorMessage("transactionSuc timeout");
-//        response.setContent("");
-//        onResponse(response);
     }
 
     public Timeout getTimeout() {

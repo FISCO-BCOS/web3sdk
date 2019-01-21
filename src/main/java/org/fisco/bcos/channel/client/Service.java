@@ -21,8 +21,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
@@ -47,8 +49,8 @@ public class Service {
 	private Timer timeoutHandler = new HashedWheelTimer();
 	private ThreadPoolTaskExecutor threadPool;
 
-	private List<String> topics = new ArrayList<String>();
-	public void setTopics(List<String> topics) {
+	private Set<String> topics = new HashSet<String>();
+	public void setTopics(Set<String> topics) {
 		try {
 			this.topics = topics;
 		}
