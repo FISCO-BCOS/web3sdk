@@ -1,14 +1,14 @@
 package org.fisco.bcos.web3j.tx;
 
 import org.fisco.bcos.web3j.crypto.Credentials;
-import org.fisco.bcos.web3j.crypto.SampleKeys;
 import org.fisco.bcos.web3j.protocol.Web3j;
-import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameterName;
 import org.fisco.bcos.web3j.protocol.core.Request;
-import org.fisco.bcos.web3j.protocol.core.methods.response.*;
+import org.fisco.bcos.web3j.protocol.core.methods.response.EthBlockNumber;
+import org.fisco.bcos.web3j.protocol.core.methods.response.EthGetTransactionReceipt;
+import org.fisco.bcos.web3j.protocol.core.methods.response.EthSendTransaction;
+import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.utils.TxHashVerifier;
 import org.junit.Before;
-
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -20,8 +20,8 @@ import static org.mockito.Mockito.when;
 
 public abstract class ManagedTransactionTester {
 
-    static final String ADDRESS = "0x3d6cb163f7c72d20b0fcd6baae5889329d138a4a";
-    static final String TRANSACTION_HASH = "0xHASH";
+    public static final String ADDRESS = "0x3d6cb163f7c72d20b0fcd6baae5889329d138a4a";
+    public static final String TRANSACTION_HASH = "0xHASH";
     protected Web3j web3j;
     protected TxHashVerifier txHashVerifier;
 

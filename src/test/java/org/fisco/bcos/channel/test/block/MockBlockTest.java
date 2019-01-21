@@ -6,7 +6,6 @@ import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.Web3jService;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
 import org.fisco.bcos.web3j.protocol.core.Request;
-import org.fisco.bcos.web3j.protocol.core.Response;
 import org.fisco.bcos.web3j.protocol.core.methods.response.EthBlock;
 import org.junit.Test;
 
@@ -15,7 +14,6 @@ import java.math.BigInteger;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -45,16 +43,6 @@ public class MockBlockTest {
         EthBlock.Block mockBlock = mockEthBlock.getBlock();
         assertEquals( mockBlock.getNonce(),new BigInteger("0"));
         assertTrue(mockBlock.getNumber().intValue() == 1);
-    }
-
-    protected <T extends Response> T deserialiseResponse(Class<T> type) {
-        T response = null;
-        try {
-            response = web3jService.send(new Request(), type);
-        } catch (IOException e) {
-            fail(e.getMessage());
-        }
-        return response;
     }
 }
 

@@ -22,7 +22,6 @@ import org.fisco.bcos.web3j.tx.gas.StaticGasProvider;
 import org.fisco.bcos.web3j.utils.Async;
 import org.fisco.bcos.web3j.utils.Numeric;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -379,7 +378,7 @@ public class ContractTest extends ManagedTransactionTester {
         assertEquals(eventValuesWithLogs2.get(0).getLog(), logs.get(1));
     }
 
-    void testErrorScenario() throws Throwable {
+    public void testErrorScenario() throws Throwable {
         try {
             contract.performTransaction(
                     new Address(BigInteger.TEN), new Uint256(BigInteger.ONE)).send();

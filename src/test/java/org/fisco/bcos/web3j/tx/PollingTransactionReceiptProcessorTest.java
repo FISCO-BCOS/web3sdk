@@ -10,14 +10,11 @@ import org.fisco.bcos.web3j.tx.response.PollingTransactionReceiptProcessor;
 import org.junit.Before;
 import org.junit.Test;
 
-
 import java.io.IOException;
 
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class PollingTransactionReceiptProcessorTest {
     private static final String TRANSACTION_HASH = "0x00";
