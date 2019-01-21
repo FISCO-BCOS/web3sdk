@@ -23,13 +23,12 @@ public class PerfomanceOkD {
 	
 	public static void main(String[] args) throws Exception {
 		String groupId = args[3];
-		//初始化Service
 		ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
 		Service service = context.getBean(Service.class);
 		service.setGroupId(Integer.parseInt(groupId));
 		service.run();
 
-		System.out.println("开始测试...");
+		System.out.println("Start test...");
 		System.out.println("===================================================================");
 		
 		ChannelEthereumService channelEthereumService = new ChannelEthereumService();
@@ -39,14 +38,11 @@ public class PerfomanceOkD {
 				Executors.newScheduledThreadPool(500);
 		Web3j web3 = Web3j.build(channelEthereumService,  15 * 100, scheduledExecutorService, Integer.parseInt(groupId));
 
-		//初始化交易签名私钥
 		Credentials credentials = Credentials.create("b83261efa42895c38c6c2364ca878f43e77f3cddbc922bf57d0d48070f79feb6");
 
-		//初始化交易参数
 		BigInteger gasPrice = new BigInteger("30000000");
 		BigInteger gasLimit = new BigInteger("30000000");
 		
-		//解析参数
 		String command = args[0];
 		Integer count = 0;
 		Integer qps = 0;
@@ -57,7 +53,7 @@ public class PerfomanceOkD {
 				qps = Integer.parseInt(args[2]);
 				break;
 			default:
-				System.out.println("参数: <trans> <请求总数> <QPS>");
+				System.out.println("Args: <trans> <Total> <QPS>");
 		}
 
 		ThreadPoolTaskExecutor threadPool = new ThreadPoolTaskExecutor();
@@ -67,7 +63,7 @@ public class PerfomanceOkD {
 		
 		threadPool.initialize();
 		
-		System.out.println("部署合约");
+		System.out.println("Deploying contract...");
 		OkD ok = OkD.deploy(web3, credentials, gasPrice, gasLimit).send();
 
 		PerfomanceCollector collector = new PerfomanceCollector();
@@ -77,7 +73,7 @@ public class PerfomanceOkD {
 		Integer area = count / 10;
 		final Integer total = count;
 
-		System.out.println("开始压测，总交易量：" + count);
+		System.out.println("Start test，total：" + count);
 		for (Integer i = 0; i < count; ++i) {
 			threadPool.execute(new Runnable() {
 				@Override
@@ -94,7 +90,7 @@ public class PerfomanceOkD {
 					int current = sended.incrementAndGet();
 
 					if (current >= area && ((current % area) == 0)) {
-						System.out.println("已发送: " + current + "/" + total + " 交易");
+						System.out.println("Already sended: " + current + "/" + total + " transactions");
 					}
 				}
 			});
