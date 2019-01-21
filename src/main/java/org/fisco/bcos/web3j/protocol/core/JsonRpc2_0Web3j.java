@@ -39,18 +39,19 @@ public class JsonRpc2_0Web3j implements Web3j {
     private final long blockTime;
     private final ScheduledExecutorService scheduledExecutorService;
     private  int groupId = 1;
-    private BigInteger blockNumber = new BigInteger("1");
     
     public Web3jService web3jService() {
     	return web3jService;
     }
 
      public BigInteger getBlockNumber() {
-        return blockNumber;
+        return ((ChannelEthereumService)web3jService).getChannelService().getNumber();
     }
 
     synchronized public void setBlockNumber(BigInteger blockNumber) {
-        this.blockNumber = blockNumber;
+        if(blockNumber.compareTo(((ChannelEthereumService)web3jService).getChannelService().getNumber()) > 0) {
+        	((ChannelEthereumService)web3jService).getChannelService().setNumber(blockNumber);
+        }
     }
 
     public JsonRpc2_0Web3j(Web3jService web3jService) {
@@ -71,23 +72,23 @@ public class JsonRpc2_0Web3j implements Web3j {
         this.scheduledExecutorService = scheduledExecutorService;
         this.groupId= groupId;
 
-        ScheduledExecutorService scheduleService = Executors.newSingleThreadScheduledExecutor();
-        Runnable runnable = new Runnable() {
-            public void run() {
-                Request irequest = ethBlockNumber();
-                try {
-                    CompletableFuture<EthBlockNumber> ifuture = ethBlockNumber().sendAsync();
-
-                    EthBlockNumber ethBlockNumber = ifuture.get(10000, TimeUnit.MILLISECONDS);
-                    setBlockNumber(ethBlockNumber.getBlockNumber());
-                } catch (Exception e) {
-                    logger.error("getblocknumber's request id is : " +  irequest.getId() );
-                    logger.error("Exception: get blocknumber request fail "  + e);
-                }
-            }
-        };
-        scheduleService.scheduleAtFixedRate(runnable,1,5,TimeUnit.SECONDS);
-
+//        ScheduledExecutorService scheduleService = Executors.newSingleThreadScheduledExecutor();
+//        
+//        Runnable runnable = new Runnable() {
+//            public void run() {
+//                Request irequest = ethBlockNumber();
+//                try {
+//                    CompletableFuture<EthBlockNumber> ifuture = ethBlockNumber().sendAsync();
+//
+//                    EthBlockNumber ethBlockNumber = ifuture.get(10000, TimeUnit.MILLISECONDS);
+//                    setBlockNumber(ethBlockNumber.getBlockNumber());
+//                } catch (Exception e) {
+//                    logger.error("getblocknumber's request id is : " +  irequest.getId() );
+//                    logger.error("Exception: get blocknumber request fail "  + e);
+//                }
+//            }
+//        };
+//        scheduleService.scheduleAtFixedRate(runnable,1,5,TimeUnit.SECONDS);
     }
 
     @Override

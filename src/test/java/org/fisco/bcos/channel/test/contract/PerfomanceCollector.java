@@ -19,22 +19,14 @@ public class PerfomanceCollector {
 		this.total = total;
 	}
 	
-	public Ok getOk() {
-		return ok;
-	}
-	public void setOk(Ok ok) {
-		this.ok = ok;
-	}
-
 	public void onMessage(TransactionReceipt receipt, Long cost) {
 		try {
-			if (receipt == null) {
+			if (!receipt.isStatusOK()) {
 				System.out.println("receipt error");
 				error.addAndGet(1);
 			}
 			else {
-				List<TransEventEventResponse> log = ok.getTransEventEvents(receipt);
-				if(!(log.size() > 0 && log.get(0).num.intValue() == 4)) {
+				if(receipt.getLogs().isEmpty()) {
 					System.out.println("receipt log error");
 					error.addAndGet(1);
 				}
@@ -73,13 +65,13 @@ public class PerfomanceCollector {
 
 				System.out.println("===================================================================");
 
-				System.out.println("总交易数:  " + String.valueOf(total));
-				System.out.println("总耗时: " + String.valueOf(totalTime) + "ms");
+				System.out.println("Total transactions:  " + String.valueOf(total));
+				System.out.println("Total time: " + String.valueOf(totalTime) + "ms");
 				System.out.println("TPS: " + String.valueOf(total / ((double) totalTime / 1000)));
-				System.out.println("平均耗时: " + String.valueOf(totalCost.get() / total) + "ms");
-				System.out.println("错误率: " + String.valueOf((error.get() / received.get()) * 100) + "%");
+				System.out.println("Avg time cost: " + String.valueOf(totalCost.get() / total) + "ms");
+				System.out.println("Error rate: " + String.valueOf((error.get() / received.get()) * 100) + "%");
 
-				System.out.println("时间区间分布:");
+				System.out.println("Time area:");
 				System.out.println("0    < time <  50ms   : " + String.valueOf(less50) + "  : "
 						+ String.valueOf((double) less50.get() / total * 100) + "%");
 				System.out.println("50   < time <  100ms  : " + String.valueOf(less100) + "  : "
@@ -94,9 +86,9 @@ public class PerfomanceCollector {
 						+ String.valueOf((double) less2000.get() / total * 100) + "%");
 				System.out.println("2000 < time           : " + String.valueOf(timeout2000) + "  : "
 						+ String.valueOf((double) timeout2000.get() / total * 100) + "%");
+				
+				System.exit(0);
 			}
-			
-			System.exit(0);
 		} catch (Exception e) {
 			logger.error("error:", e);
 		}
@@ -115,5 +107,4 @@ public class PerfomanceCollector {
 	private AtomicInteger received = new AtomicInteger(0);
 	private AtomicInteger error = new AtomicInteger(0);
 	private Long startTimestamp = System.currentTimeMillis();
-	private Ok ok;
 }
