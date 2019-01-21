@@ -20,11 +20,11 @@ public class ChannelEthereumService extends org.fisco.bcos.web3j.protocol.Servic
 	private static Logger logger = LoggerFactory.getLogger(ChannelEthereumService.class);
 
 	private Service channelService;
-	
+
     public ChannelEthereumService( boolean includeRawResponses) {
         super(includeRawResponses);
     }
-	
+
 	public ChannelEthereumService() {
         super(false);
     }
@@ -101,7 +101,7 @@ public class ChannelEthereumService extends org.fisco.bcos.web3j.protocol.Servic
                 throw new ResponseExcepiton(t.getError().getCode(), t.getError().getMessage());
             } else {
                 String[] resultArray = response.getContent().split("result");
-                String resultStr = resultArray[1]; 
+                String resultStr = resultArray[1];
                 if("\"".equals(resultStr.substring(2, 3)))
                 	return resultStr.substring(3,resultStr.length()-3);
                 else
