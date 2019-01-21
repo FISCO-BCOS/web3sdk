@@ -19,6 +19,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,7 @@ public class Service {
 	private Map<String, Object> seq2Callback = new ConcurrentHashMap<String, Object>();
 	private static int groupId;
 	static private ObjectMapper objectMapper = new ObjectMapper();
+	private BigInteger number = BigInteger.valueOf(0);
 	
 	/**
 	 * add transaction seq callback
@@ -621,6 +623,25 @@ public class Service {
 			}
 		}
 	}
+	
+	public void onReceiveBlockNotify(ChannelHandlerContext ctx, ChannelMessage2 message) {
+		try {
+			String data = new String(message.getData());
+			String[] split = data.split(",");
+			if(split.length != 2) {
+				logger.error("Block notify format error: {}", data);
+				return;
+			}
+			
+			//Integer groupID = Integer.parseInt(split[0]);
+			Integer number = Integer.parseInt(split[1]);
+			
+			setNumber(BigInteger.valueOf((long)number));
+		}
+		catch(Exception e) {
+			logger.error("Block notify error", e);
+		}
+	}
 
 	public void onReceiveTransactionMessage(ChannelHandlerContext ctx, EthereumMessage message) {
         TransactionSucCallback callback = (TransactionSucCallback)seq2TransactionCallback.get(message.getSeq());
@@ -679,5 +700,11 @@ public class Service {
 
 	public void setGroupId(int groupId) {
 		this.groupId = groupId;
+	}
+	public BigInteger getNumber() {
+		return number;
+	}
+	public void setNumber(BigInteger number) {
+		this.number = number;
 	}
 }
