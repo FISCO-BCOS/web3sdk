@@ -7,7 +7,7 @@ import org.fisco.bcos.web3j.precompile.cns.CnsService;
 import org.junit.Test;
 
 import java.math.BigInteger;
-import java.util.Random;
+import java.security.SecureRandom;
 
 import static org.junit.Assert.assertEquals;
 

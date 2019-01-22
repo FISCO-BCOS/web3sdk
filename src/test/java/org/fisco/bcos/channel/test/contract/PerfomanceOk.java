@@ -85,7 +85,6 @@ public class PerfomanceOk {
 		Ok ok = Ok.deploy(web3, credentials, gasPrice, gasLimit).send();
 
 
-
 		PerfomanceOkCallback callback = new PerfomanceOkCallback();
 		callback.setTotal(count);
 		
