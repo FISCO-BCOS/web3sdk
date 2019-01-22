@@ -166,9 +166,11 @@ public class Server {
 		this.timeoutHandler = timeoutHandler;
 	}
 
+
+
 	public void run() {
 		logger.debug("init ProxyServer");
-		
+
 		try {
 			ConnectionCallback localConnectionCallback = new ConnectionCallback();
 			localConnectionCallback.setServer(this);
