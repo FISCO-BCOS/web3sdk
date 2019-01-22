@@ -146,7 +146,7 @@ public class ChannelConnections {
 			throw new Exception("activeConnections isEmpty");
 		}
 
-		Random random = new Random();
+		Random random = new SecureRandom();
 		Integer index = random.nextInt(activeConnections.size());
 
 		logger.debug("selected:{}", index);

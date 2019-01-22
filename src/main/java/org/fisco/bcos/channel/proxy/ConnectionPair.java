@@ -95,7 +95,7 @@ class ConnectionPair {
 
 			remoteConnectionInfo = null;
 			if (remoteConnectionInfos.size() > 0) {
-				Random random = new Random();
+				Random random = new SecureRandom();
 				Integer index = random.nextInt(remoteConnectionInfos.size());
 
 				logger.debug("selected:{}", index);
