@@ -1,17 +1,13 @@
 package org.fisco.bcos.web3j.tx;
 
-import java.io.IOException;
-import java.math.BigInteger;
-import java.util.Random;
-
 import org.fisco.bcos.channel.client.TransactionSucCallback;
+import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.crypto.Hash;
 import org.fisco.bcos.web3j.crypto.RawTransaction;
-import org.fisco.bcos.web3j.protocol.core.Request;
-import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.crypto.TransactionEncoder;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameterName;
+import org.fisco.bcos.web3j.protocol.core.Request;
 import org.fisco.bcos.web3j.protocol.core.methods.response.EthGetTransactionCount;
 import org.fisco.bcos.web3j.protocol.core.methods.response.EthSendTransaction;
 import org.fisco.bcos.web3j.tx.exceptions.TxHashMismatchException;
@@ -19,6 +15,11 @@ import org.fisco.bcos.web3j.utils.Numeric;
 import org.fisco.bcos.web3j.utils.TxHashVerifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.math.BigInteger;
+import java.security.SecureRandom;
+import java.util.Random;
 
 /**
  * TransactionManager implementation using Ethereum wallet file to create and sign transactions
@@ -88,7 +89,7 @@ public class RawTransactionManager extends TransactionManager {
             BigInteger gasPrice, BigInteger gasLimit, String to,
             String data, BigInteger value) throws IOException {
 
-			Random r = new Random();
+			Random r = new SecureRandom();
 			BigInteger randomid = new BigInteger(250,r);
             BigInteger blockLimit = getBlockLimit();
             RawTransaction rawTransaction = RawTransaction.createTransaction(
@@ -104,7 +105,7 @@ public class RawTransactionManager extends TransactionManager {
     }
 
     public EthSendTransaction sendTransaction(BigInteger gasPrice, BigInteger gasLimit, String to, String data, BigInteger value, TransactionSucCallback callback) throws IOException {
-        Random r = new Random();
+        Random r = new SecureRandom();
         BigInteger randomid = new BigInteger(250,r);
         BigInteger blockLimit = getBlockLimit();
         RawTransaction rawTransaction = RawTransaction.createTransaction(
