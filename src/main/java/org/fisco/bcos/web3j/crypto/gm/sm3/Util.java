@@ -326,9 +326,6 @@ public class Util
  
     /**
      * 数字字符串转ASCII码字符串
-     * 
-     * @param String
-     *            字符串
      * @return ASCII字符串
      */
     public static String StringToAsciiString(String content) {
@@ -455,9 +452,6 @@ public class Util
     
     /**
      * ASCII码字符串转数字字符串
-     * 
-     * @param String
-     *            ASCII字符串
      * @return 字符串
      */
     public static String AsciiStringToString(String content) {
