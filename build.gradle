@@ -24,7 +24,8 @@ repositories {
 def spring_version="4.3.18.RELEASE"
 
 List logger = [
-		 'org.slf4j:slf4j-log4j12:1.7.25'
+		// 'org.slf4j:slf4j-log4j12:1.7.25'
+		'org.slf4j:slf4j-api:1.7.25'
 ]
 
 List spring =[ 
@@ -63,105 +64,122 @@ dependencies {
 	        'info.picocli:picocli:3.6.0',
 			"io.reactivex.rxjava2:rxjava:2.2.2",
 			"org.java-websocket:Java-WebSocket:1.3.8",
-	        'junit:junit:4.12',
-	        'org.mockito:mockito-core:2.23.0',
 	 		"org.apache.commons:commons-collections4:4.0",
 			"commons-io:commons-io:2.4",
 			'com.github.stefanbirkner:system-rules:1.18.0',
 			'io.bretty:console-table-builder:1.2'
+	testCompile  'junit:junit:4.12',
+				 'org.mockito:mockito-core:2.23.0'
 			
 
 }
 
 archivesBaseName = 'web3sdk'
 group = 'org.fisco-bcos'
-version = '2.0.0'
+version = '2.0.1'
 
 // for old sdk
-sourceSets {
-	main {
-		java {
-			srcDir 'src/main/java'
-			srcDir 'src/test/java'
-		}
-		resources  {
-			srcDir 'src/test/resources'
-		}
-	}
-}
+//sourceSets {
+//	main {
+//		java {
+//			srcDir 'src/main/java'
+//			srcDir 'src/test/java'
+//		}
+//		resources  {
+//			srcDir 'src/test/resources'
+//		}
+//	}
+//}
 
-jar {
-	destinationDir file('dist/apps')
-	archiveName project.name + '.jar'
-	exclude '**/*.xml'
-	exclude '**/*.properties'
-	exclude '**/*.crt'
-	exclude '**/*.keystore'
-
-	doLast {
-		copy {
-			from file('tools/')
-			into 'dist/'
-		}
-		copy {
-			from configurations.runtime
-			into 'dist/lib'
-		}
-		copy {
-			from file('src/test/resources/')
-			into 'dist/conf'
-		}
-	}
-}
+//  1 dist jar
+//jar {
+//	destinationDir file('dist/apps')
+//	archiveName project.name + '.jar'
+//	exclude '**/*.xml'
+//	exclude '**/*.properties'
+//	exclude '**/*.crt'
+//	exclude '**/*.keystore'
+//
+//	doLast {
+//		copy {
+//			from file('tools/')
+//			into 'dist/'
+//		}
+//		copy {
+//			from configurations.runtime
+//			into 'dist/lib'
+//		}
+//		copy {
+//			from file('src/test/resources/')
+//			into 'dist/conf'
+//		}
+//	}
+//}
 //
 test {
 	testLogging.showStandardStreams = true
 }
+// for upload to maven
+task sourcesJar(type: Jar) {
+	classifier = 'sources'
+	from sourceSets.main.allSource
+}
 
-//signing {
-//	required { gradle.taskGraph.hasTask("uploadArchives") }
-//	sign configurations.archives
-//}
+task javadocJar(type: Jar, dependsOn: javadoc) {
+	classifier = 'javadoc'
+	from javadoc.destinationDir
+}
 
-//uploadArchives {
-//	repositories {
-//		mavenDeployer {
-//			beforeDeployment { deployment -> signing.signPom(deployment) }
-//
-//			repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-//				authentication(userName: ossrhUsername, password: ossrhPassword)
-//			}
-//
-//			snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots") {
-//				authentication(userName: sonatypeUsername, password: sonatypePassword)
-//			}
-//
-//			pom.project {
-//				name 'fisco-bcos'
-//				packaging 'jar'
-//				description 'fisco-bcos web3jsdk'
-//				url 'http://www.fisco-bcos.org'
-//
-//				scm {
-//					url 'https://github.com/FISCO-BCOS/web3sdk.git'
-//					connection 'https://github.com/FISCO-BCOS/web3sdk.git'
-//				}
-//
-//				licenses {
-//					license {
-//						name 'The Apache License, Version 2.0'
-//						url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-//					}
-//				}
-//				developers {
-//					developer {
-//						id 'shuoyanhe'
-//						name 'shuoyanhe'
-//						email 'shuoyanhe@webank.com'
-//					}
-//				}
-//			}
-//		}
-//	}
-//}
+artifacts {
+	archives jar
+	archives sourcesJar
+	archives javadocJar
+}
+
+signing {
+	required { gradle.taskGraph.hasTask("uploadArchives") }
+	sign configurations.archives
+}
+
+uploadArchives {
+	repositories {
+		mavenDeployer {
+			beforeDeployment { deployment -> signing.signPom(deployment) }
+
+			repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+				authentication(userName: ossrhUsername, password: ossrhPassword)
+			}
+
+			snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots") {
+				authentication(userName: sonatypeUsername, password: sonatypePassword)
+			}
+
+			pom.project {
+				name 'fisco-bcos'
+				packaging 'jar'
+				description 'fisco-bcos web3jsdk'
+				url 'http://www.fisco-bcos.org'
+
+				scm {
+					url 'https://github.com/FISCO-BCOS/web3sdk.git'
+					connection 'https://github.com/FISCO-BCOS/web3sdk.git'
+				}
+
+				licenses {
+					license {
+						name 'The Apache License, Version 2.0'
+						url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+					}
+				}
+				developers {
+					developer {
+						id 'shuoyanhe'
+						name 'shuoyanhe'
+						email 'shuoyanhe@webank.com'
+					}
+				}
+			}
+		}
+	}
+}
 mainClassName  = System.getProperty("exec.mainClass") ?:  "org.fisco.bcos.channel.test.PerfOkTransaction"

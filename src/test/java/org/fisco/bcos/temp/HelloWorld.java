@@ -73,9 +73,9 @@ public class HelloWorld extends Contract {
     public RemoteCall<TransactionReceipt> set(String _first_name, String _last_name, String _addr) {
         final Function function = new Function(
                 FUNC_SET, 
-                Arrays.<Type>asList(new Utf8String(_first_name),
-                new Utf8String(_last_name),
-                new Address(_addr)),
+                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(_first_name), 
+                new org.fisco.bcos.web3j.abi.datatypes.Utf8String(_last_name), 
+                new org.fisco.bcos.web3j.abi.datatypes.Address(_addr)), 
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
