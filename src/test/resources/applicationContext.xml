@@ -5,11 +5,11 @@
 	   xmlns:tx="http://www.springframework.org/schema/tx" xmlns:aop="http://www.springframework.org/schema/aop"
 	   xmlns:context="http://www.springframework.org/schema/context"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans
-      http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
-      http://www.springframework.org/schema/tx
-      http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
-      http://www.springframework.org/schema/aop
-      http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
+    http://www.springframework.org/schema/beans/spring-beans-2.5.xsd  
+         http://www.springframework.org/schema/tx   
+    http://www.springframework.org/schema/tx/spring-tx-2.5.xsd  
+         http://www.springframework.org/schema/aop   
+    http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
 
 
 	<bean id="encryptType" class="org.fisco.bcos.web3j.crypto.EncryptType">
@@ -23,25 +23,16 @@
 					<property name="groupId" value="1" />
 					<property name="connectionsStr">
 						<list>
-							<value>10.107.105.138:30901</value>
+							<value>127.0.0.1:30301</value>
 						</list>
 					</property>
 				</bean>
-				<bean id="group3" class="org.fisco.bcos.channel.handler.ChannelConnections">
-                <property name="groupId" value="3" />
-                <property name="connectionsStr">
-                    <list>
-                        <value>10.107.105.138:30901</value>
-                        <value>10.107.105.138:30904</value>
-                    </list>
-                </property>
-                </bean>
+
 			</list>
 		</property>
 	</bean>
 
-
-    <bean id="channelService" class="org.fisco.bcos.channel.client.Service" depends-on="groupChannelConnectionsConfig">
+	<bean id="channelService" class="org.fisco.bcos.channel.client.Service" depends-on="groupChannelConnectionsConfig">
 		<property name="groupId" value="1" />
 		<property name="orgID" value="fisco" />
 		<property name="allChannelConnections" ref="groupChannelConnectionsConfig"></property>
