@@ -396,7 +396,7 @@ public class Server {
 				}
 				
 				//随机下发
-				Random random = new Random();
+				Random random = new SecureRandom();
 				Integer index = random.nextInt(topicCtxs.size());
 				ChannelHandlerContext target = (ChannelHandlerContext) topicCtxs.toArray()[index];
 				
