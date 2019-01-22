@@ -10,7 +10,6 @@ public class ByteUtils {
 	 * @param bytes1
 	 * @param bytes2
 	 * @return
-	 * @date 2015-2-10
 	 * @author
 	 */
 	public static byte[] addByteArray(byte[] bytes1,byte[] bytes2){
@@ -33,7 +32,6 @@ public class ByteUtils {
 	 * 复制byte数组，返回复制的byte数组
 	 * @param bytes
 	 * @return
-	 * @date 2015年12月3日
 	 * @author
 	 */
 	public static byte[] copyBytes(byte[] bytes){
@@ -61,7 +59,6 @@ public class ByteUtils {
 	 * 翻转byte数组
 	 * @param bytes
 	 * @return
-	 * @date 2015年11月4日
 	 * @author
 	 */
 	public static byte[] reverse(byte[] bytes){
@@ -80,7 +77,6 @@ public class ByteUtils {
 	 * 将小端字节顺序转为大端字节顺序
 	 * @param bytes
 	 * @return
-	 * @date 2015年11月4日
 	 * @author
 	 */
 	public static byte[] littleToBigEndian(byte[] bytes){
