@@ -1,15 +1,11 @@
 package org.fisco.bcos.channel.proxy;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.io.UnsupportedEncodingException;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.util.HashedWheelTimer;
+import io.netty.util.Timer;
 import org.fisco.bcos.channel.handler.ChannelConnections;
 import org.fisco.bcos.channel.handler.ConnectionInfo;
 import org.fisco.bcos.channel.handler.Message;
@@ -17,15 +13,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.socket.SocketChannel;
-import io.netty.util.HashedWheelTimer;
-import io.netty.util.Timer;
-
 import javax.net.ssl.SSLException;
+import java.io.UnsupportedEncodingException;
+import java.security.SecureRandom;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Server {
 	private static Logger logger = LoggerFactory.getLogger(Server.class);
@@ -74,6 +66,9 @@ public class Server {
 				else if(msg.getType() == 0x13) {
 					onHeartBeat(ctx, msg);
 					return;
+				}
+				else if(msg.getType() == 0x1000) {
+					logger.debug("transaction message call back.");
 				}
 				else {
 					logger.error("unknown message:{}", msg.getType());

@@ -55,6 +55,7 @@ public abstract class Contract extends ManagedTransaction {
     protected Map<String, String> deployedAddresses;
     protected DefaultBlockParameter defaultBlockParameter = DefaultBlockParameterName.LATEST;
 
+
     protected Contract(String contractBinary, String contractAddress,
                        Web3j web3j, TransactionManager transactionManager,
                        ContractGasProvider gasProvider) {
@@ -72,7 +73,6 @@ public abstract class Contract extends ManagedTransaction {
                 new RawTransactionManager(web3j, credentials),
                 gasProvider);
     }
-
     @Deprecated
     protected Contract(String contractBinary, String contractAddress,
                        Web3j web3j, TransactionManager transactionManager,
