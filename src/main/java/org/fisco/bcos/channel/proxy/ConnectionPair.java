@@ -1,5 +1,6 @@
 package org.fisco.bcos.channel.proxy;
 
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
