@@ -82,7 +82,7 @@ public class CnsService {
                     address = c.getAddress();
                 }
             } catch (Exception e) {
-                throw new RuntimeException("Unable to execute Ethereum request", e);
+                throw new RuntimeException(e);
             }
 
         if (!WalletUtils.isValidAddress(address)) {

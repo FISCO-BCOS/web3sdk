@@ -61,7 +61,21 @@ public class ConsensusService {
 		{
 			return PrecompiledCommon.transferToJson(-43);
 		}
-        TransactionReceipt receipt = consensus.remove(nodeId).send();
+        TransactionReceipt receipt = new TransactionReceipt();
+		try {
+			receipt = consensus.remove(nodeId).send();
+		} catch (RuntimeException e) {
+			// firstly remove node that sdk connected to the node, return the request that present susscces
+			// because the exception is throwed by getTransactionReceipt, we need ignore it.
+			if(e.getMessage().contains("Don't send requests to this group, the node doesn't belong to the group"))
+			{
+				return PrecompiledCommon.transferToJson(1);
+			}
+			else
+			{
+				throw e;
+			}
+		}
         return PrecompiledCommon.getJsonStr(receipt.getOutput());
     }
 	
