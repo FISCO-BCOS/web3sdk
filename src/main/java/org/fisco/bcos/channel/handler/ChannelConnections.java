@@ -55,6 +55,8 @@ public class ChannelConnections {
 
 	private Callback callback;
 	private List<String> connectionsStr;
+	private String caCertPath = "classpath:ca.crt";
+	private String clientKeystorePath = "classpath:keystore.p12";
 	private String keystorePassWord = "";
 	private String clientCertPassWord = "";
 	private List<ConnectionInfo> connections = new ArrayList<ConnectionInfo>();
@@ -134,6 +136,22 @@ public class ChannelConnections {
 		this.heartBeatDelay = heartBeatDelay;
 	}
 
+
+	public String getCaCertPath() {
+		return caCertPath;
+	}
+
+	public void setCaCertPath(String caCertPath) {
+		this.caCertPath = caCertPath;
+	}
+
+	public String getClientKeystorePath() {
+		return clientKeystorePath;
+	}
+
+	public void setClientKeystorePath(String clientKeystorePath) {
+		this.clientKeystorePath = clientKeystorePath;
+	}
 
 	public ChannelHandlerContext randomNetworkConnection() throws Exception {
 		List<ChannelHandlerContext> activeConnections = new ArrayList<ChannelHandlerContext>();
@@ -327,11 +345,9 @@ public class ChannelConnections {
 	private SslContext initSslContextForConnect() throws SSLException {
 		SslContext sslCtx;
 		try {
-//			final Resource keystoreResource =  new ClassPathResource("keystore.p12");
-//			final Resource caResource = new ClassPathResource("ca.crt");
 			ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-			Resource caResource = resolver.getResource("classpath:ca.crt");
-			Resource keystoreResource = resolver.getResource("classpath:keystore.p12");
+			Resource caResource = resolver.getResource(getCaCertPath());
+			Resource keystoreResource = resolver.getResource(getClientKeystorePath());
 			InputStream caInputStream = caResource.getInputStream();
 			KeyStore ks = KeyStore.getInstance("PKCS12");
 			InputStream ksInputStream = keystoreResource.getInputStream();
@@ -349,17 +365,15 @@ public class ChannelConnections {
 	private SslContext initSslContextForListening() throws SSLException {
 		SslContext sslCtx;
 		try {
-//			final Resource keystoreResource =  new ClassPathResource("keystore.p12");
-//			final Resource caResource = new ClassPathResource("ca.crt");
 			ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-			Resource caResource = resolver.getResource("classpath:ca.crt");
-			Resource keystoreResource = resolver.getResource("classpath:keystore.p12");
+			Resource caResource = resolver.getResource(getCaCertPath());
+			Resource keystoreResource = resolver.getResource(getClientKeystorePath());
 			InputStream caInputStream = caResource.getInputStream();
 			KeyStore ks = KeyStore.getInstance("PKCS12");
 			InputStream ksInputStream = keystoreResource.getInputStream();
 			ks.load(ksInputStream, getKeystorePassWord().toCharArray());
 			sslCtx = SslContextBuilder.forServer((PrivateKey)ks.getKey("client", getClientCertPassWord().toCharArray()), (X509Certificate)ks.getCertificate("client"))
-			                			.trustManager(caResource.getInputStream())
+			                			.trustManager(caInputStream)
 			                			.build();
 		}  catch (Exception e)
 		{
