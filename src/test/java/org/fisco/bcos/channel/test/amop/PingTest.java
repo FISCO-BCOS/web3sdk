@@ -21,8 +21,13 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class PingTest {
-    static Logger logger = LoggerFactory.getLogger(PingTest.class);
+    private static Logger logger = LoggerFactory.getLogger(PingTest.class);
 
+    private List<String> localNodes;
+    private List<String> checkNodes;
+
+    private Map<String, Service> services = new HashMap<String, Service>();
+    private Map<String, Summary> allSummary = new HashMap<String, Summary>();
     public void start() {
         for(String nodeDesc: localNodes) {
             ChannelConnections connections = new ChannelConnections();
@@ -107,7 +112,7 @@ public class PingTest {
 
                 ChannelResponse response = service.sendChannelMessage2(request);
                 if(response.getErrorCode() != 0) {
-                    logger.error("AMOP测试错误: {} {}", response.getErrorCode(), response.getErrorMessage());
+                    logger.error("AMOP test error: {} {}", response.getErrorCode(), response.getErrorMessage());
 
                     if(response.getErrorCode() == 102) {
                         ++summary.totalTimeout;
@@ -198,7 +203,7 @@ public class PingTest {
         Integer count = 0;
         while(true) {
             try {
-                Thread.sleep(5 * 1000); //每秒检查一次
+                Thread.sleep(5 * 1000);
             } catch (InterruptedException e) {
                 System.out.println("Thread exception");
                 e.printStackTrace();
@@ -230,9 +235,4 @@ public class PingTest {
         this.checkNodes = checkNodes;
     }
 
-    private List<String> localNodes;
-    private List<String> checkNodes;
-
-    private Map<String, Service> services = new HashMap<String, Service>();
-    private Map<String, Summary> allSummary = new HashMap<String, Summary>();
 }

@@ -37,22 +37,6 @@ import java.util.concurrent.TimeUnit;
 public class ChannelConnections {
 	private static Logger logger = LoggerFactory.getLogger(ChannelConnections.class);
 
-	public String getKeystorePassWord() {
-		return keystorePassWord;
-	}
-
-	public void setKeystorePassWord(String keystorePassWord) {
-		this.keystorePassWord = keystorePassWord;
-	}
-
-	public String getClientCertPassWord() {
-		return clientCertPassWord;
-	}
-
-	public void setClientCertPassWord(String clientCertPassWord) {
-		this.clientCertPassWord = clientCertPassWord;
-	}
-
 	private Callback callback;
 	private List<String> connectionsStr;
 	private String caCertPath = "classpath:ca.crt";
@@ -76,6 +60,21 @@ public class ChannelConnections {
 
 	public void setGroupId(int groupId) {
 		this.groupId = groupId;
+	}
+	public String getKeystorePassWord() {
+		return keystorePassWord;
+	}
+
+	public void setKeystorePassWord(String keystorePassWord) {
+		this.keystorePassWord = keystorePassWord;
+	}
+
+	public String getClientCertPassWord() {
+		return clientCertPassWord;
+	}
+
+	public void setClientCertPassWord(String clientCertPassWord) {
+		this.clientCertPassWord = clientCertPassWord;
 	}
 
 
