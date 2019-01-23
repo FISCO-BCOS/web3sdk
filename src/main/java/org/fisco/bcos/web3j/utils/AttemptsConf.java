@@ -2,8 +2,8 @@ package org.fisco.bcos.web3j.utils;
 
 
 public class AttemptsConf {
-    public static Integer sleepDuration = 1500;
-    public static Integer attempts  = 40;
+    private static Integer sleepDuration = 1500;
+    private static Integer attempts  = 40;
     public AttemptsConf(int sleepDuration,int attempts){
         this.sleepDuration = sleepDuration;
         this.attempts = attempts;

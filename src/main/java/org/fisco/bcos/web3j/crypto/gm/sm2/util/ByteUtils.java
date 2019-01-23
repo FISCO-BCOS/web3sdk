@@ -6,7 +6,7 @@ public class ByteUtils {
 
 
 	/**
-	 * 将两个byte数组拼接起来返回拼接后的byte数组
+	 *
 	 * @param bytes1
 	 * @param bytes2
 	 * @return
@@ -29,7 +29,7 @@ public class ByteUtils {
 	}
 
 	/**
-	 * 复制byte数组，返回复制的byte数组
+	 *
 	 * @param bytes
 	 * @return
 	 * @author
@@ -42,7 +42,7 @@ public class ByteUtils {
 	}
 	
 	/**
-	 * 截取byte数组
+	 *
 	 * @param bytes
 	 * @param pos
 	 * @param length
@@ -56,7 +56,7 @@ public class ByteUtils {
 	}
 	
 	/**
-	 * 翻转byte数组
+	 *
 	 * @param bytes
 	 * @return
 	 * @author
@@ -74,7 +74,7 @@ public class ByteUtils {
 	}
 	
 	/**
-	 * 将小端字节顺序转为大端字节顺序
+	 *
 	 * @param bytes
 	 * @return
 	 * @author
