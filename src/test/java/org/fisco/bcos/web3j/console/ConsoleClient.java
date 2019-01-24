@@ -1,9 +1,11 @@
 package org.fisco.bcos.web3j.console;
 
+import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
+import org.fisco.bcos.web3j.protocol.channel.ResponseExcepiton;
+import org.fisco.bcos.web3j.protocol.core.Response;
+
 import java.io.IOException;
 import java.util.Scanner;
-
-import org.fisco.bcos.web3j.protocol.channel.ResponseExcepiton;
 
 public class ConsoleClient {
 
@@ -66,6 +68,10 @@ public class ConsoleClient {
 				case "getPeers":
 				case "gps":
 					console.getPeers(params);
+					break;
+				case "getNodeIDList":
+				case "gnl":
+					console.getNodeIDList(params);
 					break;
 				case "getGroupPeers":
 				case "ggp":
@@ -202,7 +208,19 @@ public class ConsoleClient {
 					System.out.println(e.getMessage());
 				}
 				System.out.println();
-			} catch (Exception e) {
+			}catch (RuntimeException e) {
+				String message = e.getMessage();
+				Response t = null;
+				try {
+					t = ObjectMapperFactory.getObjectMapper(true).readValue(message.substring(message.indexOf("{"), message.lastIndexOf("}") + 1), Response.class);
+				} catch (IOException e1) {
+					System.out.println(e1.getMessage());
+				}
+				ConsoleUtils.printJson(
+						"{\"code\":" + t.getError().getCode() + ", \"msg\":" + "\"" + t.getError().getMessage() + "\"}");
+				System.out.println();
+			}
+			catch (Exception e) {
 				System.out.println(e.getMessage());
 				System.out.println();
 			}
