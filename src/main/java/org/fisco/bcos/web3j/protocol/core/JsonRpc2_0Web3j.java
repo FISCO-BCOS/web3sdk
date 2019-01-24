@@ -187,6 +187,15 @@ public class JsonRpc2_0Web3j implements Web3j {
     }
     
     @Override
+    public Request<?, NodeIDList> getNodeIDList() {
+        return new Request<>(
+                "getNodeIDList",
+               Arrays.asList(groupId),
+                web3jService,
+                NodeIDList.class);
+    }
+    
+    @Override
     public Request<?, SystemConfig> getSystemConfigByKey(String key) {
     	return new Request<>(
     			"getSystemConfigByKey",
