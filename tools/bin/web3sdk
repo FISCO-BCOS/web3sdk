@@ -38,6 +38,9 @@ function execute_cmd()
 }
 
 function Usage() {
+    LOG_INFO "###### Console TOOLS"
+    LOG_INFO "--Start console: \n\t./web3sdk -c [groupID] [privateKey]\n"
+    
     LOG_INFO "###### SystemContract TOOLS(please refer to https://fisco-bcos-test.readthedocs.io/zh/latest/docs/web3sdk/advanced/index.html)"
     LOG_INFO "--Deploy system contract: \n\t./web3sdk InitSystemContract\n"
     LOG_INFO "--Get system contract routers: \n\t./web3sdk SystemProxy\n"
@@ -279,7 +282,7 @@ function splitJvmOpts() {
 eval splitJvmOpts $DEFAULT_JVM_OPTS $JAVA_OPTS $WEB3J_OPTS
 
 if [ $1 == "-c" ]; then	
-	java -cp "../apps/*:../conf/:../lib/*" org.fisco.bcos.web3j.console.ConsoleClient $2
+	java -cp "../apps/*:../conf/:../lib/*" org.fisco.bcos.web3j.console.ConsoleClient $2 $3
 	
 else	
 	exec "$JAVACMD" "${JVM_OPTS[@]}" -classpath "$CLASSPATH" Runner "$@"

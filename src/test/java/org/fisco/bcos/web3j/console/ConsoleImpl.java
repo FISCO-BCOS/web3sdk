@@ -1,12 +1,14 @@
 package org.fisco.bcos.web3j.console;
 
-import java.io.IOException;
-import java.lang.reflect.Method;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.alibaba.fastjson.JSONObject;
+import io.bretty.console.table.Alignment;
+import io.bretty.console.table.ColumnFormatter;
+import io.bretty.console.table.Table;
 import org.fisco.bcos.channel.client.Service;
+import org.fisco.bcos.web3j.crypto.Credentials;
+import org.fisco.bcos.web3j.crypto.ECKeyPair;
+import org.fisco.bcos.web3j.crypto.Keys;
+import org.fisco.bcos.web3j.crypto.gm.GenCredential;
 import org.fisco.bcos.web3j.precompile.authority.AuthorityInfo;
 import org.fisco.bcos.web3j.precompile.authority.AuthorityService;
 import org.fisco.bcos.web3j.precompile.cns.CnsInfo;
@@ -14,11 +16,6 @@ import org.fisco.bcos.web3j.precompile.cns.CnsService;
 import org.fisco.bcos.web3j.precompile.common.PrecompiledCommon;
 import org.fisco.bcos.web3j.precompile.config.SystemConfigSerivce;
 import org.fisco.bcos.web3j.precompile.consensus.ConsensusService;
-import org.fisco.bcos.web3j.crypto.Credentials;
-import org.fisco.bcos.web3j.crypto.ECKeyPair;
-import org.fisco.bcos.web3j.crypto.EncryptType;
-import org.fisco.bcos.web3j.crypto.Keys;
-import org.fisco.bcos.web3j.crypto.gm.GenCredential;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
@@ -29,11 +26,11 @@ import org.fisco.bcos.web3j.utils.Numeric;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import com.alibaba.fastjson.JSONObject;
-
-import io.bretty.console.table.Alignment;
-import io.bretty.console.table.ColumnFormatter;
-import io.bretty.console.table.Table;
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ConsoleImpl implements ConsoleFace {
 
@@ -82,7 +79,8 @@ public class ConsoleImpl implements ConsoleFace {
 		try {
 			service.run();
 		} catch (Exception e) {
-			System.out.println("Failed to connect blockchain. Please check running status for blockchain and configruation for console.");
+			System.out.println(
+					"Failed to connect blockchain. Please check running status for blockchain and configruation for console.");
 			System.exit(1);
 		}
 		channelEthereumService.setChannelService(service);
@@ -103,7 +101,7 @@ public class ConsoleImpl implements ConsoleFace {
 	@Override
 	public void welcome() {
 		ConsoleUtils.doubleLine();
-		System.out.println("Welcome to FISCO BCOS 2.0!");
+		System.out.println("Welcome to FISCO BCOS console!");
 		System.out.println("Type 'help' or 'h' for help. Type 'quit' or 'q' to quit console.");
 		String logo = " ________  ______   ______    ______    ______         _______    ______    ______    ______  \n"
 				+ "|        \\|      \\ /      \\  /      \\  /      \\       |       \\  /      \\  /      \\  /      \\ \n"
@@ -121,12 +119,9 @@ public class ConsoleImpl implements ConsoleFace {
 
 	@Override
 	public void help(String[] params) {
-		if(promptNoParams(params, "h"))
-		{
+		if (promptNoParams(params, "h")) {
 			return;
-		}
-		else if(params.length > 2)
-		{
+		} else if (params.length > 2) {
 			HelpInfo.promptHelp("h");
 			return;
 		}
@@ -135,14 +130,14 @@ public class ConsoleImpl implements ConsoleFace {
 		sb.append("help(h)                                       Provide help information.\n");
 		sb.append("getBlockNumber(gbn)                           Query the number of most recent block.\n");
 		sb.append("getPbftView(gpv)                              Query the pbft view of node.\n");
-		sb.append("getMinerList(gml)                             Query the pbft miner nodes.\n");
-		sb.append("getObserverList(gol)                          Query the pbft observer node.\n");
+		sb.append("getMinerList(gml)                             Query nodeID list for miner nodes.\n");
+		sb.append("getObserverList(gol)                          Query nodeID list for observer nodes.\n");
+		sb.append("getNodeIDList(gnl)                            Query nodeID list for all connected nodes.\n");
+		sb.append("getGroupPeers(ggp)                            Query nodeID list for miner and observer nodes.\n");
+		sb.append("getPeers(gps)                                 Query peers currently connected to the client.\n");
 		sb.append("getConsensusStatus(gcs)                       Query consensus status.\n");
 		sb.append("getSyncStatus(gss)                            Query sync status.\n");
 		sb.append("getClientVersion(gcv)                         Query the current client version.\n");
-		sb.append("getPeers(gps)                                 Query peers currently connected to the client.\n");
-		sb.append(
-				"getGroupPeers(ggp)                            Query peers currently connected to the client in the specified group.\n");
 		sb.append("getGroupList(ggl)                             Query group list.\n");
 		sb.append("getBlockByHash(gbbh)                          Query information about a block by hash.\n");
 		sb.append("getBlockByNumber(gbbn)                        Query information about a block by block number.\n");
@@ -181,34 +176,25 @@ public class ConsoleImpl implements ConsoleFace {
 	}
 
 	private boolean promptNoParams(String[] params, String funcName) {
-		if(params.length == 2)
-		{
-			if("-h".equals(params[1]) || "--help".equals(params[1]))
-			{
+		if (params.length == 2) {
+			if ("-h".equals(params[1]) || "--help".equals(params[1])) {
 				HelpInfo.helpNoParams(funcName);
 				return true;
-			}
-			else 
-			{
+			} else {
 				HelpInfo.promptHelp(funcName);
 				return true;
 			}
-		}
-		else if(params.length > 2)
-		{
+		} else if (params.length > 2) {
 			HelpInfo.promptHelp(funcName);
 			return true;
-		}
-		else
-		{
+		} else {
 			return false;
 		}
 	}
 
 	@Override
 	public void getBlockNumber(String[] params) throws IOException {
-		if(promptNoParams(params, "gbn"))
-		{
+		if (promptNoParams(params, "gbn")) {
 			return;
 		}
 		String blockNumber = web3j.ethBlockNumber().sendForReturnString();
@@ -218,8 +204,7 @@ public class ConsoleImpl implements ConsoleFace {
 
 	@Override
 	public void getPbftView(String[] params) throws IOException {
-		if(promptNoParams(params, "gpv"))
-		{
+		if (promptNoParams(params, "gpv")) {
 			return;
 		}
 		String pbftView = web3j.ethPbftView().sendForReturnString();
@@ -229,8 +214,7 @@ public class ConsoleImpl implements ConsoleFace {
 
 	@Override
 	public void getObserverList(String[] params) throws IOException {
-		if(promptNoParams(params, "gol"))
-		{
+		if (promptNoParams(params, "gol")) {
 			return;
 		}
 		List<String> observerList = web3j.getObserverList().send().getResult();
@@ -246,8 +230,7 @@ public class ConsoleImpl implements ConsoleFace {
 
 	@Override
 	public void getMinerList(String[] params) throws IOException {
-		if(promptNoParams(params, "gml"))
-		{
+		if (promptNoParams(params, "gml")) {
 			return;
 		}
 		List<String> minerList = web3j.getMinerList().send().getResult();
@@ -263,8 +246,7 @@ public class ConsoleImpl implements ConsoleFace {
 
 	@Override
 	public void getConsensusStatus(String[] params) throws IOException {
-		if(promptNoParams(params, "gcs"))
-		{
+		if (promptNoParams(params, "gcs")) {
 			return;
 		}
 		String consensusStatus = web3j.consensusStatus().sendForReturnString();
@@ -274,8 +256,7 @@ public class ConsoleImpl implements ConsoleFace {
 
 	@Override
 	public void getSyncStatus(String[] params) throws IOException {
-		if(promptNoParams(params, "gss"))
-		{
+		if (promptNoParams(params, "gss")) {
 			return;
 		}
 		String syncStatus = web3j.ethSyncing().sendForReturnString();
@@ -285,8 +266,7 @@ public class ConsoleImpl implements ConsoleFace {
 
 	@Override
 	public void getClientVersion(String[] params) throws IOException {
-		if(promptNoParams(params, "gcv"))
-		{
+		if (promptNoParams(params, "gcv")) {
 			return;
 		}
 		String clientVersion = web3j.web3ClientVersion().sendForReturnString();
@@ -296,8 +276,7 @@ public class ConsoleImpl implements ConsoleFace {
 
 	@Override
 	public void getPeers(String[] params) throws IOException {
-		if(promptNoParams(params, "gps"))
-		{
+		if (promptNoParams(params, "gps")) {
 			return;
 		}
 		String peers = web3j.ethPeersInfo().sendForReturnString();
@@ -306,9 +285,18 @@ public class ConsoleImpl implements ConsoleFace {
 	}
 
 	@Override
+	public void getNodeIDList(String[] params) throws IOException {
+		if (promptNoParams(params, "gnl")) {
+			return;
+		}
+		List<String> nodeIDs = web3j.getNodeIDList().send().getResult();
+		ConsoleUtils.printJson(nodeIDs.toString());
+		System.out.println();
+	}
+
+	@Override
 	public void getGroupPeers(String[] params) throws IOException {
-		if(promptNoParams(params, "ggp"))
-		{
+		if (promptNoParams(params, "ggp")) {
 			return;
 		}
 		List<String> groupPeers = web3j.ethGroupPeers().send().getResult();
@@ -318,8 +306,7 @@ public class ConsoleImpl implements ConsoleFace {
 
 	@Override
 	public void getGroupList(String[] params) throws IOException {
-		if(promptNoParams(params, "ggl"))
-		{
+		if (promptNoParams(params, "ggl")) {
 			return;
 		}
 		List<String> groupList = web3j.ethGroupList().send().getResult();
@@ -332,9 +319,7 @@ public class ConsoleImpl implements ConsoleFace {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("gbbh");
 			return;
-		}
-		else if(params.length > 3)
-		{
+		} else if (params.length > 3) {
 			HelpInfo.promptHelp("gbbh");
 			return;
 		}
@@ -346,18 +331,12 @@ public class ConsoleImpl implements ConsoleFace {
 		if (ConsoleUtils.isInvalidHash(blockHash))
 			return;
 		boolean flag = false;
-		if(params.length == 3)
-		{
-			if("true".equals(params[2]))
-			{
+		if (params.length == 3) {
+			if ("true".equals(params[2])) {
 				flag = true;
-			}
-			else if("false".equals(params[2]))
-			{
+			} else if ("false".equals(params[2])) {
 				flag = false;
-			}
-			else
-			{
+			} else {
 				System.out.println("Please provide true or false for the second parameter.");
 				System.out.println();
 				return;
@@ -374,9 +353,7 @@ public class ConsoleImpl implements ConsoleFace {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("gbbn");
 			return;
-		}
-		else if(params.length > 3)
-		{
+		} else if (params.length > 3) {
 			HelpInfo.promptHelp("gbbn");
 			return;
 		}
@@ -390,25 +367,18 @@ public class ConsoleImpl implements ConsoleFace {
 		BigInteger blockNumber1 = new BigInteger(blockNumberStr1);
 		String blockNumberStr2 = web3j.ethBlockNumber().sendForReturnString();
 		BigInteger blockNumber2 = Numeric.decodeQuantity(blockNumberStr2);
-		if(blockNumber1.compareTo(blockNumber2) == 1)
-		{
+		if (blockNumber1.compareTo(blockNumber2) == 1) {
 			System.out.println("BlockNumber does not exist.");
 			System.out.println();
 			return;
 		}
 		boolean flag = false;
-		if(params.length == 3)
-		{
-			if("true".equals(params[2]))
-			{
+		if (params.length == 3) {
+			if ("true".equals(params[2])) {
 				flag = true;
-			}
-			else if("false".equals(params[2]))
-			{
+			} else if ("false".equals(params[2])) {
 				flag = false;
-			}
-			else
-			{
+			} else {
 				System.out.println("Please provide true or false for the second parameter.");
 				System.out.println();
 				return;
@@ -425,9 +395,7 @@ public class ConsoleImpl implements ConsoleFace {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("ghbn");
 			return;
-		}
-		else if(params.length > 2)
-		{
+		} else if (params.length > 2) {
 			HelpInfo.promptHelp("ghbn");
 			return;
 		}
@@ -453,9 +421,7 @@ public class ConsoleImpl implements ConsoleFace {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("gtbh");
 			return;
-		}
-		else if(params.length > 2)
-		{
+		} else if (params.length > 2) {
 			HelpInfo.promptHelp("gtbh");
 			return;
 		}
@@ -480,9 +446,7 @@ public class ConsoleImpl implements ConsoleFace {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("gthi");
 			return;
-		}
-		else if(params.length > 3)
-		{
+		} else if (params.length > 3) {
 			HelpInfo.promptHelp("gthi");
 			return;
 		}
@@ -511,9 +475,7 @@ public class ConsoleImpl implements ConsoleFace {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("gtni");
 			return;
-		}
-		else if(params.length > 3)
-		{
+		} else if (params.length > 3) {
 			HelpInfo.promptHelp("gtni");
 			return;
 		}
@@ -545,9 +507,7 @@ public class ConsoleImpl implements ConsoleFace {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("gtr");
 			return;
-		}
-		else if(params.length > 2)
-		{
+		} else if (params.length > 2) {
 			HelpInfo.promptHelp("gtr");
 			return;
 		}
@@ -569,8 +529,7 @@ public class ConsoleImpl implements ConsoleFace {
 
 	@Override
 	public void getPendingTxSize(String[] params) throws IOException {
-		if(promptNoParams(params, "gpts"))
-		{
+		if (promptNoParams(params, "gpts")) {
 			return;
 		}
 		String size = web3j.getPendingTxSize().sendForReturnString();
@@ -580,8 +539,7 @@ public class ConsoleImpl implements ConsoleFace {
 
 	@Override
 	public void getPendingTransactions(String[] params) throws IOException {
-		if(promptNoParams(params, "gpt"))
-		{
+		if (promptNoParams(params, "gpt")) {
 			return;
 		}
 		String pendingTransactions = web3j.ethPendingTransaction().sendForReturnString();
@@ -597,9 +555,7 @@ public class ConsoleImpl implements ConsoleFace {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("gc");
 			return;
-		}
-		else if(params.length > 2)
-		{
+		} else if (params.length > 2) {
 			HelpInfo.promptHelp("gc");
 			return;
 		}
@@ -623,8 +579,7 @@ public class ConsoleImpl implements ConsoleFace {
 
 	@Override
 	public void getTotalTransactionCount(String[] params) throws IOException {
-		if(promptNoParams(params, "gtc"))
-		{
+		if (promptNoParams(params, "gtc")) {
 			return;
 		}
 		String transactionCount = web3j.getTotalTransactionCount().sendForReturnString();
@@ -640,9 +595,7 @@ public class ConsoleImpl implements ConsoleFace {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("d");
 			return;
-		}
-		else if(params.length > 2)
-		{
+		} else if (params.length > 2) {
 			HelpInfo.promptHelp("d");
 			return;
 		}
@@ -650,7 +603,7 @@ public class ConsoleImpl implements ConsoleFace {
 			HelpInfo.deployHelp();
 			return;
 		}
-		contractName = ConsoleUtils.getContractFullName(params[1]);
+		contractName = Common.CONTRACT_PACKAGE + params[1];
 		contractClass = ContractClassFactory.getContractClass(contractName);
 		Method deploy = contractClass.getMethod("deploy", Web3j.class, Credentials.class, BigInteger.class,
 				BigInteger.class);
@@ -675,7 +628,7 @@ public class ConsoleImpl implements ConsoleFace {
 			HelpInfo.promptHelp("c");
 			return;
 		}
-		contractName = ConsoleUtils.getContractFullName(params[1]);
+		contractName = Common.CONTRACT_PACKAGE + params[1];
 		contractClass = ContractClassFactory.getContractClass(contractName);
 		Method load = contractClass.getMethod("load", String.class, Web3j.class, Credentials.class, BigInteger.class,
 				BigInteger.class);
@@ -690,15 +643,11 @@ public class ConsoleImpl implements ConsoleFace {
 		String funcName = params[3];
 		boolean funcFlag = true;
 		for (Method method : methods) {
-			if(funcName.equals(method.getName()))
-			{
+			if (funcName.equals(method.getName())) {
 				Class[] parameterType = ContractClassFactory.getParameterType(contractClass, funcName);
-				if(parameterType.length != params.length - 4)
-				{
+				if (parameterType.length != params.length - 4) {
 					continue;
-				}
-				else
-				{
+				} else {
 					funcFlag = false;
 					Method func = contractClass.getMethod(funcName, parameterType);
 					Object[] argobj = ContractClassFactory.getPrametersObject(parameterType, params);
@@ -714,8 +663,7 @@ public class ConsoleImpl implements ConsoleFace {
 				}
 			}
 		}
-		if(funcFlag)
-		{
+		if (funcFlag) {
 			HelpInfo.promptNoFunc(params[1], funcName, params.length - 4);
 			return;
 		}
@@ -727,9 +675,7 @@ public class ConsoleImpl implements ConsoleFace {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("dbc");
 			return;
-		}
-		else if(params.length > 3)
-		{
+		} else if (params.length > 3) {
 			HelpInfo.promptHelp("dbc");
 			return;
 		}
@@ -759,7 +705,15 @@ public class ConsoleImpl implements ConsoleFace {
 			System.out.println();
 			return;
 		}
-		contractName = ConsoleUtils.getContractFullName(params[1]);
+		CnsService cnsService = new CnsService(web3j, credentials);
+		List<CnsInfo> qcns = cnsService.queryCnsByNameAndVersion(params[1], params[2]);
+		if(qcns.size() != 0)
+		{
+			ConsoleUtils.printJson(PrecompiledCommon.transferToJson(-50));
+			System.out.println();
+			return;
+		}
+		contractName = Common.CONTRACT_PACKAGE + params[1];
 		contractClass = ContractClassFactory.getContractClass(contractName);
 		Method deploy = contractClass.getMethod("deploy", Web3j.class, Credentials.class, BigInteger.class,
 				BigInteger.class);
@@ -768,10 +722,7 @@ public class ConsoleImpl implements ConsoleFace {
 		contractAddress = contract.getContractAddress();
 		contractVersion = params[2];
 		// register cns
-		CnsService cnsService = new CnsService(web3j, credentials);
-		String result = cnsService.registerCns(params[1], contractVersion, contractAddress,
-				contract.getContractBinary());
-		ConsoleUtils.printJson(result);
+		String result = cnsService.registerCns(params[1], contractVersion, contractAddress, "");
 		System.out.println(contractAddress);
 		System.out.println();
 	}
@@ -791,7 +742,7 @@ public class ConsoleImpl implements ConsoleFace {
 			HelpInfo.promptHelp("cbc");
 			return;
 		}
-		contractName = ConsoleUtils.getContractFullName(params[1]);
+		contractName = Common.CONTRACT_PACKAGE + params[1];
 		contractClass = ContractClassFactory.getContractClass(contractName);
 		Method load = contractClass.getMethod("load", String.class, Web3j.class, Credentials.class, BigInteger.class,
 				BigInteger.class);
@@ -803,20 +754,16 @@ public class ConsoleImpl implements ConsoleFace {
 		CnsService cnsResolver = new CnsService(web3j, credentials);
 		contractAddress = cnsResolver.getAddressByContractNameAndVersion(contractName + ":" + contractVersion);
 		contractObject = load.invoke(null, contractAddress, web3j, credentials, gasPrice, gasLimit);
-		
+
 		Method[] methods = contractClass.getMethods();
 		String funcName = params[3];
 		boolean funcFlag = true;
 		for (Method method : methods) {
-			if(funcName.equals(method.getName()))
-			{
+			if (funcName.equals(method.getName())) {
 				Class[] parameterType = ContractClassFactory.getParameterType(contractClass, funcName);
-				if(parameterType.length != params.length - 4)
-				{
+				if (parameterType.length != params.length - 4) {
 					continue;
-				}
-				else
-				{
+				} else {
 					funcFlag = false;
 					Method func = contractClass.getMethod(funcName, parameterType);
 					Object[] argobj = ContractClassFactory.getPrametersObject(parameterType, params);
@@ -832,12 +779,11 @@ public class ConsoleImpl implements ConsoleFace {
 				}
 			}
 		}
-		if(funcFlag)
-		{
+		if (funcFlag) {
 			HelpInfo.promptNoFunc(params[1], funcName, params.length - 4);
 			return;
 		}
-		
+
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -846,9 +792,7 @@ public class ConsoleImpl implements ConsoleFace {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("qcs");
 			return;
-		}
-		else if(params.length > 3)
-		{
+		} else if (params.length > 3) {
 			HelpInfo.promptHelp("qcs");
 			return;
 		}
@@ -892,9 +836,7 @@ public class ConsoleImpl implements ConsoleFace {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("am");
 			return;
-		}
-		else if(params.length > 2)
-		{
+		} else if (params.length > 2) {
 			HelpInfo.promptHelp("am");
 			return;
 		}
@@ -920,9 +862,7 @@ public class ConsoleImpl implements ConsoleFace {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("ao");
 			return;
-		}
-		else if(params.length > 2)
-		{
+		} else if (params.length > 2) {
 			HelpInfo.promptHelp("ao");
 			return;
 		}
@@ -947,9 +887,7 @@ public class ConsoleImpl implements ConsoleFace {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("rn");
 			return;
-		}
-		else if(params.length > 2)
-		{
+		} else if (params.length > 2) {
 			HelpInfo.promptHelp("rn");
 			return;
 		}
@@ -974,9 +912,7 @@ public class ConsoleImpl implements ConsoleFace {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("aa");
 			return;
-		}
-		else if(params.length > 3)
-		{
+		} else if (params.length > 3) {
 			HelpInfo.promptHelp("aa");
 			return;
 		}
@@ -1005,9 +941,7 @@ public class ConsoleImpl implements ConsoleFace {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("ra");
 			return;
-		}
-		else if(params.length > 3)
-		{
+		} else if (params.length > 3) {
 			HelpInfo.promptHelp("ra");
 			return;
 		}
@@ -1036,9 +970,7 @@ public class ConsoleImpl implements ConsoleFace {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("qa");
 			return;
-		}
-		else if(params.length > 3)
-		{
+		} else if (params.length > 3) {
 			HelpInfo.promptHelp("qa");
 			return;
 		}
@@ -1074,9 +1006,7 @@ public class ConsoleImpl implements ConsoleFace {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("ssc");
 			return;
-		}
-		else if(params.length > 3)
-		{
+		} else if (params.length > 3) {
 			HelpInfo.promptHelp("ssc");
 			return;
 		}
@@ -1103,9 +1033,7 @@ public class ConsoleImpl implements ConsoleFace {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("gsc");
 			return;
-		}
-		else if(params.length > 2)
-		{
+		} else if (params.length > 2) {
 			HelpInfo.promptHelp("gsc");
 			return;
 		}
@@ -1119,15 +1047,12 @@ public class ConsoleImpl implements ConsoleFace {
 		System.out.println(value);
 		System.out.println();
 	}
-	
+
 	@Override
 	public void quit(String[] params) throws IOException {
-		if(promptNoParams(params, "q"))
-		{
+		if (promptNoParams(params, "q")) {
 			return;
-		}
-		else if(params.length > 2)
-		{
+		} else if (params.length > 2) {
 			HelpInfo.promptHelp("q");
 			return;
 		}
