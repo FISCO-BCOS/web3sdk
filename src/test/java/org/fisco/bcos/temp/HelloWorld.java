@@ -52,7 +52,7 @@ public class HelloWorld extends Contract {
     public RemoteCall<TransactionReceipt> set(String n) {
         final Function function = new Function(
                 FUNC_SET, 
-                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(n)), 
+                Arrays.<Type>asList(new Utf8String(n)), 
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
