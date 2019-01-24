@@ -10,15 +10,21 @@ import io.netty.util.TimerTask;
 import org.fisco.bcos.channel.dto.*;
 import org.fisco.bcos.channel.handler.ChannelConnections;
 import org.fisco.bcos.channel.handler.GroupChannelConnectionsConfig;
+import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.channel.handler.ConnectionCallback;
 import org.fisco.bcos.channel.handler.ConnectionInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
@@ -33,6 +39,9 @@ public class Service {
 	private ChannelPushCallback pushCallback;
 	private Map<String, Object> seq2Callback = new ConcurrentHashMap<String, Object>();
 	private static int groupId;
+	static private ObjectMapper objectMapper = new ObjectMapper();
+	private BigInteger number = BigInteger.valueOf(0);
+	
 	/**
 	 * add transaction seq callback
 	 */
@@ -40,8 +49,8 @@ public class Service {
 	private Timer timeoutHandler = new HashedWheelTimer();
 	private ThreadPoolTaskExecutor threadPool;
 
-	private List<String> topics = new ArrayList<String>();
-	public void setTopics(List<String> topics) {
+	private Set<String> topics = new HashSet<String>();
+	public void setTopics(Set<String> topics) {
 		try {
 			this.topics = topics;
 		}
@@ -616,6 +625,25 @@ public class Service {
 			}
 		}
 	}
+	
+	public void onReceiveBlockNotify(ChannelHandlerContext ctx, ChannelMessage2 message) {
+		try {
+			String data = new String(message.getData());
+			String[] split = data.split(",");
+			if(split.length != 2) {
+				logger.error("Block notify format error: {}", data);
+				return;
+			}
+			
+			//Integer groupID = Integer.parseInt(split[0]);
+			Integer number = Integer.parseInt(split[1]);
+			
+			setNumber(BigInteger.valueOf((long)number));
+		}
+		catch(Exception e) {
+			logger.error("Block notify error", e);
+		}
+	}
 
 	public void onReceiveTransactionMessage(ChannelHandlerContext ctx, EthereumMessage message) {
         TransactionSucCallback callback = (TransactionSucCallback)seq2TransactionCallback.get(message.getSeq());
@@ -628,17 +656,18 @@ public class Service {
                 //停止定时器，防止多响应一次
                 callback.getTimeout().cancel();
             }
-
-            EthereumResponse response = new EthereumResponse();
-            if(message.getResult() != 0) {
-                response.setErrorMessage("EthereumResponse error");
+            
+            try {
+            	TransactionReceipt receipt = objectMapper.readValue(message.getData(), TransactionReceipt.class);
+            	
+            	callback.onResponse(receipt);
             }
-
-            response.setErrorCode(message.getResult());
-            response.setMessageID(message.getSeq());
-            response.setContent(new String(message.getData()));
-
-            callback.onResponse(response);
+            catch(Exception e) {
+            	TransactionReceipt receipt = new TransactionReceipt();
+            	receipt.setStatus("Decode receipt error: " + e.getLocalizedMessage());
+            	
+            	callback.onResponse(receipt);
+            }
 
             seq2TransactionCallback.remove(message.getSeq());
         }
@@ -673,5 +702,11 @@ public class Service {
 
 	public void setGroupId(int groupId) {
 		this.groupId = groupId;
+	}
+	public BigInteger getNumber() {
+		return number;
+	}
+	public void setNumber(BigInteger number) {
+		this.number = number;
 	}
 }

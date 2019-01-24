@@ -18,6 +18,7 @@ public class Request<S, T extends Response> {
     private String method;
     private List<S> params;
     private long id;
+    private TransactionSucCallback callback;
 
     private Web3jService web3jService;
 
@@ -107,4 +108,12 @@ public class Request<S, T extends Response> {
     public Flowable<T> flowable() {
         return new RemoteCall<>(this::send).flowable();
     }
+
+	public TransactionSucCallback getCallback() {
+		return callback;
+	}
+
+	public void setCallback(TransactionSucCallback callback) {
+		this.callback = callback;
+	}
 }
