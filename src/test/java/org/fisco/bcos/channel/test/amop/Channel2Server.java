@@ -1,7 +1,9 @@
 package org.fisco.bcos.channel.test.amop;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +29,7 @@ public class Channel2Server {
 
 		Service service = context.getBean(Service.class);
 		
-		List<String> topics = new ArrayList<String>();
+		Set<String> topics = new HashSet<String>();
 		topics.add(topic);
 		service.setTopics(topics);
 		
