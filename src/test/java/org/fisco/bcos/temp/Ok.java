@@ -64,7 +64,7 @@ public class Ok extends Contract {
     public RemoteCall<TransactionReceipt> trans(BigInteger num) {
         final Function function = new Function(
                 FUNC_TRANS, 
-                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(num)), 
+                Arrays.<Type>asList(new Uint256(num)), 
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
