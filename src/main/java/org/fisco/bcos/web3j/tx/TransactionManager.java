@@ -1,5 +1,6 @@
 package org.fisco.bcos.web3j.tx;
 
+import org.fisco.bcos.channel.client.TransactionSucCallback;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.methods.response.EthSendTransaction;
@@ -56,6 +57,10 @@ public abstract class TransactionManager {
             BigInteger gasPrice, BigInteger gasLimit, String to,
             String data, BigInteger value)
             throws IOException;
+    
+    public EthSendTransaction sendTransaction(BigInteger gasPrice, BigInteger gasLimit, String to, String data, BigInteger value, TransactionSucCallback callback) throws IOException {
+		return null;
+	}
 
     public String getFromAddress() {
         return credentials.getAddress();
