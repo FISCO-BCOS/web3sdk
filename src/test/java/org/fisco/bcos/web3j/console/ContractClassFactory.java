@@ -20,11 +20,11 @@ public class ContractClassFactory {
 	}
 	
     @SuppressWarnings("rawtypes")
-	public static Class[] getParameterType(Class clazz, String methodName) throws ClassNotFoundException {
+	public static Class[] getParameterType(Class clazz, String methodName, int paramsLen) throws ClassNotFoundException {
         Method[] methods = clazz.getDeclaredMethods();
         Class[] type = null;
         for (Method method : methods) {
-            if (methodName.equals(method.getName())) {
+            if (methodName.equals(method.getName()) && (method.getParameters()).length == paramsLen) {
                 Parameter[] params = method.getParameters();
                 type =  new Class[params.length];
                 for(int i=0; i< params.length;i++) {
@@ -34,7 +34,7 @@ public class ContractClassFactory {
 					else
 						type[i] = Class.forName(typeName);
                 }
-
+                break;
             }
         }
 
@@ -91,14 +91,14 @@ public class ContractClassFactory {
 	}
 	
     @SuppressWarnings("rawtypes")
-	public static String getReturnType(Class clazz, String methodName) throws ClassNotFoundException {
+	public static String getReturnType(Class clazz, String methodName, Class[] parameterType) throws ClassNotFoundException {
         Method[] methods = clazz.getDeclaredMethods();
         String returnType = null;
         for (Method method : methods) 
         {	
-            if (methodName.equals(method.getName())) 
+            if (methodName.equals(method.getName()) && (method.getParameterTypes()).length == parameterType.length) 
             {	
-                java.lang.reflect.Type genericReturnType = method.getGenericReturnType();
+            	java.lang.reflect.Type genericReturnType = method.getGenericReturnType();
          		if(genericReturnType instanceof ParameterizedType){
          			java.lang.reflect.Type[] actualTypeArguments = ((ParameterizedType)genericReturnType).getActualTypeArguments();
         			for (java.lang.reflect.Type type : actualTypeArguments) {

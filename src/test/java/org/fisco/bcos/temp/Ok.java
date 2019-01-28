@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import org.fisco.bcos.channel.client.TransactionSucCallback;
 import org.fisco.bcos.web3j.abi.EventEncoder;
 import org.fisco.bcos.web3j.abi.TypeReference;
 import org.fisco.bcos.web3j.abi.datatypes.Event;
@@ -64,9 +65,17 @@ public class Ok extends Contract {
     public RemoteCall<TransactionReceipt> trans(BigInteger num) {
         final Function function = new Function(
                 FUNC_TRANS, 
-                Arrays.<Type>asList(new Uint256(num)), 
+                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(num)), 
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
+    }
+
+    public void trans(BigInteger num, TransactionSucCallback callback) {
+        final Function function = new Function(
+                FUNC_TRANS, 
+                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(num)), 
+                Collections.<TypeReference<?>>emptyList());
+        asyncExecuteTransaction(function, callback);
     }
 
     public RemoteCall<BigInteger> get() {
