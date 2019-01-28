@@ -1,5 +1,6 @@
 package org.fisco.bcos.web3j.abi.datatypes.generated;
 
+import org.fisco.bcos.channel.client.TransactionSucCallback;
 import org.fisco.bcos.web3j.abi.datatypes.Address;
 import org.fisco.bcos.web3j.abi.datatypes.Bool;
 import org.fisco.bcos.web3j.abi.datatypes.DynamicBytes;
@@ -217,6 +218,8 @@ public final class AbiTypes {
                     return Bytes31.class;
             case "bytes32":
                     return Bytes32.class;
+            case "TransactionSucCallback":
+            		return TransactionSucCallback.class;
             default:
                     throw new UnsupportedOperationException("Unsupported type encountered: "
                             + type);

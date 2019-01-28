@@ -1,6 +1,8 @@
 package org.fisco.bcos.channel.client;
 
 import org.fisco.bcos.channel.dto.EthereumResponse;
+import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
+
 import io.netty.util.Timeout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,15 +13,14 @@ import org.slf4j.LoggerFactory;
 public abstract class TransactionSucCallback {
     private static Logger logger = LoggerFactory.getLogger(TransactionSucCallback.class);
 
-    public abstract void onResponse(EthereumResponse response);
+    public abstract void onResponse(TransactionReceipt response);
 
     public void onTimeout() {
         logger.error("transactionSuc timeout");
-        EthereumResponse response = new EthereumResponse();
-        response.setErrorCode(102);
-        response.setErrorMessage("transactionSuc timeout");
-        response.setContent("");
-        onResponse(response);
+        
+        TransactionReceipt receipt = new TransactionReceipt();
+        receipt.setStatus("Receipt timeout");
+        onResponse(receipt);
     }
 
     public Timeout getTimeout() {

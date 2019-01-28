@@ -11,7 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public class ConnectionCallback implements ChannelConnections.Callback {
@@ -19,7 +21,7 @@ public class ConnectionCallback implements ChannelConnections.Callback {
 
     private ObjectMapper objectMapper = new ObjectMapper();
     private Service channelService;
-    private List<String> topics;
+    private Set<String> topics;
 
     public Service getChannelService() {
         return channelService;
@@ -29,11 +31,11 @@ public class ConnectionCallback implements ChannelConnections.Callback {
         this.channelService = channelService;
     }
 
-    public ConnectionCallback(List<String> topics) {
+    public ConnectionCallback(Set<String> topics) {
         this.topics = topics;
     }
 
-    public void setTopics(List<String> topics) {
+    public void setTopics(Set<String> topics) {
         try {
             this.topics = topics;
         } catch (Exception e) {
@@ -44,13 +46,16 @@ public class ConnectionCallback implements ChannelConnections.Callback {
     @Override
     public void onConnect(ChannelHandlerContext ctx) {
         try {
+        	channelService.setNumber(BigInteger.ONE);
+        	
             Message message = new Message();
             message.setResult(0);
-            message.setType((short) 0x32); //topic设置topic消息0x32
+            message.setType((short) 0x32);
             message.setSeq(UUID.randomUUID().toString().replaceAll("-", ""));
 
             logger.debug("connection established，send topic to the connection:{}", message.getSeq());
 
+            topics.add("_block_notify_" + channelService.getGroupId());
             message.setData(objectMapper.writeValueAsBytes(topics.toArray()));
 
             logger.debug("topics: {}", new String(message.getData()));
@@ -128,11 +133,18 @@ public class ConnectionCallback implements ChannelConnections.Callback {
                     logger.trace("heartbeat response");
                 }
             } else if (msg.getType() == 0x1000) {
-                //交易上链成功回调的消息
-                logger.debug("EthereumMessage response");
                 EthereumMessage ethereumMessage = new EthereumMessage(msg);
+                logger.trace("TransactionReceipt notify: {}", ethereumMessage.getSeq());
+                
                 ethereumMessage.readExtra(message);
                 channelService.onReceiveTransactionMessage(ctx, ethereumMessage);
+            } else if(msg.getType() == 0x1001) {
+            	//new block notify
+            	ChannelMessage2 channelMessage = new ChannelMessage2(msg);
+                channelMessage.readExtra(message);
+            	
+            	logger.trace("New block notify");
+            	channelService.onReceiveBlockNotify(ctx, channelMessage);
             } else {
                 logger.error("unknown message type:{}", msg.getType());
             }

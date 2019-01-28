@@ -101,7 +101,7 @@ public class ConsoleImpl implements ConsoleFace {
 	@Override
 	public void welcome() {
 		ConsoleUtils.doubleLine();
-		System.out.println("Welcome to FISCO BCOS 2.0!");
+		System.out.println("Welcome to FISCO BCOS console!");
 		System.out.println("Type 'help' or 'h' for help. Type 'quit' or 'q' to quit console.");
 		String logo = " ________  ______   ______    ______    ______         _______    ______    ______    ______  \n"
 				+ "|        \\|      \\ /      \\  /      \\  /      \\       |       \\  /      \\  /      \\  /      \\ \n"
