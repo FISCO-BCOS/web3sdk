@@ -49,9 +49,15 @@ public class ContractClassFactory {
 			if(type[i] == String.class)
 			{
 				if(params[i+4].startsWith("\"") && params[i+4].endsWith("\""))
+				{
 					obj[i] = params[i+4].substring(1, params[i+4].length()-1);
+				}
 				else
+				{
 					System.out.println("Please provide double quote for String");
+					System.out.println();
+					return null;
+				}
 			}
 			else if(type[i] == Boolean.class)
 			{
@@ -74,7 +80,11 @@ public class ContractClassFactory {
 					obj[i] = bytes1;
 				}
 				else
+				{
 					System.out.println("Please provide double quote for byte String");
+					System.out.println();
+					return null;
+				}
 			}
 		}
 		return obj;
