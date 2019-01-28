@@ -181,7 +181,6 @@ test {
 //		}
 //	}
 //}
-mainClassName  = System.getProperty("exec.mainClass")
 
 
 mainClassName  = System.getProperty("exec.mainClass") ?:  "org.fisco.bcos.channel.test.amop.Channel2Client"
