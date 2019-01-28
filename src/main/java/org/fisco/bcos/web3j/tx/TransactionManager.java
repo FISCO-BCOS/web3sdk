@@ -60,7 +60,9 @@ public abstract class TransactionManager {
             String data, BigInteger value)
             throws IOException;
 
-    public  abstract EthSendTransaction sendTransaction(BigInteger gasPrice, BigInteger gasLimit, String to, String data, BigInteger value, TransactionSucCallback callback) throws IOException ;
+    public   EthSendTransaction sendTransaction(BigInteger gasPrice, BigInteger gasLimit, String to, String data, BigInteger value, TransactionSucCallback callback) throws IOException {
+        return null;
+    };
 
 
     public String getFromAddress() {
