@@ -3,6 +3,7 @@ package org.fisco.bcos.temp;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collections;
+import org.fisco.bcos.channel.client.TransactionSucCallback;
 import org.fisco.bcos.web3j.abi.TypeReference;
 import org.fisco.bcos.web3j.abi.datatypes.Function;
 import org.fisco.bcos.web3j.abi.datatypes.Type;
@@ -52,9 +53,17 @@ public class HelloWorld extends Contract {
     public RemoteCall<TransactionReceipt> set(String n) {
         final Function function = new Function(
                 FUNC_SET, 
-                Arrays.<Type>asList(new Utf8String(n)), 
+                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(n)), 
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
+    }
+
+    public void set(String n, TransactionSucCallback callback) {
+        final Function function = new Function(
+                FUNC_SET, 
+                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(n)), 
+                Collections.<TypeReference<?>>emptyList());
+        asyncExecuteTransaction(function, callback);
     }
 
     public RemoteCall<String> get() {
