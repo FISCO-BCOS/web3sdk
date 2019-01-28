@@ -651,6 +651,10 @@ public class ConsoleImpl implements ConsoleFace {
 					funcFlag = false;
 					Method func = contractClass.getMethod(funcName, parameterType);
 					Object[] argobj = ContractClassFactory.getPrametersObject(parameterType, params);
+					if(argobj == null)
+					{
+						return;
+					}
 					String returnType = ContractClassFactory.getReturnType(contractClass, funcName);
 					remoteCall = (RemoteCall<?>) func.invoke(contractObject, argobj);
 					Object result;
@@ -767,6 +771,10 @@ public class ConsoleImpl implements ConsoleFace {
 					funcFlag = false;
 					Method func = contractClass.getMethod(funcName, parameterType);
 					Object[] argobj = ContractClassFactory.getPrametersObject(parameterType, params);
+					if(argobj == null)
+					{
+						return;
+					}
 					String returnType = ContractClassFactory.getReturnType(contractClass, funcName);
 					remoteCall = (RemoteCall<?>) func.invoke(contractObject, argobj);
 					Object result;
