@@ -199,16 +199,15 @@ public abstract class Contract extends ManagedTransaction {
     return Optional.ofNullable(transactionReceipt);
   }
 
-  /**
-   * Sets the default block parameter. This use useful if one wants to query
-   * historical state of a contract.
-   *
-   * @param defaultBlockParameter the default block parameter
-   */
-  public void
-  setDefaultBlockParameter(DefaultBlockParameter defaultBlockParameter) {
-    this.defaultBlockParameter = defaultBlockParameter;
-  }
+    /**
+     * Sets the default block parameter. This use useful if one wants to query
+     * historical state of a contract.
+     *
+     * @param defaultBlockParameter the default block parameter
+     */
+    public void setDefaultBlockParameter(DefaultBlockParameter defaultBlockParameter) {
+        this.defaultBlockParameter = defaultBlockParameter;
+    }
 
   /**
    * Execute constant function call - i.e. a call that does not change state of
@@ -230,16 +229,16 @@ public abstract class Contract extends ManagedTransaction {
     return FunctionReturnDecoder.decode(value, function.getOutputParameters());
   }
 
-  @SuppressWarnings("unchecked")
-  protected <T extends Type> T executeCallSingleValueReturn(Function function)
-      throws IOException {
-    List<Type> values = executeCall(function);
-    if (!values.isEmpty()) {
-      return (T)values.get(0);
-    } else {
-      return null;
+    @SuppressWarnings("unchecked")
+    protected <T extends Type> T executeCallSingleValueReturn(
+            Function function) throws IOException {
+        List<Type> values = executeCall(function);
+        if (!values.isEmpty()) {
+            return (T) values.get(0);
+        } else {
+            return null;
+        }
     }
-  }
 
   @SuppressWarnings("unchecked")
   protected <T extends Type, R>
@@ -340,17 +339,21 @@ public abstract class Contract extends ManagedTransaction {
   }
 
   protected void asyncExecuteTransaction(Function function,
-                                         TransactionSucCallback callback) throws IOException, TransactionException {
+                                         TransactionSucCallback callback) {
     try {
       sendOnly(contractAddress, FunctionEncoder.encode(function),
                BigInteger.ZERO, gasProvider.getGasPrice(function.getName()),
                gasProvider.getGasLimit(function.getName()), callback);
     } catch (IOException e) {
-      e.printStackTrace();
-      throw e;
+      TransactionReceipt receipt = new TransactionReceipt();
+      receipt.setStatus("Error sending: " + e.getMessage());
+      callback.onResponse(receipt);
     } catch (TransactionException e) {
+	  TransactionReceipt receipt = new TransactionReceipt();
+      receipt.setStatus("Error sending: " + e.getMessage());
+      callback.onResponse(receipt);
+         
       e.printStackTrace();
-      throw e;
     }
   }
 
