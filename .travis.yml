@@ -1,7 +1,7 @@
 # safelist
 branches:
   only:
-  - sdk-2.0
+  - release-2.0.1
 
 language: java
 jdk:
