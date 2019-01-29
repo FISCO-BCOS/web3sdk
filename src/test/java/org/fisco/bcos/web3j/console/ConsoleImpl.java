@@ -641,32 +641,30 @@ public class ConsoleImpl implements ConsoleFace {
 		contractObject = load.invoke(null, contractAddress, web3j, credentials, gasPrice, gasLimit);
 		Method[] methods = contractClass.getMethods();
 		String funcName = params[3];
-		boolean funcFlag = true;
-		for (Method method : methods) {
-			if (funcName.equals(method.getName())) {
-				Class[] parameterType = ContractClassFactory.getParameterType(contractClass, funcName);
-				if (parameterType.length != params.length - 4) {
-					continue;
-				} else {
-					funcFlag = false;
-					Method func = contractClass.getMethod(funcName, parameterType);
-					Object[] argobj = ContractClassFactory.getPrametersObject(parameterType, params);
-					String returnType = ContractClassFactory.getReturnType(contractClass, funcName);
-					remoteCall = (RemoteCall<?>) func.invoke(contractObject, argobj);
-					Object result;
-					result = remoteCall.send();
-					String resultStr;
-					resultStr = ContractClassFactory.getReturnObject(returnType, result);
-					System.out.println(resultStr);
-					System.out.println();
-					break;
-				}
-			}
-		}
-		if (funcFlag) {
+		Class[] parameterType = ContractClassFactory.getParameterType(contractClass, funcName, params.length - 4);
+		if(parameterType == null)
+		{
 			HelpInfo.promptNoFunc(params[1], funcName, params.length - 4);
 			return;
 		}
+		Method func = contractClass.getMethod(funcName, parameterType);
+		Object[] argobj = ContractClassFactory.getPrametersObject(parameterType, params);
+		if (argobj == null) {
+			return;
+		}
+		String returnType = ContractClassFactory.getReturnType(contractClass, funcName, parameterType);
+		if(returnType == null)
+		{
+			HelpInfo.promptNoFunc(params[1], funcName, params.length - 4);
+			return;
+		}
+		remoteCall = (RemoteCall<?>) func.invoke(contractObject, argobj);
+		Object result;
+		result = remoteCall.send();
+		String resultStr;
+		resultStr = ContractClassFactory.getReturnObject(returnType, result);
+		System.out.println(resultStr);
+		System.out.println();
 
 	}
 
@@ -757,32 +755,30 @@ public class ConsoleImpl implements ConsoleFace {
 
 		Method[] methods = contractClass.getMethods();
 		String funcName = params[3];
-		boolean funcFlag = true;
-		for (Method method : methods) {
-			if (funcName.equals(method.getName())) {
-				Class[] parameterType = ContractClassFactory.getParameterType(contractClass, funcName);
-				if (parameterType.length != params.length - 4) {
-					continue;
-				} else {
-					funcFlag = false;
-					Method func = contractClass.getMethod(funcName, parameterType);
-					Object[] argobj = ContractClassFactory.getPrametersObject(parameterType, params);
-					String returnType = ContractClassFactory.getReturnType(contractClass, funcName);
-					remoteCall = (RemoteCall<?>) func.invoke(contractObject, argobj);
-					Object result;
-					result = remoteCall.send();
-					String resultStr;
-					resultStr = ContractClassFactory.getReturnObject(returnType, result);
-					System.out.println(resultStr);
-					System.out.println();
-					break;
-				}
-			}
-		}
-		if (funcFlag) {
+		Class[] parameterType = ContractClassFactory.getParameterType(contractClass, funcName, params.length - 4);
+		if(parameterType == null)
+		{
 			HelpInfo.promptNoFunc(params[1], funcName, params.length - 4);
 			return;
 		}
+		Method func = contractClass.getMethod(funcName, parameterType);
+		Object[] argobj = ContractClassFactory.getPrametersObject(parameterType, params);
+		if (argobj == null) {
+			return;
+		}
+		String returnType = ContractClassFactory.getReturnType(contractClass, funcName, parameterType);
+		if(returnType == null)
+		{
+			HelpInfo.promptNoFunc(params[1], funcName, params.length - 4);
+			return;
+		}
+		remoteCall = (RemoteCall<?>) func.invoke(contractObject, argobj);
+		Object result;
+		result = remoteCall.send();
+		String resultStr;
+		resultStr = ContractClassFactory.getReturnObject(returnType, result);
+		System.out.println(resultStr);
+		System.out.println();
 
 	}
 

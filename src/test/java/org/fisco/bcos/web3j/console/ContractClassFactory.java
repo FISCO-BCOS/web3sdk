@@ -20,11 +20,11 @@ public class ContractClassFactory {
 	}
 	
     @SuppressWarnings("rawtypes")
-	public static Class[] getParameterType(Class clazz, String methodName) throws ClassNotFoundException {
+	public static Class[] getParameterType(Class clazz, String methodName, int paramsLen) throws ClassNotFoundException {
         Method[] methods = clazz.getDeclaredMethods();
         Class[] type = null;
         for (Method method : methods) {
-            if (methodName.equals(method.getName())) {
+            if (methodName.equals(method.getName()) && (method.getParameters()).length == paramsLen) {
                 Parameter[] params = method.getParameters();
                 type =  new Class[params.length];
                 for(int i=0; i< params.length;i++) {
@@ -34,7 +34,7 @@ public class ContractClassFactory {
 					else
 						type[i] = Class.forName(typeName);
                 }
-
+                break;
             }
         }
 
@@ -49,9 +49,15 @@ public class ContractClassFactory {
 			if(type[i] == String.class)
 			{
 				if(params[i+4].startsWith("\"") && params[i+4].endsWith("\""))
+				{
 					obj[i] = params[i+4].substring(1, params[i+4].length()-1);
+				}
 				else
+				{
 					System.out.println("Please provide double quote for String");
+					System.out.println();
+					return null;
+				}
 			}
 			else if(type[i] == Boolean.class)
 			{
@@ -74,21 +80,25 @@ public class ContractClassFactory {
 					obj[i] = bytes1;
 				}
 				else
+				{
 					System.out.println("Please provide double quote for byte String");
+					System.out.println();
+					return null;
+				}
 			}
 		}
 		return obj;
 	}
 	
     @SuppressWarnings("rawtypes")
-	public static String getReturnType(Class clazz, String methodName) throws ClassNotFoundException {
+	public static String getReturnType(Class clazz, String methodName, Class[] parameterType) throws ClassNotFoundException {
         Method[] methods = clazz.getDeclaredMethods();
         String returnType = null;
         for (Method method : methods) 
         {	
-            if (methodName.equals(method.getName())) 
+            if (methodName.equals(method.getName()) && (method.getParameterTypes()).length == parameterType.length) 
             {	
-                java.lang.reflect.Type genericReturnType = method.getGenericReturnType();
+            	java.lang.reflect.Type genericReturnType = method.getGenericReturnType();
          		if(genericReturnType instanceof ParameterizedType){
          			java.lang.reflect.Type[] actualTypeArguments = ((ParameterizedType)genericReturnType).getActualTypeArguments();
         			for (java.lang.reflect.Type type : actualTypeArguments) {

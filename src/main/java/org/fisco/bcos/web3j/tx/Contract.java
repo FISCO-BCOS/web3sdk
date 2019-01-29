@@ -343,7 +343,7 @@ public abstract class Contract extends ManagedTransaction {
     try {
       sendOnly(contractAddress, FunctionEncoder.encode(function),
                BigInteger.ZERO, gasProvider.getGasPrice(function.getName()),
-               gasProvider.getGasPrice(function.getName()), callback);
+               gasProvider.getGasLimit(function.getName()), callback);
     } catch (IOException e) {
       e.printStackTrace();
     } catch (TransactionException e) {
