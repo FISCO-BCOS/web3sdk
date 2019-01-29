@@ -81,7 +81,7 @@ public class OkD extends Contract {
         return executeRemoteCallTransaction(function);
     }
 
-    public void trans(String from_accout, BigInteger num, TransactionSucCallback callback) throws IOException, TransactionException {
+    public void trans(String from_accout, BigInteger num, TransactionSucCallback callback) {
         final Function function = new Function(
                 FUNC_TRANS, 
                 Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(from_accout), 
