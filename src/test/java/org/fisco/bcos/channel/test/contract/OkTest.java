@@ -66,16 +66,6 @@ public class OkTest extends TestBase {
         Method load = contractClass.getMethod("load", String.class, Web3j.class, Credentials.class, BigInteger.class, BigInteger.class);
         Object contractObject = load.invoke(null, contractAddress, web3j, credentials, gasPrice, gasLimit);
 
-
-        Method func = contractClass.getMethod("get",  getParameterType(contractClass,"get"));
-        RemoteCall<BigInteger> rm = (RemoteCall)func.invoke(contractObject);
-        System.out.println( rm.send().intValue());
-
-        Method func1 = contractClass.getMethod("trans",  getParameterType(contractClass,"trans"));
-//       Class[] type =  getParameterType(contractClass,"trans");
-//        type[0].newInstance();
-        RemoteCall<TransactionReceipt> rm1 = (RemoteCall) func1.invoke(contractObject, new BigInteger("6"));
-        System.out.println(rm1.send().getTransactionHash());
     }
 
 
