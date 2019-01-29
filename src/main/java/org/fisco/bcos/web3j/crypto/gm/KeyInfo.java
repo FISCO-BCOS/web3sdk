@@ -97,7 +97,6 @@ public class KeyInfo implements KeyInfoInterface {
     
 	/**
      * @author: fisco-dev
-     * @function: load key information from specified file
 	 * @param keyFile: file that contains the key information
 	 * 
 	 */
@@ -159,8 +158,6 @@ public class KeyInfo implements KeyInfoInterface {
 
 	/**
      * @author: fisco-dev
-     * @function: store key information into specified file
-	 * @param keyFile: file used to store the key information
 	 * 
 	 */
     @Override

@@ -7,7 +7,7 @@ import org.fisco.bcos.web3j.precompile.cns.CnsService;
 import org.junit.Test;
 
 import java.math.BigInteger;
-import java.util.Random;
+import java.security.SecureRandom;
 
 import static org.junit.Assert.assertEquals;
 
@@ -25,7 +25,7 @@ public class CnsServiceTest extends TestBase {
 
         Ok okDemo = Ok.deploy(web3j, credentials, gasPrice, gasLimit).send();
         System.out.println("okdemo contract address " + okDemo.getContractAddress());
-        int random = new Random().nextInt(1000);
+        int random = new SecureRandom().nextInt(1000);
         String name = "hello world" + random;
         String result = cnsService.registerCns(name , "10.0", okDemo.getContractAddress(),"[\n" +
             "\t{\n" +
