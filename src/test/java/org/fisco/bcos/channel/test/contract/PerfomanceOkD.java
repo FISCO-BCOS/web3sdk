@@ -17,8 +17,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class PerfomanceOk {
-	private static Logger logger = LoggerFactory.getLogger(PerfomanceOk.class);
+public class PerfomanceOkD {
+	private static Logger logger = LoggerFactory.getLogger(PerfomanceOkD.class);
 	private static AtomicInteger sended = new AtomicInteger(0);
 	
 	public static void main(String[] args) throws Exception {
@@ -34,9 +34,6 @@ public class PerfomanceOk {
 			
 			ChannelEthereumService channelEthereumService = new ChannelEthereumService();
 			channelEthereumService.setChannelService(service);
-
-			Web3AsyncThreadPoolSize.web3AsyncCorePoolSize = 3000;
-			Web3AsyncThreadPoolSize.web3AsyncPoolSize = 2000;
 
 			ScheduledExecutorService scheduledExecutorService =
 					Executors.newScheduledThreadPool(500);
@@ -68,7 +65,7 @@ public class PerfomanceOk {
 			threadPool.initialize();
 			
 			System.out.println("Deploying contract...");
-			Ok ok = Ok.deploy(web3, credentials, gasPrice, gasLimit).send();
+			OkD ok = OkD.deploy(web3, credentials, gasPrice, gasLimit).send();
 
 			PerfomanceCollector collector = new PerfomanceCollector();
 			collector.setTotal(count);
@@ -86,7 +83,7 @@ public class PerfomanceOk {
 						try {
 							PerfomanceOkCallback callback = new PerfomanceOkCallback();
 							callback.setCollector(collector);
-							ok.trans(new BigInteger("4"), callback);
+							ok.trans("0x1", new BigInteger("1"), callback);
 						} catch (Exception e) {
 							logger.info(e.getMessage());
 						}
@@ -101,7 +98,7 @@ public class PerfomanceOk {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.exit(-1);;
+			System.exit(-1);
 		}
 	}
 }
