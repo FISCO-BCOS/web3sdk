@@ -340,15 +340,17 @@ public abstract class Contract extends ManagedTransaction {
   }
 
   protected void asyncExecuteTransaction(Function function,
-                                         TransactionSucCallback callback) {
+                                         TransactionSucCallback callback) throws IOException, TransactionException {
     try {
       sendOnly(contractAddress, FunctionEncoder.encode(function),
                BigInteger.ZERO, gasProvider.getGasPrice(function.getName()),
                gasProvider.getGasLimit(function.getName()), callback);
     } catch (IOException e) {
       e.printStackTrace();
+      throw e;
     } catch (TransactionException e) {
       e.printStackTrace();
+      throw e;
     }
   }
 
