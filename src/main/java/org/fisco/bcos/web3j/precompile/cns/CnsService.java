@@ -11,6 +11,7 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.EthBlock;
 import org.fisco.bcos.web3j.protocol.core.methods.response.EthSyncing;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.tx.ClientTransactionManager;
+import org.fisco.bcos.web3j.tx.RawTransactionManager;
 import org.fisco.bcos.web3j.tx.TransactionManager;
 import org.fisco.bcos.web3j.tx.gas.DefaultGasProvider;
 import org.fisco.bcos.web3j.tx.gas.StaticGasProvider;
@@ -37,7 +38,7 @@ public class CnsService {
 
     public CnsService(Web3j web3j, long syncThreshold, Credentials credentials) {
         this.web3j = web3j;
-        transactionManager = new ClientTransactionManager(web3j, credentials);  // don't use empty string
+        transactionManager = new RawTransactionManager(web3j, credentials);
         this.syncThreshold = syncThreshold;
     }
 
