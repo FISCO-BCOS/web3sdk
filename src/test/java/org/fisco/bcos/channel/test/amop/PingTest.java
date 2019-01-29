@@ -16,8 +16,10 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class PingTest {
@@ -51,7 +53,7 @@ public class PingTest {
                 System.exit(1);
             }
 
-            List<String> topics = new ArrayList<String>();
+            Set<String> topics = new HashSet<String>();
             topics.add(nodeSplit[0]);
 
             service.setTopics(topics);
