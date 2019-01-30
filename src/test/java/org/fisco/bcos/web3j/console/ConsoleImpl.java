@@ -407,8 +407,10 @@ public class ConsoleImpl implements ConsoleFace {
 		if (ConsoleUtils.isInvalidNumber(blockNumberStr, 0))
 			return;
 		BigInteger blockNumber = new BigInteger(blockNumberStr);
-		if (blockNumber.intValue() > Numeric.decodeQuantity(web3j.ethBlockNumber().sendForReturnString()).intValue()) {
+		BigInteger getBlockNumber = Numeric.decodeQuantity(web3j.ethBlockNumber().sendForReturnString());
+		if (blockNumber.compareTo(getBlockNumber) == 1) {
 			System.out.println("This block number doesn't exsit.");
+			System.out.println();
 			return;
 		}
 		String blockHash = web3j.getBlockHashByNumber(DefaultBlockParameter.valueOf(blockNumber)).sendForReturnString();
