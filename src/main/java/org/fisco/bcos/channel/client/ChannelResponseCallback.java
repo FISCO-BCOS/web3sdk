@@ -1,18 +1,18 @@
 package org.fisco.bcos.channel.client;
 
-import java.util.List;
-import java.util.Random;
-
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.util.Timeout;
+import org.fisco.bcos.channel.dto.ChannelMessage;
+import org.fisco.bcos.channel.dto.ChannelResponse;
 import org.fisco.bcos.channel.handler.ChannelConnections;
 import org.fisco.bcos.channel.handler.ConnectionInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.fisco.bcos.channel.dto.ChannelMessage;
-import org.fisco.bcos.channel.dto.ChannelResponse;
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.util.Timeout;
+import java.security.SecureRandom;
+import java.util.List;
+import java.util.Random;
 
 public abstract class ChannelResponseCallback {
 	private static Logger logger = LoggerFactory.getLogger(ChannelResponseCallback.class);
@@ -75,7 +75,7 @@ public abstract class ChannelResponseCallback {
 				//选取客户端节点
 				logger.debug("Number of local nodes:{}", fromConnectionInfos.size());
 				if (fromConnectionInfos.size() > 0) {
-					Random random = new Random();
+					Random random = new SecureRandom();
 					Integer index = random.nextInt(fromConnectionInfos.size());
 
 					logger.debug("selected:{}", index);
@@ -101,7 +101,7 @@ public abstract class ChannelResponseCallback {
 				// 选取服务端节点
 				logger.debug("Number of peer nodes:{}", toConnectionInfos.size());
 				if (toConnectionInfos.size() > 0) {
-					Random random = new Random();
+					Random random = new SecureRandom();
 					Integer index = random.nextInt(toConnectionInfos.size());
 
 					logger.debug("selected:{}", index);

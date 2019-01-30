@@ -73,6 +73,7 @@ public class PerfomanceOk {
 			PerfomanceCollector collector = new PerfomanceCollector();
 			collector.setTotal(count);
 
+
 			RateLimiter limiter = RateLimiter.create(qps);
 			Integer area = count / 10;
 			final Integer total = count;

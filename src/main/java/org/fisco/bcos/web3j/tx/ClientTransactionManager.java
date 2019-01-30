@@ -1,17 +1,10 @@
 package org.fisco.bcos.web3j.tx;
 
-import java.io.IOException;
-import java.math.BigInteger;
-import java.util.Random;
-
-import org.fisco.bcos.channel.client.TransactionSucCallback;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.crypto.Hash;
 import org.fisco.bcos.web3j.crypto.RawTransaction;
 import org.fisco.bcos.web3j.crypto.TransactionEncoder;
 import org.fisco.bcos.web3j.protocol.Web3j;
-import org.fisco.bcos.web3j.protocol.core.Request;
-import org.fisco.bcos.web3j.protocol.core.methods.request.Transaction;
 import org.fisco.bcos.web3j.protocol.core.methods.response.EthSendTransaction;
 import org.fisco.bcos.web3j.tx.exceptions.TxHashMismatchException;
 import org.fisco.bcos.web3j.tx.response.TransactionReceiptProcessor;
@@ -19,6 +12,11 @@ import org.fisco.bcos.web3j.utils.Numeric;
 import org.fisco.bcos.web3j.utils.TxHashVerifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.math.BigInteger;
+import java.security.SecureRandom;
+import java.util.Random;
 
 /**
  * TransactionManager implementation for using an Ethereum node to transact.
@@ -56,7 +54,7 @@ public class ClientTransactionManager extends TransactionManager {
             String data, BigInteger value)
             throws IOException {
 
-        Random r = new Random();
+        Random r = new SecureRandom();
         BigInteger randomid = new BigInteger(250,r);
         BigInteger blockLimit = getBlockLimit();
         logger.info("sendTransaction randomid: {} blockLimit:{}", randomid,blockLimit);
