@@ -50,7 +50,13 @@ public class ContractClassFactory {
 			{
 				if(params[i+4].startsWith("\"") && params[i+4].endsWith("\""))
 				{
-					obj[i] = params[i+4].substring(1, params[i+4].length()-1);
+					try {
+						obj[i] = params[i+4].substring(1, params[i+4].length()-1);
+					} catch (Exception e) {
+						System.out.println("Please provide double quote for String that cannot contain any blank spaces");
+						System.out.println();
+						return null;
+					}
 				}
 				else
 				{

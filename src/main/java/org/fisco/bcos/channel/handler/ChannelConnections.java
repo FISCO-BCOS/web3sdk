@@ -18,14 +18,17 @@ import io.netty.handler.timeout.IdleStateHandler;
 import org.fisco.bcos.channel.dto.EthereumMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import javax.net.ssl.SSLException;
 import java.io.InputStream;
 import java.security.KeyStore;
 import java.security.PrivateKey;
+import java.security.SecureRandom;
+import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.*;
 import java.util.Map.Entry;
@@ -34,24 +37,10 @@ import java.util.concurrent.TimeUnit;
 public class ChannelConnections {
 	private static Logger logger = LoggerFactory.getLogger(ChannelConnections.class);
 
-	public String getKeystorePassWord() {
-		return keystorePassWord;
-	}
-
-	public void setKeystorePassWord(String keystorePassWord) {
-		this.keystorePassWord = keystorePassWord;
-	}
-
-	public String getClientCertPassWord() {
-		return clientCertPassWord;
-	}
-
-	public void setClientCertPassWord(String clientCertPassWord) {
-		this.clientCertPassWord = clientCertPassWord;
-	}
-
 	private Callback callback;
 	private List<String> connectionsStr;
+	private String caCertPath = "classpath:ca.crt";
+	private String clientKeystorePath = "classpath:keystore.p12";
 	private String keystorePassWord = "";
 	private String clientCertPassWord = "";
 	private List<ConnectionInfo> connections = new ArrayList<ConnectionInfo>();
@@ -71,6 +60,21 @@ public class ChannelConnections {
 
 	public void setGroupId(int groupId) {
 		this.groupId = groupId;
+	}
+	public String getKeystorePassWord() {
+		return keystorePassWord;
+	}
+
+	public void setKeystorePassWord(String keystorePassWord) {
+		this.keystorePassWord = keystorePassWord;
+	}
+
+	public String getClientCertPassWord() {
+		return clientCertPassWord;
+	}
+
+	public void setClientCertPassWord(String clientCertPassWord) {
+		this.clientCertPassWord = clientCertPassWord;
 	}
 
 
@@ -132,6 +136,22 @@ public class ChannelConnections {
 	}
 
 
+	public String getCaCertPath() {
+		return caCertPath;
+	}
+
+	public void setCaCertPath(String caCertPath) {
+		this.caCertPath = caCertPath;
+	}
+
+	public String getClientKeystorePath() {
+		return clientKeystorePath;
+	}
+
+	public void setClientKeystorePath(String clientKeystorePath) {
+		this.clientKeystorePath = clientKeystorePath;
+	}
+
 	public ChannelHandlerContext randomNetworkConnection() throws Exception {
 		List<ChannelHandlerContext> activeConnections = new ArrayList<ChannelHandlerContext>();
 
@@ -146,7 +166,7 @@ public class ChannelConnections {
 			throw new Exception("activeConnections isEmpty");
 		}
 
-		Random random = new Random();
+		Random random = new SecureRandom();
 		Integer index = random.nextInt(activeConnections.size());
 
 		logger.debug("selected:{}", index);
@@ -324,13 +344,28 @@ public class ChannelConnections {
 	private SslContext initSslContextForConnect() throws SSLException {
 		SslContext sslCtx;
 		try {
-			final Resource keystoreResource =  new ClassPathResource("keystore.p12");
-			final Resource caResource = new ClassPathResource("ca.crt");
+			ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+			Resource caResource = resolver.getResource(getCaCertPath());
+			Resource keystoreResource = resolver.getResource(getClientKeystorePath());
+			InputStream caInputStream = caResource.getInputStream();
 			KeyStore ks = KeyStore.getInstance("PKCS12");
 			InputStream ksInputStream = keystoreResource.getInputStream();
 			ks.load(ksInputStream, getKeystorePassWord().toCharArray());
 			//List<String> ciphers = Lists.newArrayList("ECDHE-RSA-AES128-SHA", "ECDHE-RSA-AES256-SHA", "AES128-SHA", "AES256-SHA", "DES-CBC3-SHA");
-			sslCtx = SslContextBuilder.forClient().trustManager(caResource.getFile()).sslProvider( SslProvider.JDK).build();
+		//	sslCtx = SslContextBuilder.forClient().trustManager(caInputStream).sslProvider( SslProvider.JDK).build();
+			PrivateKey key= (PrivateKey) ks.getKey("client", getClientCertPassWord().toCharArray());
+			Certificate[] certificates = ks.getCertificateChain("client");
+			X509Certificate[] x509Certificates = new X509Certificate[certificates.length];
+			for(int i=0 ;i< certificates.length;i++ ){
+				x509Certificates[i]= (X509Certificate) certificates[i];
+			}
+			sslCtx = SslContextBuilder.forClient().trustManager(caInputStream).keyManager(key,
+					x509Certificates).sslProvider( SslProvider.JDK).build();
+			//for node.key node.crt
+//			Resource keystorecaResource = resolver.getResource("classpath:node.crt");
+//			Resource keystorekeyResource = resolver.getResource("classpath:node.key");
+//			sslCtx = SslContextBuilder.forClient().trustManager(caInputStream).keyManager(keystorecaResource.getInputStream(),
+//					keystorekeyResource.getInputStream()).sslProvider( SslProvider.JDK).build();
 		}  catch (Exception e)
 		{
 			logger.debug( "SSLCONTEXT ***********" + e.getMessage());
@@ -342,13 +377,15 @@ public class ChannelConnections {
 	private SslContext initSslContextForListening() throws SSLException {
 		SslContext sslCtx;
 		try {
-			final Resource keystoreResource =  new ClassPathResource("keystore.p12");
-			final Resource caResource = new ClassPathResource("ca.crt");
+			ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+			Resource caResource = resolver.getResource(getCaCertPath());
+			Resource keystoreResource = resolver.getResource(getClientKeystorePath());
+			InputStream caInputStream = caResource.getInputStream();
 			KeyStore ks = KeyStore.getInstance("PKCS12");
 			InputStream ksInputStream = keystoreResource.getInputStream();
 			ks.load(ksInputStream, getKeystorePassWord().toCharArray());
 			sslCtx = SslContextBuilder.forServer((PrivateKey)ks.getKey("client", getClientCertPassWord().toCharArray()), (X509Certificate)ks.getCertificate("client"))
-			                			.trustManager(caResource.getFile())
+			                			.trustManager(caInputStream)
 			                			.build();
 		}  catch (Exception e)
 		{

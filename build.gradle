@@ -24,7 +24,8 @@ repositories {
 def spring_version="4.3.18.RELEASE"
 
 List logger = [
-		 'org.slf4j:slf4j-log4j12:1.7.25'
+		'org.slf4j:slf4j-log4j12:1.7.25'
+		// 'org.slf4j:slf4j-api:1.7.25'
 ]
 
 List spring =[ 
@@ -59,23 +60,21 @@ dependencies {
             'com.lambdaworks:scrypt:1.4.0',
             'com.squareup:javapoet:1.7.0',
             'io.reactivex:rxjava:1.2.4',
+			"io.reactivex.rxjava2:rxjava:2.2.2",
 			'com.github.jnr:jnr-unixsocket:0.15',
 	        'info.picocli:picocli:3.6.0',
-			"io.reactivex.rxjava2:rxjava:2.2.2",
 			"org.java-websocket:Java-WebSocket:1.3.8",
-	        'junit:junit:4.12',
-	        'org.mockito:mockito-core:2.23.0',
 	 		"org.apache.commons:commons-collections4:4.0",
 			"commons-io:commons-io:2.4",
 			'com.github.stefanbirkner:system-rules:1.18.0',
-			'io.bretty:console-table-builder:1.2'
-			
-
+			'io.bretty:console-table-builder:1.2',
+	  		'junit:junit:4.12',
+			'org.mockito:mockito-core:2.23.0'
 }
 
 archivesBaseName = 'web3sdk'
 group = 'org.fisco-bcos'
-version = '2.0.0'
+version = '2.0.1'
 
 // for old sdk
 sourceSets {
@@ -90,6 +89,7 @@ sourceSets {
 	}
 }
 
+//  1 dist jar
 jar {
 	destinationDir file('dist/apps')
 	archiveName project.name + '.jar'
@@ -97,6 +97,7 @@ jar {
 	exclude '**/*.properties'
 	exclude '**/*.crt'
 	exclude '**/*.keystore'
+	exclude '**/*.p12'
 
 	doLast {
 		copy {
@@ -113,16 +114,32 @@ jar {
 		}
 	}
 }
-//
+
 test {
 	testLogging.showStandardStreams = true
 }
-
+// for upload to maven
+//task sourcesJar(type: Jar) {
+//	classifier = 'sources'
+//	from sourceSets.main.allSource
+//}
+//
+//task javadocJar(type: Jar, dependsOn: javadoc) {
+//	classifier = 'javadoc'
+//	from javadoc.destinationDir
+//}
+//
+//artifacts {
+//	archives jar
+//	archives sourcesJar
+//	archives javadocJar
+//}
+//
 //signing {
 //	required { gradle.taskGraph.hasTask("uploadArchives") }
 //	sign configurations.archives
 //}
-
+//
 //uploadArchives {
 //	repositories {
 //		mavenDeployer {
@@ -164,4 +181,6 @@ test {
 //		}
 //	}
 //}
-mainClassName  = System.getProperty("exec.mainClass") ?:  "org.fisco.bcos.channel.test.PerfOkTransaction"
+
+
+mainClassName  = System.getProperty("exec.mainClass") ?:  "org.fisco.bcos.channel.test.amop.Channel2Client"
