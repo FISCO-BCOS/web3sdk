@@ -621,7 +621,6 @@ public class ByteUtil {
      * Converts string hex representation to data bytes
      * Accepts following hex:
      *  - with or without 0x prefix
-     *  - with no leading 0, like 0xabc -> 0x0abc
      * @param data  String like '0xa5e..' or just 'a5e..'
      * @return  decoded bytes array
      */

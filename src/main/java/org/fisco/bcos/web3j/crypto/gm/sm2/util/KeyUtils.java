@@ -398,7 +398,6 @@ public class KeyUtils {
 	 * @param bytes1
 	 * @param bytes2
 	 * @return
-	 * @date 2015-2-10
 	 * @author fisco-bcos
 	 */
 	public static byte[] addByteArray(byte[] bytes1, byte[] bytes2) {
