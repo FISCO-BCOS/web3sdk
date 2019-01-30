@@ -54,7 +54,7 @@ public class ContractClassFactory {
 				}
 				else
 				{
-					System.out.println("Please provide double quote for String");
+					System.out.println("Please provide double quote for String that cannot contain any blank spaces");
 					System.out.println();
 					return null;
 				}
@@ -65,7 +65,7 @@ public class ContractClassFactory {
 			}
 			else if(type[i] == BigInteger.class)
 			{
-				obj[i] = BigInteger.valueOf(Integer.parseInt(params[i+4]));
+				obj[i] = new BigInteger(params[i+4]);
 			}
 			else if(type[i] == byte[].class)
 			{	
