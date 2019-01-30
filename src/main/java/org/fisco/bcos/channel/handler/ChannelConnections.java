@@ -18,7 +18,6 @@ import io.netty.handler.timeout.IdleStateHandler;
 import org.fisco.bcos.channel.dto.EthereumMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -29,6 +28,7 @@ import java.io.InputStream;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.SecureRandom;
+import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.*;
 import java.util.Map.Entry;
@@ -352,7 +352,20 @@ public class ChannelConnections {
 			InputStream ksInputStream = keystoreResource.getInputStream();
 			ks.load(ksInputStream, getKeystorePassWord().toCharArray());
 			//List<String> ciphers = Lists.newArrayList("ECDHE-RSA-AES128-SHA", "ECDHE-RSA-AES256-SHA", "AES128-SHA", "AES256-SHA", "DES-CBC3-SHA");
-			sslCtx = SslContextBuilder.forClient().trustManager(caInputStream).sslProvider( SslProvider.JDK).build();
+		//	sslCtx = SslContextBuilder.forClient().trustManager(caInputStream).sslProvider( SslProvider.JDK).build();
+			PrivateKey key= (PrivateKey) ks.getKey("client", getClientCertPassWord().toCharArray());
+			Certificate[] certificates = ks.getCertificateChain("client");
+			X509Certificate[] x509Certificates = new X509Certificate[certificates.length];
+			for(int i=0 ;i< certificates.length;i++ ){
+				x509Certificates[i]= (X509Certificate) certificates[i];
+			}
+			sslCtx = SslContextBuilder.forClient().trustManager(caInputStream).keyManager(key,
+					x509Certificates).sslProvider( SslProvider.JDK).build();
+			//for node.key node.crt
+//			Resource keystorecaResource = resolver.getResource("classpath:node.crt");
+//			Resource keystorekeyResource = resolver.getResource("classpath:node.key");
+//			sslCtx = SslContextBuilder.forClient().trustManager(caInputStream).keyManager(keystorecaResource.getInputStream(),
+//					keystorekeyResource.getInputStream()).sslProvider( SslProvider.JDK).build();
 		}  catch (Exception e)
 		{
 			logger.debug( "SSLCONTEXT ***********" + e.getMessage());
