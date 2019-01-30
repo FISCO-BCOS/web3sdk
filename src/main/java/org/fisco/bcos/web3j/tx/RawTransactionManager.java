@@ -11,8 +11,6 @@ import org.fisco.bcos.web3j.protocol.core.Request;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.crypto.TransactionEncoder;
 import org.fisco.bcos.web3j.protocol.Web3j;
-import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameterName;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthGetTransactionCount;
 import org.fisco.bcos.web3j.protocol.core.methods.response.EthSendTransaction;
 import org.fisco.bcos.web3j.tx.exceptions.TxHashMismatchException;
 import org.fisco.bcos.web3j.utils.Numeric;
@@ -61,13 +59,6 @@ public class RawTransactionManager extends TransactionManager {
     public RawTransactionManager(
             Web3j web3j, Credentials credentials, int attempts, int sleepDuration) {
         this(web3j, credentials, ChainId.NONE, attempts, sleepDuration);
-    }
-
-    BigInteger getNonce() throws IOException {
-        EthGetTransactionCount ethGetTransactionCount = web3j.ethGetTransactionCount(
-                credentials.getAddress(), DefaultBlockParameterName.PENDING).send();
-
-        return ethGetTransactionCount.getTransactionCount();
     }
 
     BigInteger getBlockLimit() throws IOException {
