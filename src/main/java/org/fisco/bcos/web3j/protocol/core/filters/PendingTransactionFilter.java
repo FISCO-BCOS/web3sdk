@@ -7,8 +7,8 @@ import java.util.Optional;
 
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.Request;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthFilter;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthLog;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosFilter;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosLog;
 
 /**
  * Handler for working with transaction filter requests.
@@ -20,15 +20,15 @@ public class PendingTransactionFilter extends Filter<String> {
     }
 
     @Override
-    EthFilter sendRequest() throws IOException {
-        return web3j.ethNewPendingTransactionFilter().send();
+    BcosFilter sendRequest() throws IOException {
+        return web3j.newPendingTransactionFilter().send();
     }
 
     @Override
-    void process(List<EthLog.LogResult> logResults) {
-        for (EthLog.LogResult logResult : logResults) {
-            if (logResult instanceof EthLog.Hash) {
-                String blockHash = ((EthLog.Hash) logResult).get();
+    void process(List<BcosLog.LogResult> logResults) {
+        for (BcosLog.LogResult logResult : logResults) {
+            if (logResult instanceof BcosLog.Hash) {
+                String blockHash = ((BcosLog.Hash) logResult).get();
                 callback.onEvent(blockHash);
             } else {
                 throw new FilterException(
@@ -44,7 +44,7 @@ public class PendingTransactionFilter extends Filter<String> {
      * @return Optional.empty()
      */
     @Override
-    protected Optional<Request<?, EthLog>> getFilterLogs(BigInteger filterId) {
+    protected Optional<Request<?, BcosLog>> getFilterLogs(BigInteger filterId) {
         return Optional.empty();
     }
 }

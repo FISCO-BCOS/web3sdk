@@ -6,10 +6,10 @@ import org.fisco.bcos.web3j.protocol.core.Response;
 import org.fisco.bcos.web3j.utils.Numeric;
 
 /**
- * eth_gasPrice.
+ * newBlockFilter
  */
-public class EthGasPrice extends Response<String> {
-    public BigInteger getGasPrice() {
+public class BcosFilter extends Response<String> {
+    public BigInteger getFilterId() {
         return Numeric.decodeQuantity(getResult());
     }
 }

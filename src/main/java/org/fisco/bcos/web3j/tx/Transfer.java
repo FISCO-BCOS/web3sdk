@@ -23,6 +23,7 @@ public class Transfer extends ManagedTransaction {
 
     // This is the cost to send Ether between parties
     public static final BigInteger GAS_LIMIT = BigInteger.valueOf(21000);
+    public static final BigInteger GAS_PRICE = BigInteger.valueOf(1);
 
     public Transfer(Web3j web3j, TransactionManager transactionManager) {
         super(web3j, transactionManager);
@@ -46,8 +47,7 @@ public class Transfer extends ManagedTransaction {
     private TransactionReceipt send(String toAddress, BigDecimal value, Convert.Unit unit)
             throws IOException, TransactionException {
 
-        BigInteger gasPrice = requestCurrentGasPrice();
-        return send(toAddress, value, unit, gasPrice, GAS_LIMIT);
+        return send(toAddress, value, unit, GAS_PRICE, GAS_LIMIT);
     }
 
     private TransactionReceipt send(

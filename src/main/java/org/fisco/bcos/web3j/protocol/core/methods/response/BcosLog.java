@@ -27,7 +27,7 @@ import org.fisco.bcos.web3j.protocol.core.Response;
  * <a href="https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getfilterchanges">docs</a>
  * for further details.</p>
  */
-public class EthLog extends Response<List<EthLog.LogResult>> {
+public class BcosLog extends Response<List<BcosLog.LogResult>> {
 
     @Override
     @JsonDeserialize(using = LogResultDeserialiser.class)
