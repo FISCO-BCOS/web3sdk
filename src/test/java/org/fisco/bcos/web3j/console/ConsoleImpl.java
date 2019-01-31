@@ -662,7 +662,13 @@ public class ConsoleImpl implements ConsoleFace {
 		}
 		remoteCall = (RemoteCall<?>) func.invoke(contractObject, argobj);
 		Object result;
-		result = remoteCall.send();
+		try {
+			result = remoteCall.send();
+		} catch (Exception e) {
+			System.out.println("The contract "+ params[1] +" for address " + contractAddress + " doesn't exsit");
+			System.out.println();
+			return;
+		}
 		String resultStr;
 		resultStr = ContractClassFactory.getReturnObject(returnType, result);
 		System.out.println(resultStr);
@@ -752,7 +758,13 @@ public class ConsoleImpl implements ConsoleFace {
 		contractName = params[1];
 		contractVersion = params[2];
 		CnsService cnsResolver = new CnsService(web3j, credentials);
-		contractAddress = cnsResolver.getAddressByContractNameAndVersion(contractName + ":" + contractVersion);
+		try {
+			contractAddress = cnsResolver.getAddressByContractNameAndVersion(contractName + ":" + contractVersion);
+		} catch (Exception e) {
+			System.out.println("The contract "+ contractName +" for version " + contractVersion + " doesn't exsit");
+			System.out.println();
+			return;
+		}
 		contractObject = load.invoke(null, contractAddress, web3j, credentials, gasPrice, gasLimit);
 
 		Method[] methods = contractClass.getMethods();
