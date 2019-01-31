@@ -5,6 +5,9 @@ import org.fisco.bcos.web3j.protocol.core.Response;
 
 import java.util.List;
 
+/**
+ * getPeers
+ */
 public class Peers extends Response<List<Peers.Peer>> {
 
     public  List<Peers.Peer> getValue() {

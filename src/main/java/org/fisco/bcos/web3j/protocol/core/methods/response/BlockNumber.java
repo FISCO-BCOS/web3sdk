@@ -6,7 +6,7 @@ import org.fisco.bcos.web3j.protocol.core.Response;
 import org.fisco.bcos.web3j.utils.Numeric;
 
 /**
- * eth_blockNumber.
+ * getblockNumber.
  */
 public class BlockNumber extends Response<String> {
     public BigInteger getBlockNumber() {

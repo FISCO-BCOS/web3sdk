@@ -22,7 +22,7 @@ public class BasicTest extends TestBase {
 	@Ignore
 	@Test
 	public void pbftViewTest() throws Exception {
-		int i = web3j.getPbftView().send().getEthPbftView().intValue();
+		int i = web3j.getPbftView().send().getPbftView().intValue();
 		System.out.println(i);
 		assertNotNull(i > 0);
 	}
