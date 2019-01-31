@@ -18,11 +18,11 @@ import org.fisco.bcos.web3j.protocol.core.Response;
  *
  * <p>Returns an object with data about the sync status or false.
  */
-public class EthSyncing extends Response<EthSyncing.Result> {
+public class SyncStatus extends Response<SyncStatus.Result> {
 
     @Override
-    @JsonDeserialize(using = EthSyncing.ResponseDeserialiser.class)
-    public void setResult(EthSyncing.Result result) {
+    @JsonDeserialize(using = SyncStatus.ResponseDeserialiser.class)
+    public void setResult(SyncStatus.Result result) {
         super.setResult(result);
     }
 
@@ -143,7 +143,7 @@ public class EthSyncing extends Response<EthSyncing.Result> {
         }
     }
 
-    public static class ResponseDeserialiser extends JsonDeserializer<EthSyncing.Result> {
+    public static class ResponseDeserialiser extends JsonDeserializer<SyncStatus.Result> {
 
         private ObjectReader objectReader = ObjectMapperFactory.getObjectReader();
 

@@ -3,11 +3,10 @@ package org.fisco.bcos.web3j.protocol.core.methods.response;
 import org.fisco.bcos.web3j.protocol.core.Response;
 
 /**
- * web3_clientVersion.
+ * sendTransaction.
  */
-public class Web3ClientVersion extends Response<String> {
-
-    public String getWeb3ClientVersion() {
+public class SendTransaction extends Response<String> {
+    public String getTransactionHash() {
         return getResult();
     }
 }

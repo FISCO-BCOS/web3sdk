@@ -32,10 +32,10 @@ import java.util.List;
  * <p>See the following <a href="https://github.com/ethcore/parity/issues/2401">issue</a> for
  * details on additional Parity fields present in EthBlock.</p>
  */
-public class EthBlock extends Response<EthBlock.Block> {
+public class BcosBlock extends Response<BcosBlock.Block> {
 
     @Override
-    @JsonDeserialize(using = EthBlock.ResponseDeserialiser.class)
+    @JsonDeserialize(using = BcosBlock.ResponseDeserialiser.class)
     public void setResult(Block result) {
         super.setResult(result);
     }
