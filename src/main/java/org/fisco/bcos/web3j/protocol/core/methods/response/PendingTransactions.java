@@ -4,7 +4,7 @@ import org.fisco.bcos.web3j.protocol.core.Response;
 
 import java.util.List;
 
-public class EthPendingTransactions  extends Response<List<Transaction>> {
+public class PendingTransactions  extends Response<List<Transaction>> {
     public List<Transaction> getPendingTransactions() {
         return getResult();
     }

@@ -5,13 +5,13 @@ import org.fisco.bcos.web3j.protocol.core.Response;
 
 import java.util.List;
 
-public class EthPeers extends Response<List<EthPeers.Peer>> {
+public class Peers extends Response<List<Peers.Peer>> {
 
-    public  List<EthPeers.Peer> getValue() {
+    public  List<Peers.Peer> getValue() {
         return getResult();
     }
 
-    public void setResult(List<EthPeers.Peer> result) {
+    public void setResult(List<Peers.Peer> result) {
         super.setResult(result);
     }
 
