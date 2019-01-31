@@ -6,7 +6,7 @@ import io.reactivex.Flowable;
 import org.fisco.bcos.web3j.protocol.websocket.events.LogNotification;
 import org.fisco.bcos.web3j.protocol.websocket.events.NewHeadsNotification;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
-import org.fisco.bcos.web3j.protocol.core.methods.request.EthFilter;
+import org.fisco.bcos.web3j.protocol.core.methods.request.BcosFilter;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Log;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
@@ -22,7 +22,7 @@ public interface Web3jRx {
      * @param ethFilter filter criteria
      * @return a {@link Flowable} instance that emits all Log events matching the filter
      */
-    Flowable<Log> ethLogFlowable(EthFilter ethFilter);
+    Flowable<Log> logFlowable(BcosFilter filter);
 
     /**
      * Create an Flowable to emit block hashes.
@@ -30,7 +30,7 @@ public interface Web3jRx {
      * @return a {@link Flowable} instance that emits all new block hashes as new blocks are
      *      created on the blockchain
      */
-    Flowable<String> ethBlockHashFlowable();
+    Flowable<String> blockHashFlowable();
 
     /**
      * Create an Flowable to emit pending transactions, i.e. those transactions that have been
@@ -38,7 +38,7 @@ public interface Web3jRx {
      *
      * @return a {@link Flowable} instance to emit pending transaction hashes.
      */
-    Flowable<String> ethPendingTransactionHashFlowable();
+    Flowable<String> pendingTransactionHashFlowable();
 
     /**
      * Create an {@link Flowable} instance to emit all new transactions as they are confirmed on
