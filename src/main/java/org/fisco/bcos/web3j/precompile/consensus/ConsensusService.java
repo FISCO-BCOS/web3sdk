@@ -3,7 +3,7 @@ package org.fisco.bcos.web3j.precompile.consensus;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.precompile.common.PrecompiledCommon;
 import org.fisco.bcos.web3j.protocol.Web3j;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthPeers.Peer;
+import org.fisco.bcos.web3j.protocol.core.methods.response.Peers.Peer;
 import org.fisco.bcos.web3j.tx.gas.ContractGasProvider;
 import org.fisco.bcos.web3j.tx.gas.StaticGasProvider;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
@@ -56,7 +56,7 @@ public class ConsensusService {
     }
 	
 	public String removeNode(String nodeId) throws Exception {
-		List<String> groupPeers = web3j.ethGroupPeers().send().getResult();
+		List<String> groupPeers = web3j.getGroupPeers().send().getResult();
 		if(!groupPeers.contains(nodeId))
 		{
 			return PrecompiledCommon.transferToJson(-43);

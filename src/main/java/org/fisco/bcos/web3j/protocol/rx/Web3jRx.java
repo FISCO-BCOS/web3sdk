@@ -6,8 +6,8 @@ import io.reactivex.Flowable;
 import org.fisco.bcos.web3j.protocol.websocket.events.LogNotification;
 import org.fisco.bcos.web3j.protocol.websocket.events.NewHeadsNotification;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
-import org.fisco.bcos.web3j.protocol.core.methods.request.EthFilter;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthBlock;
+import org.fisco.bcos.web3j.protocol.core.methods.request.BcosFilter;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Log;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
 
@@ -22,7 +22,7 @@ public interface Web3jRx {
      * @param ethFilter filter criteria
      * @return a {@link Flowable} instance that emits all Log events matching the filter
      */
-    Flowable<Log> ethLogFlowable(EthFilter ethFilter);
+    Flowable<Log> logFlowable(BcosFilter filter);
 
     /**
      * Create an Flowable to emit block hashes.
@@ -30,7 +30,7 @@ public interface Web3jRx {
      * @return a {@link Flowable} instance that emits all new block hashes as new blocks are
      *      created on the blockchain
      */
-    Flowable<String> ethBlockHashFlowable();
+    Flowable<String> blockHashFlowable();
 
     /**
      * Create an Flowable to emit pending transactions, i.e. those transactions that have been
@@ -38,7 +38,7 @@ public interface Web3jRx {
      *
      * @return a {@link Flowable} instance to emit pending transaction hashes.
      */
-    Flowable<String> ethPendingTransactionHashFlowable();
+    Flowable<String> pendingTransactionHashFlowable();
 
     /**
      * Create an {@link Flowable} instance to emit all new transactions as they are confirmed on
@@ -64,7 +64,7 @@ public interface Web3jRx {
      * @return a {@link Flowable} instance that emits all new blocks as they are added to the
      *         blockchain
      */
-    Flowable<EthBlock> blockFlowable(boolean fullTransactionObjects);
+    Flowable<BcosBlock> blockFlowable(boolean fullTransactionObjects);
 
     /**
      * Create an {@link Flowable} instance that emits all blocks from the blockchain contained
@@ -76,7 +76,7 @@ public interface Web3jRx {
      *                               transaction hashes
      * @return a {@link Flowable} instance to emit these blocks
      */
-    Flowable<EthBlock> replayPastBlocksFlowable(
+    Flowable<BcosBlock> replayPastBlocksFlowable(
             DefaultBlockParameter startBlock, DefaultBlockParameter endBlock,
             boolean fullTransactionObjects);
 
@@ -92,7 +92,7 @@ public interface Web3jRx {
      *                  in descending order
      * @return a {@link Flowable} instance to emit these blocks
      */
-    Flowable<EthBlock> replayPastBlocksFlowable(
+    Flowable<BcosBlock> replayPastBlocksFlowable(
             DefaultBlockParameter startBlock, DefaultBlockParameter endBlock,
             boolean fullTransactionObjects, boolean ascending);
 
@@ -106,14 +106,14 @@ public interface Web3jRx {
      *
      * @param startBlock the block number we wish to request from
      * @param fullTransactionObjects if we require full {@link Transaction} objects to be provided
-     *                              in the {@link EthBlock} responses
+     *                              in the {@link BcosBlock} responses
      * @param onCompleteFlowable a subsequent Flowable that we wish to run once we are caught
      *                             up with the latest block
      * @return a {@link Flowable} instance to emit all requested blocks
      */
-    Flowable<EthBlock> replayPastBlocksFlowable(
+    Flowable<BcosBlock> replayPastBlocksFlowable(
             DefaultBlockParameter startBlock, boolean fullTransactionObjects,
-            Flowable<EthBlock> onCompleteFlowable);
+            Flowable<BcosBlock> onCompleteFlowable);
 
     /**
      * Creates a {@link Flowable} instance that emits all blocks from the requested block number
@@ -121,10 +121,10 @@ public interface Web3jRx {
      *
      * @param startBlock the block number we wish to request from
      * @param fullTransactionObjects if we require full {@link Transaction} objects to be provided
-     *                               in the {@link EthBlock} responses
+     *                               in the {@link BcosBlock} responses
      * @return a {@link Flowable} instance to emit all requested blocks
      */
-    Flowable<EthBlock> replayPastBlocksFlowable(
+    Flowable<BcosBlock> replayPastBlocksFlowable(
             DefaultBlockParameter startBlock, boolean fullTransactionObjects);
 
     /**
@@ -157,10 +157,10 @@ public interface Web3jRx {
      *
      * @param startBlock the block number we wish to request from
      * @param fullTransactionObjects if we require full {@link Transaction} objects to be provided
-     *                               in the {@link EthBlock} responses
+     *                               in the {@link BcosBlock} responses
      * @return a {@link Flowable} instance to emit all requested blocks and future
      */
-    Flowable<EthBlock> replayPastAndFutureBlocksFlowable(
+    Flowable<BcosBlock> replayPastAndFutureBlocksFlowable(
             DefaultBlockParameter startBlock, boolean fullTransactionObjects);
 
     /**

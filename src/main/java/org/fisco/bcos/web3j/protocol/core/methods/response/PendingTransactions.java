@@ -5,11 +5,10 @@ import org.fisco.bcos.web3j.protocol.core.Response;
 import java.util.List;
 
 /**
- * getGroupList
+ * getPendingTransactions
  */
-public class MinerList extends Response<List<String>> {
-
-    public List<String> getGroupList() {
+public class PendingTransactions  extends Response<List<Transaction>> {
+    public List<Transaction> getPendingTransactions() {
         return getResult();
     }
 }

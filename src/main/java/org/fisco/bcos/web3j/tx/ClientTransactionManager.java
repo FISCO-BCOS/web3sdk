@@ -5,7 +5,7 @@ import org.fisco.bcos.web3j.crypto.Hash;
 import org.fisco.bcos.web3j.crypto.RawTransaction;
 import org.fisco.bcos.web3j.crypto.TransactionEncoder;
 import org.fisco.bcos.web3j.protocol.Web3j;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthSendTransaction;
+import org.fisco.bcos.web3j.protocol.core.methods.response.SendTransaction;
 import org.fisco.bcos.web3j.tx.exceptions.TxHashMismatchException;
 import org.fisco.bcos.web3j.tx.response.TransactionReceiptProcessor;
 import org.fisco.bcos.web3j.utils.Numeric;
@@ -49,7 +49,7 @@ public class ClientTransactionManager extends TransactionManager {
     }
 
     @Override
-    public EthSendTransaction sendTransaction(
+    public SendTransaction sendTransaction(
             BigInteger gasPrice, BigInteger gasLimit, String to,
             String data, BigInteger value)
             throws IOException {
@@ -81,7 +81,7 @@ public class ClientTransactionManager extends TransactionManager {
 //        return request.send();
 //    }
 
-    public EthSendTransaction signAndSend(RawTransaction rawTransaction)
+    public SendTransaction signAndSend(RawTransaction rawTransaction)
             throws IOException {
 
         byte[] signedMessage;
@@ -90,16 +90,16 @@ public class ClientTransactionManager extends TransactionManager {
 
 
         String hexValue = Numeric.toHexString(signedMessage);
-        EthSendTransaction ethSendTransaction  =  web3j.ethSendRawTransaction(hexValue).send();
+        SendTransaction sendTransaction  =  web3j.sendRawTransaction(hexValue).send();
 
-        if (ethSendTransaction != null && !ethSendTransaction.hasError()) {
+        if (sendTransaction != null && !sendTransaction.hasError()) {
             String txHashLocal = Hash.sha3(hexValue);
-            String txHashRemote = ethSendTransaction.getTransactionHash();
+            String txHashRemote = sendTransaction.getTransactionHash();
             if (!txHashVerifier.verify(txHashLocal, txHashRemote)) {
                 throw new TxHashMismatchException(txHashLocal, txHashRemote);
             }
         }
-        return ethSendTransaction;
+        return sendTransaction;
     }
 
     BigInteger getBlockLimit() throws IOException {
