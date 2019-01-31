@@ -3,7 +3,7 @@ package org.fisco.bcos.web3j.protocol.core.methods.response;
 import org.fisco.bcos.web3j.protocol.core.Response;
 
 /**
- * web3_clientVersion.
+ * getClientVersion.
  */
 public class ClientVersion extends Response<String> {
 
