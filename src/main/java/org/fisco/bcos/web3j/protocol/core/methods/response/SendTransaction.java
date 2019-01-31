@@ -2,14 +2,11 @@ package org.fisco.bcos.web3j.protocol.core.methods.response;
 
 import org.fisco.bcos.web3j.protocol.core.Response;
 
-import java.util.List;
-
 /**
- * getGroupList
+ * sendTransaction.
  */
-public class MinerList extends Response<List<String>> {
-
-    public List<String> getGroupList() {
+public class SendTransaction extends Response<String> {
+    public String getTransactionHash() {
         return getResult();
     }
 }

@@ -193,11 +193,21 @@ public class ConsoleImpl implements ConsoleFace {
 	}
 
 	@Override
+	public void getClientVersion(String[] params) throws IOException {
+		if (promptNoParams(params, "gcv")) {
+			return;
+		}
+		String clientVersion = web3j.getClientVersion().sendForReturnString();
+		ConsoleUtils.printJson(clientVersion);
+		System.out.println();
+	}
+	
+	@Override
 	public void getBlockNumber(String[] params) throws IOException {
 		if (promptNoParams(params, "gbn")) {
 			return;
 		}
-		String blockNumber = web3j.ethBlockNumber().sendForReturnString();
+		String blockNumber = web3j.getBlockNumber().sendForReturnString();
 		System.out.println(Numeric.decodeQuantity(blockNumber));
 		System.out.println();
 	}
@@ -207,7 +217,7 @@ public class ConsoleImpl implements ConsoleFace {
 		if (promptNoParams(params, "gpv")) {
 			return;
 		}
-		String pbftView = web3j.ethPbftView().sendForReturnString();
+		String pbftView = web3j.getPbftView().sendForReturnString();
 		System.out.println(Numeric.decodeQuantity(pbftView));
 		System.out.println();
 	}
@@ -249,7 +259,7 @@ public class ConsoleImpl implements ConsoleFace {
 		if (promptNoParams(params, "gcs")) {
 			return;
 		}
-		String consensusStatus = web3j.consensusStatus().sendForReturnString();
+		String consensusStatus = web3j.getConsensusStatus().sendForReturnString();
 		ConsoleUtils.printJson(consensusStatus);
 		System.out.println();
 	}
@@ -259,27 +269,17 @@ public class ConsoleImpl implements ConsoleFace {
 		if (promptNoParams(params, "gss")) {
 			return;
 		}
-		String syncStatus = web3j.ethSyncing().sendForReturnString();
+		String syncStatus = web3j.getSyncStatus().sendForReturnString();
 		ConsoleUtils.printJson(syncStatus);
 		System.out.println();
 	}
-
-	@Override
-	public void getClientVersion(String[] params) throws IOException {
-		if (promptNoParams(params, "gcv")) {
-			return;
-		}
-		String clientVersion = web3j.web3ClientVersion().sendForReturnString();
-		ConsoleUtils.printJson(clientVersion);
-		System.out.println();
-	}
-
+	
 	@Override
 	public void getPeers(String[] params) throws IOException {
 		if (promptNoParams(params, "gps")) {
 			return;
 		}
-		String peers = web3j.ethPeersInfo().sendForReturnString();
+		String peers = web3j.getPeers().sendForReturnString();
 		ConsoleUtils.printJson(peers);
 		System.out.println();
 	}
@@ -299,7 +299,7 @@ public class ConsoleImpl implements ConsoleFace {
 		if (promptNoParams(params, "ggp")) {
 			return;
 		}
-		List<String> groupPeers = web3j.ethGroupPeers().send().getResult();
+		List<String> groupPeers = web3j.getGroupPeers().send().getResult();
 		ConsoleUtils.printJson(groupPeers.toString());
 		System.out.println();
 	}
@@ -309,7 +309,7 @@ public class ConsoleImpl implements ConsoleFace {
 		if (promptNoParams(params, "ggl")) {
 			return;
 		}
-		List<String> groupList = web3j.ethGroupList().send().getResult();
+		List<String> groupList = web3j.getGroupList().send().getResult();
 		System.out.println(groupList);
 		System.out.println();
 	}
@@ -342,7 +342,7 @@ public class ConsoleImpl implements ConsoleFace {
 				return;
 			}
 		}
-		String block = web3j.ethGetBlockByHash(blockHash, flag).sendForReturnString();
+		String block = web3j.getBlockByHash(blockHash, flag).sendForReturnString();
 		ConsoleUtils.printJson(block);
 		System.out.println();
 
@@ -365,7 +365,7 @@ public class ConsoleImpl implements ConsoleFace {
 		if (ConsoleUtils.isInvalidNumber(blockNumberStr1, 0))
 			return;
 		BigInteger blockNumber1 = new BigInteger(blockNumberStr1);
-		String blockNumberStr2 = web3j.ethBlockNumber().sendForReturnString();
+		String blockNumberStr2 = web3j.getBlockNumber().sendForReturnString();
 		BigInteger blockNumber2 = Numeric.decodeQuantity(blockNumberStr2);
 		if (blockNumber1.compareTo(blockNumber2) == 1) {
 			System.out.println("BlockNumber does not exist.");
@@ -384,7 +384,7 @@ public class ConsoleImpl implements ConsoleFace {
 				return;
 			}
 		}
-		String block = web3j.ethGetBlockByNumber(DefaultBlockParameter.valueOf(blockNumber1), flag)
+		String block = web3j.getBlockByNumber(DefaultBlockParameter.valueOf(blockNumber1), flag)
 				.sendForReturnString();
 		ConsoleUtils.printJson(block);
 		System.out.println();
@@ -407,7 +407,7 @@ public class ConsoleImpl implements ConsoleFace {
 		if (ConsoleUtils.isInvalidNumber(blockNumberStr, 0))
 			return;
 		BigInteger blockNumber = new BigInteger(blockNumberStr);
-		BigInteger getBlockNumber = Numeric.decodeQuantity(web3j.ethBlockNumber().sendForReturnString());
+		BigInteger getBlockNumber = Numeric.decodeQuantity(web3j.getBlockNumber().sendForReturnString());
 		if (blockNumber.compareTo(getBlockNumber) == 1) {
 			System.out.println("This block number doesn't exsit.");
 			System.out.println();
@@ -434,7 +434,7 @@ public class ConsoleImpl implements ConsoleFace {
 		}
 		if (ConsoleUtils.isInvalidHash(transactionHash))
 			return;
-		String transaction = web3j.ethGetTransactionByHash(transactionHash).sendForReturnString();
+		String transaction = web3j.getTransactionByHash(transactionHash).sendForReturnString();
 		if ("null".equals(transaction)) {
 			System.out.println("This transaction hash doesn't exist.");
 			return;
@@ -467,7 +467,7 @@ public class ConsoleImpl implements ConsoleFace {
 		if (ConsoleUtils.isInvalidNumber(indexStr, 1))
 			return;
 		BigInteger index = new BigInteger(indexStr);
-		String transaction = web3j.ethGetTransactionByBlockHashAndIndex(blockHash, index).sendForReturnString();
+		String transaction = web3j.getTransactionByBlockHashAndIndex(blockHash, index).sendForReturnString();
 		ConsoleUtils.printJson(transaction);
 		System.out.println();
 	}
@@ -498,7 +498,7 @@ public class ConsoleImpl implements ConsoleFace {
 			return;
 		BigInteger index = new BigInteger(indexStr);
 		String transaction = web3j
-				.ethGetTransactionByBlockNumberAndIndex(DefaultBlockParameter.valueOf(blockNumber), index)
+				.getTransactionByBlockNumberAndIndex(DefaultBlockParameter.valueOf(blockNumber), index)
 				.sendForReturnString();
 		ConsoleUtils.printJson(transaction);
 		System.out.println();
@@ -520,7 +520,7 @@ public class ConsoleImpl implements ConsoleFace {
 		}
 		if (ConsoleUtils.isInvalidHash(transactionHash))
 			return;
-		String transactionReceipt = web3j.ethGetTransactionReceipt(transactionHash).sendForReturnString();
+		String transactionReceipt = web3j.getTransactionReceipt(transactionHash).sendForReturnString();
 		if ("null".equals(transactionReceipt)) {
 			System.out.println("This transaction hash doesn't exist.");
 			return;
@@ -544,7 +544,7 @@ public class ConsoleImpl implements ConsoleFace {
 		if (promptNoParams(params, "gpt")) {
 			return;
 		}
-		String pendingTransactions = web3j.ethPendingTransaction().sendForReturnString();
+		String pendingTransactions = web3j.getPendingTransaction().sendForReturnString();
 		if ("[]".equals(pendingTransactions))
 			System.out.println(pendingTransactions);
 		else
@@ -569,7 +569,7 @@ public class ConsoleImpl implements ConsoleFace {
 		if (ConsoleUtils.isInvalidAddress(address)) {
 			return;
 		}
-		String code = web3j.ethGetCode(address, DefaultBlockParameterName.LATEST).sendForReturnString();
+		String code = web3j.getCode(address, DefaultBlockParameterName.LATEST).sendForReturnString();
 		if ("0x".equals(code)) {
 			System.out.println("This address doesn't exist.");
 			System.out.println();
@@ -662,7 +662,13 @@ public class ConsoleImpl implements ConsoleFace {
 		}
 		remoteCall = (RemoteCall<?>) func.invoke(contractObject, argobj);
 		Object result;
-		result = remoteCall.send();
+		try {
+			result = remoteCall.send();
+		} catch (Exception e) {
+			System.out.println("The contract "+ params[1] +" for address " + contractAddress + " doesn't exsit");
+			System.out.println();
+			return;
+		}
 		String resultStr;
 		resultStr = ContractClassFactory.getReturnObject(returnType, result);
 		System.out.println(resultStr);
@@ -752,7 +758,13 @@ public class ConsoleImpl implements ConsoleFace {
 		contractName = params[1];
 		contractVersion = params[2];
 		CnsService cnsResolver = new CnsService(web3j, credentials);
-		contractAddress = cnsResolver.getAddressByContractNameAndVersion(contractName + ":" + contractVersion);
+		try {
+			contractAddress = cnsResolver.getAddressByContractNameAndVersion(contractName + ":" + contractVersion);
+		} catch (Exception e) {
+			System.out.println("The contract "+ contractName +" for version " + contractVersion + " doesn't exsit");
+			System.out.println();
+			return;
+		}
 		contractObject = load.invoke(null, contractAddress, web3j, credentials, gasPrice, gasLimit);
 
 		Method[] methods = contractClass.getMethods();

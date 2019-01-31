@@ -6,7 +6,7 @@ import java.util.List;
 import org.fisco.bcos.web3j.utils.Numeric;
 
 /**
- * TransactionReceipt object used by {@link EthGetTransactionReceipt}.
+ * TransactionReceipt object used by {@link BcosTransactionReceipt}.
  */
 public class TransactionReceipt {
     private String transactionHash;

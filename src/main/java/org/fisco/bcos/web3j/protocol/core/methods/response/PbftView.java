@@ -6,10 +6,12 @@ import org.fisco.bcos.web3j.protocol.core.Response;
 import org.fisco.bcos.web3j.utils.Numeric;
 
 /**
- * getPendingTxSize
+ * getPbftView
  */
-public class PendingTxSize extends Response<String> {
-    public BigInteger getPendingTxSize() {
-        return Numeric.decodeQuantity(getResult());
-    }
+public class PbftView extends Response<String>{
+	
+	 public BigInteger getPbftView() {
+	        return Numeric.decodeQuantity(getResult());
+	    }
+
 }

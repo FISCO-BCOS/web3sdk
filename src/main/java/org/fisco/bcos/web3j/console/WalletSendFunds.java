@@ -4,7 +4,7 @@ import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.crypto.WalletUtils;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
-import org.fisco.bcos.web3j.protocol.core.methods.response.Web3ClientVersion;
+import org.fisco.bcos.web3j.protocol.core.methods.response.ClientVersion;
 import org.fisco.bcos.web3j.protocol.exceptions.TransactionTimeoutException;
 import org.fisco.bcos.web3j.protocol.http.HttpService;
 import org.fisco.bcos.web3j.protocol.infura.InfuraHttpService;
@@ -138,7 +138,7 @@ public class WalletSendFunds extends WalletManager {
         }
 
         try {
-            Web3ClientVersion web3ClientVersion = web3j.web3ClientVersion().sendAsync().get();
+            ClientVersion web3ClientVersion = web3j.getClientVersion().sendAsync().get();
             if (web3ClientVersion.hasError()) {
                 exitError("Unable to process response from client: "
                         + web3ClientVersion.getError());

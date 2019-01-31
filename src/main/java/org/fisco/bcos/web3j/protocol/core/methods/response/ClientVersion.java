@@ -2,14 +2,12 @@ package org.fisco.bcos.web3j.protocol.core.methods.response;
 
 import org.fisco.bcos.web3j.protocol.core.Response;
 
-import java.util.List;
-
 /**
- * getGroupList
+ * getClientVersion.
  */
-public class MinerList extends Response<List<String>> {
+public class ClientVersion extends Response<String> {
 
-    public List<String> getGroupList() {
+    public String getWeb3ClientVersion() {
         return getResult();
     }
 }
