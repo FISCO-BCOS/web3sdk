@@ -13,7 +13,7 @@ import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 import org.fisco.bcos.web3j.protocol.core.Response;
 
 /**
- * eth_getTransactionReceipt.
+ * getTransactionReceipt.
  */
 public class BcosTransactionReceipt extends Response<TransactionReceipt> {
 

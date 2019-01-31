@@ -6,7 +6,7 @@ import org.fisco.bcos.web3j.protocol.core.Response;
 import java.util.List;
 
 /**
- * eth_call.
+ * call.
  */
 public class Call extends Response<Call.CallOutput> {
 

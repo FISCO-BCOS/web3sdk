@@ -14,7 +14,7 @@ import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 import org.fisco.bcos.web3j.protocol.core.Response;
 
 /**
- * eth_syncing.
+ * getSyncStatus
  *
  * <p>Returns an object with data about the sync status or false.
  */
