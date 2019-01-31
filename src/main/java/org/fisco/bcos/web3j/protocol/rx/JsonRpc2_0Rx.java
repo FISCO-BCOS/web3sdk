@@ -17,7 +17,7 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.Log;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
 import org.fisco.bcos.web3j.utils.Flowables;
 import org.fisco.bcos.web3j.protocol.core.filters.Filter;
-import org.fisco.bcos.web3j.protocol.core.methods.request.EthFilter;
+import org.fisco.bcos.web3j.protocol.core.methods.request.BcosFilter;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -40,7 +40,7 @@ public class JsonRpc2_0Rx {
         this.scheduler = Schedulers.from(scheduledExecutorService);
     }
 
-    public Flowable<String> ethBlockHashFlowable(long pollingInterval) {
+    public Flowable<String> blockHashFlowable(long pollingInterval) {
         return Flowable.create(subscriber -> {
             BlockFilter blockFilter = new BlockFilter(
                     web3j, subscriber::onNext);
@@ -48,7 +48,7 @@ public class JsonRpc2_0Rx {
         }, BackpressureStrategy.BUFFER);
     }
 
-    public Flowable<String> ethPendingTransactionHashFlowable(long pollingInterval) {
+    public Flowable<String> pendingTransactionHashFlowable(long pollingInterval) {
         return Flowable.create(subscriber -> {
             PendingTransactionFilter pendingTransactionFilter = new PendingTransactionFilter(
                     web3j, subscriber::onNext);
@@ -57,8 +57,8 @@ public class JsonRpc2_0Rx {
         }, BackpressureStrategy.BUFFER);
     }
 
-    public Flowable<Log> ethLogFlowable(
-            EthFilter ethFilter, long pollingInterval) {
+    public Flowable<Log> logFlowable(
+            BcosFilter ethFilter, long pollingInterval) {
         return Flowable.create(subscriber -> {
             LogFilter logFilter = new LogFilter(
                     web3j, subscriber::onNext, ethFilter);
@@ -81,7 +81,7 @@ public class JsonRpc2_0Rx {
     }
 
     public Flowable<Transaction> pendingTransactionFlowable(long pollingInterval) {
-        return ethPendingTransactionHashFlowable(pollingInterval)
+        return pendingTransactionHashFlowable(pollingInterval)
                 .flatMap(transactionHash ->
                         web3j.getTransactionByHash(transactionHash).flowable())
                 .filter(ethTransaction -> ethTransaction.getTransaction().isPresent())
@@ -90,7 +90,7 @@ public class JsonRpc2_0Rx {
 
     public Flowable<BcosBlock> blockFlowable(
             boolean fullTransactionObjects, long pollingInterval) {
-        return ethBlockHashFlowable(pollingInterval)
+        return blockHashFlowable(pollingInterval)
                 .flatMap(blockHash ->
                         web3j.getBlockByHash(blockHash, fullTransactionObjects).flowable());
     }

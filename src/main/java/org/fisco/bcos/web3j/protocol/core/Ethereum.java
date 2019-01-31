@@ -69,15 +69,14 @@ public interface Ethereum {
     Request<?, SendTransaction> sendRawTransaction(
             String signedTransactionData);
 	
-	Request<?, EthFilter> ethNewPendingTransactionFilter();
+    //TODO
+	Request<?, BcosFilter> newPendingTransactionFilter();
 	
-	Request<?, EthGasPrice> ethGasPrice();
+	Request<?, BcosFilter> newBlockFilter();
 	
-	Request<?, EthFilter> ethNewBlockFilter();
+	Request<?, BcosLog> getFilterChanges(BigInteger filterId);
 	
-	Request<?, EthLog> ethGetFilterChanges(BigInteger filterId);
+	Request<?, UninstallFilter> getUninstallFilter(BigInteger filterId);
 	
-	Request<?, EthUninstallFilter> ethUninstallFilter(BigInteger filterId);
-	
-	Request<?, EthFilter> ethNewFilter(org.fisco.bcos.web3j.protocol.core.methods.request.EthFilter ethFilter);
+	Request<?, BcosFilter> newFilter(org.fisco.bcos.web3j.protocol.core.methods.request.BcosFilter ethFilter);
 }

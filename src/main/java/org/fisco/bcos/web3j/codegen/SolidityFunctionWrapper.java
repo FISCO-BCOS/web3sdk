@@ -15,7 +15,7 @@ import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
 import org.fisco.bcos.web3j.protocol.core.RemoteCall;
-import org.fisco.bcos.web3j.protocol.core.methods.request.EthFilter;
+import org.fisco.bcos.web3j.protocol.core.methods.request.BcosFilter;
 import org.fisco.bcos.web3j.protocol.core.methods.response.AbiDefinition;
 import org.fisco.bcos.web3j.protocol.core.methods.response.AbiDefinition.NamedType;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Log;
@@ -908,7 +908,7 @@ public class SolidityFunctionWrapper extends Generator{
         MethodSpec.Builder flowableMethodBuilder =
                 MethodSpec.methodBuilder(generatedFunctionName)
                         .addModifiers(Modifier.PUBLIC)
-                        .addParameter(EthFilter.class, FILTER)
+                        .addParameter(BcosFilter.class, FILTER)
                         .returns(parameterizedTypeName);
 
         TypeSpec converter = TypeSpec.anonymousClassBuilder("")
@@ -957,7 +957,7 @@ public class SolidityFunctionWrapper extends Generator{
                         .returns(parameterizedTypeName);
 
         flowableMethodBuilder.addStatement("$1T filter = new $1T($2L, $3L, "
-                + "getContractAddress())", EthFilter.class, START_BLOCK, END_BLOCK)
+                + "getContractAddress())", BcosFilter.class, START_BLOCK, END_BLOCK)
                 .addStatement("filter.addSingleTopic($T.encode("
                         + buildEventDefinitionName(functionName) + "))", EventEncoder.class)
                 .addStatement("return " + generatedFunctionName + "(filter)");

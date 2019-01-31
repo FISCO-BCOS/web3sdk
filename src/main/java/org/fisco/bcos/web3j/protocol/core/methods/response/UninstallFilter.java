@@ -3,9 +3,9 @@ package org.fisco.bcos.web3j.protocol.core.methods.response;
 import org.fisco.bcos.web3j.protocol.core.Response;
 
 /**
- * eth_uninstallFilter.
+ * getUninstallFilter
  */
-public class EthUninstallFilter extends Response<Boolean> {
+public class UninstallFilter extends Response<Boolean> {
     public boolean isUninstalled() {
         return getResult();
     }

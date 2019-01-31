@@ -19,8 +19,6 @@ import java.math.BigInteger;
 import java.util.*;
 import java.util.concurrent.ScheduledExecutorService;
 
-//增加eth_pbftView接口
-
 /**
  * JSON-RPC 2.0 factory implementation.
  */
@@ -210,15 +208,6 @@ public class JsonRpc2_0Web3j implements Web3j {
                 web3jService,
                 Call.class);
     }
-    
-    @Override
-    public Request<?, EthGasPrice> ethGasPrice() {
-        return new Request<>(
-                "gasPrice",
-               Arrays.asList(groupId),
-                web3jService,
-                EthGasPrice.class);
-    }
 
     @Override
     public Request<?, BcosBlock> getBlockByHash(
@@ -337,49 +326,49 @@ public class JsonRpc2_0Web3j implements Web3j {
     }
     
     @Override
-    public Request<?, EthFilter> ethNewPendingTransactionFilter() {
+    public Request<?, BcosFilter> newPendingTransactionFilter() {
         return new Request<>(
                 "newPendingTransactionFilter",
                Arrays.asList(groupId),
                 web3jService,
-                EthFilter.class);
+                BcosFilter.class);
     }
     
     @Override
-    public Request<?, EthFilter> ethNewBlockFilter() {
+    public Request<?, BcosFilter> newBlockFilter() {
         return new Request<>(
                 "newBlockFilter",
                Arrays.asList(groupId),
                 web3jService,
-                EthFilter.class);
+                BcosFilter.class);
     }
     
     @Override
-    public Request<?, EthLog> ethGetFilterChanges(BigInteger filterId) {
+    public Request<?, BcosLog> getFilterChanges(BigInteger filterId) {
         return new Request<>(
                 "getFilterChanges",
                 Arrays.asList(groupId,Numeric.toHexStringWithPrefixSafe(filterId)),
                 web3jService,
-                EthLog.class);
+                BcosLog.class);
     }
     
     @Override
-    public Request<?, EthUninstallFilter> ethUninstallFilter(BigInteger filterId) {
+    public Request<?, UninstallFilter> getUninstallFilter(BigInteger filterId) {
         return new Request<>(
-                "uninstallFilter",
+                "getUninstallFilter",
                 Arrays.asList(groupId,Numeric.toHexStringWithPrefixSafe(filterId)),
                 web3jService,
-                EthUninstallFilter.class);
+                UninstallFilter.class);
     }
     
     @Override
-    public Request<?, EthFilter> ethNewFilter(
-            org.fisco.bcos.web3j.protocol.core.methods.request.EthFilter ethFilter) {
+    public Request<?, BcosFilter> newFilter(
+            org.fisco.bcos.web3j.protocol.core.methods.request.BcosFilter filter) {
         return new Request<>(
                 "newFilter",
-                Arrays.asList(groupId,ethFilter),
+                Arrays.asList(groupId,filter),
                 web3jService,
-                EthFilter.class);
+                BcosFilter.class);
     }
     
     @Override
@@ -389,7 +378,7 @@ public class JsonRpc2_0Web3j implements Web3j {
                         "subscribe",
                         Collections.singletonList("newHeads"),
                         web3jService,
-                        EthSubscribe.class),
+                        BcosSubscribe.class),
                 "unsubscribe",
                 NewHeadsNotification.class
         );
@@ -406,7 +395,7 @@ public class JsonRpc2_0Web3j implements Web3j {
                         "subscribe",
                         Arrays.asList(groupId,"logs", params),
                         web3jService,
-                        EthSubscribe.class),
+                        BcosSubscribe.class),
                 "unsubscribe",
                 LogNotification.class
         );
@@ -424,19 +413,19 @@ public class JsonRpc2_0Web3j implements Web3j {
     }
 
     @Override
-    public Flowable<String> ethBlockHashFlowable() {
-        return web3jRx.ethBlockHashFlowable(blockTime);
+    public Flowable<String> blockHashFlowable() {
+        return web3jRx.blockHashFlowable(blockTime);
     }
 
     @Override
-    public Flowable<String> ethPendingTransactionHashFlowable() {
-        return web3jRx.ethPendingTransactionHashFlowable(blockTime);
+    public Flowable<String> pendingTransactionHashFlowable() {
+        return web3jRx.pendingTransactionHashFlowable(blockTime);
     }
 
     @Override
-    public Flowable<Log> ethLogFlowable(
-            org.fisco.bcos.web3j.protocol.core.methods.request.EthFilter ethFilter) {
-        return web3jRx.ethLogFlowable(ethFilter, blockTime);
+    public Flowable<Log> logFlowable(
+            org.fisco.bcos.web3j.protocol.core.methods.request.BcosFilter filter) {
+        return web3jRx.logFlowable(filter, blockTime);
     }
 
     @Override
