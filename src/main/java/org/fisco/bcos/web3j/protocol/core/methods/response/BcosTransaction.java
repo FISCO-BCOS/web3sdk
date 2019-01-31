@@ -26,7 +26,7 @@ import org.fisco.bcos.web3j.protocol.core.Response;
  * <a href="https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactionbyhash">docs</a>
  * for further details.</p>
  */
-public class EthTransaction extends Response<Transaction> {
+public class BcosTransaction extends Response<Transaction> {
 
     public Optional<Transaction> getTransaction() {
         return Optional.ofNullable(getResult());

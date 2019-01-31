@@ -5,7 +5,7 @@ import java.math.BigInteger;
 import org.fisco.bcos.web3j.utils.Numeric;
 
 /**
- * Transaction object used by both {@link EthTransaction} and {@link EthBlock}.
+ * Transaction object used by both {@link BcosTransaction} and {@link BcosBlock}.
  */
 public class Transaction {
     private String hash;

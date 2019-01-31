@@ -15,7 +15,7 @@ import org.fisco.bcos.web3j.protocol.core.Response;
 /**
  * eth_getTransactionReceipt.
  */
-public class EthGetTransactionReceipt extends Response<TransactionReceipt> {
+public class BcosTransactionReceipt extends Response<TransactionReceipt> {
 
     public Optional<TransactionReceipt> getTransactionReceipt() {
         return Optional.ofNullable(getResult());

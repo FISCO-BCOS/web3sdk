@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * eth_call.
  */
-public class EthCall extends Response<EthCall.CallOutput> {
+public class Call extends Response<Call.CallOutput> {
 
     public static class CallOutput {
         private String currentBlockNumber;

@@ -3,10 +3,10 @@ package org.fisco.bcos.web3j.protocol.core.methods.response;
 import org.fisco.bcos.web3j.protocol.core.Response;
 
 /**
- * eth_getCode.
+ * sendRawTransaction.
  */
-public class EthGetCode extends Response<String> {
-    public String getCode() {
+public class SendRawTransaction extends Response<String> {
+    public String getTransactionHash() {
         return getResult();
     }
 }
