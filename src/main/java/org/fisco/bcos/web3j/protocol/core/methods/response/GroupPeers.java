@@ -5,11 +5,10 @@ import org.fisco.bcos.web3j.protocol.core.Response;
 import java.util.List;
 
 /**
- * getGroupList
+ * getGroupPeers
  */
-public class MinerList extends Response<List<String>> {
-
-    public List<String> getGroupList() {
+public class GroupPeers extends Response<List<String>> {
+    public List<String> getGroupPeers() {
         return getResult();
     }
 }

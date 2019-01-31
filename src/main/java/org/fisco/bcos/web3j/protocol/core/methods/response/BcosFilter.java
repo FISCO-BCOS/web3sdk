@@ -6,10 +6,10 @@ import org.fisco.bcos.web3j.protocol.core.Response;
 import org.fisco.bcos.web3j.utils.Numeric;
 
 /**
- * getPendingTxSize
+ * newBlockFilter
  */
-public class PendingTxSize extends Response<String> {
-    public BigInteger getPendingTxSize() {
+public class BcosFilter extends Response<String> {
+    public BigInteger getFilterId() {
         return Numeric.decodeQuantity(getResult());
     }
 }
