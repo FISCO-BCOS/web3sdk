@@ -7,9 +7,7 @@ import java.util.*;
 import java.util.concurrent.Semaphore;
 import java.util.stream.Collectors;
 
-import org.fisco.bcos.channel.client.ChannelResponseCallback2;
 import org.fisco.bcos.channel.client.TransactionSucCallback;
-import org.fisco.bcos.channel.dto.ChannelResponse;
 import org.fisco.bcos.web3j.abi.EventEncoder;
 import org.fisco.bcos.web3j.abi.EventValues;
 import org.fisco.bcos.web3j.abi.FunctionEncoder;
@@ -35,12 +33,6 @@ import org.fisco.bcos.web3j.tx.gas.ContractGasProvider;
 import org.fisco.bcos.web3j.tx.gas.DefaultGasProvider;
 import org.fisco.bcos.web3j.tx.gas.StaticGasProvider;
 import org.fisco.bcos.web3j.utils.Numeric;
-
-import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.math.BigInteger;
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Solidity contract type abstraction for interacting with smart contracts via
@@ -252,13 +244,7 @@ public abstract class Contract extends ManagedTransaction {
 	}
 
 	protected TransactionReceipt executeTransaction(Function function) throws IOException, TransactionException {
-		return executeTransaction(function, BigInteger.ZERO);
-	}
 
-	private TransactionReceipt executeTransaction(Function function, BigInteger weiValue)
-			throws IOException, TransactionException {
-		// return executeTransaction(FunctionEncoder.encode(function), weiValue,
-		// function.getName());
 		class Callback extends TransactionSucCallback {
 			Callback() {
 				try {
@@ -276,8 +262,7 @@ public abstract class Contract extends ManagedTransaction {
 
 			public TransactionReceipt receipt;
 			public Semaphore semaphore = new Semaphore(1, true);
-		}
-		;
+		};
 
 		Callback callback = new Callback();
 
@@ -300,7 +285,7 @@ public abstract class Contract extends ManagedTransaction {
 	 * @throws IOException          if the call to the node fails
 	 * @throws TransactionException if the transaction was not mined while waiting
 	 */
-	TransactionReceipt executeTransaction(String data, BigInteger weiValue, String funcName)
+	protected TransactionReceipt executeTransaction(String data, BigInteger weiValue, String funcName)
 			throws TransactionException, IOException {
 		TransactionReceipt receipt = send(contractAddress, data, weiValue, gasProvider.getGasPrice(funcName),
 				gasProvider.getGasLimit(funcName));
@@ -341,10 +326,6 @@ public abstract class Contract extends ManagedTransaction {
 
 	protected RemoteCall<TransactionReceipt> executeRemoteCallTransaction(Function function) {
 		return new RemoteCall<>(() -> executeTransaction(function));
-	}
-
-	protected RemoteCall<TransactionReceipt> executeRemoteCallTransaction(Function function, BigInteger weiValue) {
-		return new RemoteCall<>(() -> executeTransaction(function, weiValue));
 	}
 
 	private static <T extends Contract> T create(T contract, String binary, String encodedConstructor, BigInteger value)
