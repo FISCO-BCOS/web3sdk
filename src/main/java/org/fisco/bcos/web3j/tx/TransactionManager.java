@@ -3,7 +3,7 @@ package org.fisco.bcos.web3j.tx;
 import org.fisco.bcos.channel.client.TransactionSucCallback;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.protocol.Web3j;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthSendTransaction;
+import org.fisco.bcos.web3j.protocol.core.methods.response.SendTransaction;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.protocol.exceptions.TransactionException;
 import org.fisco.bcos.web3j.tx.response.PollingTransactionReceiptProcessor;
@@ -50,17 +50,17 @@ public abstract class TransactionManager {
             String data, BigInteger value)
             throws IOException, TransactionException {
 
-        EthSendTransaction ethSendTransaction = sendTransaction(
+        SendTransaction sendTransaction = sendTransaction(
                 gasPrice, gasLimit, to, data, value);
-        return processResponse(ethSendTransaction);
+        return processResponse(sendTransaction);
     }
 
-    public abstract EthSendTransaction sendTransaction(
+    public abstract SendTransaction sendTransaction(
             BigInteger gasPrice, BigInteger gasLimit, String to,
             String data, BigInteger value)
             throws IOException;
 
-    public   EthSendTransaction sendTransaction(BigInteger gasPrice, BigInteger gasLimit, String to, String data, BigInteger value, TransactionSucCallback callback) throws IOException {
+    public SendTransaction sendTransaction(BigInteger gasPrice, BigInteger gasLimit, String to, String data, BigInteger value, TransactionSucCallback callback) throws IOException {
         return null;
     };
 
@@ -69,7 +69,7 @@ public abstract class TransactionManager {
         return credentials.getAddress();
     }
 
-    private TransactionReceipt processResponse(EthSendTransaction transactionResponse)
+    private TransactionReceipt processResponse(SendTransaction transactionResponse)
             throws IOException, TransactionException {
         if (transactionResponse.hasError()) {
             throw new RuntimeException("Error processing transaction request: "

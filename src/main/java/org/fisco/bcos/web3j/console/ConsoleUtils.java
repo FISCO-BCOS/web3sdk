@@ -73,7 +73,7 @@ public class ConsoleUtils {
 
 	private static void addIndentBlank(StringBuilder sb, int indent) {
 		for (int i = 0; i < indent; i++) {
-			sb.append('\t');
+			sb.append("    ");
 		}
 	}
 	

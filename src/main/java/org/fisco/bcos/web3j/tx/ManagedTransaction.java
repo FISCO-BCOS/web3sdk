@@ -1,11 +1,8 @@
 package org.fisco.bcos.web3j.tx;
 
 import org.fisco.bcos.channel.client.TransactionSucCallback;
-import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.precompile.cns.CnsService;
 import org.fisco.bcos.web3j.protocol.Web3j;
-import org.fisco.bcos.web3j.protocol.core.JsonRpc2_0Web3j;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthGasPrice;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.protocol.exceptions.TransactionException;
 
@@ -39,12 +36,6 @@ public abstract class ManagedTransaction {
 
     public void setSyncThreshold(long syncThreshold) {
     	cnsService.setSyncThreshold(syncThreshold);
-    }
-
-    public BigInteger requestCurrentGasPrice() throws IOException {
-        EthGasPrice ethGasPrice = web3j.ethGasPrice().send();
-
-        return ethGasPrice.getGasPrice();
     }
 
     protected TransactionReceipt send(
