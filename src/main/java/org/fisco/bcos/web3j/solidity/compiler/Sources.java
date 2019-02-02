@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.fisco.bcos.web3j.solidity.compiler.ContractException.assembleError;
+
 public class Sources {
 
     private final Map<String, SourceArtifact> artifacts = new HashMap<>();
