@@ -6,10 +6,8 @@ import org.fisco.bcos.web3j.crypto.Hash;
 import org.fisco.bcos.web3j.crypto.RawTransaction;
 import org.fisco.bcos.web3j.crypto.TransactionEncoder;
 import org.fisco.bcos.web3j.protocol.Web3j;
-import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameterName;
 import org.fisco.bcos.web3j.protocol.core.Request;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthGetTransactionCount;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthSendTransaction;
+import org.fisco.bcos.web3j.protocol.core.methods.response.SendTransaction;
 import org.fisco.bcos.web3j.tx.exceptions.TxHashMismatchException;
 import org.fisco.bcos.web3j.utils.Numeric;
 import org.fisco.bcos.web3j.utils.TxHashVerifier;
@@ -64,13 +62,6 @@ public class RawTransactionManager extends TransactionManager {
         this(web3j, credentials, ChainId.NONE, attempts, sleepDuration);
     }
 
-    BigInteger getNonce() throws IOException {
-        EthGetTransactionCount ethGetTransactionCount = web3j.ethGetTransactionCount(
-                credentials.getAddress(), DefaultBlockParameterName.PENDING).send();
-
-        return ethGetTransactionCount.getTransactionCount();
-    }
-
     BigInteger getBlockLimit() throws IOException {
         return  web3j.getBlockNumberCache();
     }
@@ -85,7 +76,7 @@ public class RawTransactionManager extends TransactionManager {
 
 
     @Override
-    public EthSendTransaction sendTransaction(
+    public SendTransaction sendTransaction(
             BigInteger gasPrice, BigInteger gasLimit, String to,
             String data, BigInteger value) throws IOException {
 
@@ -105,7 +96,7 @@ public class RawTransactionManager extends TransactionManager {
     }
 
     @Override
-    public EthSendTransaction sendTransaction(BigInteger gasPrice, BigInteger gasLimit, String to, String data, BigInteger value, TransactionSucCallback callback) throws IOException {
+    public SendTransaction sendTransaction(BigInteger gasPrice, BigInteger gasLimit, String to, String data, BigInteger value, TransactionSucCallback callback) throws IOException {
         Random r = new SecureRandom();
         BigInteger randomid = new BigInteger(250,r);
         BigInteger blockLimit = getBlockLimit();
@@ -122,7 +113,7 @@ public class RawTransactionManager extends TransactionManager {
         return signAndSend(rawTransaction, callback);
     }
 
-    public EthSendTransaction signAndSend(RawTransaction rawTransaction)
+    public SendTransaction signAndSend(RawTransaction rawTransaction)
             throws IOException {
 
         byte[] signedMessage;
@@ -134,18 +125,18 @@ public class RawTransactionManager extends TransactionManager {
         }
 
         String hexValue = Numeric.toHexString(signedMessage);
-        EthSendTransaction ethSendTransaction  =  web3j.ethSendRawTransaction(hexValue).send();
-        if (ethSendTransaction != null && !ethSendTransaction.hasError()) {
+        SendTransaction sendTransaction  =  web3j.sendRawTransaction(hexValue).send();
+        if (sendTransaction != null && !sendTransaction.hasError()) {
             String txHashLocal = Hash.sha3(hexValue);
-            String txHashRemote = ethSendTransaction.getTransactionHash();
+            String txHashRemote = sendTransaction.getTransactionHash();
             if (!txHashVerifier.verify(txHashLocal, txHashRemote)) {
                 throw new TxHashMismatchException(txHashLocal, txHashRemote);
             }
         }
-        return ethSendTransaction;
+        return sendTransaction;
     }
 
-    public EthSendTransaction signAndSend(RawTransaction rawTransaction, TransactionSucCallback callback)
+    public SendTransaction signAndSend(RawTransaction rawTransaction, TransactionSucCallback callback)
             throws IOException {
 
         byte[] signedMessage;
@@ -157,10 +148,10 @@ public class RawTransactionManager extends TransactionManager {
         }
 
         String hexValue = Numeric.toHexString(signedMessage);
-        Request<?, EthSendTransaction> request = web3j.ethSendRawTransaction(hexValue);
+        Request<?, SendTransaction> request = web3j.sendRawTransaction(hexValue);
         request.setNeedTransCallback(true);
         request.setTransactionSucCallback(callback);
-        EthSendTransaction ethSendTransaction = request.send();
+        SendTransaction ethSendTransaction = request.send();
 
         if (ethSendTransaction != null && !ethSendTransaction.hasError()) {
             String txHashLocal = Hash.sha3(hexValue);

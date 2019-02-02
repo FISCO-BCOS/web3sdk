@@ -1,6 +1,5 @@
 package org.fisco.bcos.web3j.tx;
 
-import java.io.IOException;
 import java.math.BigInteger;
 
 import org.fisco.bcos.web3j.crypto.Credentials;
@@ -22,23 +21,11 @@ public class FastRawTransactionManager extends RawTransactionManager {
         super(web3j, credentials);
     }
 
-    @Override
-    synchronized BigInteger getNonce() throws IOException {
-        if (nonce.signum() == -1) {
-            nonce = super.getNonce();
-        } else {
-            nonce = nonce.add(BigInteger.ONE);
-        }
-        return nonce;
-    }
 
     public BigInteger getCurrentNonce() {
         return nonce;
     }
 
-    public synchronized void resetNonce() throws IOException {
-        nonce = super.getNonce();
-    }
 
     public synchronized void setNonce(BigInteger value) {
         nonce = value;

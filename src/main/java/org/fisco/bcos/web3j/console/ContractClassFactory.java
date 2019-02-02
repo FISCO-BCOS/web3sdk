@@ -1,16 +1,16 @@
 package org.fisco.bcos.web3j.console;
 
-import org.fisco.bcos.web3j.abi.datatypes.Type;
-import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
-import org.fisco.bcos.web3j.tuples.Tuple;
-import org.fisco.bcos.web3j.tuples.generated.*;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.math.BigInteger;
 import java.util.Arrays;
+
+import org.fisco.bcos.web3j.abi.datatypes.Type;
+import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.fisco.bcos.web3j.tuples.Tuple;
+import org.fisco.bcos.web3j.tuples.generated.*;
 
 public class ContractClassFactory {
 	
@@ -50,11 +50,17 @@ public class ContractClassFactory {
 			{
 				if(params[i+4].startsWith("\"") && params[i+4].endsWith("\""))
 				{
-					obj[i] = params[i+4].substring(1, params[i+4].length()-1);
+					try {
+						obj[i] = params[i+4].substring(1, params[i+4].length()-1);
+					} catch (Exception e) {
+						System.out.println("Please provide double quote for String that cannot contain any blank spaces");
+						System.out.println();
+						return null;
+					}
 				}
 				else
 				{
-					System.out.println("Please provide double quote for String");
+					System.out.println("Please provide double quote for String that cannot contain any blank spaces");
 					System.out.println();
 					return null;
 				}
@@ -65,7 +71,7 @@ public class ContractClassFactory {
 			}
 			else if(type[i] == BigInteger.class)
 			{
-				obj[i] = BigInteger.valueOf(Integer.parseInt(params[i+4]));
+				obj[i] = new BigInteger(params[i+4]);
 			}
 			else if(type[i] == byte[].class)
 			{	
