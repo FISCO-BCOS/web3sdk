@@ -37,9 +37,9 @@ import static org.apache.commons.collections4.ListUtils.select;
 import static org.apache.commons.lang3.ArrayUtils.subarray;
 import static org.apache.commons.lang3.StringUtils.join;
 import static org.apache.commons.lang3.StringUtils.stripEnd;
+import static org.fisco.bcos.web3j.crypto.Hash.sha3;
 import static org.fisco.bcos.web3j.solidity.SolidityType.IntType.decodeInt;
 import static org.fisco.bcos.web3j.solidity.SolidityType.IntType.encodeInt;
-import static org.fisco.bcos.web3j.crypto.Hash.sha3;
 
 public class Abi extends ArrayList<Abi.Entry> {
     private final static ObjectMapper DEFAULT_MAPPER = new ObjectMapper()
@@ -62,19 +62,19 @@ public class Abi extends ArrayList<Abi.Entry> {
         }
     }
 
-    private <T extends Abi.Entry> T find(Class<T> resultClass, final Abi.Entry.Type type, final Predicate<T> searchPredicate) {
+    private <T extends Entry> T find(Class<T> resultClass, final Entry.Type type, final Predicate<T> searchPredicate) {
         return (T) CollectionUtils.find(this, entry -> entry.type == type && searchPredicate.evaluate((T) entry));
     }
 
     public Function findFunction(Predicate<Function> searchPredicate) {
-        return find(Function.class, Abi.Entry.Type.function, searchPredicate);
+        return find(Function.class, Entry.Type.function, searchPredicate);
     }
 
     public Event findEvent(Predicate<Event> searchPredicate) {
-        return find(Event.class, Abi.Entry.Type.event, searchPredicate);
+        return find(Event.class, Entry.Type.event, searchPredicate);
     }
 
-    public Abi.Constructor findConstructor() {
+    public Constructor findConstructor() {
         return find(Constructor.class, Entry.Type.constructor, object -> true);
     }
 
