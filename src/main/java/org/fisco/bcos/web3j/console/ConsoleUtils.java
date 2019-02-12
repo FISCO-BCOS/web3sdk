@@ -1,7 +1,5 @@
 package org.fisco.bcos.web3j.console;
 
-import org.fisco.bcos.web3j.crypto.EncryptType;
-
 public class ConsoleUtils {
 
 	public static void main(String[] args) {
