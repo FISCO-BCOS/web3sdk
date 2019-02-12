@@ -13,7 +13,7 @@
 
 
 	<bean id="encryptType" class="org.fisco.bcos.web3j.crypto.EncryptType">
-		<constructor-arg value="0"/>
+		<constructor-arg value="0"/> <!-- 0:standard 1:guomi -->
 	</bean>
 
 	<bean id="groupChannelConnectionsConfig" class="org.fisco.bcos.channel.handler.GroupChannelConnectionsConfig">
