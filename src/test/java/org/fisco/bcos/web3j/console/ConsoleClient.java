@@ -15,7 +15,7 @@ public class ConsoleClient {
 		ConsoleFace console = new ConsoleImpl();
 		console.init(args);
 		console.welcome();
-
+		
 		Scanner sc = new Scanner(System.in);
 		while (true) {
 			System.out.print("> ");
