@@ -12,9 +12,9 @@ import java.util.concurrent.TimeUnit;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.Request;
 import org.fisco.bcos.web3j.protocol.core.Response;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthFilter;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthLog;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthUninstallFilter;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosFilter;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosLog;
+import org.fisco.bcos.web3j.protocol.core.methods.response.UninstallFilter;
 
 /**
  * Class for creating managed filter requests with callbacks.
@@ -35,7 +35,7 @@ public abstract class Filter<T> {
 
     public void run(ScheduledExecutorService scheduledExecutorService, long blockTime) {
         try {
-            EthFilter ethFilter = sendRequest();
+            BcosFilter ethFilter = sendRequest();
             if (ethFilter.hasError()) {
                 throwException(ethFilter.getError());
             }
@@ -55,12 +55,12 @@ public abstract class Filter<T> {
 
     private void getInitialFilterLogs() {
         try {
-            Optional<Request<?, EthLog>> maybeRequest = this.getFilterLogs(this.filterId);
-            EthLog ethLog;
+            Optional<Request<?, BcosLog>> maybeRequest = this.getFilterLogs(this.filterId);
+            BcosLog ethLog;
             if (maybeRequest.isPresent()) {
                 ethLog = maybeRequest.get().send();
             } else {
-                ethLog = new EthLog();
+                ethLog = new BcosLog();
                 ethLog.setResult(Collections.emptyList());
             }
             process(ethLog.getLogs());
@@ -69,10 +69,10 @@ public abstract class Filter<T> {
         }
     }
 
-    private void pollFilter(EthFilter ethFilter) {
-        EthLog ethLog = null;
+    private void pollFilter(BcosFilter ethFilter) {
+        BcosLog ethLog = null;
         try {
-            ethLog = web3j.ethGetFilterChanges(filterId).send();
+            ethLog = web3j.getFilterChanges(filterId).send();
         } catch (IOException e) {
             throwException(e);
         }
@@ -82,16 +82,16 @@ public abstract class Filter<T> {
         process(ethLog.getLogs());
     }
 
-    abstract EthFilter sendRequest() throws IOException;
+    abstract BcosFilter sendRequest() throws IOException;
 
-    abstract void process(List<EthLog.LogResult> logResults);
+    abstract void process(List<BcosLog.LogResult> logResults);
 
     public void cancel() {
         schedule.cancel(false);
 
-        EthUninstallFilter ethUninstallFilter = null;
+        UninstallFilter ethUninstallFilter = null;
         try {
-            ethUninstallFilter = web3j.ethUninstallFilter(filterId).send();
+            ethUninstallFilter = web3j.getUninstallFilter(filterId).send();
         } catch (IOException e) {
             throwException(e);
         }
@@ -113,7 +113,7 @@ public abstract class Filter<T> {
      * @param filterId Id of the filter for which the historic log should be retrieved
      * @return Historic logs, or an empty optional if the filter cannot retrieve historic logs
      */
-    protected abstract Optional<Request<?, EthLog>> getFilterLogs(BigInteger filterId);
+    protected abstract Optional<Request<?, BcosLog>> getFilterLogs(BigInteger filterId);
 
     void throwException(Response.Error error) {
         throw new FilterException("Invalid request: " + error.getMessage());

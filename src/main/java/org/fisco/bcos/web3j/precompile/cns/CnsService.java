@@ -7,8 +7,8 @@ import org.fisco.bcos.web3j.precompile.common.PrecompiledCommon;
 import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameterName;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthBlock;
-import org.fisco.bcos.web3j.protocol.core.methods.response.EthSyncing;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock;
+import org.fisco.bcos.web3j.protocol.core.methods.response.SyncStatus;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.tx.ClientTransactionManager;
 import org.fisco.bcos.web3j.tx.RawTransactionManager;
@@ -134,13 +134,13 @@ public class CnsService {
     }
 
     boolean isSynced() throws Exception {
-        EthSyncing ethSyncing = web3j.ethSyncing().send();
+        SyncStatus ethSyncing = web3j.getSyncStatus().send();
         if (ethSyncing.isSyncing()) {
             return false;
         } else {
-            EthBlock ethBlock =
-                    web3j.ethGetBlockByNumber(DefaultBlockParameterName.LATEST, false).send();
-            long timestamp = ethBlock.getBlock().getTimestamp().longValueExact() * 1000;
+            BcosBlock block =
+                    web3j.getBlockByNumber(DefaultBlockParameterName.LATEST, false).send();
+            long timestamp = block.getBlock().getTimestamp().longValueExact() * 1000;
 
             return System.currentTimeMillis() - syncThreshold < timestamp;
         }
