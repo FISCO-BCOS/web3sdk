@@ -1030,8 +1030,6 @@ public class ConsoleImpl implements ConsoleFace {
 			return;
 		}
 		String value = params[2];
-
-		String[] args = { "setSystemConfig", key, value };
 		SystemConfigSerivce systemConfigSerivce = new SystemConfigSerivce(web3j, credentials);
 		String result = systemConfigSerivce.setValueByKey(key, value);
 		ConsoleUtils.printJson(result);
@@ -1052,7 +1050,6 @@ public class ConsoleImpl implements ConsoleFace {
 			HelpInfo.getSystemConfigByKeyHelp();
 			return;
 		}
-		String[] args = { "getSystemConfigByKey", key };
 		String value = web3j.getSystemConfigByKey(key).sendForReturnString();
 		System.out.println(value);
 		System.out.println();
