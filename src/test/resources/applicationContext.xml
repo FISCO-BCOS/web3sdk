@@ -13,7 +13,7 @@
 
 
 	<bean id="encryptType" class="org.fisco.bcos.web3j.crypto.EncryptType">
-		<constructor-arg value="0"/>  <!-- 0：feiguomi   1：guomi -->
+		<constructor-arg value="0"/> <!-- 0:standard 1:guomi -->
 	</bean>
 
 	<bean id="groupChannelConnectionsConfig" class="org.fisco.bcos.channel.handler.GroupChannelConnectionsConfig">
@@ -24,10 +24,19 @@
 					<property name="connectionsStr">
 						<list>
 							<value>127.0.0.1:30301</value>
+							<value>127.0.0.1:30304</value>
 						</list>
 					</property>
 				</bean>
-
+				<bean id="group2"  class="org.fisco.bcos.channel.handler.ChannelConnections">
+					<property name="groupId" value="2" />
+					<property name="connectionsStr">
+						<list>
+							<value>127.0.0.1:30307</value>
+							<value>127.0.0.1:30310</value>
+						</list>
+					</property>
+				</bean>
 			</list>
 		</property>
 	</bean>
