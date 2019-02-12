@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.squareup.javapoet.*;
 import io.reactivex.Flowable;
 
-import org.fisco.bcos.channel.client.TransactionSucCallback;
 import org.fisco.bcos.web3j.abi.EventEncoder;
 import org.fisco.bcos.web3j.abi.FunctionEncoder;
 import org.fisco.bcos.web3j.abi.TypeReference;
@@ -15,9 +14,8 @@ import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
 import org.fisco.bcos.web3j.protocol.core.RemoteCall;
-import org.fisco.bcos.web3j.protocol.core.methods.request.EthFilter;
+import org.fisco.bcos.web3j.protocol.core.methods.request.BcosFilter;
 import org.fisco.bcos.web3j.protocol.core.methods.response.AbiDefinition;
-import org.fisco.bcos.web3j.protocol.core.methods.response.AbiDefinition.NamedType;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Log;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.tx.Contract;
@@ -26,7 +24,6 @@ import org.fisco.bcos.web3j.tx.gas.ContractGasProvider;
 import org.fisco.bcos.web3j.utils.Collection;
 import org.fisco.bcos.web3j.utils.Strings;
 import org.fisco.bcos.web3j.utils.Version;
-import org.fisco.bcos.web3j.abi.datatypes.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -908,7 +905,7 @@ public class SolidityFunctionWrapper extends Generator{
         MethodSpec.Builder flowableMethodBuilder =
                 MethodSpec.methodBuilder(generatedFunctionName)
                         .addModifiers(Modifier.PUBLIC)
-                        .addParameter(EthFilter.class, FILTER)
+                        .addParameter(BcosFilter.class, FILTER)
                         .returns(parameterizedTypeName);
 
         TypeSpec converter = TypeSpec.anonymousClassBuilder("")
@@ -933,7 +930,7 @@ public class SolidityFunctionWrapper extends Generator{
                 .build();
 
         flowableMethodBuilder
-                .addStatement("return web3j.ethLogFlowable(filter).map($L)", converter);
+                .addStatement("return web3j.logFlowable(filter).map($L)", converter);
 
         return flowableMethodBuilder
                 .build();
@@ -957,7 +954,7 @@ public class SolidityFunctionWrapper extends Generator{
                         .returns(parameterizedTypeName);
 
         flowableMethodBuilder.addStatement("$1T filter = new $1T($2L, $3L, "
-                + "getContractAddress())", EthFilter.class, START_BLOCK, END_BLOCK)
+                + "getContractAddress())", BcosFilter.class, START_BLOCK, END_BLOCK)
                 .addStatement("filter.addSingleTopic($T.encode("
                         + buildEventDefinitionName(functionName) + "))", EventEncoder.class)
                 .addStatement("return " + generatedFunctionName + "(filter)");
