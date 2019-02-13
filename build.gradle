@@ -97,7 +97,6 @@ jar {
 	exclude '**/*.properties'
 	exclude '**/*.crt'
 	exclude '**/*.key'
-	//exclude '**/*.p12'
 
 	doLast {
 		copy {
