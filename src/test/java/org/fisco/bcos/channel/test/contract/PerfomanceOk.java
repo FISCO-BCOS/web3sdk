@@ -5,6 +5,7 @@ import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
+import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.utils.Web3AsyncThreadPoolSize;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,11 +85,15 @@ public class PerfomanceOk {
 					@Override
 					public void run() {
 						limiter.acquire();
+						PerfomanceOkCallback callback = new PerfomanceOkCallback();
+						callback.setCollector(collector);
 						try {
-							PerfomanceOkCallback callback = new PerfomanceOkCallback();
-							callback.setCollector(collector);
 							ok.trans(new BigInteger("4"), callback);
 						} catch (Exception e) {
+							TransactionReceipt receipt = new TransactionReceipt();
+							receipt.setStatus("Error sending!");
+							
+							callback.onResponse(receipt);
 							logger.info(e.getMessage());
 						}
 
