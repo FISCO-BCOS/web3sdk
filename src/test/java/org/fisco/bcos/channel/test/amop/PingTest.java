@@ -14,7 +14,12 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class PingTest {
@@ -48,7 +53,7 @@ public class PingTest {
                 System.exit(1);
             }
 
-            Set<String> topics = new HashSet<>();
+            Set<String> topics = new HashSet<String>();
             topics.add(nodeSplit[0]);
 
             service.setTopics(topics);

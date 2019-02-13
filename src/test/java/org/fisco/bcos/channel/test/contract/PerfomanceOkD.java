@@ -5,6 +5,7 @@ import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
+import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.utils.Web3AsyncThreadPoolSize;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +14,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.math.BigInteger;
+import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -73,6 +75,8 @@ public class PerfomanceOkD {
 			RateLimiter limiter = RateLimiter.create(qps);
 			Integer area = count / 10;
 			final Integer total = count;
+			
+			Random random = new Random(System.currentTimeMillis());
 
 			System.out.println("Start test，total：" + count);
 			for (Integer i = 0; i < count; ++i) {
@@ -80,12 +84,16 @@ public class PerfomanceOkD {
 					@Override
 					public void run() {
 						limiter.acquire();
+						PerfomanceOkCallback callback = new PerfomanceOkCallback();
+						callback.setCollector(collector);
 						try {
-							PerfomanceOkCallback callback = new PerfomanceOkCallback();
-							callback.setCollector(collector);
-							ok.trans("0x1", new BigInteger("1"), callback);
+							ok.trans(String.valueOf(random.nextLong()), new BigInteger("1"), callback);
 						} catch (Exception e) {
-							logger.info(e.getMessage());
+							TransactionReceipt receipt = new TransactionReceipt();
+							receipt.setStatus("Error sending!");
+							
+							callback.onResponse(receipt);
+							logger.error("Error sending:", e);
 						}
 
 						int current = sended.incrementAndGet();
