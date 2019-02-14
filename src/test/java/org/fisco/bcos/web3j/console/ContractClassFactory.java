@@ -53,14 +53,14 @@ public class ContractClassFactory {
 					try {
 						obj[i] = params[i+4].substring(1, params[i+4].length()-1);
 					} catch (Exception e) {
-						System.out.println("Please provide double quote for String that cannot contain any blank spaces");
+						System.out.println("Please provide double quote for String that cannot contain any blank spaces.");
 						System.out.println();
 						return null;
 					}
 				}
 				else
 				{
-					System.out.println("Please provide double quote for String that cannot contain any blank spaces");
+					System.out.println("Please provide double quote for String that cannot contain any blank spaces.");
 					System.out.println();
 					return null;
 				}
@@ -70,7 +70,7 @@ public class ContractClassFactory {
 				try {
 					obj[i] = Boolean.parseBoolean(params[i+4]);
 				} catch (Exception e) {
-					System.out.println("The " + (i+1) + "th parameter of " + funcName +" needs boolean value");
+					System.out.println("The " + (i+1) + "th parameter of " + funcName +" needs boolean value.");
 					System.out.println();
 					return null;
 				}
@@ -80,7 +80,7 @@ public class ContractClassFactory {
 				try {
 					obj[i] = new BigInteger(params[i+4]);
 				} catch (Exception e) {
-					System.out.println("The " + (i+1) + "th parameter of " + funcName +" needs integer value");
+					System.out.println("The " + (i+1) + "th parameter of " + funcName +" needs integer value.");
 					System.out.println();
 					return null;
 				}
@@ -99,7 +99,7 @@ public class ContractClassFactory {
 				}
 				else
 				{
-					System.out.println("Please provide double quote for byte String");
+					System.out.println("Please provide double quote for byte String.");
 					System.out.println();
 					return null;
 				}
