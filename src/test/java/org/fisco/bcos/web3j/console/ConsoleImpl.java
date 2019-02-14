@@ -665,7 +665,7 @@ public class ConsoleImpl implements ConsoleFace {
 		try {
 			result = remoteCall.send();
 		} catch (Exception e) {
-			System.out.println("The contract "+ params[1] +" for address " + contractAddress + " doesn't exsit");
+			System.out.println("The contract "+ params[1] +" for address " + contractAddress + " doesn't exsit.");
 			System.out.println();
 			return;
 		}
@@ -767,7 +767,7 @@ public class ConsoleImpl implements ConsoleFace {
 		try {
 			contractAddress = cnsResolver.getAddressByContractNameAndVersion(contractName + ":" + contractVersion);
 		} catch (Exception e) {
-			System.out.println("The contract "+ contractName +" for version " + contractVersion + " doesn't exsit");
+			System.out.println("The contract "+ contractName +" for version " + contractVersion + " doesn't exsit.");
 			System.out.println();
 			return;
 		}
