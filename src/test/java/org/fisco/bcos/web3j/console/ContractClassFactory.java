@@ -42,7 +42,7 @@ public class ContractClassFactory {
     }
     
 	@SuppressWarnings("rawtypes")
-	public static Object[] getPrametersObject(Class[] type, String[] params) {
+	public static Object[] getPrametersObject(String funcName, Class[] type, String[] params) {
 		Object[] obj = new Object[params.length - 4];
     	for (int i = 0; i < obj.length; i++) 
     	{	
@@ -67,11 +67,23 @@ public class ContractClassFactory {
 			}
 			else if(type[i] == Boolean.class)
 			{
-				obj[i] = Boolean.parseBoolean(params[i+4]);
+				try {
+					obj[i] = Boolean.parseBoolean(params[i+4]);
+				} catch (Exception e) {
+					System.out.println("The " + (i+1) + "th parameter of " + funcName +" needs boolean value");
+					System.out.println();
+					return null;
+				}
 			}
 			else if(type[i] == BigInteger.class)
 			{
-				obj[i] = new BigInteger(params[i+4]);
+				try {
+					obj[i] = new BigInteger(params[i+4]);
+				} catch (Exception e) {
+					System.out.println("The " + (i+1) + "th parameter of " + funcName +" needs integer value");
+					System.out.println();
+					return null;
+				}
 			}
 			else if(type[i] == byte[].class)
 			{	
