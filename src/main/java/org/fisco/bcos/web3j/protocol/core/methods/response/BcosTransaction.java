@@ -20,7 +20,7 @@ import org.fisco.bcos.web3j.protocol.core.Response;
  * <li>eth_getTransactionByBlockNumberAndIndex</li>
  * </ul>
  *
- * <p>This differs slightly from the request {@link EthSendTransaction} Transaction object.</p>
+ * <p>This differs slightly from the request {@link SendTransaction} Transaction object.</p>
  *
  * <p>See
  * <a href="https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactionbyhash">docs</a>

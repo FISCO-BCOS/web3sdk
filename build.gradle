@@ -75,7 +75,7 @@ dependencies {
 
 archivesBaseName = 'web3sdk'
 group = 'org.fisco-bcos'
-version = '2.0.1'
+version = '2.0.2'
 
 // for old sdk
 sourceSets {
