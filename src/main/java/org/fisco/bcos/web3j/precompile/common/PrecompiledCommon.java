@@ -43,6 +43,9 @@ public class PrecompiledCommon {
     		case -50:
     			msg = "address and version exist";
     			break;
+    		case -51:
+    			msg = "version exceeds maximum(40) length";
+    			break;
     		case -60:
     			msg = "invalid configuration value";
     			break;
