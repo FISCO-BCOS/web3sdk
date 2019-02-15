@@ -1,17 +1,17 @@
-pragma solidity ^0.4.2;
+pragma solidity ^0.5.2;
 
 contract HelloWorld{
-    string name;
+   string  name;
 
-    function HelloWorld(){
+     constructor() public {
        name = "Hello, World!";
     }
 
-    function get()constant returns(string){
+    function get() public view  returns(string memory ){
         return name;
     }
 
-    function set(string n){
+    function set(string memory n) public {
     	name = n;
     }
 }
