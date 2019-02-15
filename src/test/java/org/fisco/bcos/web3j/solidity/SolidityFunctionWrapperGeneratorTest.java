@@ -77,7 +77,7 @@ public class SolidityFunctionWrapperGeneratorTest {
             Path source = Paths.get(solFile.getPath());
             // todo
             String contractname = solFile.getName().split("\\.")[0];
-            CompilationResult.ContractMetadata a = result.getContract(source, solFile.getName().split("\\.")[0]);
+            CompilationResult.ContractMetadata a = result.getContract(solFile.getName().split("\\.")[0]);
             System.out.println("abi   " + a.abi);
             System.out.println("bin   " + a.bin);
             FileUtils.writeStringToFile(new File("src/test/resources/solidity/" + contractname + ".abi"), a.abi);
