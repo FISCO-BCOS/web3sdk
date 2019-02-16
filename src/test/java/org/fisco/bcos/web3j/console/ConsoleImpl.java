@@ -25,12 +25,18 @@ import org.fisco.bcos.web3j.tx.Contract;
 import org.fisco.bcos.web3j.utils.Numeric;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 public class ConsoleImpl implements ConsoleFace {
 
@@ -53,10 +59,26 @@ public class ConsoleImpl implements ConsoleFace {
 		service = context.getBean(Service.class);
 		int groupID = 1;
 		try {
-			keyPair = Keys.createEcKeyPair();
-			credentials = GenCredential.create(keyPair.getPrivateKey().toString(16));
+			Properties prop = new Properties();
+			final Resource keyResource = new ClassPathResource("privateKey.properties");
+			InputStream fis = keyResource.getInputStream();
+	        prop.load(fis);
+	        privateKey = prop.getProperty("privateKey");
+	        fis.close();
+	        if(privateKey == null || "".equals(privateKey.trim()))
+	        {
+	        	keyPair = Keys.createEcKeyPair();
+	        	privateKey = keyPair.getPrivateKey().toString(16);
+				credentials = GenCredential.create(privateKey);
+		        prop.setProperty("privateKey", privateKey);
+		        FileOutputStream fos = new FileOutputStream(keyResource.getFile());
+		        prop.store(fos, "private key");
+		        fos.close();
+	        }
+
 		} catch (Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
+			System.exit(0);
 		}
 		switch (args.length) {
 		case 0:
