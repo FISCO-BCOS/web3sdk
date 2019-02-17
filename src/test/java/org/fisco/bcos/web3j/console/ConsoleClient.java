@@ -157,17 +157,17 @@ public class ConsoleClient {
 				case "rn":
 					console.removeNode(params);
 					break;
-				case "addAuthority":
-				case "aa":
-					console.addAuthority(params);
+				case "addUserTableManager":
+				case "aut":
+					console.addUserTableManager(params);
 					break;
-				case "removeAuthority":
-				case "ra":
-					console.removeAuthority(params);
+				case "removeUserTableManager":
+				case "rut":
+					console.removeUserTableManager(params);
 					break;
-				case "queryAuthority":
-				case "qa":
-					console.queryAuthority(params);
+				case "queryUserTableManager":
+				case "qut":
+					console.queryUserTableManager(params);
 					break;
 				case "setSystemConfigByKey":
 				case "ssc":
