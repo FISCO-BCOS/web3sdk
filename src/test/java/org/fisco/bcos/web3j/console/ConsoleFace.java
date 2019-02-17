@@ -68,11 +68,11 @@ public interface ConsoleFace {
 	
 	void removeNode(String[] params) throws Exception;
 	
-	void addAuthority(String[] params) throws Exception;
+	void addUserTableManager(String[] params) throws Exception;
 	
-	void removeAuthority(String[] params) throws Exception;
+	void removeUserTableManager(String[] params) throws Exception;
 	
-	void queryAuthority(String[] params) throws Exception;
+	void queryUserTableManager(String[] params) throws Exception;
 
 	void setSystemConfigByKey(String[] params) throws Exception;
 

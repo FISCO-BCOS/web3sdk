@@ -579,27 +579,27 @@ public class ConsoleTest{
     	
     }
     @Test
-    public void addAuthorityTest() throws Exception {
+    public void addUserTableManagerTest() throws Exception {
     	String[] params1 = {};
-    	console.addAuthority(params1);
+    	console.addUserTableManager(params1);
     	assertTrue(!"".equals(log.getLog()));
     	log.clearLog();
     	
     	String[] params2 = {"aa", "-h"};
-    	console.addAuthority(params2);
+    	console.addUserTableManager(params2);
     	assertTrue(!"".equals(log.getLog()));
     	log.clearLog();
     	
     }
     @Test
-    public void removeAuthorityTest() throws Exception {
+    public void removeUserTableManagerTest() throws Exception {
     	String[] params1 = {};
-    	console.removeAuthority(params1);
+    	console.removeUserTableManager(params1);
     	assertTrue(!"".equals(log.getLog()));
     	log.clearLog();
     	
     	String[] params2 = {"ra", "-h"};
-    	console.removeAuthority(params2);
+    	console.removeUserTableManager(params2);
     	assertTrue(!"".equals(log.getLog()));
     	log.clearLog();
     	
@@ -607,17 +607,17 @@ public class ConsoleTest{
     @Test
     public void queryAuthorityTest() throws Exception {
     	String[] params1 = {};
-    	console.queryAuthority(params1);
+    	console.queryUserTableManager(params1);
     	assertTrue(!"".equals(log.getLog()));
     	log.clearLog();
     	
     	String[] params2 = {"qa", "-h"};
-    	console.queryAuthority(params2);
+    	console.queryUserTableManager(params2);
     	assertTrue(!"".equals(log.getLog()));
     	log.clearLog();
     	
     	String[] params3 = {"qa", "t_test"};
-    	console.queryAuthority(params3);
+    	console.queryUserTableManager(params3);
     	assertTrue(!"".equals(log.getLog()));
     }
     

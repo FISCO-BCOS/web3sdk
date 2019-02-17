@@ -276,28 +276,28 @@ public class HelpInfo {
 		System.out.println();
 	}
 
-	public static void addAuthorityHelp() 
+	public static void addUserTableManagerHelp() 
 	{
-		System.out.println("Add authority for table by address.");
-		System.out.println("Usage: aa tableName address");
+		System.out.println("Add authority for user table by table name and address.");
+		System.out.println("Usage: aut tableName address");
 		System.out.println("tableName -- name of a table.");
 		System.out.println("address -- address of tx.origin.");
 		System.out.println();
 	}
 	
-	public static void removeAuthorityHelp() 
+	public static void removeUserTableManagerHelp() 
 	{
-		System.out.println("Remove authority for table by address.");
-		System.out.println("Usage: ra tableName address");
+		System.out.println("Remove authority for user table by table name and address.");
+		System.out.println("Usage: rut tableName address");
 		System.out.println("tableName -- name of a table.");
 		System.out.println("address -- address of tx.origin.");
 		System.out.println();
 	}
 	
-	public static void queryAuthorityHelp() 
+	public static void queryUserTableManagerHelp() 
 	{
-		System.out.println("Query authority information.");
-		System.out.println("Usage: qa tableName");
+		System.out.println("Query authority for user table information.");
+		System.out.println("Usage: qut tableName");
 		System.out.println("tableName -- name of a table.");
 		System.out.println();
 	}
