@@ -9,6 +9,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class PrecompiledCommon {
 	
+	// system table for authority control
+	public static final String SYSTABLE = "_sys_tables_";
+	public static final String SYSTABLEACCESS = "_sys_table_access_";
+	public static final String SYSMINER = "_sys_miners_";
+	public static final String SYSCNS = "_sys_cns_";
+	public static final String SYSCONFIG = "_sys_config_";
+	
     public static String transferToJson(int code) throws JsonProcessingException{
     	String msg = "";
     	switch (code)
