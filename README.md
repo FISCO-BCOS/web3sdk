@@ -8,7 +8,9 @@ English / [中文](doc/README_CN.md)
 ---
 Java SDK provides the Java API for [FISCO-BCOS](https://github.com/fqliao/FISCO-BCOS/tree/release-2.0.1). You can easily and quickly develop your blockchain applications based on the FISCO-BCOS Java SDK.
 
-![sdk.png](./images/sdk.png)
+<div align="center">
+  <img src="./images/sdk.png" width = "600" height = "420"/>
+</div>
 
 ## Features
 
@@ -32,7 +34,7 @@ A [spring boot starter](https://github.com/FISCO-BCOS/spring-boot-starter) for S
 - [中文](https://fisco-bcos-documentation.readthedocs.io/zh_CN/feature-2.0.0/docs/sdk/index.html)
 
 ## Developing & Contributing
-- Star our Github
+- Star our Github.
 - Pull requests. See [CONTRIBUTING](CONTRIBUTING.md).
 - [Ask questions](https://github.com/FISCO-BCOS/web3sdk/issues).
 - Discuss in [WeChat group](doc/images/WeChatQR.jpeg)  or [Gitter](https://gitter.im/fisco-bcos/Lobby).
