@@ -73,6 +73,36 @@ public interface ConsoleFace {
 	void removeUserTableManager(String[] params) throws Exception;
 	
 	void queryUserTableManager(String[] params) throws Exception;
+	
+	void addDeployAndCreateManager(String[] params) throws Exception;
+	
+	void removeDeployAndCreateManager(String[] params) throws Exception;
+	
+	void queryDeployAndCreateManager(String[] params) throws Exception;
+	
+	void addAuthorityManager(String[] params) throws Exception;
+	
+	void removeAuthorityManager(String[] params) throws Exception;
+	
+	void queryAuthorityManager(String[] params) throws Exception;
+	
+	void addNodeManager(String[] params) throws Exception;
+	
+	void removeNodeManager(String[] params) throws Exception;
+	
+	void queryNodeManager(String[] params) throws Exception;
+	
+	void addCNSManager(String[] params) throws Exception;
+	
+	void removeCNSManager(String[] params) throws Exception;
+	
+	void queryCNSManager(String[] params) throws Exception;
+	
+	void addSysConfigManager(String[] params) throws Exception;
+	
+	void removeSysConfigManager(String[] params) throws Exception;
+	
+	void querySysConfigManager(String[] params) throws Exception;
 
 	void setSystemConfigByKey(String[] params) throws Exception;
 
