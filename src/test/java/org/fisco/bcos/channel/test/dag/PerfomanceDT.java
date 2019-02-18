@@ -38,7 +38,7 @@ public class PerfomanceDT {
 		}
 
 		logger.info(" dag transfer test begin, command is {}, count is {}, tps is {}, file is {}, strategy is {}",
-				command, tps, file, strategy);
+				command, count, tps, file, strategy);
 
 		DagUserMgr d = new DagUserMgr();
 		d.setFile(file);
