@@ -94,13 +94,13 @@ public class CnsService {
         }
     }
 
-    public String registerCns(String name, String version, String addr, String abi) throws Exception {
+    public String registerCns(String name, String version, String address, String abi) throws Exception {
         CNS cns = lookupResolver();
         if(version.length() > MAX_VERSION_LENGTH)
         {
         	return PrecompiledCommon.transferToJson(-51);
         }
-        TransactionReceipt receipt = cns.insert(name, version, addr, abi).send();
+        TransactionReceipt receipt = cns.insert(name, version, address, abi).send();
         return PrecompiledCommon.getJsonStr(receipt.getOutput());
     }
     
