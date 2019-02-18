@@ -650,7 +650,7 @@ public class ConsoleImpl implements ConsoleFace {
 			return;
 		}
 		Method func = contractClass.getMethod(funcName, parameterType);
-		Object[] argobj = ContractClassFactory.getPrametersObject(parameterType, params);
+		Object[] argobj = ContractClassFactory.getPrametersObject(funcName, parameterType, params);
 		if (argobj == null) {
 			return;
 		}
@@ -665,7 +665,7 @@ public class ConsoleImpl implements ConsoleFace {
 		try {
 			result = remoteCall.send();
 		} catch (Exception e) {
-			System.out.println("The contract "+ params[1] +" for address " + contractAddress + " doesn't exsit");
+			System.out.println("The contract "+ params[1] +" for address " + contractAddress + " doesn't exsit.");
 			System.out.println();
 			return;
 		}
@@ -724,9 +724,15 @@ public class ConsoleImpl implements ConsoleFace {
 		Method deploy = contractClass.getMethod("deploy", Web3j.class, Credentials.class, BigInteger.class,
 				BigInteger.class);
 		remoteCall = (RemoteCall<?>) deploy.invoke(null, web3j, credentials, gasPrice, gasLimit);
+		contractVersion = params[2];
+        if(contractVersion.length() > CnsService.MAX_VERSION_LENGTH)
+        {
+        	ConsoleUtils.printJson(PrecompiledCommon.transferToJson(-51));
+        	System.out.println();
+        	return;
+        }
 		Contract contract = (Contract) remoteCall.send();
 		contractAddress = contract.getContractAddress();
-		contractVersion = params[2];
 		// register cns
 		String result = cnsService.registerCns(params[1], contractVersion, contractAddress, "");
 		System.out.println(contractAddress);
@@ -761,7 +767,7 @@ public class ConsoleImpl implements ConsoleFace {
 		try {
 			contractAddress = cnsResolver.getAddressByContractNameAndVersion(contractName + ":" + contractVersion);
 		} catch (Exception e) {
-			System.out.println("The contract "+ contractName +" for version " + contractVersion + " doesn't exsit");
+			System.out.println("The contract "+ contractName +" for version " + contractVersion + " doesn't exsit.");
 			System.out.println();
 			return;
 		}
@@ -776,7 +782,7 @@ public class ConsoleImpl implements ConsoleFace {
 			return;
 		}
 		Method func = contractClass.getMethod(funcName, parameterType);
-		Object[] argobj = ContractClassFactory.getPrametersObject(parameterType, params);
+		Object[] argobj = ContractClassFactory.getPrametersObject(funcName, parameterType, params);
 		if (argobj == null) {
 			return;
 		}
