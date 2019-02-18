@@ -42,7 +42,10 @@ public class PerfomanceDT {
 
 		DagUserMgr d = new DagUserMgr();
 		d.setFile(file);
-		d.setTransfer(command == "transfer");
+		if (command.equals("transfer")) {
+			d.setTransfer(true);
+		}
+		
 		d.loadDagTransferUser();
 		
 		PerfomanceDTCollector collector = new PerfomanceDTCollector();
