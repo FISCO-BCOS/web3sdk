@@ -158,16 +158,76 @@ public class ConsoleClient {
 					console.removeNode(params);
 					break;
 				case "addUserTableManager":
-				case "aut":
+				case "aum":
 					console.addUserTableManager(params);
 					break;
 				case "removeUserTableManager":
-				case "rut":
+				case "rum":
 					console.removeUserTableManager(params);
 					break;
 				case "queryUserTableManager":
-				case "qut":
+				case "qum":
 					console.queryUserTableManager(params);
+					break;
+				case "addDeployAndCreateManager":
+				case "adm":
+					console.addDeployAndCreateManager(params);
+					break;
+				case "removeDeployAndCreateManager":
+				case "rdm":
+					console.removeDeployAndCreateManager(params);
+					break;
+				case "queryDeployAndCreateManager":
+				case "qdm":
+					console.queryDeployAndCreateManager(params);
+					break;
+				case "addAuthorityManager":
+				case "aam":
+					console.addAuthorityManager(params);
+					break;
+				case "removeAuthorityManager":
+				case "ram":
+					console.removeAuthorityManager(params);
+					break;
+				case "queryAuthorityManager":
+				case "qam":
+					console.queryAuthorityManager(params);
+					break;
+				case "addNodeManager":
+				case "anm":
+					console.addNodeManager(params);
+					break;
+				case "removeNodeManager":
+				case "rnm":
+					console.removeNodeManager(params);
+					break;
+				case "queryNodeManager":
+				case "qnm":
+					console.queryNodeManager(params);
+					break;
+				case "addCNSManager":
+				case "acm":
+					console.addCNSManager(params);
+					break;
+				case "removeCNSManager":
+				case "rcm":
+					console.removeCNSManager(params);
+					break;
+				case "queryCNSManager":
+				case "qcm":
+					console.queryCNSManager(params);
+					break;
+				case "addSysConfigManager":
+				case "asm":
+					console.addSysConfigManager(params);
+					break;
+				case "removeSysConfigManager":
+				case "rsm":
+					console.removeSysConfigManager(params);
+					break;
+				case "querySysConfigManager":
+				case "qsm":
+					console.querySysConfigManager(params);
 					break;
 				case "setSystemConfigByKey":
 				case "ssc":
