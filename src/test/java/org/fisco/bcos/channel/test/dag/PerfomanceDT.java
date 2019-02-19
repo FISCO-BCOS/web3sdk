@@ -29,16 +29,21 @@ public class PerfomanceDT {
 		BigInteger count = new BigInteger(args[1]);
 		BigInteger tps = new BigInteger(args[2]);
 		String file = null;
-		String strategy = null;
+		BigInteger deci = new BigInteger("0");
 		if (args.length > 3) {
 			file = args[3];
 			if (args.length > 4) {
-				strategy = args[4];
+				deci = new BigInteger(args[4]);
 			}
 		}
+		
+		// deci can not bigger than 10.
+		if (deci.compareTo(new BigInteger("10")) > 0) {
+			deci = new BigInteger("0");
+		}
 
-		logger.info(" dag transfer test begin, command is {}, count is {}, tps is {}, file is {}, strategy is {}",
-				command, count, tps, file, strategy);
+		logger.info(" dag transfer test begin, command is {}, count is {}, tps is {}, file is {}, deci is {}",
+				command, count, tps, file, deci);
 
 		DagUserMgr d = new DagUserMgr();
 		d.setFile(file);
@@ -58,7 +63,7 @@ public class PerfomanceDT {
 		case "transfer":
 			d.setTransfer(true);
 			d.loadDagTransferUser();
-			p.userTransferTest(count, tps, strategy);
+			p.userTransferTest(count, tps, deci);
 			break;
 		default:
 			Usage();
