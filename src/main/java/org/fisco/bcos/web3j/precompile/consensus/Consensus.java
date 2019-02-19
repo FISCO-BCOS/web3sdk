@@ -1,5 +1,9 @@
 package org.fisco.bcos.web3j.precompile.consensus;
 
+import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.Collections;
+import org.fisco.bcos.channel.client.TransactionSucCallback;
 import org.fisco.bcos.web3j.abi.TypeReference;
 import org.fisco.bcos.web3j.abi.datatypes.Function;
 import org.fisco.bcos.web3j.abi.datatypes.Type;
@@ -10,10 +14,6 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.tx.Contract;
 import org.fisco.bcos.web3j.tx.TransactionManager;
 import org.fisco.bcos.web3j.tx.gas.ContractGasProvider;
-
-import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.Collections;
 
 /**
  * <p>Auto generated code.
@@ -27,11 +27,11 @@ import java.util.Collections;
 public class Consensus extends Contract {
     private static final String BINARY = "";
 
-    public static final String FUNC_ADDMINER = "addMiner";
+    public static final String FUNC_ADDOBSERVER = "addObserver";
 
     public static final String FUNC_REMOVE = "remove";
 
-    public static final String FUNC_ADDOBSERVER = "addObserver";
+    public static final String FUNC_ADDSEALER = "addSealer";
 
     @Deprecated
     protected Consensus(String contractAddress, Web3j web3j, Credentials credentials, BigInteger gasPrice, BigInteger gasLimit) {
@@ -51,12 +51,20 @@ public class Consensus extends Contract {
         super(BINARY, contractAddress, web3j, transactionManager, contractGasProvider);
     }
 
-    public RemoteCall<TransactionReceipt> addMiner(String nodeID) {
+    public RemoteCall<TransactionReceipt> addObserver(String nodeID) {
         final Function function = new Function(
-                FUNC_ADDMINER, 
+                FUNC_ADDOBSERVER, 
                 Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(nodeID)), 
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
+    }
+
+    public void addObserver(String nodeID, TransactionSucCallback callback) {
+        final Function function = new Function(
+                FUNC_ADDOBSERVER, 
+                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(nodeID)), 
+                Collections.<TypeReference<?>>emptyList());
+        asyncExecuteTransaction(function, callback);
     }
 
     public RemoteCall<TransactionReceipt> remove(String nodeID) {
@@ -67,12 +75,28 @@ public class Consensus extends Contract {
         return executeRemoteCallTransaction(function);
     }
 
-    public RemoteCall<TransactionReceipt> addObserver(String nodeID) {
+    public void remove(String nodeID, TransactionSucCallback callback) {
         final Function function = new Function(
-                FUNC_ADDOBSERVER, 
+                FUNC_REMOVE, 
+                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(nodeID)), 
+                Collections.<TypeReference<?>>emptyList());
+        asyncExecuteTransaction(function, callback);
+    }
+
+    public RemoteCall<TransactionReceipt> addSealer(String nodeID) {
+        final Function function = new Function(
+                FUNC_ADDSEALER, 
                 Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(nodeID)), 
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
+    }
+
+    public void addSealer(String nodeID, TransactionSucCallback callback) {
+        final Function function = new Function(
+                FUNC_ADDSEALER, 
+                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(nodeID)), 
+                Collections.<TypeReference<?>>emptyList());
+        asyncExecuteTransaction(function, callback);
     }
 
     @Deprecated

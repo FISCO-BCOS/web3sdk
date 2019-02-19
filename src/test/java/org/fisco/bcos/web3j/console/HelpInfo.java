@@ -23,8 +23,8 @@ public class HelpInfo {
 		case "gol":
 			getObserverListHelp();
 			break;
-		case "gml":
-			getMinerListHelp();
+		case "gsl":
+			getSealerListHelp();
 			break;
 		case "gcs":
 			getConsensusStatusHelp();
@@ -105,10 +105,10 @@ public class HelpInfo {
 		System.out.println("Usage: gol");
 	}
 	
-	public static void getMinerListHelp() 
+	public static void getSealerListHelp() 
 	{
-		System.out.println("Query nodeID list for miner nodes.");
-		System.out.println("Usage: gml");
+		System.out.println("Query nodeID list for sealer nodes.");
+		System.out.println("Usage: gsl");
 	}
 	
 	public static void getConsensusStatusHelp() 
@@ -143,7 +143,7 @@ public class HelpInfo {
 	
 	public static void getGroupPeersHelp() 
 	{
-		System.out.println("Query nodeID list for miner and observer nodes.");
+		System.out.println("Query nodeID list for sealer and observer nodes.");
 		System.out.println("Usage: ggp");
 	}
 	
@@ -276,10 +276,10 @@ public class HelpInfo {
 		System.out.println("nodeID -- nodeID of node.");
 		System.out.println();
 	}
-	public static void addMinerHelp() 
+	public static void addSealerHelp() 
 	{
-		System.out.println("Add a miner node.");
-		System.out.println("Usage: am nodeID");
+		System.out.println("Add a sealer node.");
+		System.out.println("Usage: as nodeID");
 		System.out.println("nodeID -- nodeID of a node.");
 		System.out.println();
 	}

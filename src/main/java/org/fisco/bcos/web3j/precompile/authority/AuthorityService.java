@@ -54,13 +54,13 @@ public class AuthorityService {
 	}
 	
 	public String addNodeManager(String address) throws Exception {
-		return add(PrecompiledCommon.SYSMINER, address);
+		return add(PrecompiledCommon.SYSCONSENSUS, address);
 	}
 	public String removeNodeManager(String address) throws Exception {
-		return remove(PrecompiledCommon.SYSMINER, address);
+		return remove(PrecompiledCommon.SYSCONSENSUS, address);
 	}
 	public List<AuthorityInfo> queryNodeManager() throws Exception {
-		return query(PrecompiledCommon.SYSMINER);
+		return query(PrecompiledCommon.SYSCONSENSUS);
 	}
 	
 	public String addCNSManager(String address) throws Exception {
