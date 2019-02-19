@@ -171,9 +171,9 @@ public class ConsoleImpl implements ConsoleFace {
 		sb.append("addDeployAndCreateManager(adm)                Add authority for deploy contract and create user table by address.\n");
 		sb.append("removeDeployAndCreateManager(rdm)             Remove authority for deploy contract and create user table by address.\n");
 		sb.append("queryDeployAndCreateManager(qdm)              Query authority information for deploy contract and create user table.\n");
-		sb.append("addAuthorityManager(aum)                      Add authority for authority configuration by address.\n");
-		sb.append("removeAuthorityManager(rum)                   Remove authority for authority configuration by address.\n");
-		sb.append("queryAuthorityManager(qum)                    Query authority information for authority configuration.\n");
+		sb.append("addAuthorityManager(aam)                      Add authority for authority configuration by address.\n");
+		sb.append("removeAuthorityManager(ram)                   Remove authority for authority configuration by address.\n");
+		sb.append("queryAuthorityManager(qam)                    Query authority information for authority configuration.\n");
 		sb.append("addNodeManager(anm)                           Add authority for node configuration by address.\n");
 		sb.append("removeNodeManager(rnm)                        Remove authority for node configuration by address.\n");
 		sb.append("queryNodeManager(qnm)                         Query authority information for node configuration.\n");
