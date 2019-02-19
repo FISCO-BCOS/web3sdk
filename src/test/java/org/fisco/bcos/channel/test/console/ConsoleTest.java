@@ -66,24 +66,24 @@ public class ConsoleTest{
     }
 
     @Test
-    public void getMinerListTest() throws IOException {
+    public void getSealerListTest() throws IOException {
     	String[] params1 = {};
-        console.getMinerList(params1);
+        console.getSealerList(params1);
     	assertTrue(!"".equals(log.getLog()));
     	log.clearLog();
     	
     	String[] params2 = {"-h"};
-        console.getMinerList(params2);
+        console.getSealerList(params2);
     	assertTrue(!"".equals(log.getLog()));
     	log.clearLog();
         
         String[] params3 = {"--help"};
-        console.getMinerList(params3);
+        console.getSealerList(params3);
     	assertTrue(!"".equals(log.getLog()));
     	log.clearLog();
     	
         String[] params4 = {"k"};
-        console.getMinerList(params4);
+        console.getSealerList(params4);
     	assertTrue(!"".equals(log.getLog()));
     }
     @Test
@@ -528,19 +528,19 @@ public class ConsoleTest{
     	
     }
     @Test
-    public void addMinerTest() throws Exception {
+    public void addSealerTest() throws Exception {
     	String[] params1 = {};
-    	console.addMiner(params1);
+    	console.addSealer(params1);
     	assertTrue(!"".equals(log.getLog()));
     	log.clearLog();
     	
-    	String[] params2 = {"am", "-h"};
-    	console.addMiner(params2);
+    	String[] params2 = {"as", "-h"};
+    	console.addSealer(params2);
     	assertTrue(!"".equals(log.getLog()));
     	log.clearLog();
     	
-    	String[] params3 = {"am", "ae"};
-    	console.addMiner(params3);
+    	String[] params3 = {"as", "ae"};
+    	console.addSealer(params3);
     	assertTrue(!"".equals(log.getLog()));
     	
     }

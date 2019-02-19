@@ -45,9 +45,9 @@ public class ConsoleClient {
 				case "gpv":
 					console.getPbftView(params);
 					break;
-				case "getMinerList":
-				case "gml":
-					console.getMinerList(params);
+				case "getSealerList":
+				case "gsl":
+					console.getSealerList(params);
 					break;
 				case "getObserverList":
 				case "gol":
@@ -145,9 +145,9 @@ public class ConsoleClient {
 				case "qcs":
 					console.queryCNS(params);
 					break;
-				case "addMiner":
-				case "am":
-					console.addMiner(params);
+				case "addSealer":
+				case "as":
+					console.addSealer(params);
 					break;
 				case "addObserver":
 				case "ao":
