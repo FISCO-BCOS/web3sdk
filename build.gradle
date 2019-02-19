@@ -14,7 +14,7 @@ targetCompatibility = 1.8
 // In this section you declare where to find the dependencies of your project
 repositories {
     maven {
-        url "http://maven.aliyun.com/nexus/content/groups/public/"
+        url "http://maven.weoa.com/nexus/content/groups/public/"
     }
 	maven { url 'https://dl.bintray.com/ethereum/maven/' }
     mavenCentral()
@@ -172,9 +172,9 @@ test {
 //				}
 //				developers {
 //					developer {
-//						id 'shuoyanhe'
-//						name 'shuoyanhe'
-//						email 'shuoyanhe@webank.com'
+//						id 'zhangsan'
+//						name 'zhangsan'
+//						email 'zhangsan@gmail.com'
 //					}
 //				}
 //			}
