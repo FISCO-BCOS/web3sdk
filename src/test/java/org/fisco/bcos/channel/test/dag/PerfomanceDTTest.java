@@ -154,7 +154,7 @@ public class PerfomanceDTTest {
 
 	}
 
-	public void userTransferTest(BigInteger count, BigInteger qps, String strategy) {
+	public void userTransferTest(BigInteger count, BigInteger qps, BigInteger deci) {
 		
 		try {
 
@@ -183,6 +183,10 @@ public class PerfomanceDTTest {
 						limiter.acquire();
 						DagTransferUser from = dagUserMgr.getFrom(index);
 						DagTransferUser to = dagUserMgr.getTo(index);
+						if ((deci.intValue() > 0) && (deci.intValue() >= (index % 10 + 1))) {
+							to = dagUserMgr.getNext(index);
+						}
+						
 						BigInteger amount = new BigInteger("1");
 
 						PerfomanceDTCallback callback = new PerfomanceDTCallback();
