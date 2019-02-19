@@ -14,7 +14,7 @@ public interface ConsoleFace {
 
 	void getObserverList(String[] params) throws IOException;
 
-	void getMinerList(String[] params) throws IOException;
+	void getSealerList(String[] params) throws IOException;
 
 	void getConsensusStatus(String[] params) throws IOException;
 
@@ -62,7 +62,7 @@ public interface ConsoleFace {
 	
 	void queryCNS(String[] params) throws Exception;
 
-	void addMiner(String[] params) throws Exception;
+	void addSealer(String[] params) throws Exception;
 
 	void addObserver(String[] params) throws Exception;
 	

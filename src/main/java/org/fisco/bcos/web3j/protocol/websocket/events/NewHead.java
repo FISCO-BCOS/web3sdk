@@ -7,7 +7,7 @@ public class NewHead {
     private String gasUsed;
     private String hash;
     private String logsBloom;
-    private String miner;
+    private String sealer;
     private String nonce;
     private String number;
     private String parentHash;
@@ -41,8 +41,8 @@ public class NewHead {
         return logsBloom;
     }
 
-    public String getMiner() {
-        return miner;
+    public String getSealer() {
+        return sealer;
     }
 
     public String getNonce() {

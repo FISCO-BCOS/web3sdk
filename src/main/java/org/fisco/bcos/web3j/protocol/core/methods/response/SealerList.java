@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * getGroupList
  */
-public class MinerList extends Response<List<String>> {
+public class SealerList extends Response<List<String>> {
 
     public List<String> getGroupList() {
         return getResult();

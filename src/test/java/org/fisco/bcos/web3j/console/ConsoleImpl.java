@@ -131,10 +131,10 @@ public class ConsoleImpl implements ConsoleFace {
 		sb.append("help(h)                                       Provide help information.\n");
 		sb.append("getBlockNumber(gbn)                           Query the number of most recent block.\n");
 		sb.append("getPbftView(gpv)                              Query the pbft view of node.\n");
-		sb.append("getMinerList(gml)                             Query nodeID list for miner nodes.\n");
+		sb.append("getSealerList(gsl)                            Query nodeID list for sealer nodes.\n");
 		sb.append("getObserverList(gol)                          Query nodeID list for observer nodes.\n");
 		sb.append("getNodeIDList(gnl)                            Query nodeID list for all connected nodes.\n");
-		sb.append("getGroupPeers(ggp)                            Query nodeID list for miner and observer nodes.\n");
+		sb.append("getGroupPeers(ggp)                            Query nodeID list for sealer and observer nodes.\n");
 		sb.append("getPeers(gps)                                 Query peers currently connected to the client.\n");
 		sb.append("getConsensusStatus(gcs)                       Query consensus status.\n");
 		sb.append("getSyncStatus(gss)                            Query sync status.\n");
@@ -162,9 +162,11 @@ public class ConsoleImpl implements ConsoleFace {
 				"callByCNS(cbc)                                Call a contract by a function and paramters by CNS.\n");
 		sb.append(
 				"queryCNS(qcs)                                 Query cns information by contract name and contract version.\n");
-		sb.append("addMiner(am)                                  Add a miner node.\n");
+		sb.append("addSealer(as)                                 Add a sealer node.\n");
 		sb.append("addObserver(ao)                               Add an observer node.\n");
 		sb.append("removeNode(rn)                                Remove a node.\n");
+		sb.append("setSystemConfigByKey(ssc)                     Set a system config.\n");
+		sb.append("getSystemConfigByKey(gsc)                     Query a system config value by key.\n");
 		sb.append("addUserTableManager(aum)                      Add authority for user table by table name and address.\n");
 		sb.append("removeUserTableManager(rum)                   Remove authority for user table by table name and address.\n");
 		sb.append("queryUserTableManager(qum)                    Query authority for user table information.\n");
@@ -183,8 +185,6 @@ public class ConsoleImpl implements ConsoleFace {
 		sb.append("addSysConfigManager(asm)                      Add authority for system configuration by address.\n");
 		sb.append("removeSysConfigManager(rsm)                   Remove authority for system configuration by address.\n");
 		sb.append("querySysConfigManager(qsm)                    Query authority information for system configuration.\n");
-		sb.append("setSystemConfigByKey(ssc)                     Set a system config.\n");
-		sb.append("getSystemConfigByKey(gsc)                     Query a system config value by key.\n");
 		sb.append("quit(q)                                       Quit console.");
 		System.out.println(sb.toString());
 		ConsoleUtils.singleLine();
@@ -255,16 +255,16 @@ public class ConsoleImpl implements ConsoleFace {
 	}
 
 	@Override
-	public void getMinerList(String[] params) throws IOException {
-		if (promptNoParams(params, "gml")) {
+	public void getSealerList(String[] params) throws IOException {
+		if (promptNoParams(params, "gsl")) {
 			return;
 		}
-		List<String> minerList = web3j.getMinerList().send().getResult();
-		String miners = minerList.toString();
-		if ("[]".equals(miners)) {
+		List<String> sealerList = web3j.getSealerList().send().getResult();
+		String sealers = sealerList.toString();
+		if ("[]".equals(sealers)) {
 			System.out.println("[]");
 		} else {
-			ConsoleUtils.printJson(miners);
+			ConsoleUtils.printJson(sealers);
 		}
 		System.out.println();
 
@@ -864,24 +864,24 @@ public class ConsoleImpl implements ConsoleFace {
 	}
 
 	@Override
-	public void addMiner(String[] params) throws Exception {
+	public void addSealer(String[] params) throws Exception {
 		if (params.length < 2) {
-			HelpInfo.promptHelp("am");
+			HelpInfo.promptHelp("as");
 			return;
 		} else if (params.length > 2) {
-			HelpInfo.promptHelp("am");
+			HelpInfo.promptHelp("as");
 			return;
 		}
 		String nodeID = params[1];
 		if ("-h".equals(nodeID) || "--help".equals(nodeID)) {
-			HelpInfo.addMinerHelp();
+			HelpInfo.addSealerHelp();
 			return;
 		}
 		if (nodeID.length() != 128) {
 			ConsoleUtils.printJson(PrecompiledCommon.transferToJson(-40));
 		} else {
 			ConsensusService consensusService = new ConsensusService(web3j, credentials);
-			String result = consensusService.addMiner(nodeID);
+			String result = consensusService.addSealer(nodeID);
 			ConsoleUtils.printJson(result);
 		}
 		System.out.println();
