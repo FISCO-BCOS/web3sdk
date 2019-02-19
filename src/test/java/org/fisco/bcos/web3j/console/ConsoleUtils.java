@@ -91,9 +91,9 @@ public class ConsoleUtils {
 		String numberStr = number.trim();
 		if (!numberStr.matches("^[0-9]*$") || "".equals(numberStr)) {
 			if(flag == 0)
-				System.out.println("Please provide block number by decimal mode.");
+				System.out.println("Please provide block number as a decimal non-negative integer.");
 			else
-				System.out.println("Please provide transaction index by decimal mode.");
+				System.out.println("Please provide transaction index as a decimal non-negative integer.");
 			System.out.println();
 			return true;
 		}
