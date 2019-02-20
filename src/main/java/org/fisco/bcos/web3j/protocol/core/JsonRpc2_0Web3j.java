@@ -77,10 +77,10 @@ public class JsonRpc2_0Web3j implements Web3j {
     }
     
     @Override
-    public Request<?, BlockNumber> getBlockNumber() {
+    synchronized public Request<?, BlockNumber> getBlockNumber() {
         return new Request<>(
                 "getBlockNumber",
-               Arrays.asList(groupId),
+                Arrays.asList(groupId),
                 web3jService,
                 BlockNumber.class);
     }
@@ -90,8 +90,8 @@ public class JsonRpc2_0Web3j implements Web3j {
         if (getLocalBlockNumber().intValue() == 1)
         {
             try {
-                BlockNumber ethBlockNumber = getBlockNumber().sendAsync().get();
-                setBlockNumber(ethBlockNumber.getBlockNumber());
+                BlockNumber blockNumber = getBlockNumber().sendAsync().get();
+                setBlockNumber(blockNumber.getBlockNumber());
             } catch (Exception e) {
                 logger.error("Exception: " + e);
             }

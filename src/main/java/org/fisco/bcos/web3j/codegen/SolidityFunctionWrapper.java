@@ -577,19 +577,19 @@ public class SolidityFunctionWrapper extends Generator{
 
         String simpleName = ((ClassName) typeName).simpleName();
 
-        if (simpleName.equals(Address.class.getSimpleName())) {
+        if (simpleName.equals("Address")) {
             return TypeName.get(String.class);
         } else if (simpleName.startsWith("Uint")) {
             return TypeName.get(BigInteger.class);
         } else if (simpleName.startsWith("Int")) {
             return TypeName.get(BigInteger.class);
-        } else if (simpleName.equals(Utf8String.class.getSimpleName())) {
+        } else if (simpleName.equals("Utf8String")) {
             return TypeName.get(String.class);
         } else if (simpleName.startsWith("Bytes")) {
             return TypeName.get(byte[].class);
-        } else if (simpleName.equals(DynamicBytes.class.getSimpleName())) {
+        } else if (simpleName.equals("DynamicBytes")) {
             return TypeName.get(byte[].class);
-        } else if (simpleName.equals(Bool.class.getSimpleName())) {
+        } else if (simpleName.equals("Bool")) {
             return TypeName.get(Boolean.class);  // boolean cannot be a parameterized type
         } else {
             throw new UnsupportedOperationException(
@@ -615,7 +615,7 @@ public class SolidityFunctionWrapper extends Generator{
         }
 
         String simpleName = ((ClassName) typeName).simpleName();
-        if (simpleName.equals(Utf8String.class.getSimpleName())) {
+        if (simpleName.equals("Utf8String")) {
             return TypeName.get(byte[].class);
         } else {
             return getNativeType(typeName);
