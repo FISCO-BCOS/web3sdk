@@ -109,12 +109,12 @@ public class JsonRpc2_0Web3j implements Web3j {
     }
     
     @Override
-    public Request<?, MinerList> getMinerList() {
+    public Request<?, SealerList> getSealerList() {
     	return new Request<>(
-    			"getMinerList",
+    			"getSealerList",
     			Arrays.asList(groupId),
     			web3jService,
-    			MinerList.class);
+    			SealerList.class);
     }
     
     @Override
