@@ -616,7 +616,7 @@ public class Util
         for (int i = 0, j = 0, l = hex.length(); i < l; i++, j++) {
             String swap = "" + arr[i++] + arr[i];
             int byteint = Integer.parseInt(swap, 16) & 0xFF;
-            b[j] = Integer.valueOf(byteint).byteValue();
+            b[j] = (byte)byteint;
         }
         return b;
     }
