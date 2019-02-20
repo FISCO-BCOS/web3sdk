@@ -205,8 +205,9 @@ public class PingTest {
         Integer count = 0;
         while(true) {
             try {
-                Thread.sleep(5 * 1000);
+                Thread.sleep(5 * 1000L);
             } catch (InterruptedException e) {
+            	Thread.currentThread().interrupt();
                 System.out.println("Thread exception");
                 e.printStackTrace();
 

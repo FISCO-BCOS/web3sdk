@@ -10,7 +10,6 @@ import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameterName;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock;
 import org.fisco.bcos.web3j.protocol.core.methods.response.SyncStatus;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
-import org.fisco.bcos.web3j.tx.ClientTransactionManager;
 import org.fisco.bcos.web3j.tx.RawTransactionManager;
 import org.fisco.bcos.web3j.tx.TransactionManager;
 import org.fisco.bcos.web3j.tx.gas.DefaultGasProvider;
@@ -26,7 +25,7 @@ import java.util.List;
  */
 public class CnsService {
     static Logger logger = LoggerFactory.getLogger(CnsService.class);
-    static final long DEFAULT_SYNC_THRESHOLD = 1000 * 60 * 3;
+    static final long DEFAULT_SYNC_THRESHOLD = 1000 * 60 * 3L;
     static final String REVERSE_NAME_SUFFIX = ".addr.reverse";
     public static final int MAX_VERSION_LENGTH = 40;
 

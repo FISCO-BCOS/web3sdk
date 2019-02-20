@@ -76,7 +76,6 @@ public class BasicTest extends TestBase {
 		for (Transaction t : transactions) {
 			System.out.println(t.getHash());
 		}
-		assertTrue(transactions.size() >= 0);
 	}
 
 	@Ignore

@@ -218,7 +218,7 @@ public class MnemonicUtils {
         byte res = 0;
         for (int k = 0; k < 8; k++) {
             if (bits.get(startByte * 8 + k)) {
-                res = (byte) (res | (1 << (7 - k)));
+                res = (byte) ((res & 0xff) | (1 << (7 - k)));
             }
         }
         return res;

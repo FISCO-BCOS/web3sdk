@@ -88,7 +88,16 @@ public class ConsoleImpl implements ConsoleFace {
 		web3j = Web3j.build(channelEthereumService, groupID);
 
 	}
-
+	@Override
+	public void close()
+	{
+		try {
+			channelEthereumService.close();
+			System.exit(0);
+		} catch (IOException e) {
+			System.out.println(e.getMessage());;
+		}
+	}
 	private int setGroupID(String[] args, int groupID) {
 		try {
 			groupID = Integer.parseInt(args[0]);
@@ -120,9 +129,10 @@ public class ConsoleImpl implements ConsoleFace {
 
 	@Override
 	public void help(String[] params) {
-		if (promptNoParams(params, "h")) {
+		if (HelpInfo.promptNoParams(params, "h")) {
 			return;
-		} else if (params.length > 2) {
+		}
+		if (params.length > 2) {
 			HelpInfo.promptHelp("h");
 			return;
 		}
@@ -191,26 +201,9 @@ public class ConsoleImpl implements ConsoleFace {
 		System.out.println();
 	}
 
-	private boolean promptNoParams(String[] params, String funcName) {
-		if (params.length == 2) {
-			if ("-h".equals(params[1]) || "--help".equals(params[1])) {
-				HelpInfo.helpNoParams(funcName);
-				return true;
-			} else {
-				HelpInfo.promptHelp(funcName);
-				return true;
-			}
-		} else if (params.length > 2) {
-			HelpInfo.promptHelp(funcName);
-			return true;
-		} else {
-			return false;
-		}
-	}
-
 	@Override
 	public void getClientVersion(String[] params) throws IOException {
-		if (promptNoParams(params, "gcv")) {
+		if (HelpInfo.promptNoParams(params, "gcv")) {
 			return;
 		}
 		String clientVersion = web3j.getClientVersion().sendForReturnString();
@@ -220,7 +213,7 @@ public class ConsoleImpl implements ConsoleFace {
 	
 	@Override
 	public void getBlockNumber(String[] params) throws IOException {
-		if (promptNoParams(params, "gbn")) {
+		if (HelpInfo.promptNoParams(params, "gbn")) {
 			return;
 		}
 		String blockNumber = web3j.getBlockNumber().sendForReturnString();
@@ -230,7 +223,7 @@ public class ConsoleImpl implements ConsoleFace {
 
 	@Override
 	public void getPbftView(String[] params) throws IOException {
-		if (promptNoParams(params, "gpv")) {
+		if (HelpInfo.promptNoParams(params, "gpv")) {
 			return;
 		}
 		String pbftView = web3j.getPbftView().sendForReturnString();
@@ -240,7 +233,7 @@ public class ConsoleImpl implements ConsoleFace {
 
 	@Override
 	public void getObserverList(String[] params) throws IOException {
-		if (promptNoParams(params, "gol")) {
+		if (HelpInfo.promptNoParams(params, "gol")) {
 			return;
 		}
 		List<String> observerList = web3j.getObserverList().send().getResult();
@@ -256,7 +249,7 @@ public class ConsoleImpl implements ConsoleFace {
 
 	@Override
 	public void getSealerList(String[] params) throws IOException {
-		if (promptNoParams(params, "gsl")) {
+		if (HelpInfo.promptNoParams(params, "gsl")) {
 			return;
 		}
 		List<String> sealerList = web3j.getSealerList().send().getResult();
@@ -272,7 +265,7 @@ public class ConsoleImpl implements ConsoleFace {
 
 	@Override
 	public void getConsensusStatus(String[] params) throws IOException {
-		if (promptNoParams(params, "gcs")) {
+		if (HelpInfo.promptNoParams(params, "gcs")) {
 			return;
 		}
 		String consensusStatus = web3j.getConsensusStatus().sendForReturnString();
@@ -282,7 +275,7 @@ public class ConsoleImpl implements ConsoleFace {
 
 	@Override
 	public void getSyncStatus(String[] params) throws IOException {
-		if (promptNoParams(params, "gss")) {
+		if (HelpInfo.promptNoParams(params, "gss")) {
 			return;
 		}
 		String syncStatus = web3j.getSyncStatus().sendForReturnString();
@@ -292,7 +285,7 @@ public class ConsoleImpl implements ConsoleFace {
 	
 	@Override
 	public void getPeers(String[] params) throws IOException {
-		if (promptNoParams(params, "gps")) {
+		if (HelpInfo.promptNoParams(params, "gps")) {
 			return;
 		}
 		String peers = web3j.getPeers().sendForReturnString();
@@ -302,7 +295,7 @@ public class ConsoleImpl implements ConsoleFace {
 
 	@Override
 	public void getNodeIDList(String[] params) throws IOException {
-		if (promptNoParams(params, "gnl")) {
+		if (HelpInfo.promptNoParams(params, "gnl")) {
 			return;
 		}
 		List<String> nodeIDs = web3j.getNodeIDList().send().getResult();
@@ -312,7 +305,7 @@ public class ConsoleImpl implements ConsoleFace {
 
 	@Override
 	public void getGroupPeers(String[] params) throws IOException {
-		if (promptNoParams(params, "ggp")) {
+		if (HelpInfo.promptNoParams(params, "ggp")) {
 			return;
 		}
 		List<String> groupPeers = web3j.getGroupPeers().send().getResult();
@@ -322,7 +315,7 @@ public class ConsoleImpl implements ConsoleFace {
 
 	@Override
 	public void getGroupList(String[] params) throws IOException {
-		if (promptNoParams(params, "ggl")) {
+		if (HelpInfo.promptNoParams(params, "ggl")) {
 			return;
 		}
 		List<String> groupList = web3j.getGroupList().send().getResult();
@@ -335,7 +328,8 @@ public class ConsoleImpl implements ConsoleFace {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("gbbh");
 			return;
-		} else if (params.length > 3) {
+		}
+		if (params.length > 3) {
 			HelpInfo.promptHelp("gbbh");
 			return;
 		}
@@ -369,7 +363,8 @@ public class ConsoleImpl implements ConsoleFace {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("gbbn");
 			return;
-		} else if (params.length > 3) {
+		}
+		if (params.length > 3) {
 			HelpInfo.promptHelp("gbbn");
 			return;
 		}
@@ -383,7 +378,7 @@ public class ConsoleImpl implements ConsoleFace {
 		BigInteger blockNumber1 = new BigInteger(blockNumberStr1);
 		String blockNumberStr2 = web3j.getBlockNumber().sendForReturnString();
 		BigInteger blockNumber2 = Numeric.decodeQuantity(blockNumberStr2);
-		if (blockNumber1.compareTo(blockNumber2) == 1) {
+		if (blockNumber1.compareTo(blockNumber2) > 0) {
 			System.out.println("BlockNumber does not exist.");
 			System.out.println();
 			return;
@@ -411,7 +406,8 @@ public class ConsoleImpl implements ConsoleFace {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("ghbn");
 			return;
-		} else if (params.length > 2) {
+		}
+		if (params.length > 2) {
 			HelpInfo.promptHelp("ghbn");
 			return;
 		}
@@ -424,7 +420,7 @@ public class ConsoleImpl implements ConsoleFace {
 			return;
 		BigInteger blockNumber = new BigInteger(blockNumberStr);
 		BigInteger getBlockNumber = Numeric.decodeQuantity(web3j.getBlockNumber().sendForReturnString());
-		if (blockNumber.compareTo(getBlockNumber) == 1) {
+		if (blockNumber.compareTo(getBlockNumber) > 0) {
 			System.out.println("This block number doesn't exsit.");
 			System.out.println();
 			return;
@@ -439,7 +435,8 @@ public class ConsoleImpl implements ConsoleFace {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("gtbh");
 			return;
-		} else if (params.length > 2) {
+		}
+		if (params.length > 2) {
 			HelpInfo.promptHelp("gtbh");
 			return;
 		}
@@ -464,7 +461,8 @@ public class ConsoleImpl implements ConsoleFace {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("gthi");
 			return;
-		} else if (params.length > 3) {
+		}
+		if (params.length > 3) {
 			HelpInfo.promptHelp("gthi");
 			return;
 		}
@@ -493,7 +491,8 @@ public class ConsoleImpl implements ConsoleFace {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("gtni");
 			return;
-		} else if (params.length > 3) {
+		}
+		if (params.length > 3) {
 			HelpInfo.promptHelp("gtni");
 			return;
 		}
@@ -525,7 +524,8 @@ public class ConsoleImpl implements ConsoleFace {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("gtr");
 			return;
-		} else if (params.length > 2) {
+		}
+		if (params.length > 2) {
 			HelpInfo.promptHelp("gtr");
 			return;
 		}
@@ -547,7 +547,7 @@ public class ConsoleImpl implements ConsoleFace {
 
 	@Override
 	public void getPendingTxSize(String[] params) throws IOException {
-		if (promptNoParams(params, "gpts")) {
+		if (HelpInfo.promptNoParams(params, "gpts")) {
 			return;
 		}
 		String size = web3j.getPendingTxSize().sendForReturnString();
@@ -557,7 +557,7 @@ public class ConsoleImpl implements ConsoleFace {
 
 	@Override
 	public void getPendingTransactions(String[] params) throws IOException {
-		if (promptNoParams(params, "gpt")) {
+		if (HelpInfo.promptNoParams(params, "gpt")) {
 			return;
 		}
 		String pendingTransactions = web3j.getPendingTransaction().sendForReturnString();
@@ -573,7 +573,8 @@ public class ConsoleImpl implements ConsoleFace {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("gc");
 			return;
-		} else if (params.length > 2) {
+		}
+		if (params.length > 2) {
 			HelpInfo.promptHelp("gc");
 			return;
 		}
@@ -597,7 +598,7 @@ public class ConsoleImpl implements ConsoleFace {
 
 	@Override
 	public void getTotalTransactionCount(String[] params) throws IOException {
-		if (promptNoParams(params, "gtc")) {
+		if (HelpInfo.promptNoParams(params, "gtc")) {
 			return;
 		}
 		String transactionCount = web3j.getTotalTransactionCount().sendForReturnString();
@@ -613,7 +614,8 @@ public class ConsoleImpl implements ConsoleFace {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("d");
 			return;
-		} else if (params.length > 2) {
+		}
+		if (params.length > 2) {
 			HelpInfo.promptHelp("d");
 			return;
 		}
@@ -697,7 +699,8 @@ public class ConsoleImpl implements ConsoleFace {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("dbc");
 			return;
-		} else if (params.length > 3) {
+		}
+		if (params.length > 3) {
 			HelpInfo.promptHelp("dbc");
 			return;
 		}
@@ -824,7 +827,8 @@ public class ConsoleImpl implements ConsoleFace {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("qcs");
 			return;
-		} else if (params.length > 3) {
+		}
+		if (params.length > 3) {
 			HelpInfo.promptHelp("qcs");
 			return;
 		}
@@ -868,7 +872,8 @@ public class ConsoleImpl implements ConsoleFace {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("as");
 			return;
-		} else if (params.length > 2) {
+		}
+		if (params.length > 2) {
 			HelpInfo.promptHelp("as");
 			return;
 		}
@@ -894,7 +899,8 @@ public class ConsoleImpl implements ConsoleFace {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("ao");
 			return;
-		} else if (params.length > 2) {
+		}
+		if (params.length > 2) {
 			HelpInfo.promptHelp("ao");
 			return;
 		}
@@ -919,7 +925,8 @@ public class ConsoleImpl implements ConsoleFace {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("rn");
 			return;
-		} else if (params.length > 2) {
+		}
+		if (params.length > 2) {
 			HelpInfo.promptHelp("rn");
 			return;
 		}
@@ -944,7 +951,8 @@ public class ConsoleImpl implements ConsoleFace {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("aum");
 			return;
-		} else if (params.length > 3) {
+		}
+		if (params.length > 3) {
 			HelpInfo.promptHelp("aum");
 			return;
 		}
@@ -973,7 +981,8 @@ public class ConsoleImpl implements ConsoleFace {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("rum");
 			return;
-		} else if (params.length > 3) {
+		}
+		if (params.length > 3) {
 			HelpInfo.promptHelp("rum");
 			return;
 		}
@@ -1002,7 +1011,8 @@ public class ConsoleImpl implements ConsoleFace {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("qum");
 			return;
-		} else if (params.length > 2) {
+		}
+		if (params.length > 2) {
 			HelpInfo.promptHelp("qum");
 			return;
 		}
@@ -1021,7 +1031,8 @@ public class ConsoleImpl implements ConsoleFace {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("adm");
 			return;
-		} else if (params.length > 2) {
+		}
+		if (params.length > 2) {
 			HelpInfo.promptHelp("adm");
 			return;
 		}
@@ -1044,7 +1055,8 @@ public class ConsoleImpl implements ConsoleFace {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("rdm");
 			return;
-		} else if (params.length > 2) {
+		}
+		if (params.length > 2) {
 			HelpInfo.promptHelp("rdm");
 			return;
 		}
@@ -1064,7 +1076,7 @@ public class ConsoleImpl implements ConsoleFace {
 	
 	@Override
 	public void queryDeployAndCreateManager(String[] params) throws Exception {
-		if (promptNoParams(params, "qdm")) {
+		if (HelpInfo.promptNoParams(params, "qdm")) {
 			return;
 		}
 		AuthorityService authorityTableService = new AuthorityService(web3j, credentials);
@@ -1077,7 +1089,8 @@ public class ConsoleImpl implements ConsoleFace {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("aam");
 			return;
-		} else if (params.length > 2) {
+		}
+		if (params.length > 2) {
 			HelpInfo.promptHelp("aam");
 			return;
 		}
@@ -1100,7 +1113,8 @@ public class ConsoleImpl implements ConsoleFace {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("ram");
 			return;
-		} else if (params.length > 2) {
+		}
+		if (params.length > 2) {
 			HelpInfo.promptHelp("ram");
 			return;
 		}
@@ -1120,7 +1134,7 @@ public class ConsoleImpl implements ConsoleFace {
 	
 	@Override
 	public void queryAuthorityManager(String[] params) throws Exception {
-		if (promptNoParams(params, "qam")) {
+		if (HelpInfo.promptNoParams(params, "qam")) {
 			return;
 		}
 		AuthorityService authorityTableService = new AuthorityService(web3j, credentials);
@@ -1133,7 +1147,8 @@ public class ConsoleImpl implements ConsoleFace {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("anm");
 			return;
-		} else if (params.length > 2) {
+		}
+		if (params.length > 2) {
 			HelpInfo.promptHelp("anm");
 			return;
 		}
@@ -1156,7 +1171,8 @@ public class ConsoleImpl implements ConsoleFace {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("rnm");
 			return;
-		} else if (params.length > 2) {
+		}
+		if (params.length > 2) {
 			HelpInfo.promptHelp("rnm");
 			return;
 		}
@@ -1176,7 +1192,7 @@ public class ConsoleImpl implements ConsoleFace {
 	
 	@Override
 	public void queryNodeManager(String[] params) throws Exception {
-		if (promptNoParams(params, "qnm")) {
+		if (HelpInfo.promptNoParams(params, "qnm")) {
 			return;
 		}
 		AuthorityService authorityTableService = new AuthorityService(web3j, credentials);
@@ -1189,7 +1205,8 @@ public class ConsoleImpl implements ConsoleFace {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("acm");
 			return;
-		} else if (params.length > 2) {
+		}
+		if (params.length > 2) {
 			HelpInfo.promptHelp("acm");
 			return;
 		}
@@ -1212,7 +1229,8 @@ public class ConsoleImpl implements ConsoleFace {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("rcm");
 			return;
-		} else if (params.length > 2) {
+		}
+		if (params.length > 2) {
 			HelpInfo.promptHelp("rcm");
 			return;
 		}
@@ -1232,7 +1250,7 @@ public class ConsoleImpl implements ConsoleFace {
 	
 	@Override
 	public void queryCNSManager(String[] params) throws Exception {
-		if (promptNoParams(params, "qcm")) {
+		if (HelpInfo.promptNoParams(params, "qcm")) {
 			return;
 		}
 		AuthorityService authorityTableService = new AuthorityService(web3j, credentials);
@@ -1245,7 +1263,8 @@ public class ConsoleImpl implements ConsoleFace {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("asm");
 			return;
-		} else if (params.length > 2) {
+		}
+		if (params.length > 2) {
 			HelpInfo.promptHelp("asm");
 			return;
 		}
@@ -1268,7 +1287,8 @@ public class ConsoleImpl implements ConsoleFace {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("rsm");
 			return;
-		} else if (params.length > 2) {
+		}
+		if (params.length > 2) {
 			HelpInfo.promptHelp("rsm");
 			return;
 		}
@@ -1288,7 +1308,7 @@ public class ConsoleImpl implements ConsoleFace {
 	
 	@Override
 	public void querySysConfigManager(String[] params) throws Exception {
-		if (promptNoParams(params, "qsm")) {
+		if (HelpInfo.promptNoParams(params, "qsm")) {
 			return;
 		}
 		AuthorityService authorityTableService = new AuthorityService(web3j, credentials);
@@ -1301,7 +1321,8 @@ public class ConsoleImpl implements ConsoleFace {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("ssc");
 			return;
-		} else if (params.length > 3) {
+		}
+		if (params.length > 3) {
 			HelpInfo.promptHelp("ssc");
 			return;
 		}
@@ -1328,7 +1349,8 @@ public class ConsoleImpl implements ConsoleFace {
 		if (params.length < 2) {
 			HelpInfo.promptHelp("gsc");
 			return;
-		} else if (params.length > 2) {
+		}
+		if (params.length > 2) {
 			HelpInfo.promptHelp("gsc");
 			return;
 		}
@@ -1341,18 +1363,6 @@ public class ConsoleImpl implements ConsoleFace {
 		String value = web3j.getSystemConfigByKey(key).sendForReturnString();
 		System.out.println(value);
 		System.out.println();
-	}
-
-	@Override
-	public void quit(String[] params) throws IOException {
-		if (promptNoParams(params, "q")) {
-			return;
-		} else if (params.length > 2) {
-			HelpInfo.promptHelp("q");
-			return;
-		}
-		channelEthereumService.close();
-		System.exit(0);
 	}
 	
 	private void printAuthorityInfo(List<AuthorityInfo> authoritys) {
