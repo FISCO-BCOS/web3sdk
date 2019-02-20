@@ -30,7 +30,7 @@ public class Util
 	{
 		int num = 0;
 		int temp;
-		temp = (0x000000ff & (bytes[0])) << 0;
+		temp = (0x000000ff & (bytes[0]));
 		num = num | temp;
 		temp = (0x000000ff & (bytes[1])) << 8;
 		num = num | temp;
@@ -179,7 +179,7 @@ public class Util
 		for (int i = 0; i < length; i++) 
 		{
 			int pos = i * 2;
-			d[i] = (byte) (charToByte(hexChars[pos]) << 4 | charToByte(hexChars[pos + 1]));
+			d[i] = (byte) (charToByte(hexChars[pos]) << 4 | (charToByte(hexChars[pos + 1])  & 0xff));
 		}
 		return d;
 	}
@@ -378,7 +378,7 @@ public class Util
             } else {
                 algorism = c - 55;
             }
-            result += Math.pow(16, max - i) * algorism;
+            result += Math.pow(16, max - (double)i) * algorism;
         }
         return result;
     }
@@ -518,7 +518,7 @@ public class Util
         for (int i = max; i > 0; i--) {
             char c = binary.charAt(i - 1);
             int algorism = c - '0';
-            result += Math.pow(2, max - i) * algorism;
+            result += Math.pow(2, max - (double)i) * algorism;
         }
         return result;
     }
@@ -616,7 +616,7 @@ public class Util
         for (int i = 0, j = 0, l = hex.length(); i < l; i++, j++) {
             String swap = "" + arr[i++] + arr[i];
             int byteint = Integer.parseInt(swap, 16) & 0xFF;
-            b[j] = new Integer(byteint).byteValue();
+            b[j] = Integer.valueOf(byteint).byteValue();
         }
         return b;
     }

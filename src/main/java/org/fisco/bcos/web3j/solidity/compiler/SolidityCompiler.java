@@ -207,6 +207,7 @@ public class SolidityCompiler {
                     try {
                         wait();
                     } catch (InterruptedException e) {
+                    	Thread.currentThread().interrupt();
                         throw new RuntimeException(e);
                     }
                 }
@@ -261,6 +262,7 @@ public class SolidityCompiler {
         try {
             process.waitFor();
         } catch (InterruptedException e) {
+        	Thread.currentThread().interrupt();
             throw new RuntimeException(e);
         }
         boolean success = process.exitValue() == 0;
@@ -331,6 +333,7 @@ public class SolidityCompiler {
         try {
             process.waitFor();
         } catch (InterruptedException e) {
+        	Thread.currentThread().interrupt();
             throw new RuntimeException(e);
         }
         boolean success = process.exitValue() == 0;
@@ -358,6 +361,7 @@ public class SolidityCompiler {
         try {
             process.waitFor();
         } catch (InterruptedException e) {
+        	Thread.currentThread().interrupt();
             throw new RuntimeException(e);
         }
         if (process.exitValue() == 0) {
