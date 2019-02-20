@@ -629,7 +629,13 @@ public class ConsoleImpl implements ConsoleFace {
         String name = params[1];
         processContract(name);
         contractName = ConsoleUtils.PACKAGENAME + "." + name;
-        contractClass = ContractClassFactory.getContractClass(contractName);
+        try {
+			contractClass = ContractClassFactory.getContractClass(contractName);
+		} catch (Exception e) {
+			System.out.println("There is no " + name +".sol" + " in the directory of solidity/contracts.");
+			System.out.println();
+			return;
+		}
         Method deploy = contractClass.getMethod("deploy", Web3j.class, Credentials.class, BigInteger.class,
                 BigInteger.class);
         remoteCall = (RemoteCall<?>) deploy.invoke(null, web3j, credentials, gasPrice, gasLimit);
