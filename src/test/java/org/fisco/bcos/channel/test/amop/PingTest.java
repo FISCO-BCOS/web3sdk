@@ -216,6 +216,10 @@ public class PingTest {
 
             pingTest.check();
             ++count;
+            if(count == Integer.MAX_VALUE)
+            {
+            	break;
+            }
 
             pingTest.outputSummary();
         }
