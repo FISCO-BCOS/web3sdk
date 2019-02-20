@@ -172,9 +172,9 @@ test {
 //				}
 //				developers {
 //					developer {
-//						id 'shuoyanhe'
-//						name 'shuoyanhe'
-//						email 'shuoyanhe@webank.com'
+//						id 'zhangsan'
+//						name 'zhangsan'
+//						email 'zhangsan@gmail.com'
 //					}
 //				}
 //			}
