@@ -47,7 +47,8 @@ public class ConsoleImpl implements ConsoleFace {
 	private RemoteCall<?> remoteCall;
 	private String privateKey = "";
 	private ChannelEthereumService channelEthereumService = new ChannelEthereumService();
-
+	private final String CONTRACT_PACKAGE = "org.fisco.bcos.temp.";
+	
 	public void init(String[] args) {
 		ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
 		service = context.getBean(Service.class);
@@ -103,15 +104,15 @@ public class ConsoleImpl implements ConsoleFace {
 		ConsoleUtils.doubleLine();
 		System.out.println("Welcome to FISCO BCOS console!");
 		System.out.println("Type 'help' or 'h' for help. Type 'quit' or 'q' to quit console.");
-		String logo = " ________  ______   ______    ______    ______         _______    ______    ______    ______  \n"
-				+ "|        \\|      \\ /      \\  /      \\  /      \\       |       \\  /      \\  /      \\  /      \\ \n"
-				+ "| $$$$$$$$ \\$$$$$$|  $$$$$$\\|  $$$$$$\\|  $$$$$$\\      | $$$$$$$\\|  $$$$$$\\|  $$$$$$\\|  $$$$$$\\\n"
-				+ "| $$__      | $$  | $$___\\$$| $$   \\$$| $$  | $$      | $$__/ $$| $$   \\$$| $$  | $$| $$___\\$$\n"
-				+ "| $$  \\     | $$   \\$$    \\ | $$      | $$  | $$      | $$    $$| $$      | $$  | $$ \\$$    \\ \n"
-				+ "| $$$$$     | $$   _\\$$$$$$\\| $$   __ | $$  | $$      | $$$$$$$\\| $$   __ | $$  | $$ _\\$$$$$$\\\n"
-				+ "| $$       _| $$_ |  \\__| $$| $$__/  \\| $$__/ $$      | $$__/ $$| $$__/  \\| $$__/ $$|  \\__| $$\n"
-				+ "| $$      |   $$ \\ \\$$    $$ \\$$    $$ \\$$    $$      | $$    $$ \\$$    $$ \\$$    $$ \\$$    $$\n"
-				+ " \\$$       \\$$$$$$  \\$$$$$$   \\$$$$$$   \\$$$$$$        \\$$$$$$$   \\$$$$$$   \\$$$$$$   \\$$$$$$";
+		String logo = " ________ ______  ______   ______   ______       _______   ______   ______   ______  \n" + 
+				"|        |      \\/      \\ /      \\ /      \\     |       \\ /      \\ /      \\ /      \\ \n" + 
+				"| $$$$$$$$\\$$$$$|  $$$$$$|  $$$$$$|  $$$$$$\\    | $$$$$$$|  $$$$$$|  $$$$$$|  $$$$$$\\\n" + 
+				"| $$__     | $$ | $$___\\$| $$   \\$| $$  | $$    | $$__/ $| $$   \\$| $$  | $| $$___\\$$\n" + 
+				"| $$  \\    | $$  \\$$    \\| $$     | $$  | $$    | $$    $| $$     | $$  | $$\\$$    \\ \n" + 
+				"| $$$$$    | $$  _\\$$$$$$| $$   __| $$  | $$    | $$$$$$$| $$   __| $$  | $$_\\$$$$$$\\\n" + 
+				"| $$      _| $$_|  \\__| $| $$__/  | $$__/ $$    | $$__/ $| $$__/  | $$__/ $|  \\__| $$\n" + 
+				"| $$     |   $$ \\\\$$    $$\\$$    $$\\$$    $$    | $$    $$\\$$    $$\\$$    $$\\$$    $$\n" + 
+				" \\$$      \\$$$$$$ \\$$$$$$  \\$$$$$$  \\$$$$$$      \\$$$$$$$  \\$$$$$$  \\$$$$$$  \\$$$$$$";
 		System.out.println(logo);
 		System.out.println();
 		ConsoleUtils.doubleLine();
@@ -130,10 +131,10 @@ public class ConsoleImpl implements ConsoleFace {
 		sb.append("help(h)                                       Provide help information.\n");
 		sb.append("getBlockNumber(gbn)                           Query the number of most recent block.\n");
 		sb.append("getPbftView(gpv)                              Query the pbft view of node.\n");
-		sb.append("getMinerList(gml)                             Query nodeID list for miner nodes.\n");
+		sb.append("getSealerList(gsl)                            Query nodeID list for sealer nodes.\n");
 		sb.append("getObserverList(gol)                          Query nodeID list for observer nodes.\n");
 		sb.append("getNodeIDList(gnl)                            Query nodeID list for all connected nodes.\n");
-		sb.append("getGroupPeers(ggp)                            Query nodeID list for miner and observer nodes.\n");
+		sb.append("getGroupPeers(ggp)                            Query nodeID list for sealer and observer nodes.\n");
 		sb.append("getPeers(gps)                                 Query peers currently connected to the client.\n");
 		sb.append("getConsensusStatus(gcs)                       Query consensus status.\n");
 		sb.append("getSyncStatus(gss)                            Query sync status.\n");
@@ -161,14 +162,29 @@ public class ConsoleImpl implements ConsoleFace {
 				"callByCNS(cbc)                                Call a contract by a function and paramters by CNS.\n");
 		sb.append(
 				"queryCNS(qcs)                                 Query cns information by contract name and contract version.\n");
-		sb.append("addMiner(am)                                  Add a miner node.\n");
+		sb.append("addSealer(as)                                 Add a sealer node.\n");
 		sb.append("addObserver(ao)                               Add an observer node.\n");
 		sb.append("removeNode(rn)                                Remove a node.\n");
-		sb.append("addAuthority(aa)                              Add authority for table by address.\n");
-		sb.append("removeAuthority(ra)                           Remove authority for table by address.\n");
-		sb.append("queryAuthority(qa)                            Query authority information.\n");
 		sb.append("setSystemConfigByKey(ssc)                     Set a system config.\n");
 		sb.append("getSystemConfigByKey(gsc)                     Query a system config value by key.\n");
+		sb.append("addUserTableManager(aum)                      Add authority for user table by table name and address.\n");
+		sb.append("removeUserTableManager(rum)                   Remove authority for user table by table name and address.\n");
+		sb.append("queryUserTableManager(qum)                    Query authority for user table information.\n");
+		sb.append("addDeployAndCreateManager(adm)                Add authority for deploy contract and create user table by address.\n");
+		sb.append("removeDeployAndCreateManager(rdm)             Remove authority for deploy contract and create user table by address.\n");
+		sb.append("queryDeployAndCreateManager(qdm)              Query authority information for deploy contract and create user table.\n");
+		sb.append("addAuthorityManager(aam)                      Add authority for authority configuration by address.\n");
+		sb.append("removeAuthorityManager(ram)                   Remove authority for authority configuration by address.\n");
+		sb.append("queryAuthorityManager(qam)                    Query authority information for authority configuration.\n");
+		sb.append("addNodeManager(anm)                           Add authority for node configuration by address.\n");
+		sb.append("removeNodeManager(rnm)                        Remove authority for node configuration by address.\n");
+		sb.append("queryNodeManager(qnm)                         Query authority information for node configuration.\n");
+		sb.append("addCNSManager(acm)                            Add authority for CNS by address.\n");
+		sb.append("removeCNSManager(rcm)                         Remove authority for CNS by address.\n");
+		sb.append("queryCNSManager(qcm)                          Query authority information for CNS.\n");
+		sb.append("addSysConfigManager(asm)                      Add authority for system configuration by address.\n");
+		sb.append("removeSysConfigManager(rsm)                   Remove authority for system configuration by address.\n");
+		sb.append("querySysConfigManager(qsm)                    Query authority information for system configuration.\n");
 		sb.append("quit(q)                                       Quit console.");
 		System.out.println(sb.toString());
 		ConsoleUtils.singleLine();
@@ -239,16 +255,16 @@ public class ConsoleImpl implements ConsoleFace {
 	}
 
 	@Override
-	public void getMinerList(String[] params) throws IOException {
-		if (promptNoParams(params, "gml")) {
+	public void getSealerList(String[] params) throws IOException {
+		if (promptNoParams(params, "gsl")) {
 			return;
 		}
-		List<String> minerList = web3j.getMinerList().send().getResult();
-		String miners = minerList.toString();
-		if ("[]".equals(miners)) {
+		List<String> sealerList = web3j.getSealerList().send().getResult();
+		String sealers = sealerList.toString();
+		if ("[]".equals(sealers)) {
 			System.out.println("[]");
 		} else {
-			ConsoleUtils.printJson(miners);
+			ConsoleUtils.printJson(sealers);
 		}
 		System.out.println();
 
@@ -605,7 +621,7 @@ public class ConsoleImpl implements ConsoleFace {
 			HelpInfo.deployHelp();
 			return;
 		}
-		contractName = Common.CONTRACT_PACKAGE + params[1];
+		contractName = CONTRACT_PACKAGE + params[1];
 		contractClass = ContractClassFactory.getContractClass(contractName);
 		Method deploy = contractClass.getMethod("deploy", Web3j.class, Credentials.class, BigInteger.class,
 				BigInteger.class);
@@ -630,7 +646,7 @@ public class ConsoleImpl implements ConsoleFace {
 			HelpInfo.promptHelp("c");
 			return;
 		}
-		contractName = Common.CONTRACT_PACKAGE + params[1];
+		contractName = CONTRACT_PACKAGE + params[1];
 		contractClass = ContractClassFactory.getContractClass(contractName);
 		Method load = contractClass.getMethod("load", String.class, Web3j.class, Credentials.class, BigInteger.class,
 				BigInteger.class);
@@ -694,7 +710,7 @@ public class ConsoleImpl implements ConsoleFace {
 			return;
 		}
 		AuthorityService authorityTableService = new AuthorityService(web3j, credentials);
-		List<AuthorityInfo> authoritys = authorityTableService.query(Common.SYS_CNS);
+		List<AuthorityInfo> authoritys = authorityTableService.queryCNSManager();
 		boolean flag = false;
 		if (authoritys.size() == 0) {
 			flag = true;
@@ -719,7 +735,7 @@ public class ConsoleImpl implements ConsoleFace {
 			System.out.println();
 			return;
 		}
-		contractName = Common.CONTRACT_PACKAGE + params[1];
+		contractName = CONTRACT_PACKAGE + params[1];
 		contractClass = ContractClassFactory.getContractClass(contractName);
 		Method deploy = contractClass.getMethod("deploy", Web3j.class, Credentials.class, BigInteger.class,
 				BigInteger.class);
@@ -754,7 +770,7 @@ public class ConsoleImpl implements ConsoleFace {
 			HelpInfo.promptHelp("cbc");
 			return;
 		}
-		contractName = Common.CONTRACT_PACKAGE + params[1];
+		contractName = CONTRACT_PACKAGE + params[1];
 		contractClass = ContractClassFactory.getContractClass(contractName);
 		Method load = contractClass.getMethod("load", String.class, Web3j.class, Credentials.class, BigInteger.class,
 				BigInteger.class);
@@ -832,7 +848,7 @@ public class ConsoleImpl implements ConsoleFace {
 			System.out.println();
 			return;
 		}
-		ConsoleUtils.singleLine();
+		ConsoleUtils.singleLineForTable();
 		String[] headers = { "version", "address" };
 		int size = cnsInfos.size();
 		String[][] data = new String[size][2];
@@ -843,29 +859,29 @@ public class ConsoleImpl implements ConsoleFace {
 		ColumnFormatter<String> cf = ColumnFormatter.text(Alignment.CENTER, 45);
 		Table table = Table.of(headers, data, cf);
 		System.out.println(table);
-		ConsoleUtils.singleLine();
+		ConsoleUtils.singleLineForTable();
 		System.out.println();
 	}
 
 	@Override
-	public void addMiner(String[] params) throws Exception {
+	public void addSealer(String[] params) throws Exception {
 		if (params.length < 2) {
-			HelpInfo.promptHelp("am");
+			HelpInfo.promptHelp("as");
 			return;
 		} else if (params.length > 2) {
-			HelpInfo.promptHelp("am");
+			HelpInfo.promptHelp("as");
 			return;
 		}
 		String nodeID = params[1];
 		if ("-h".equals(nodeID) || "--help".equals(nodeID)) {
-			HelpInfo.addMinerHelp();
+			HelpInfo.addSealerHelp();
 			return;
 		}
 		if (nodeID.length() != 128) {
 			ConsoleUtils.printJson(PrecompiledCommon.transferToJson(-40));
 		} else {
 			ConsensusService consensusService = new ConsensusService(web3j, credentials);
-			String result = consensusService.addMiner(nodeID);
+			String result = consensusService.addSealer(nodeID);
 			ConsoleUtils.printJson(result);
 		}
 		System.out.println();
@@ -924,21 +940,21 @@ public class ConsoleImpl implements ConsoleFace {
 	}
 
 	@Override
-	public void addAuthority(String[] params) throws Exception {
+	public void addUserTableManager(String[] params) throws Exception {
 		if (params.length < 2) {
-			HelpInfo.promptHelp("aa");
+			HelpInfo.promptHelp("aum");
 			return;
 		} else if (params.length > 3) {
-			HelpInfo.promptHelp("aa");
+			HelpInfo.promptHelp("aum");
 			return;
 		}
 		String tableName = params[1];
 		if ("-h".equals(tableName) || "--help".equals(tableName)) {
-			HelpInfo.addAuthorityHelp();
+			HelpInfo.addUserTableManagerHelp();
 			return;
 		}
 		if (params.length < 3) {
-			HelpInfo.promptHelp("aa");
+			HelpInfo.promptHelp("aum");
 			return;
 		}
 		String addr = params[2];
@@ -946,28 +962,28 @@ public class ConsoleImpl implements ConsoleFace {
 			return;
 		}
 		AuthorityService authority = new AuthorityService(web3j, credentials);
-		String result = authority.add(tableName, addr);
+		String result = authority.addUserTableManager(tableName, addr);
 		ConsoleUtils.printJson(result);
 		System.out.println();
 
 	}
 
 	@Override
-	public void removeAuthority(String[] params) throws Exception {
+	public void removeUserTableManager(String[] params) throws Exception {
 		if (params.length < 2) {
-			HelpInfo.promptHelp("ra");
+			HelpInfo.promptHelp("rum");
 			return;
 		} else if (params.length > 3) {
-			HelpInfo.promptHelp("ra");
+			HelpInfo.promptHelp("rum");
 			return;
 		}
 		String tableName = params[1];
 		if ("-h".equals(tableName) || "--help".equals(tableName)) {
-			HelpInfo.removeAuthorityHelp();
+			HelpInfo.removeUserTableManagerHelp();
 			return;
 		}
 		if (params.length < 3) {
-			HelpInfo.promptHelp("ra");
+			HelpInfo.promptHelp("rum");
 			return;
 		}
 		String addr = params[2];
@@ -975,48 +991,311 @@ public class ConsoleImpl implements ConsoleFace {
 			return;
 		}
 		AuthorityService authority = new AuthorityService(web3j, credentials);
-		String result = authority.remove(tableName, addr);
+		String result = authority.removeUserTableManager(tableName, addr);
 		ConsoleUtils.printJson(result);
 		System.out.println();
 
 	}
 
 	@Override
-	public void queryAuthority(String[] params) throws Exception {
+	public void queryUserTableManager(String[] params) throws Exception {
 		if (params.length < 2) {
-			HelpInfo.promptHelp("qa");
+			HelpInfo.promptHelp("qum");
 			return;
-		} else if (params.length > 3) {
-			HelpInfo.promptHelp("qa");
+		} else if (params.length > 2) {
+			HelpInfo.promptHelp("qum");
 			return;
 		}
 		String tableName = params[1];
 		if ("-h".equals(tableName) || "--help".equals(tableName)) {
-			HelpInfo.queryAuthorityHelp();
+			HelpInfo.queryUserTableManagerHelp();
 			return;
 		}
 		AuthorityService authorityTableService = new AuthorityService(web3j, credentials);
-		List<AuthorityInfo> authoritys = authorityTableService.query(tableName);
-		if (authoritys.isEmpty()) {
-			System.out.println("Empty set.");
-			System.out.println();
+		List<AuthorityInfo> authoritys = authorityTableService.queryUserTableManager(tableName);
+		printAuthorityInfo(authoritys);
+	}
+	
+	@Override
+	public void addDeployAndCreateManager(String[] params) throws Exception {
+		if (params.length < 2) {
+			HelpInfo.promptHelp("adm");
+			return;
+		} else if (params.length > 2) {
+			HelpInfo.promptHelp("adm");
 			return;
 		}
-		ConsoleUtils.singleLine();
-		String[] headers = { "address", "enable_num" };
-		int size = authoritys.size();
-		String[][] data = new String[size][2];
-		for (int i = 0; i < size; i++) {
-			data[i][0] = authoritys.get(i).getAddress();
-			data[i][1] = authoritys.get(i).getEnableNum();
+		String address = params[1];
+		if ("-h".equals(address) || "--help".equals(address)) {
+			HelpInfo.addDeployAndCreateManagerHelp();
+			return;
 		}
-		ColumnFormatter<String> cf = ColumnFormatter.text(Alignment.CENTER, 45);
-		Table table = Table.of(headers, data, cf);
-		System.out.println(table);
-		ConsoleUtils.singleLine();
+		if (ConsoleUtils.isInvalidAddress(address)) {
+			return;
+		}
+		AuthorityService authority = new AuthorityService(web3j, credentials);
+		String result = authority.addDeployAndCreateManager(address);
+		ConsoleUtils.printJson(result);
 		System.out.println();
 	}
-
+	
+	@Override
+	public void removeDeployAndCreateManager(String[] params) throws Exception {
+		if (params.length < 2) {
+			HelpInfo.promptHelp("rdm");
+			return;
+		} else if (params.length > 2) {
+			HelpInfo.promptHelp("rdm");
+			return;
+		}
+		String address = params[1];
+		if ("-h".equals(address) || "--help".equals(address)) {
+			HelpInfo.removeDeployAndCreateManagerHelp();
+			return;
+		}
+		if (ConsoleUtils.isInvalidAddress(address)) {
+			return;
+		}
+		AuthorityService authority = new AuthorityService(web3j, credentials);
+		String result = authority.removeDeployAndCreateManager(address);
+		ConsoleUtils.printJson(result);
+		System.out.println();
+	}
+	
+	@Override
+	public void queryDeployAndCreateManager(String[] params) throws Exception {
+		if (promptNoParams(params, "qdm")) {
+			return;
+		}
+		AuthorityService authorityTableService = new AuthorityService(web3j, credentials);
+		List<AuthorityInfo> authoritys = authorityTableService.queryDeployAndCreateManager();
+		printAuthorityInfo(authoritys);
+	}
+	
+	@Override
+	public void addAuthorityManager(String[] params) throws Exception {
+		if (params.length < 2) {
+			HelpInfo.promptHelp("aam");
+			return;
+		} else if (params.length > 2) {
+			HelpInfo.promptHelp("aam");
+			return;
+		}
+		String address = params[1];
+		if ("-h".equals(address) || "--help".equals(address)) {
+			HelpInfo.addAuthorityManagerHelp();
+			return;
+		}
+		if (ConsoleUtils.isInvalidAddress(address)) {
+			return;
+		}
+		AuthorityService authority = new AuthorityService(web3j, credentials);
+		String result = authority.addAuthorityManager(address);
+		ConsoleUtils.printJson(result);
+		System.out.println();
+	}
+	
+	@Override
+	public void removeAuthorityManager(String[] params) throws Exception {
+		if (params.length < 2) {
+			HelpInfo.promptHelp("ram");
+			return;
+		} else if (params.length > 2) {
+			HelpInfo.promptHelp("ram");
+			return;
+		}
+		String address = params[1];
+		if ("-h".equals(address) || "--help".equals(address)) {
+			HelpInfo.removeAuthorityManagerHelp();
+			return;
+		}
+		if (ConsoleUtils.isInvalidAddress(address)) {
+			return;
+		}
+		AuthorityService authority = new AuthorityService(web3j, credentials);
+		String result = authority.removeAuthorityManager(address);
+		ConsoleUtils.printJson(result);
+		System.out.println();
+	}
+	
+	@Override
+	public void queryAuthorityManager(String[] params) throws Exception {
+		if (promptNoParams(params, "qam")) {
+			return;
+		}
+		AuthorityService authorityTableService = new AuthorityService(web3j, credentials);
+		List<AuthorityInfo> authoritys = authorityTableService.queryAuthorityManager();
+		printAuthorityInfo(authoritys);
+	}
+	
+	@Override
+	public void addNodeManager(String[] params) throws Exception {
+		if (params.length < 2) {
+			HelpInfo.promptHelp("anm");
+			return;
+		} else if (params.length > 2) {
+			HelpInfo.promptHelp("anm");
+			return;
+		}
+		String address = params[1];
+		if ("-h".equals(address) || "--help".equals(address)) {
+			HelpInfo.addNodeManagerHelp();
+			return;
+		}
+		if (ConsoleUtils.isInvalidAddress(address)) {
+			return;
+		}
+		AuthorityService authority = new AuthorityService(web3j, credentials);
+		String result = authority.addNodeManager(address);
+		ConsoleUtils.printJson(result);
+		System.out.println();
+	}
+	
+	@Override
+	public void removeNodeManager(String[] params) throws Exception {
+		if (params.length < 2) {
+			HelpInfo.promptHelp("rnm");
+			return;
+		} else if (params.length > 2) {
+			HelpInfo.promptHelp("rnm");
+			return;
+		}
+		String address = params[1];
+		if ("-h".equals(address) || "--help".equals(address)) {
+			HelpInfo.removeNodeManagerHelp();
+			return;
+		}
+		if (ConsoleUtils.isInvalidAddress(address)) {
+			return;
+		}
+		AuthorityService authority = new AuthorityService(web3j, credentials);
+		String result = authority.removeNodeManager(address);
+		ConsoleUtils.printJson(result);
+		System.out.println();
+	}
+	
+	@Override
+	public void queryNodeManager(String[] params) throws Exception {
+		if (promptNoParams(params, "qnm")) {
+			return;
+		}
+		AuthorityService authorityTableService = new AuthorityService(web3j, credentials);
+		List<AuthorityInfo> authoritys = authorityTableService.queryNodeManager();
+		printAuthorityInfo(authoritys);
+	}
+	
+	@Override
+	public void addCNSManager(String[] params) throws Exception {
+		if (params.length < 2) {
+			HelpInfo.promptHelp("acm");
+			return;
+		} else if (params.length > 2) {
+			HelpInfo.promptHelp("acm");
+			return;
+		}
+		String address = params[1];
+		if ("-h".equals(address) || "--help".equals(address)) {
+			HelpInfo.addCNSManagerHelp();
+			return;
+		}
+		if (ConsoleUtils.isInvalidAddress(address)) {
+			return;
+		}
+		AuthorityService authority = new AuthorityService(web3j, credentials);
+		String result = authority.addCNSManager(address);
+		ConsoleUtils.printJson(result);
+		System.out.println();
+	}
+	
+	@Override
+	public void removeCNSManager(String[] params) throws Exception {
+		if (params.length < 2) {
+			HelpInfo.promptHelp("rcm");
+			return;
+		} else if (params.length > 2) {
+			HelpInfo.promptHelp("rcm");
+			return;
+		}
+		String address = params[1];
+		if ("-h".equals(address) || "--help".equals(address)) {
+			HelpInfo.removeCNSManagerHelp();
+			return;
+		}
+		if (ConsoleUtils.isInvalidAddress(address)) {
+			return;
+		}
+		AuthorityService authority = new AuthorityService(web3j, credentials);
+		String result = authority.removeCNSManager(address);
+		ConsoleUtils.printJson(result);
+		System.out.println();
+	}
+	
+	@Override
+	public void queryCNSManager(String[] params) throws Exception {
+		if (promptNoParams(params, "qcm")) {
+			return;
+		}
+		AuthorityService authorityTableService = new AuthorityService(web3j, credentials);
+		List<AuthorityInfo> authoritys = authorityTableService.queryCNSManager();
+		printAuthorityInfo(authoritys);
+	}
+	
+	@Override
+	public void addSysConfigManager(String[] params) throws Exception {
+		if (params.length < 2) {
+			HelpInfo.promptHelp("asm");
+			return;
+		} else if (params.length > 2) {
+			HelpInfo.promptHelp("asm");
+			return;
+		}
+		String address = params[1];
+		if ("-h".equals(address) || "--help".equals(address)) {
+			HelpInfo.addSysConfigManagerHelp();
+			return;
+		}
+		if (ConsoleUtils.isInvalidAddress(address)) {
+			return;
+		}
+		AuthorityService authority = new AuthorityService(web3j, credentials);
+		String result = authority.addSysConfigManager(address);
+		ConsoleUtils.printJson(result);
+		System.out.println();
+	}
+	
+	@Override
+	public void removeSysConfigManager(String[] params) throws Exception {
+		if (params.length < 2) {
+			HelpInfo.promptHelp("rsm");
+			return;
+		} else if (params.length > 2) {
+			HelpInfo.promptHelp("rsm");
+			return;
+		}
+		String address = params[1];
+		if ("-h".equals(address) || "--help".equals(address)) {
+			HelpInfo.removeSysConfigManagerHelp();
+			return;
+		}
+		if (ConsoleUtils.isInvalidAddress(address)) {
+			return;
+		}
+		AuthorityService authority = new AuthorityService(web3j, credentials);
+		String result = authority.removeSysConfigManager(address);
+		ConsoleUtils.printJson(result);
+		System.out.println();
+	}
+	
+	@Override
+	public void querySysConfigManager(String[] params) throws Exception {
+		if (promptNoParams(params, "qsm")) {
+			return;
+		}
+		AuthorityService authorityTableService = new AuthorityService(web3j, credentials);
+		List<AuthorityInfo> authoritys = authorityTableService.querySysConfigManager();
+		printAuthorityInfo(authoritys);
+	}
+	
 	@Override
 	public void setSystemConfigByKey(String[] params) throws Exception {
 		if (params.length < 2) {
@@ -1074,5 +1353,26 @@ public class ConsoleImpl implements ConsoleFace {
 		}
 		channelEthereumService.close();
 		System.exit(0);
+	}
+	
+	private void printAuthorityInfo(List<AuthorityInfo> authoritys) {
+		if (authoritys.isEmpty()) {
+			System.out.println("Empty set.");
+			System.out.println();
+			return;
+		}
+		ConsoleUtils.singleLineForTable();
+		String[] headers = { "address", "enable_num" };
+		int size = authoritys.size();
+		String[][] data = new String[size][2];
+		for (int i = 0; i < size; i++) {
+			data[i][0] = authoritys.get(i).getAddress();
+			data[i][1] = authoritys.get(i).getEnableNum();
+		}
+		ColumnFormatter<String> cf = ColumnFormatter.text(Alignment.CENTER, 45);
+		Table table = Table.of(headers, data, cf);
+		System.out.println(table);
+		ConsoleUtils.singleLineForTable();
+		System.out.println();
 	}
 }

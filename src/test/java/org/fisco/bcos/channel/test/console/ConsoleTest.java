@@ -66,24 +66,24 @@ public class ConsoleTest{
     }
 
     @Test
-    public void getMinerListTest() throws IOException {
+    public void getSealerListTest() throws IOException {
     	String[] params1 = {};
-        console.getMinerList(params1);
+        console.getSealerList(params1);
     	assertTrue(!"".equals(log.getLog()));
     	log.clearLog();
     	
     	String[] params2 = {"-h"};
-        console.getMinerList(params2);
+        console.getSealerList(params2);
     	assertTrue(!"".equals(log.getLog()));
     	log.clearLog();
         
         String[] params3 = {"--help"};
-        console.getMinerList(params3);
+        console.getSealerList(params3);
     	assertTrue(!"".equals(log.getLog()));
     	log.clearLog();
     	
         String[] params4 = {"k"};
-        console.getMinerList(params4);
+        console.getSealerList(params4);
     	assertTrue(!"".equals(log.getLog()));
     }
     @Test
@@ -528,19 +528,19 @@ public class ConsoleTest{
     	
     }
     @Test
-    public void addMinerTest() throws Exception {
+    public void addSealerTest() throws Exception {
     	String[] params1 = {};
-    	console.addMiner(params1);
+    	console.addSealer(params1);
     	assertTrue(!"".equals(log.getLog()));
     	log.clearLog();
     	
-    	String[] params2 = {"am", "-h"};
-    	console.addMiner(params2);
+    	String[] params2 = {"as", "-h"};
+    	console.addSealer(params2);
     	assertTrue(!"".equals(log.getLog()));
     	log.clearLog();
     	
-    	String[] params3 = {"am", "ae"};
-    	console.addMiner(params3);
+    	String[] params3 = {"as", "ae"};
+    	console.addSealer(params3);
     	assertTrue(!"".equals(log.getLog()));
     	
     }
@@ -579,27 +579,27 @@ public class ConsoleTest{
     	
     }
     @Test
-    public void addAuthorityTest() throws Exception {
+    public void addUserTableManagerTest() throws Exception {
     	String[] params1 = {};
-    	console.addAuthority(params1);
+    	console.addUserTableManager(params1);
     	assertTrue(!"".equals(log.getLog()));
     	log.clearLog();
     	
     	String[] params2 = {"aa", "-h"};
-    	console.addAuthority(params2);
+    	console.addUserTableManager(params2);
     	assertTrue(!"".equals(log.getLog()));
     	log.clearLog();
     	
     }
     @Test
-    public void removeAuthorityTest() throws Exception {
+    public void removeUserTableManagerTest() throws Exception {
     	String[] params1 = {};
-    	console.removeAuthority(params1);
+    	console.removeUserTableManager(params1);
     	assertTrue(!"".equals(log.getLog()));
     	log.clearLog();
     	
     	String[] params2 = {"ra", "-h"};
-    	console.removeAuthority(params2);
+    	console.removeUserTableManager(params2);
     	assertTrue(!"".equals(log.getLog()));
     	log.clearLog();
     	
@@ -607,17 +607,17 @@ public class ConsoleTest{
     @Test
     public void queryAuthorityTest() throws Exception {
     	String[] params1 = {};
-    	console.queryAuthority(params1);
+    	console.queryUserTableManager(params1);
     	assertTrue(!"".equals(log.getLog()));
     	log.clearLog();
     	
     	String[] params2 = {"qa", "-h"};
-    	console.queryAuthority(params2);
+    	console.queryUserTableManager(params2);
     	assertTrue(!"".equals(log.getLog()));
     	log.clearLog();
     	
     	String[] params3 = {"qa", "t_test"};
-    	console.queryAuthority(params3);
+    	console.queryUserTableManager(params3);
     	assertTrue(!"".equals(log.getLog()));
     }
     
