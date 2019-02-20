@@ -9,6 +9,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class PrecompiledCommon {
 	
+	// system table for authority control
+	public static final String SYSTABLE = "_sys_tables_";
+	public static final String SYSTABLEACCESS = "_sys_table_access_";
+	public static final String SYSCONSENSUS = "_sys_consensus_";
+	public static final String SYSCNS = "_sys_cns_";
+	public static final String SYSCONFIG = "_sys_config_";
+	
     public static String transferToJson(int code) throws JsonProcessingException{
     	String msg = "";
     	switch (code)
@@ -26,7 +33,7 @@ public class PrecompiledCommon {
     			msg = "invalid nodeID";
     			break;
     		case -41:
-    			msg = "last miner cannot be removed";
+    			msg = "last sealer cannot be removed";
     			break;
     		case -42:
     			msg = "nodeID is not in network";
@@ -35,7 +42,7 @@ public class PrecompiledCommon {
     			msg = "nodeID is not in group peers";
     			break;
     		case -44:
-    			msg = "nodeID is already in miner list";
+    			msg = "nodeID is already in sealer list";
     			break;
     		case -45:
     			msg = "nodeID is already in observer list";
