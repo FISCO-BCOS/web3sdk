@@ -111,6 +111,11 @@ jar {
 			from file('src/test/resources/')
 			into 'dist/conf'
 		}
+		copy {
+			from file('src/test/resources/contract/')
+			into 'dist/solidity/contracts'
+		}
+		project.file('dist/java/classes').mkdirs()
 	}
 }
 

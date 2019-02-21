@@ -1,11 +1,31 @@
 package org.fisco.bcos.web3j.console;
 
-public class ConsoleUtils {
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.Arrays;
+import java.util.Stack;
 
-	public static void main(String[] args) {
-		String json = "{\"name\":\"chenggang\",\"age\":24}";
-		printJson(json);
-	}
+import javax.tools.JavaCompiler;
+import javax.tools.ToolProvider;
+
+import org.apache.commons.io.FileUtils;
+import org.fisco.bcos.web3j.codegen.SolidityFunctionWrapperGenerator;
+import org.fisco.bcos.web3j.solidity.compiler.CompilationResult;
+import org.fisco.bcos.web3j.solidity.compiler.SolidityCompiler;
+
+public class ConsoleUtils {
+	
+	public static final String JAVAPATH = "java/org/fisco/bcos/temp";
+	public static final String CLASSPATH = "java/classes/org/fisco/bcos/temp";
+	public static final String TARGETCLASSPATH = "java/classes";
+	public static final String PACKAGENAME = "org.fisco.bcos.temp";
+	
 	public static void printJson(String jsonStr) {
 		System.out.println(formatJson(jsonStr));
 	}
@@ -55,15 +75,14 @@ public class ConsoleUtils {
 				}
 				break;
 			case ' ':
-				if(',' != jsonStr.charAt(i-1))
-				{
+				if (',' != jsonStr.charAt(i - 1)) {
 					sb.append(current);
 				}
 				break;
 			case '\\':
 				break;
 			default:
-				if(!(current == " ".charAt(0)))
+				if (!(current == " ".charAt(0)))
 					sb.append(current);
 			}
 		}
@@ -76,7 +95,7 @@ public class ConsoleUtils {
 			sb.append("    ");
 		}
 	}
-	
+
 	public static boolean isInvalidHash(String hash) {
 		if (hash.startsWith("0x") && hash.length() == 66) {
 			return false;
@@ -86,48 +105,170 @@ public class ConsoleUtils {
 			return true;
 		}
 	}
-	
+
 	public static boolean isInvalidNumber(String number, int flag) {
 		String numberStr = number.trim();
 		if (!numberStr.matches("^[0-9]*$") || "".equals(numberStr)) {
-			if(flag == 0)
+			if (flag == 0)
 				System.out.println("Please provide block number as a decimal non-negative integer.");
 			else
 				System.out.println("Please provide transaction index as a decimal non-negative integer.");
 			System.out.println();
 			return true;
+		} else {
+			return false;
 		}
-		else
-		{
+
+	}
+
+	public static boolean isInvalidAddress(String address) {
+		if (!address.startsWith("0x") || (address.length() != 42)) {
+			System.out.println("Please provide a valid address.");
+			System.out.println();
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	// dynamic compile target java code
+	public static void dynamicCompileJavaToClass(String name) throws Exception {
+
+		File sourceDir = new File(JAVAPATH);
+		if (!sourceDir.exists()) {
+			sourceDir.mkdirs();
+		}
+
+		File distDir = new File(TARGETCLASSPATH);
+		if (!distDir.exists()) {
+			distDir.mkdirs();
+		}
+		File[] javaFiles = sourceDir.listFiles();
+		for (File javaFile : javaFiles) {
+			if(!javaFile.getName().equals(name+".java"))
+			{
+				continue;
+			}
+			JavaCompiler javac = ToolProvider.getSystemJavaCompiler();
+			int compileResult = javac.run(null, null, null, "-d", distDir.getAbsolutePath(),
+					javaFile.getAbsolutePath());
+			if (compileResult != 0) {
+				System.err.println("compile failed!!");
+				System.out.println();
+				return;
+			}
+		}
+
+	}
+
+	// dynamic load class
+	public static void dynamicLoadClass() throws NoSuchMethodException, MalformedURLException,
+			InvocationTargetException, IllegalAccessException, ClassNotFoundException {
+
+		int clazzCount = 0;
+		File clazzPath = new File(TARGETCLASSPATH);
+
+		if (clazzPath.exists() && clazzPath.isDirectory()) {
+
+			int clazzPathLen = clazzPath.getAbsolutePath().length() + 1;
+
+			Stack<File> stack = new Stack<>();
+			stack.push(clazzPath);
+
+			while (!stack.isEmpty()) {
+				File path = stack.pop();
+				File[] classFiles = path.listFiles(new FileFilter() {
+					public boolean accept(File pathname) {
+						return pathname.isDirectory() || pathname.getName().endsWith(".class");
+					}
+				});
+				for (File subFile : classFiles) {
+					if (subFile.isDirectory()) {
+						stack.push(subFile);
+					} else {
+						if (clazzCount++ == 0) {
+							Method method = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
+							boolean accessible = method.isAccessible();
+							try {
+								if (!accessible) {
+									method.setAccessible(true);
+								}
+								URLClassLoader classLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
+								method.invoke(classLoader, clazzPath.toURI().toURL());
+							} finally {
+								method.setAccessible(accessible);
+							}
+						}
+						String className = subFile.getAbsolutePath();
+						if (className.contains("$")) {
+							continue;
+						}
+						className = className.substring(clazzPathLen, className.length() - 6);
+						className = className.replace(File.separatorChar, '.');
+						Class.forName(className);
+					}
+				}
+			}
+		}
+	}
+
+	public static void dynamicCompileSolFilesToJava() throws IOException {
+		File solFileList = new File("solidity/contracts/");
+		File[] solFiles = solFileList.listFiles();
+
+		for (File solFile : solFiles) {
+
+			SolidityCompiler.Result res = SolidityCompiler.compile(solFile, true, SolidityCompiler.Options.ABI,
+					SolidityCompiler.Options.BIN, SolidityCompiler.Options.INTERFACE,
+					SolidityCompiler.Options.METADATA);
+			CompilationResult result = CompilationResult.parse(res.output);
+			String contractname = solFile.getName().split("\\.")[0];
+			CompilationResult.ContractMetadata a = result.getContract(solFile.getName().split("\\.")[0]);
+			FileUtils.writeStringToFile(new File("solidity/abi/" + contractname + ".abi"), a.abi);
+			FileUtils.writeStringToFile(new File("solidity/bin/" + contractname + ".bin"), a.bin);
+			String binFile;
+			String abiFile;
+			String tempDirPath = new File("java").getAbsolutePath();
+			String filename = contractname;
+			abiFile = "solidity/abi/" + filename + ".abi";
+			binFile = "solidity/bin/" + filename + ".bin";
+			SolidityFunctionWrapperGenerator.main(Arrays
+					.asList("-a", abiFile, "-b", binFile, "-p", PACKAGENAME, "-o", tempDirPath).toArray(new String[0]));
+		}
+	}
+	
+	public static boolean isExistJavaContract(String name)
+	{
+		File sourceDir = new File(JAVAPATH);
+        if (!sourceDir.exists()) {
+            return false;
+        }
+        
+        File[] javaFiles = sourceDir.listFiles();
+        return Arrays.asList(javaFiles).stream().anyMatch(x -> x.getName().equals(name + ".java"));
+	}
+	
+	public static boolean isExistJavaClass(String name)
+	{
+		File sourceDir = new File(CLASSPATH);
+		if (!sourceDir.exists()) {
 			return false;
 		}
 		
-	}
-	public static boolean isInvalidAddress(String address) {
-		 if(!address.startsWith("0x") || (address.length() != 42))
-		 {
-			 System.out.println("Please provide a valid address.");
-			 System.out.println();
-			 return true;
-		 }
-		 else
-		 {
-			 return false;
-		 }
+		File[] classFiles = sourceDir.listFiles();
+		return Arrays.asList(classFiles).stream().anyMatch(x -> x.getName().equals(name + ".class"));
 	}
 	
 	public static void singleLine() {
-		System.out.println(
-				"-------------------------------------------------------------------------------------");
+		System.out.println("-------------------------------------------------------------------------------------");
 	}
-	
+
 	public static void singleLineForTable() {
 		System.out.println(
 				"---------------------------------------------------------------------------------------------");
 	}
 
 	public static void doubleLine() {
-		System.out.println(
-				"=====================================================================================");
+		System.out.println("=====================================================================================");
 	}
 }
