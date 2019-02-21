@@ -49,11 +49,11 @@ public abstract class Array<T extends Type> implements Type<List<T>> {
     }
 
     private boolean valid(T[] values, String type) {
-        return values != null || (values != null && values.length != 0) || type != null;
+        return (values != null && values.length != 0) || type != null;
     }
 
     private boolean valid(List<T> values, String type) {
-        return values != null || (values != null && values.size() != 0) || type != null;
+        return (values != null && values.size() != 0) || type != null;
     }
 
     @Override

@@ -21,10 +21,10 @@ import org.fisco.bcos.web3j.solidity.compiler.SolidityCompiler;
 
 public class ConsoleUtils {
 	
-	static final String JAVAPATH = "java/org/fisco/bcos/temp";
-	static final String CLASSPATH = "java/classes/org/fisco/bcos/temp";
-	static final String TARGETCLASSPATH = "java/classes";
-	static final String PACKAGENAME = "org.fisco.bcos.temp";
+	public static final String JAVAPATH = "java/org/fisco/bcos/temp";
+	public static final String CLASSPATH = "java/classes/org/fisco/bcos/temp";
+	public static final String TARGETCLASSPATH = "java/classes";
+	public static final String PACKAGENAME = "org.fisco.bcos.temp";
 	
 	public static void printJson(String jsonStr) {
 		System.out.println(formatJson(jsonStr));
@@ -175,7 +175,7 @@ public class ConsoleUtils {
 			Stack<File> stack = new Stack<>();
 			stack.push(clazzPath);
 
-			while (stack.isEmpty() == false) {
+			while (!stack.isEmpty()) {
 				File path = stack.pop();
 				File[] classFiles = path.listFiles(new FileFilter() {
 					public boolean accept(File pathname) {
@@ -190,7 +190,7 @@ public class ConsoleUtils {
 							Method method = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
 							boolean accessible = method.isAccessible();
 							try {
-								if (accessible == false) {
+								if (!accessible) {
 									method.setAccessible(true);
 								}
 								URLClassLoader classLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
