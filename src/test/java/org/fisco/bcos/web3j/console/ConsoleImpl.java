@@ -627,7 +627,21 @@ public class ConsoleImpl implements ConsoleFace {
             return;
         }
         String name = params[1];
-        processContract(name);
+		if(!ConsoleUtils.isExistJavaContract(name))
+        {
+        	try {
+				ConsoleUtils.dynamicCompileSolFilesToJava();
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+				System.out.println();
+				return;
+			}
+        }
+        if(!ConsoleUtils.isExistJavaClass(name))
+        {	
+        	ConsoleUtils.dynamicCompileJavaToClass(name);
+        }
+        ConsoleUtils.dynamicLoadClass();
         contractName = ConsoleUtils.PACKAGENAME + "." + name;
         try {
 			contractClass = ContractClassFactory.getContractClass(contractName);
@@ -645,19 +659,6 @@ public class ConsoleImpl implements ConsoleFace {
         System.out.println();
     }
 
-	private void processContract(String name) throws IOException, Exception, NoSuchMethodException,
-			MalformedURLException, InvocationTargetException, IllegalAccessException, ClassNotFoundException {
-		if(!ConsoleUtils.isExistJavaContract(name))
-        {
-        	ConsoleUtils.dynamicCompileSolFilesToJava();
-        }
-        if(!ConsoleUtils.isExistJavaClass(name))
-        {	
-        	ConsoleUtils.dynamicCompileJavaToClass(name);
-        }
-        ConsoleUtils.dynamicLoadClass();
-	}
-
     @Override
     public void call(String[] params) throws Exception {
         if (params.length < 2) {
@@ -673,8 +674,16 @@ public class ConsoleImpl implements ConsoleFace {
             return;
         }
         String name = params[1];
+        ConsoleUtils.dynamicLoadClass();
         contractName = ConsoleUtils.PACKAGENAME + "." + name;
-        contractClass = ContractClassFactory.getContractClass(contractName);
+        try {
+			contractClass = ContractClassFactory.getContractClass(contractName);
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("There is no " + name +".class" + " in the directory of java/classes/org/fisco/bcos/temp");
+			System.out.println();
+			return;
+		}
         Method load = contractClass.getMethod("load", String.class, Web3j.class, Credentials.class, BigInteger.class,
                 BigInteger.class);
         Object contractObject;
@@ -760,9 +769,29 @@ public class ConsoleImpl implements ConsoleFace {
             return;
         }
         String name = params[1];
-        processContract(name);
+		if(!ConsoleUtils.isExistJavaContract(name))
+        {
+        	try {
+				ConsoleUtils.dynamicCompileSolFilesToJava();
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+				System.out.println();
+				return;
+			}
+        }
+        if(!ConsoleUtils.isExistJavaClass(name))
+        {	
+        	ConsoleUtils.dynamicCompileJavaToClass(name);
+        }
+        ConsoleUtils.dynamicLoadClass();
         contractName = ConsoleUtils.PACKAGENAME + "." + name;
-        contractClass = ContractClassFactory.getContractClass(contractName);
+        try {
+			contractClass = ContractClassFactory.getContractClass(contractName);
+		} catch (Exception e) {
+			System.out.println("There is no " + name +".sol" + " in the directory of solidity/contracts.");
+			System.out.println();
+			return;
+		}
         Method deploy = contractClass.getMethod("deploy", Web3j.class, Credentials.class, BigInteger.class,
                 BigInteger.class);
         remoteCall = (RemoteCall<?>) deploy.invoke(null, web3j, credentials, gasPrice, gasLimit);
@@ -795,9 +824,16 @@ public class ConsoleImpl implements ConsoleFace {
             HelpInfo.promptHelp("cbc");
             return;
         }
+        ConsoleUtils.dynamicLoadClass();
         String name = params[1];
         contractName = ConsoleUtils.PACKAGENAME + "." + name;
-        contractClass = ContractClassFactory.getContractClass(contractName);
+        try {
+			contractClass = ContractClassFactory.getContractClass(contractName);
+		} catch (Exception e) {
+			System.out.println("There is no " + name +".class" + " in the directory of java/classes/org/fisco/bcos/temp");
+			System.out.println();
+			return;
+		}
         Method load = contractClass.getMethod("load", String.class, Web3j.class, Credentials.class, BigInteger.class,
                 BigInteger.class);
         Object contractObject;
