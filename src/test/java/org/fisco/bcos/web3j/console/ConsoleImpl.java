@@ -25,70 +25,91 @@ import org.fisco.bcos.web3j.tx.Contract;
 import org.fisco.bcos.web3j.utils.Numeric;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 public class ConsoleImpl implements ConsoleFace {
 
-    private Service service = null;
-    private Web3j web3j = null;
-    private java.math.BigInteger gasPrice = new BigInteger("1");
-    private java.math.BigInteger gasLimit = new BigInteger("30000000");
-    private ECKeyPair keyPair;
-    private Credentials credentials;
-    private String contractAddress;
-    private String contractName;
-    private String contractVersion;
-    private Class<?> contractClass;
-    private RemoteCall<?> remoteCall;
-    private String privateKey = "";
-    private ChannelEthereumService channelEthereumService = new ChannelEthereumService();
+	private Service service = null;
+	private Web3j web3j = null;
+	private java.math.BigInteger gasPrice = new BigInteger("1");
+	private java.math.BigInteger gasLimit = new BigInteger("30000000");
+	private ECKeyPair keyPair;
+	private Credentials credentials;
+	private String contractAddress;
+	private String contractName;
+	private String contractVersion;
+	private Class<?> contractClass;
+	private RemoteCall<?> remoteCall;
+	private String privateKey = "";
+	private ChannelEthereumService channelEthereumService = new ChannelEthereumService();
 
-    public void init(String[] args) {
-        ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
-        service = context.getBean(Service.class);
-        int groupID = 1;
-        try {
-            keyPair = Keys.createEcKeyPair();
-            credentials = GenCredential.create(keyPair.getPrivateKey().toString(16));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        switch (args.length) {
-            case 0:
-                break;
-            case 1:
-                groupID = setGroupID(args, groupID);
-                break;
-            default:
-                groupID = setGroupID(args, groupID);
-                privateKey = args[1];
-                try {
-                    credentials = GenCredential.create(privateKey);
-                } catch (NumberFormatException e) {
-                    System.out.println("Please provide private key by hex format.");
-                    System.exit(0);
-                }
-                break;
-        }
-        service.setGroupId(groupID);
-        try {
-            service.run();
-        } catch (Exception e) {
-            System.out.println(
-                    "Failed to connect blockchain. Please check running status for blockchain and configruation for console.");
-            System.exit(1);
-        }
-        channelEthereumService.setChannelService(service);
-        web3j = Web3j.build(channelEthereumService, groupID);
+	public void init(String[] args) {
+		ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
+		service = context.getBean(Service.class);
+		int groupID = 1;
+		try {
+			Properties prop = new Properties();
+			final Resource keyResource = new ClassPathResource("privateKey.properties");
+			InputStream fis = keyResource.getInputStream();
+	        prop.load(fis);
+	        privateKey = prop.getProperty("privateKey");
+	        fis.close();
+	        if(privateKey == null || "".equals(privateKey.trim()))
+	        {
+	        	keyPair = Keys.createEcKeyPair();
+	        	privateKey = keyPair.getPrivateKey().toString(16);
+				credentials = GenCredential.create(privateKey);
+		        prop.setProperty("privateKey", privateKey);
+		        FileOutputStream fos = new FileOutputStream(keyResource.getFile());
+		        prop.store(fos, "private key");
+		        fos.close();
+	        }
 
-    }
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			System.exit(0);
+		}
+		switch (args.length) {
+		case 0:
+			break;
+		case 1:
+			groupID = setGroupID(args, groupID);
+			break;
+		default:
+			groupID = setGroupID(args, groupID);
+			privateKey = args[1];
+			try {
+				credentials = GenCredential.create(privateKey);
+			} catch (NumberFormatException e) {
+				System.out.println("Please provide private key by hex format.");
+				System.exit(0);
+			}
+			break;
+		}
+		service.setGroupId(groupID);
+		try {
+			service.run();
+		} catch (Exception e) {
+			System.out.println(
+					"Failed to connect blockchain. Please check running status for blockchain and configruation for console.");
+			System.exit(1);
+		}
+		channelEthereumService.setChannelService(service);
+		web3j = Web3j.build(channelEthereumService, groupID);
+	}
 
     @Override
     public void close() {
