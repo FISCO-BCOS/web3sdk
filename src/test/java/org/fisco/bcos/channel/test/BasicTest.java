@@ -69,15 +69,6 @@ public class BasicTest extends TestBase {
 		assertTrue((groupList.getGroupList().size() > 0));
 	}
 
-	@Test
-	public void pendingTransactionsTest() throws Exception {
-		List<Transaction> transactions = web3j.getPendingTransaction().send().getPendingTransactions();
-		System.out.println("**** pending transaction ****");
-		for (Transaction t : transactions) {
-			System.out.println(t.getHash());
-		}
-	}
-
 	@Ignore
 	@Test
 	public void getTransactionByBlockNumberAndIndexTest() throws IOException {

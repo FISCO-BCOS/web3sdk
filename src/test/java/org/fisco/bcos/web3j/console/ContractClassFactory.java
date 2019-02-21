@@ -142,7 +142,7 @@ public class ContractClassFactory {
     }
 
 	@SuppressWarnings("unchecked")
-	public static String getReturnObject(String returnType, Object result) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public static String getReturnObject(String returnType, Object result) throws Exception {
 		String resultStr = "";
 		if(returnType.startsWith("Tuple") && "byte[]".equals(returnType.substring(7, 13)))
 		{	

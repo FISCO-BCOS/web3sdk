@@ -84,11 +84,8 @@ public class SolidityFunctionWrapperGenerator extends FunctionWrapperGenerator {
             exitError("Unable to parse input ABI file");
         } else {
             String contractName = getFileNameNoExtension(abiFile.getName());
-            String className = Strings.capitaliseFirstLetter(contractName);
-     //       System.out.printf("Generating " + basePackageName + "." + className + " ... ");
             new SolidityFunctionWrapper(useJavaNativeTypes).generateJavaFiles(
                     contractName, binary, abi, destinationDirLocation.toString(), basePackageName);
-//            System.out.println("File written to " + destinationDirLocation.toString() + "\n");
         }
     }
 

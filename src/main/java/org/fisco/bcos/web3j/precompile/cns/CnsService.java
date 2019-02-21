@@ -24,9 +24,8 @@ import java.util.List;
  * Resolution logic for contract addresses.
  */
 public class CnsService {
-    static Logger logger = LoggerFactory.getLogger(CnsService.class);
-    static final long DEFAULT_SYNC_THRESHOLD = 1000 * 60 * 3L;
-    static final String REVERSE_NAME_SUFFIX = ".addr.reverse";
+    private static Logger logger = LoggerFactory.getLogger(CnsService.class);
+    private static final long DEFAULT_SYNC_THRESHOLD = 1000 * 60 * 3L;
     public static final int MAX_VERSION_LENGTH = 40;
 
     private final Web3j web3j;
