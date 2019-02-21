@@ -267,7 +267,7 @@ public class SM3
 		k += 1;
 		byte[] padd = new byte[k / 8];
 		padd[0] = (byte) 0x80;
-		long n = in.length * 8 + bLen * 512;
+		long n = in.length * 8L + bLen * 512L;
 		byte[] out = new byte[in.length + k / 8 + 64 / 8];
 		int pos = 0;
 		System.arraycopy(in, 0, out, 0, in.length);

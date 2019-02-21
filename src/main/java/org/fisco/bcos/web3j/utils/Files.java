@@ -18,7 +18,8 @@ public class Files {
         FileInputStream fileInputStream = null;
         try {
             fileInputStream = new FileInputStream(file);
-            fileInputStream.read(bytes);
+            int count = fileInputStream.read(bytes);
+            logger.debug("readBytes count :", count);
         }catch (Exception e)
         {
             logger.error("readBytes error :", e);

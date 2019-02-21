@@ -40,6 +40,7 @@ public class PollingTransactionReceiptProcessor extends TransactionReceiptProces
                 try {
                     Thread.sleep(sleepDuration);
                 } catch (InterruptedException e) {
+                	Thread.currentThread().interrupt();
                     throw new TransactionException(e);
                 }
                 receiptOptional = sendTransactionReceiptRequest(transactionHash);
