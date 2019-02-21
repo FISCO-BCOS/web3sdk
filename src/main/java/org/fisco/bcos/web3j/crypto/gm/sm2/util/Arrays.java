@@ -1,6 +1,7 @@
 package org.fisco.bcos.web3j.crypto.gm.sm2.util;
 
 import java.math.BigInteger;
+import java.util.NoSuchElementException;
 
 /**
  * General array utilities.
@@ -790,6 +791,10 @@ public final class Arrays {
 		}
 
 		public T next() {
+			if(!hasNext())
+			{
+				throw new NoSuchElementException();
+			}
 			return dataArray[position++];
 		}
 

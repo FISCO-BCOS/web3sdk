@@ -405,7 +405,10 @@ public class ByteUtil {
     public static byte[] copyToArray(BigInteger value) {
         byte[] src = ByteUtil.bigIntegerToBytes(value);
         byte[] dest = ByteBuffer.allocate(32).array();
-        System.arraycopy(src, 0, dest, dest.length - src.length, src.length);
+        if(src != null)
+        {
+        	System.arraycopy(src, 0, dest, dest.length - src.length, src.length);
+        }
         return dest;
     }
 
@@ -441,7 +444,7 @@ public class ByteUtil {
         int posByte = data.length - 1 - pos / 8;
         int posBit = pos % 8;
         byte dataByte = data[posByte];
-        return Math.min(1, (dataByte & (1 << (posBit))));
+        return Math.min(1, ((dataByte & 0xff) & (1 << (posBit))));
     }
 
     public static byte[] and(byte[] b1, byte[] b2) {
