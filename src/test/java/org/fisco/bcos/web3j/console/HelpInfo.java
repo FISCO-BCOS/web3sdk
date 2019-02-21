@@ -23,8 +23,8 @@ public class HelpInfo {
 		case "gol":
 			getObserverListHelp();
 			break;
-		case "gml":
-			getMinerListHelp();
+		case "gsl":
+			getSealerListHelp();
 			break;
 		case "gcs":
 			getConsensusStatusHelp();
@@ -55,6 +55,21 @@ public class HelpInfo {
 			break;
 		case "gtc":
 			getTotalTransactionCountHelp();
+			break;
+		case "qdm":
+			queryDeployAndCreateManagerHelp();
+			break;
+		case "qam":
+			queryAuthorityManagerHelp();
+			break;
+		case "qnm":
+			queryNodeManagerHelp();
+			break;
+		case "qcm":
+			queryCNSManagerHelp();
+			break;
+		case "qsm":
+			querySysConfigManagerHelp();
 			break;
 		case "q":
 			quitHelp();
@@ -90,10 +105,10 @@ public class HelpInfo {
 		System.out.println("Usage: gol");
 	}
 	
-	public static void getMinerListHelp() 
+	public static void getSealerListHelp() 
 	{
-		System.out.println("Query nodeID list for miner nodes.");
-		System.out.println("Usage: gml");
+		System.out.println("Query nodeID list for sealer nodes.");
+		System.out.println("Usage: gsl");
 	}
 	
 	public static void getConsensusStatusHelp() 
@@ -128,7 +143,7 @@ public class HelpInfo {
 	
 	public static void getGroupPeersHelp() 
 	{
-		System.out.println("Query nodeID list for miner and observer nodes.");
+		System.out.println("Query nodeID list for sealer and observer nodes.");
 		System.out.println("Usage: ggp");
 	}
 	
@@ -261,10 +276,10 @@ public class HelpInfo {
 		System.out.println("nodeID -- nodeID of node.");
 		System.out.println();
 	}
-	public static void addMinerHelp() 
+	public static void addSealerHelp() 
 	{
-		System.out.println("Add a miner node.");
-		System.out.println("Usage: am nodeID");
+		System.out.println("Add a sealer node.");
+		System.out.println("Usage: as nodeID");
 		System.out.println("nodeID -- nodeID of a node.");
 		System.out.println();
 	}
@@ -276,31 +291,147 @@ public class HelpInfo {
 		System.out.println();
 	}
 
-	public static void addAuthorityHelp() 
+	public static void addUserTableManagerHelp() 
 	{
-		System.out.println("Add authority for table by address.");
-		System.out.println("Usage: aa tableName address");
+		System.out.println("Add authority for user table by table name and address.");
+		System.out.println("Usage: aum tableName address");
 		System.out.println("tableName -- name of a table.");
 		System.out.println("address -- address of tx.origin.");
 		System.out.println();
 	}
 	
-	public static void removeAuthorityHelp() 
+	public static void removeUserTableManagerHelp() 
 	{
-		System.out.println("Remove authority for table by address.");
-		System.out.println("Usage: ra tableName address");
+		System.out.println("Remove authority for user table by table name and address.");
+		System.out.println("Usage: rum tableName address");
 		System.out.println("tableName -- name of a table.");
 		System.out.println("address -- address of tx.origin.");
 		System.out.println();
 	}
 	
-	public static void queryAuthorityHelp() 
+	public static void queryUserTableManagerHelp() 
 	{
-		System.out.println("Query authority information.");
-		System.out.println("Usage: qa tableName");
+		System.out.println("Query authority for user table information.");
+		System.out.println("Usage: qum tableName");
 		System.out.println("tableName -- name of a table.");
 		System.out.println();
 	}
+	
+	public static void addDeployAndCreateManagerHelp() 
+	{
+		System.out.println("Add authority for deploy contract and create user table by address.");
+		System.out.println("Usage: adm address");
+		System.out.println("address -- address of tx.origin.");
+		System.out.println();
+	}
+	
+	public static void removeDeployAndCreateManagerHelp() 
+	{
+		System.out.println("Remove authority for deploy contract and create user table by address.");
+		System.out.println("Usage: rdm address");
+		System.out.println("address -- address of tx.origin.");
+		System.out.println();
+	}
+	
+	public static void queryDeployAndCreateManagerHelp() 
+	{
+		System.out.println("Query authority information for deploy contract and create user table.");
+		System.out.println("Usage: qdm");
+		System.out.println();
+	}
+	
+	public static void addAuthorityManagerHelp() 
+	{
+		System.out.println("Add authority for authority configuration by address.");
+		System.out.println("Usage: aam address");
+		System.out.println("address -- address of tx.origin.");
+		System.out.println();
+	}
+	
+	public static void removeAuthorityManagerHelp() 
+	{
+		System.out.println("Remove authority for authority configuration by address.");
+		System.out.println("Usage: ram address");
+		System.out.println("address -- address of tx.origin.");
+		System.out.println();
+	}
+	
+	public static void queryAuthorityManagerHelp() 
+	{
+		System.out.println("Query authority information for authority configuration.");
+		System.out.println("Usage: qam");
+		System.out.println();
+	}
+	
+	public static void addNodeManagerHelp() 
+	{
+		System.out.println("Add authority for node configuration by address.");
+		System.out.println("Usage: anm address");
+		System.out.println("address -- address of tx.origin.");
+		System.out.println();
+	}
+	
+	public static void removeNodeManagerHelp() 
+	{
+		System.out.println("Remove authority for node configuration by address.");
+		System.out.println("Usage: rnm address");
+		System.out.println("address -- address of tx.origin.");
+		System.out.println();
+	}
+	
+	public static void queryNodeManagerHelp() 
+	{
+		System.out.println("Query authority information for node configuration.");
+		System.out.println("Usage: qnm");
+		System.out.println();
+	}
+	
+	public static void addCNSManagerHelp() 
+	{
+		System.out.println("Add authority for CNS by address.");
+		System.out.println("Usage: acm address");
+		System.out.println("address -- address of tx.origin.");
+		System.out.println();
+	}
+	
+	public static void removeCNSManagerHelp() 
+	{
+		System.out.println("Remove authority for CNS by address.");
+		System.out.println("Usage: rcm address");
+		System.out.println("address -- address of tx.origin.");
+		System.out.println();
+	}
+	
+	public static void queryCNSManagerHelp() 
+	{
+		System.out.println("Query authority information for CNS.");
+		System.out.println("Usage: qcm");
+		System.out.println();
+	}
+	
+	public static void addSysConfigManagerHelp() 
+	{
+		System.out.println("Add authority for system configuration by address.");
+		System.out.println("Usage: asm address");
+		System.out.println("address -- address of tx.origin.");
+		System.out.println();
+	}
+	
+	public static void removeSysConfigManagerHelp() 
+	{
+		System.out.println("Remove authority for system configuration by address.");
+		System.out.println("Usage: rsm address");
+		System.out.println("address -- address of tx.origin.");
+		System.out.println();
+	}
+	
+	public static void querySysConfigManagerHelp() 
+	{
+		System.out.println("Query authority information for system configuration.");
+		System.out.println("Usage: qsm");
+		System.out.println();
+	}
+	
 	public static void setSystemConfigByKeyHelp()
 	{
 		System.out.println("Set a system config.");
