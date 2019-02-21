@@ -70,8 +70,8 @@ public class KeyInfo implements KeyInfoInterface {
 			logger.error("read file " + keyFile + " failed, error message:" + e.getMessage());
 			return null;
 		} finally {
-			 ReleaseInputStream(reader);
-	         ReleaseBufferedReader(bufReader);
+			ReleaseBufferedReader(bufReader);
+			ReleaseInputStream(reader);
 		}
 	}
 

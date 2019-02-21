@@ -8,6 +8,23 @@ public class HelpInfo {
 		System.out.println();
 	}
 	
+	public static boolean promptNoParams(String[] params, String funcName) {
+		if (params.length == 2) {
+			if ("-h".equals(params[1]) || "--help".equals(params[1])) {
+				helpNoParams(funcName);
+				return true;
+			} else {
+				promptHelp(funcName);
+				return true;
+			}
+		} else if (params.length > 2) {
+			promptHelp(funcName);
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
 	public static void helpNoParams(String func) 
 	{
 		switch (func) {

@@ -142,8 +142,8 @@ public class ContractClassFactory {
     }
 
 	@SuppressWarnings("unchecked")
-	public static String getReturnObject(String returnType, Object result) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		String resultStr = null;
+	public static String getReturnObject(String returnType, Object result) throws Exception {
+		String resultStr = "";
 		if(returnType.startsWith("Tuple") && "byte[]".equals(returnType.substring(7, 13)))
 		{	
 			int n = Integer.parseInt(returnType.substring(5, 6));
@@ -210,15 +210,22 @@ public class ContractClassFactory {
 				resultObj = (Tuple20<byte[],byte[],byte[],byte[],byte[],byte[],byte[],byte[],byte[],byte[],byte[],byte[],byte[],byte[],byte[],byte[],byte[],byte[],byte[],byte[]>)result;
 				break;
 			}
-			Class<? extends Tuple> classResult = resultObj.getClass();
-			String[] str = new String[resultObj.getSize()];
-			for(int i = 1; i <= resultObj.getSize(); i++)
+			Class<? extends Tuple> classResult = null;
+			String[] str = null;
+			if(resultObj != null)
 			{
-				Method get = classResult.getMethod("getValue"+i);
-				str[i-1] = new String((byte[])get.invoke(result)).trim();
+				classResult = resultObj.getClass();
+				str = new String[resultObj.getSize()];
 			}
-			resultStr = Arrays.toString(str);
-
+			if(classResult != null && str != null)
+			{
+				for(int i = 1; i <= resultObj.getSize(); i++)
+				{
+					Method get = classResult.getMethod("getValue"+i);
+					str[i-1] = new String((byte[])get.invoke(result)).trim();
+				}
+				resultStr = Arrays.toString(str);
+			}
 		}
 		else if("BigInteger".equals(returnType))
 		{
