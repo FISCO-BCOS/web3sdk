@@ -88,7 +88,7 @@ public class ConsoleClient {
                     .build();
 		} catch (IOException e2) {
 			e2.printStackTrace();
-			System.exit(1);
+			console.close();
 		}
 		
 		while (true) {
