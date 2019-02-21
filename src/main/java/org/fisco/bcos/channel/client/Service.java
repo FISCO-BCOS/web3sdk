@@ -499,18 +499,7 @@ public class Service {
 
 					push.setContent(new String(message.getData(), 0, message.getData().length));
 
-					if(threadPool == null) {
-						pushCallback.onPush(push);
-					}
-					else {
-						threadPool.execute(new Runnable() {
-							@Override
-							public void run() {
-								pushCallback.onPush(push);
-							}
-							
-						});
-					}
+					pushCallback.onPush(push);
 				}
 				else {
 					logger.error("can not push，unset push callback");
@@ -601,19 +590,7 @@ public class Service {
 					push.setMessageID(message.getSeq());
 					push.setContent(new String(message.getData(), 0, message.getData().length));
 
-					if(threadPool == null) {
-						pushCallback.onPush(push);
-					}
-					else {
-						threadPool.execute(new Runnable() {
-							@Override
-							public void run() {
-								pushCallback.onPush(push);
-							}
-							
-						});
-					}
-					//pushCallback.onPush(push);
+					pushCallback.onPush(push);
 				}
 				else {
 					logger.error("can not push，unset push callback");
