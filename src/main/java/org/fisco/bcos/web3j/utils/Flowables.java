@@ -25,7 +25,7 @@ public class Flowables {
      */
     public static Flowable<BigInteger> range(
             final BigInteger startValue, final BigInteger endValue, final boolean ascending) {
-        if (startValue.compareTo(BigInteger.ZERO) == -1) {
+        if (startValue.compareTo(BigInteger.ZERO) < 0) {
             throw new IllegalArgumentException("Negative start index cannot be used");
         } else if (startValue.compareTo(endValue) > 0) {
             throw new IllegalArgumentException(
