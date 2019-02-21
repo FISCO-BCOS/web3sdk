@@ -3,23 +3,96 @@ package org.fisco.bcos.web3j.console;
 import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 import org.fisco.bcos.web3j.protocol.channel.ResponseExcepiton;
 import org.fisco.bcos.web3j.protocol.core.Response;
+import org.jline.reader.LineReader;
+import org.jline.reader.LineReaderBuilder;
+import org.jline.reader.impl.completer.AggregateCompleter;
+import org.jline.reader.impl.completer.ArgumentCompleter;
+import org.jline.reader.impl.completer.StringsCompleter;
+import org.jline.builtins.Completers.FileNameCompleter;
+import org.jline.reader.Completer;
+import org.jline.terminal.Terminal;
+import org.jline.terminal.TerminalBuilder;
 
 import java.io.IOException;
-import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ConsoleClient {
-
 	@SuppressWarnings("resource")
 	public static void main(String[] args) {
-
 		ConsoleFace console = new ConsoleImpl();
 		console.init(args);
 		console.welcome();
 		
-		Scanner sc = new Scanner(System.in);
+		LineReader lineReader = null;
+		try {
+			List<Completer> completers = new ArrayList<Completer>();
+			completers.add(new ArgumentCompleter(new StringsCompleter("help")));
+			completers.add(new ArgumentCompleter(new StringsCompleter("getBlockNumber")));
+			completers.add(new ArgumentCompleter(new StringsCompleter("getPbftView")));
+			completers.add(new ArgumentCompleter(new StringsCompleter("getSealerList")));
+			completers.add(new ArgumentCompleter(new StringsCompleter("getConsensusStatus")));
+			completers.add(new ArgumentCompleter(new StringsCompleter("getSyncStatus")));
+			completers.add(new ArgumentCompleter(new StringsCompleter("getClientVersion")));
+			completers.add(new ArgumentCompleter(new StringsCompleter("getPeers")));
+			completers.add(new ArgumentCompleter(new StringsCompleter("getNodeIDList")));
+			completers.add(new ArgumentCompleter(new StringsCompleter("getGroupPeers")));
+			completers.add(new ArgumentCompleter(new StringsCompleter("getGroupList")));
+			completers.add(new ArgumentCompleter(new StringsCompleter("getBlockByHash")));
+			completers.add(new ArgumentCompleter(new StringsCompleter("getBlockByNumber")));
+			completers.add(new ArgumentCompleter(new StringsCompleter("getBlockHashByNumber")));
+			completers.add(new ArgumentCompleter(new StringsCompleter("getTransactionByHash")));
+			completers.add(new ArgumentCompleter(new StringsCompleter("getTransactionByBlockHashAndIndex")));
+			completers.add(new ArgumentCompleter(new StringsCompleter("getTransactionByBlockNumberAndIndex")));
+			completers.add(new ArgumentCompleter(new StringsCompleter("getTransactionReceipt")));
+			completers.add(new ArgumentCompleter(new StringsCompleter("getPendingTransactions")));
+			completers.add(new ArgumentCompleter(new StringsCompleter("getPendingTxSize")));
+			completers.add(new ArgumentCompleter(new StringsCompleter("getCode")));
+			completers.add(new ArgumentCompleter(new StringsCompleter("getTotalTransactionCount")));
+			completers.add(new ArgumentCompleter(new StringsCompleter("call")));
+			completers.add(new ArgumentCompleter(new StringsCompleter("deploy"), new FileNameCompleter()));
+			completers.add(new ArgumentCompleter(new StringsCompleter("deployByCNS"), new FileNameCompleter()));
+			completers.add(new ArgumentCompleter(new StringsCompleter("callByCNS")));
+			completers.add(new ArgumentCompleter(new StringsCompleter("queryCNS")));
+			completers.add(new ArgumentCompleter(new StringsCompleter("addSealer")));
+			completers.add(new ArgumentCompleter(new StringsCompleter("addObserver")));
+			completers.add(new ArgumentCompleter(new StringsCompleter("removeNode")));
+			completers.add(new ArgumentCompleter(new StringsCompleter("addUserTableManager")));
+			completers.add(new ArgumentCompleter(new StringsCompleter("removeUserTableManager")));
+			completers.add(new ArgumentCompleter(new StringsCompleter("queryUserTableManager")));
+			completers.add(new ArgumentCompleter(new StringsCompleter("addDeployAndCreateManager")));
+			completers.add(new ArgumentCompleter(new StringsCompleter("removeDeployAndCreateManager")));
+			completers.add(new ArgumentCompleter(new StringsCompleter("queryDeployAndCreateManager")));
+			completers.add(new ArgumentCompleter(new StringsCompleter("addAuthorityManager")));
+			completers.add(new ArgumentCompleter(new StringsCompleter("removeAuthorityManager")));
+			completers.add(new ArgumentCompleter(new StringsCompleter("queryAuthorityManager")));
+			completers.add(new ArgumentCompleter(new StringsCompleter("addNodeManager")));
+			completers.add(new ArgumentCompleter(new StringsCompleter("removeNodeManager")));
+			completers.add(new ArgumentCompleter(new StringsCompleter("queryNodeManager")));
+			completers.add(new ArgumentCompleter(new StringsCompleter("addCNSManager")));
+			completers.add(new ArgumentCompleter(new StringsCompleter("removeCNSManager")));
+			completers.add(new ArgumentCompleter(new StringsCompleter("queryCNSManager")));
+			completers.add(new ArgumentCompleter(new StringsCompleter("addSysConfigManager")));
+			completers.add(new ArgumentCompleter(new StringsCompleter("removeSysConfigManager")));
+			completers.add(new ArgumentCompleter(new StringsCompleter("querySysConfigManager")));
+			completers.add(new ArgumentCompleter(new StringsCompleter("setSystemConfigByKey")));
+			completers.add(new ArgumentCompleter(new StringsCompleter("getSystemConfigByKey")));
+			completers.add(new ArgumentCompleter(new StringsCompleter("quit")));
+			
+			completers.add(new ArgumentCompleter(new StringsCompleter("deploy"), new FileNameCompleter()));
+			
+			Terminal terminal = TerminalBuilder.terminal();
+			lineReader = LineReaderBuilder.builder()
+                    .terminal(terminal)
+                    .completer(new AggregateCompleter(completers))
+                    .build();
+		} catch (IOException e2) {
+			e2.printStackTrace();
+			console.close();
+		}
+		
 		while (true) {
-			System.out.print("> ");
-			String request = sc.nextLine().trim().replaceAll(" +", " ");
+			String request = lineReader.readLine(">").trim().replaceAll(" +", " ");
 			String[] params = request.split(" ");
 			if (params.length < 1) {
 				System.out.print("");
@@ -41,9 +114,7 @@ public class ConsoleClient {
 				break;
 			}
 			try {
-
 				switch (params[0]) {
-
 				case "help":
 				case "h":
 					console.help(params);
@@ -251,9 +322,7 @@ public class ConsoleClient {
 				default:
 					System.out.println("Undefined command: \"" + params[0] + "\".  Try \"help\".\n");
 					break;
-
 				}
-
 			} catch (ResponseExcepiton e) {
 				ConsoleUtils.printJson(
 						"{\"code\":" + e.getCode() + ", \"msg\":" + "\"" + e.getMessage() + "\"}");
@@ -294,5 +363,4 @@ public class ConsoleClient {
 
 		}
 	}
-
 }
