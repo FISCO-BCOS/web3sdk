@@ -124,7 +124,7 @@ public class HexEncoder
                 throw new IOException("invalid characters encountered in Hex data");
             }
 
-            out.write((b1 << 4) | b2);
+            out.write((b1 << 4) | (b2 & 0xff));
             
             outLen++;
         }
@@ -180,7 +180,7 @@ public class HexEncoder
                 throw new IOException("invalid characters encountered in Hex string");
             }
 
-            out.write((b1 << 4) | b2);
+            out.write((b1 << 4) | (b2 & 0xff));
             
             length++;
         }
