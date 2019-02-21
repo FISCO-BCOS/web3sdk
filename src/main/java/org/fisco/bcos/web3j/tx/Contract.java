@@ -40,7 +40,6 @@ import org.fisco.bcos.web3j.utils.Numeric;
  */
 public abstract class Contract extends ManagedTransaction {
 
-	// https://www.reddit.com/r/ethereum/comments/5g8ia6/attention_miners_we_recommend_raising_gas_limit/
 	/**
 	 * @deprecated ...
 	 * @see DefaultGasProvider

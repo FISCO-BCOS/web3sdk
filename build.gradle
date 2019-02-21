@@ -45,6 +45,7 @@ List alibaba = [
 // In this section you declare the dependencies for your production and test code
 dependencies {
    // compile files('lib/solcJ-all-0.4.25-gm.jar')
+	//compile	'org.ethereum:solcJ-all:0.5.2'
 	compile	'org.ethereum:solcJ-all:0.4.25'
     compile logger,spring,alibaba
     compile 'org.apache.commons:commons-lang3:3.1'
@@ -96,8 +97,7 @@ jar {
 	exclude '**/*.xml'
 	exclude '**/*.properties'
 	exclude '**/*.crt'
-	exclude '**/*.keystore'
-	exclude '**/*.p12'
+	exclude '**/*.key'
 
 	doLast {
 		copy {
@@ -172,9 +172,9 @@ test {
 //				}
 //				developers {
 //					developer {
-//						id 'shuoyanhe'
-//						name 'shuoyanhe'
-//						email 'shuoyanhe@webank.com'
+//						id 'zhangsan'
+//						name 'zhangsan'
+//						email 'zhangsan@gmail.com'
 //					}
 //				}
 //			}

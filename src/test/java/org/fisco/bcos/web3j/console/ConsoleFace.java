@@ -14,7 +14,7 @@ public interface ConsoleFace {
 
 	void getObserverList(String[] params) throws IOException;
 
-	void getMinerList(String[] params) throws IOException;
+	void getSealerList(String[] params) throws IOException;
 
 	void getConsensusStatus(String[] params) throws IOException;
 
@@ -62,17 +62,47 @@ public interface ConsoleFace {
 	
 	void queryCNS(String[] params) throws Exception;
 
-	void addMiner(String[] params) throws Exception;
+	void addSealer(String[] params) throws Exception;
 
 	void addObserver(String[] params) throws Exception;
 	
 	void removeNode(String[] params) throws Exception;
 	
-	void addAuthority(String[] params) throws Exception;
+	void addUserTableManager(String[] params) throws Exception;
 	
-	void removeAuthority(String[] params) throws Exception;
+	void removeUserTableManager(String[] params) throws Exception;
 	
-	void queryAuthority(String[] params) throws Exception;
+	void queryUserTableManager(String[] params) throws Exception;
+	
+	void addDeployAndCreateManager(String[] params) throws Exception;
+	
+	void removeDeployAndCreateManager(String[] params) throws Exception;
+	
+	void queryDeployAndCreateManager(String[] params) throws Exception;
+	
+	void addAuthorityManager(String[] params) throws Exception;
+	
+	void removeAuthorityManager(String[] params) throws Exception;
+	
+	void queryAuthorityManager(String[] params) throws Exception;
+	
+	void addNodeManager(String[] params) throws Exception;
+	
+	void removeNodeManager(String[] params) throws Exception;
+	
+	void queryNodeManager(String[] params) throws Exception;
+	
+	void addCNSManager(String[] params) throws Exception;
+	
+	void removeCNSManager(String[] params) throws Exception;
+	
+	void queryCNSManager(String[] params) throws Exception;
+	
+	void addSysConfigManager(String[] params) throws Exception;
+	
+	void removeSysConfigManager(String[] params) throws Exception;
+	
+	void querySysConfigManager(String[] params) throws Exception;
 
 	void setSystemConfigByKey(String[] params) throws Exception;
 
