@@ -28,6 +28,7 @@ public class CnsService {
     static Logger logger = LoggerFactory.getLogger(CnsService.class);
     static final long DEFAULT_SYNC_THRESHOLD = 1000 * 60 * 3;
     static final String REVERSE_NAME_SUFFIX = ".addr.reverse";
+    public static final int MAX_VERSION_LENGTH = 40;
 
     private final Web3j web3j;
     private final TransactionManager transactionManager;
@@ -93,9 +94,13 @@ public class CnsService {
         }
     }
 
-    public String registerCns(String name, String version, String addr, String abi) throws Exception {
+    public String registerCns(String name, String version, String address, String abi) throws Exception {
         CNS cns = lookupResolver();
-        TransactionReceipt receipt = cns.insert(name, version, addr, abi).send();
+        if(version.length() > MAX_VERSION_LENGTH)
+        {
+        	return PrecompiledCommon.transferToJson(-51);
+        }
+        TransactionReceipt receipt = cns.insert(name, version, address, abi).send();
         return PrecompiledCommon.getJsonStr(receipt.getOutput());
     }
     

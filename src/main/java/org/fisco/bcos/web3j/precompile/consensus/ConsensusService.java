@@ -27,17 +27,17 @@ public class ConsensusService {
 		consensus = Consensus.load(ConsensusPrecompileAddress, web3j, credentials, contractGasProvider);
 	}
 
-	public String addMiner(String nodeID) throws Exception {
+	public String addSealer(String nodeID) throws Exception {
     	if(!isValidNodeID(nodeID))
     	{
     		return PrecompiledCommon.transferToJson(-42);
     	}
-    	List<String> minerList = web3j.getMinerList().send().getResult();
-    	if(minerList.contains(nodeID))
+    	List<String> sealerList = web3j.getSealerList().send().getResult();
+    	if(sealerList.contains(nodeID))
     	{
     		return PrecompiledCommon.transferToJson(-44);
     	}
-        TransactionReceipt receipt = consensus.addMiner(nodeID).send();
+        TransactionReceipt receipt = consensus.addSealer(nodeID).send();
         return PrecompiledCommon.getJsonStr(receipt.getOutput());
     }
 

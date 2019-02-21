@@ -100,10 +100,11 @@ public class Service {
 
 	public void run() throws Exception {
 		logger.debug("init ChannelService");
-
+		int flag = 0;
 		for(ChannelConnections channelConnections :allChannelConnections.getAllChannelConnections()) {
-			if (channelConnections.getGroupId() == groupId) {
 
+			if (channelConnections.getGroupId() == groupId) {
+                    flag=1;
 				try {
 					ConnectionCallback connectionCallback = new ConnectionCallback(topics);
 					connectionCallback.setChannelService(this);
@@ -116,7 +117,7 @@ public class Service {
 					int sleepTime = 0;
 					boolean running = false;
 					while (true) {
-						Map<String, ChannelHandlerContext> networkConnection = allChannelConnections.getAllChannelConnections().stream().filter(x->x.getGroupId()==groupId).findFirst().get().getNetworkConnections();
+						Map<String, ChannelHandlerContext> networkConnection = channelConnections.getNetworkConnections();
 						for (String key : networkConnection.keySet()) {
 							if (networkConnection.get(key) != null && networkConnection.get(key).channel().isActive()) {
 								running = true;
@@ -146,6 +147,9 @@ public class Service {
 				}
 
 			}
+		}
+		if(flag == 0) {
+			throw new Exception("Please set the right groupId");
 		}
 	}
 
@@ -347,7 +351,7 @@ public class Service {
 
 			EthereumResponse response = new EthereumResponse();
 			response.setErrorCode(-1);
-			response.setErrorMessage(e.getMessage()+"Please Refer To Link Below:https://github.com/FISCO-BCOS/web3sdk/wiki/web3sdk-debug");
+			response.setErrorMessage(e.getMessage()+"   requset send failed! Please Refer To Link Below:https://github.com/FISCO-BCOS/web3sdk/wiki/web3sdk-debug");
 			response.setContent("");
 			response.setMessageID(request.getMessageID());
 

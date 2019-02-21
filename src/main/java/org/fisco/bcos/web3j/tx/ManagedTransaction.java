@@ -15,7 +15,6 @@ import java.math.BigInteger;
  */
 public abstract class ManagedTransaction {
 
-    // https://www.reddit.com/r/ethereum/comments/5g8ia6/attention_miners_we_recommend_raising_gas_limit/
     public static final BigInteger GAS_PRICE = BigInteger.valueOf(22_000_000_000L);
 
     protected Web3j web3j;

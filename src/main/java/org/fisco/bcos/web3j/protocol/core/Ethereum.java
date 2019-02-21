@@ -15,7 +15,7 @@ public interface Ethereum {
     
     Request<?, PbftView> getPbftView();
     
-    Request<?, MinerList> getMinerList();
+    Request<?, SealerList> getSealerList();
     
     Request<?, ObserverList> getObserverList();
     
