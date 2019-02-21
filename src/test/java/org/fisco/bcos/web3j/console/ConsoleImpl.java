@@ -28,14 +28,11 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -118,7 +115,6 @@ public class ConsoleImpl implements ConsoleFace {
             System.exit(0);
         } catch (IOException e) {
             System.out.println(e.getMessage());
-            ;
         }
     }
 
