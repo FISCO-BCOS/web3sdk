@@ -10,7 +10,6 @@ import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameterName;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock;
 import org.fisco.bcos.web3j.protocol.core.methods.response.SyncStatus;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
-import org.fisco.bcos.web3j.tx.ClientTransactionManager;
 import org.fisco.bcos.web3j.tx.RawTransactionManager;
 import org.fisco.bcos.web3j.tx.TransactionManager;
 import org.fisco.bcos.web3j.tx.gas.DefaultGasProvider;
@@ -25,9 +24,8 @@ import java.util.List;
  * Resolution logic for contract addresses.
  */
 public class CnsService {
-    static Logger logger = LoggerFactory.getLogger(CnsService.class);
-    static final long DEFAULT_SYNC_THRESHOLD = 1000 * 60 * 3;
-    static final String REVERSE_NAME_SUFFIX = ".addr.reverse";
+    private static Logger logger = LoggerFactory.getLogger(CnsService.class);
+    private static final long DEFAULT_SYNC_THRESHOLD = 1000 * 60 * 3L;
     public static final int MAX_VERSION_LENGTH = 40;
 
     private final Web3j web3j;

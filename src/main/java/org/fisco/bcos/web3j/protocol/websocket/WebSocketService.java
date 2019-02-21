@@ -122,7 +122,7 @@ public class WebSocketService implements Web3jService {
         try {
             return sendAsync(request, responseType).get();
         } catch (InterruptedException e) {
-            Thread.interrupted();
+        	Thread.currentThread().interrupt();
             throw new IOException("Interrupted WebSocket request", e);
         } catch (ExecutionException e) {
             if (e.getCause() instanceof IOException) {
