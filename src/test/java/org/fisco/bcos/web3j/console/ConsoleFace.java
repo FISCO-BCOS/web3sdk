@@ -5,6 +5,8 @@ import java.io.IOException;
 public interface ConsoleFace {
 	
 	void welcome();
+	
+	void close();
 
 	void help(String[] params);
 
@@ -108,7 +110,5 @@ public interface ConsoleFace {
 
 	void getSystemConfigByKey(String[] params) throws Exception;
 	
-	void quit(String[] params) throws Exception;
-
 	void init(String[] args);
 }

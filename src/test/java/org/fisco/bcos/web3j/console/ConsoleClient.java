@@ -29,6 +29,17 @@ public class ConsoleClient {
 				System.out.print("");
 				continue;
 			}
+			if("quit".equals(params[0]) || "q".equals(params[0]))
+			{	
+				if (HelpInfo.promptNoParams(params, "q")) {
+					continue;
+				} else if (params.length > 2) {
+					HelpInfo.promptHelp("q");
+					continue;
+				}
+				console.close();
+				break;
+			}
 			try {
 
 				switch (params[0]) {
@@ -236,10 +247,6 @@ public class ConsoleClient {
 				case "getSystemConfigByKey":
 				case "gsc":
 					console.getSystemConfigByKey(params);
-					break;
-				case "quit":
-				case "q":
-					console.quit(params);
 					break;
 				default:
 					System.out.println("Undefined command: \"" + params[0] + "\".  Try \"help\".\n");
