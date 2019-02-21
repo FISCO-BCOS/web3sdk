@@ -6,6 +6,8 @@
 # Package Files #
 *.war
 *.ear
+*.bin
+*.abi
 
 ### Gradle template
 .gradle
