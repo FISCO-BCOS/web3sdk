@@ -141,7 +141,6 @@ public class ConsoleImpl implements ConsoleFace {
             System.exit(0);
         } catch (IOException e) {
             System.out.println(e.getMessage());
-            ;
         }
     }
 
