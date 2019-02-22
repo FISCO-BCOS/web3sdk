@@ -11,16 +11,6 @@ contract OkD{
     Account from;
     Account to;
 
-    // struct  Translog {
-    //     string time;
-    //     address from;
-    //     address to;
-    //     uint amount;
-    // }
-    
-    
-    // Translog[] log;
-
     function OkD(){
         
         from.account=0x1;
