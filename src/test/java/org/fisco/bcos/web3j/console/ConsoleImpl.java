@@ -58,7 +58,7 @@ public class ConsoleImpl implements ConsoleFace {
     public void init(String[] args) {
         ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
         service = context.getBean(Service.class);
-        int groupID = 1;
+        int groupID = service.getGroupId();
         if(args.length < 2)
         {
         	InputStream is = null;
@@ -92,21 +92,17 @@ public class ConsoleImpl implements ConsoleFace {
     			close();
     		}
         }
-        else
-        {
-        	switch (args.length) {
-        	case 0:
-        		break;
-        	case 1:
-        		groupID = setGroupID(args, groupID);
-        		break;
-        	default:
-        		groupID = setGroupID(args, groupID);
-        		privateKey = args[1];
-        		break;
-        	}
+    	switch (args.length) {
+	    	case 0:
+	    		break;
+	    	case 1:
+	    		groupID = setGroupID(args, groupID);
+	    		break;
+	    	default:
+	    		groupID = setGroupID(args, groupID);
+	    		privateKey = args[1];
+	    		break;
         }
-
         try {
             credentials = GenCredential.create(privateKey);
         } catch (NumberFormatException e) {
