@@ -1,13 +1,14 @@
 package org.fisco.bcos.channel.test.contract;
 
-import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.math.BigInteger;
 import java.util.List;
-import java.util.Properties;
 
+import org.apache.commons.configuration.PropertiesConfiguration;
 import org.fisco.bcos.channel.client.Service;
-import org.fisco.bcos.channel.test.contract.DBTest.*;
+import org.fisco.bcos.channel.test.contract.DBTest.CreateResultEventResponse;
+import org.fisco.bcos.channel.test.contract.DBTest.InsertResultEventResponse;
+import org.fisco.bcos.channel.test.contract.DBTest.RemoveResultEventResponse;
+import org.fisco.bcos.channel.test.contract.DBTest.UpdateResultEventResponse;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.crypto.ECKeyPair;
 import org.fisco.bcos.web3j.crypto.Keys;
@@ -47,11 +48,10 @@ public class DBTestClient {
 			contractAddress = dbtest.getContractAddress();
 			System.out.println("deploy contract address: " + contractAddress);
 			logger.info("deploy contract address: " + contractAddress);
-	        Properties prop = new Properties();
-	        prop.setProperty("crud_address", contractAddress);
 	        final Resource contractResource = new ClassPathResource("contract.properties");
-	        FileOutputStream fos = new FileOutputStream(contractResource.getFile());
-	        prop.store(fos, "contract address");
+	        PropertiesConfiguration prop = new PropertiesConfiguration(contractResource.getFile());
+	        prop.setProperty("crud_address", contractAddress);
+	        prop.save();
 	        
 	        System.out.println("deploy contract successful!");
 		} 
@@ -74,12 +74,17 @@ public class DBTestClient {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static void testDBTest(String[] args) throws Exception {
 
-		Properties prop = new Properties();
 		final Resource contractResource = new ClassPathResource("contract.properties");
-		InputStream fis = contractResource.getInputStream();
-        prop.load(fis);
-        String contractAddress = prop.getProperty("crud_address");
-        
+		PropertiesConfiguration prop = new PropertiesConfiguration(contractResource.getFile());
+		Object addressObj = prop.getProperty("crud_address");
+        if(addressObj != null)
+        {
+        	contractAddress = (String) addressObj; 
+        }
+        else
+        {
+        	deployDBTest();
+        }
 		ContractGasProvider contractGasProvider = new StaticGasProvider(gasPrice, gasLimit);;
 		DBTest dbtest = DBTest.load(contractAddress, web3j, credentials, contractGasProvider);
 		// create table
