@@ -1,3 +1,7 @@
+plugins {
+  id 'com.github.sherter.google-java-format' version '0.8'
+}
+
 apply plugin: 'maven'
 apply plugin: 'idea'
 apply plugin: 'java'
@@ -21,6 +25,14 @@ repositories {
     mavenCentral()
 }
 
+googleJavaFormat {
+  source 'src/main'
+  source 'src/test'
+  include '**/*.java'
+  exclude 'src/test/java/org/fisco/bcos/temp/*.java'
+  exclude '**/BcosBlock.java'
+  exclude '**/ChannelEthereumService.java'
+}
 
 def spring_version="4.3.18.RELEASE"
 

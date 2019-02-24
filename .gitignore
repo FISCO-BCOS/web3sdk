@@ -35,6 +35,7 @@ gradle.properties
 /log
 /dist
 /src/test/resources/ca.crt
-/src/test/resources/keystore.p12
+/src/test/resources/node.crt
+/src/test/resources/node.key
 /src/test/java/org/fisco/bcos/temp
 build.gradle.bak
