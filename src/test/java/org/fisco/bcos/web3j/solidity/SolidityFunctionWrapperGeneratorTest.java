@@ -16,25 +16,8 @@ import static org.fisco.bcos.web3j.solidity.compiler.SolidityCompiler.Options.*;
 
 public class SolidityFunctionWrapperGeneratorTest {
 
-//    private String binFile =  new File("src/test/resources/solidity/HelloWorld.bin").getAbsolutePath();
-//    private String abiFile =  new File("src/test/resources/solidity/HelloWorld.abi").getAbsolutePath();
     protected String tempDirPath =  new File("src/test/java/").getAbsolutePath();
     protected String packageName =  "org.fisco.bcos.temp";
-
-
-    @Test
-    public void generateClassFromABIForHelloWorld() throws Exception {
-
-        String binFile1 =  new File("src/test/resources/solidity/HelloWorld.bin").getAbsolutePath();
-        String abiFile1 =  new File("src/test/resources/solidity/HelloWorld.abi").getAbsolutePath();
-        SolidityFunctionWrapperGenerator.main(Arrays.asList(
-                "-a",  abiFile1,
-                "-b",  binFile1,
-                "-p", packageName,
-                "-o", tempDirPath
-        ).toArray(new String[0]));
-        System.out.println("generate successfully");
-    }
 
     @Test
     public void generateClassFromABIAndBIN() throws Exception {
@@ -71,11 +54,8 @@ public class SolidityFunctionWrapperGeneratorTest {
             System.out.println("Out: '" + res.output + "'");
             System.out.println("Err: '" + res.errors + "'");
             CompilationResult result = CompilationResult.parse(res.output);
-            //   Assert.assertEquals(solFile.getName(), result.getContractName()+".sol");
-            //     Assert.assertEquals(solFile.getAbsolutePath(), result.getContractPath());
             System.out.println("contractname  " + solFile.getName());
             Path source = Paths.get(solFile.getPath());
-            // todo
             String contractname = solFile.getName().split("\\.")[0];
             CompilationResult.ContractMetadata a = result.getContract(solFile.getName().split("\\.")[0]);
             System.out.println("abi   " + a.abi);
