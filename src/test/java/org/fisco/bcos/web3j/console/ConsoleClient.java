@@ -1,12 +1,14 @@
 package org.fisco.bcos.web3j.console;
 
 import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 import org.fisco.bcos.web3j.protocol.channel.ResponseExcepiton;
 import org.fisco.bcos.web3j.protocol.core.Response;
-import org.jline.builtins.Completers.FileNameCompleter;
+import org.jline.builtins.Completers.FilesCompleter;
 import org.jline.reader.Completer;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
@@ -50,13 +52,16 @@ public class ConsoleClient {
       completers.add(new ArgumentCompleter(new StringsCompleter("getPendingTxSize")));
       completers.add(new ArgumentCompleter(new StringsCompleter("getCode")));
       completers.add(new ArgumentCompleter(new StringsCompleter("getTotalTransactionCount")));
-      completers.add(new ArgumentCompleter(new StringsCompleter("call")));
+      Path path = FileSystems.getDefault().getPath("solidity/contracts/", "");
       completers.add(
-          new ArgumentCompleter(new StringsCompleter("deploy"), new FileNameCompleter()));
+          new ArgumentCompleter(new StringsCompleter("deploy"), new FilesCompleter(path)));
+      completers.add(new ArgumentCompleter(new StringsCompleter("call"), new FilesCompleter(path)));
       completers.add(
-          new ArgumentCompleter(new StringsCompleter("deployByCNS"), new FileNameCompleter()));
-      completers.add(new ArgumentCompleter(new StringsCompleter("callByCNS")));
-      completers.add(new ArgumentCompleter(new StringsCompleter("queryCNS")));
+          new ArgumentCompleter(new StringsCompleter("deployByCNS"), new FilesCompleter(path)));
+      completers.add(
+          new ArgumentCompleter(new StringsCompleter("callByCNS"), new FilesCompleter(path)));
+      completers.add(
+          new ArgumentCompleter(new StringsCompleter("queryCNS"), new FilesCompleter(path)));
       completers.add(new ArgumentCompleter(new StringsCompleter("addSealer")));
       completers.add(new ArgumentCompleter(new StringsCompleter("addObserver")));
       completers.add(new ArgumentCompleter(new StringsCompleter("removeNode")));
@@ -81,9 +86,6 @@ public class ConsoleClient {
       completers.add(new ArgumentCompleter(new StringsCompleter("setSystemConfigByKey")));
       completers.add(new ArgumentCompleter(new StringsCompleter("getSystemConfigByKey")));
       completers.add(new ArgumentCompleter(new StringsCompleter("quit")));
-
-      completers.add(
-          new ArgumentCompleter(new StringsCompleter("deploy"), new FileNameCompleter()));
 
       Terminal terminal = TerminalBuilder.terminal();
       lineReader =
