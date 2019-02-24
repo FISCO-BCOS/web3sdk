@@ -1,21 +1,22 @@
-//package org.fisco.bcos.channel.test;
+// package org.fisco.bcos.channel.test;
 //
-//import java.util.Map;
-//import java.util.concurrent.ConcurrentHashMap;
+// import java.util.Map;
+// import java.util.concurrent.ConcurrentHashMap;
 //
-//import org.springframework.context.ApplicationContext;
-//import org.springframework.context.support.ClassPathXmlApplicationContext;
+// import org.springframework.context.ApplicationContext;
+// import org.springframework.context.support.ClassPathXmlApplicationContext;
 //
-//import com.google.common.util.concurrent.RateLimiter;
+// import com.google.common.util.concurrent.RateLimiter;
 //
-//import org.fisco.bcos.channel.client.Service;
-//import org.fisco.bcos.channel.dto.ChannelRequest;
+// import org.fisco.bcos.channel.client.Service;
+// import org.fisco.bcos.channel.dto.ChannelRequest;
 //
-//public class Perfomance {
+// public class Perfomance {
 //
 //	public static void main(String[] args) throws Exception {
 //		if(args.length < 6) {
-//			System.out.println("Param: request         receive         total;          TPS     package size          timeout");
+//			System.out.println("Param: request         receive         total;          TPS     package size
+//          timeout");
 //			return;
 //		}
 //		String from = args[0];
@@ -25,7 +26,8 @@
 //		Integer packageSize = Integer.parseInt(args[4]);
 //		Integer timeout = Integer.parseInt(args[5]);
 //
-//		ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
+//		ApplicationContext context = new
+// ClassPathXmlApplicationContext("classpath:applicationContext.xml");
 //
 //		Service service = context.getBean(Service.class);
 //		service.setPushCallback(new PushCallback());
@@ -91,4 +93,4 @@
 //
 //		System.out.println("total :" + String.valueOf(count) + " ");
 //	}
-//}
+// }
