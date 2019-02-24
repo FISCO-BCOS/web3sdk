@@ -141,7 +141,7 @@ public class CompilerTest {
     @Test
     public void compileFilesWithImportTest() throws IOException {
 
-        Path source = Paths.get("src","test","resources","contract","file2.sol");
+        Path source = Paths.get("src","test","resources","contract","test2.sol");
 
         SolidityCompiler.Result res = SolidityCompiler.compile(source.toFile(), true, ABI, BIN, INTERFACE, METADATA);
         System.out.println("Out: '" + res.output + "'");
@@ -175,7 +175,7 @@ public class CompilerTest {
     @Test
     public void compileFilesWithImportFromParentStringTest() throws IOException {
 
-        Path source = Paths.get("src","test","resources","contract","file3.sol");
+        Path source = Paths.get("src","test","resources","contract","test3.sol");
 
         SolidityCompiler.Option allowPathsOption = new AllowPaths(Collections.singletonList(source.getParent().getParent().toAbsolutePath().toString()));
         SolidityCompiler.Result res = SolidityCompiler.compile(source.toFile(), true, ABI, BIN, INTERFACE, METADATA, allowPathsOption);
