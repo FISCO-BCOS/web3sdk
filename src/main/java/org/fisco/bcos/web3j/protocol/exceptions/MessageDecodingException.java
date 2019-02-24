@@ -1,14 +1,12 @@
 package org.fisco.bcos.web3j.protocol.exceptions;
 
-/**
- * Encoding exception.
- */
+/** Encoding exception. */
 public class MessageDecodingException extends RuntimeException {
-    public MessageDecodingException(String message) {
-        super(message);
-    }
+  public MessageDecodingException(String message) {
+    super(message);
+  }
 
-    public MessageDecodingException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  public MessageDecodingException(String message, Throwable cause) {
+    super(message, cause);
+  }
 }
