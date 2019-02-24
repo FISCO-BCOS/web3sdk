@@ -2,11 +2,15 @@ English / [中文](doc/README_CN.md)
 
 # FISCO BCOS JAVA SDK
 
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 [![Build Status](https://travis-ci.org/FISCO-BCOS/web3sdk.svg?branch=release-2.0.1)](https://travis-ci.org/FISCO-BCOS/web3sdk)
+[![CircleCI](https://circleci.com/gh/FISCO-BCOS/web3sdk/tree/release-2.0.1.svg?style=shield)](https://circleci.com/gh/FISCO-BCOS/web3sdk/tree/release-2.0.1)
+[![codecov](https://codecov.io/gh/FISCO-BCOS/web3sdk/branch/feature-ci/graph/badge.svg)](https://codecov.io/gh/FISCO-BCOS/web3sdk)
+[![CodeFactor](https://www.codefactor.io/repository/github/fisco-bcos/web3sdk/badge)](https://www.codefactor.io/repository/github/fisco-bcos/web3sdk)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/c9769615cc364a408969b088e90d7912)](https://www.codacy.com/app/fisco/web3sdk?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=FISCO-BCOS/web3sdk&amp;utm_campaign=Badge_Grade)
 
 ---
-Java SDK provides the Java API for [FISCO-BCOS](https://github.com/fqliao/FISCO-BCOS/tree/release-2.0.1). You can easily and quickly develop your blockchain applications based on the FISCO-BCOS Java SDK.
+Java SDK provides the Java API for [FISCO-BCOS](https://github.com/FISCO-BCOS/FISCO-BCOS/tree/release-2.0.1). You can easily and quickly develop your blockchain applications based on the FISCO-BCOS Java SDK.
 
 <div align="center">
   <img src="./images/sdk.png" width = "600" height = "420"/>
