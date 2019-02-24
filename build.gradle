@@ -4,6 +4,7 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'signing'
 apply plugin:'application'
+apply plugin: 'jacoco'
 
 
 sourceCompatibility = 1.8
@@ -189,5 +190,13 @@ test {
 //	}
 //}
 
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        html.enabled false
+    }
+}
+
+check.dependsOn jacocoTestReport
 
 mainClassName  = System.getProperty("exec.mainClass") ?:  "org.fisco.bcos.channel.test.amop.Channel2Client"
