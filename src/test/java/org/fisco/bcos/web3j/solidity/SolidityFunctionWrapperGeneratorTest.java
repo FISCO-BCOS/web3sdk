@@ -55,8 +55,6 @@ public class SolidityFunctionWrapperGeneratorTest {
             System.out.println("Out: '" + res.output + "'");
             System.out.println("Err: '" + res.errors + "'");
             CompilationResult result = CompilationResult.parse(res.output);
-            Assert.assertEquals(solFile.getName(), result.getContractName()+".sol");
-            Assert.assertEquals(solFile.getAbsolutePath(), result.getContractPath());
             System.out.println("contractname  " + solFile.getName());
             Path source = Paths.get(solFile.getPath());
             String contractname = solFile.getName().split("\\.")[0];
