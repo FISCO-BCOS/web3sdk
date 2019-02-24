@@ -4,7 +4,6 @@ import org.apache.commons.io.FileUtils;
 import org.fisco.bcos.web3j.codegen.SolidityFunctionWrapperGenerator;
 import org.fisco.bcos.web3j.solidity.compiler.CompilationResult;
 import org.fisco.bcos.web3j.solidity.compiler.SolidityCompiler;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
