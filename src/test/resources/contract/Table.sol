@@ -3,7 +3,7 @@ contract TableFactory {
     function createTable(string,string,string) public constant returns(Table); //创建表
 }
 
-//查询条件
+//select condition
 contract Condition {
     function EQ(string, int);
     function EQ(string, string);
@@ -21,7 +21,7 @@ contract Condition {
     function limit(int, int);
 }
 
-//单条数据记录
+//one record 
 contract Entry {
     function getInt(string) public constant returns(int);
     function getAddress(string) public constant returns(address);
@@ -32,21 +32,21 @@ contract Entry {
     function set(string, string) public;
 }
 
-//数据记录集
+//record sets
 contract Entries {
     function get(int) public constant returns(Entry);
     function size() public constant returns(int);
 }
 
-//Table主类
+//Table main contract
 contract Table {
-    //查询接口
+    //select api
     function select(string, Condition) public constant returns(Entries);
-    //插入接口
+    //insert api
     function insert(string, Entry) public returns(int);
-    //更新接口
+    //update api
     function update(string, Entry, Condition) public returns(int);
-    //删除接口
+    //remove api
     function remove(string, Condition) public returns(int);
     
     function newEntry() public constant returns(Entry);

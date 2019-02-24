@@ -6,13 +6,13 @@ contract TableTest {
     event updateResult(int count);
     event removeResult(int count);
     
-    //创建表
+    //create table
     function create() public {
         TableFactory tf = TableFactory(0x1001); //TableFactory的地址固定为0x1001
         tf.createTable("t_test", "name", "item_id,item_name");
     }
 
-    //查询数据
+    //select records
     function select(string name) public constant returns(bytes32[], int[], bytes32[]){
         TableFactory tf = TableFactory(0x1001);
         Table table = tf.openTable("t_test");
@@ -36,7 +36,7 @@ contract TableTest {
  
         return (user_name_bytes_list, item_id_list, item_name_bytes_list);
     }
-    //插入数据
+    //insert records
     function insert(string name, int item_id, string item_name) public returns(int) {
         TableFactory tf = TableFactory(0x1001);
         Table table = tf.openTable("t_test");
@@ -51,7 +51,7 @@ contract TableTest {
         
         return count;
     }
-    //更新数据
+    //update records
     function update(string name, int item_id, string item_name) public returns(int) {
         TableFactory tf = TableFactory(0x1001);
         Table table = tf.openTable("t_test");
@@ -68,7 +68,7 @@ contract TableTest {
         
         return count;
     }
-    //删除数据
+    //remove records
     function remove(string name, int item_id) public returns(int){
         TableFactory tf = TableFactory(0x1001);
         Table table = tf.openTable("t_test");

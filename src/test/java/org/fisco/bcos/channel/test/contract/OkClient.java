@@ -1,10 +1,8 @@
 package org.fisco.bcos.channel.test.contract;
 
-import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.math.BigInteger;
-import java.util.Properties;
 
+import org.apache.commons.configuration.PropertiesConfiguration;
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.crypto.ECKeyPair;
@@ -44,11 +42,10 @@ public class OkClient {
 			contractAddress = ok.getContractAddress();
 			System.out.println("deploy contract address: " + contractAddress);
 			logger.info("deploy contract address: " + contractAddress);
-	        Properties prop = new Properties();
-	        prop.setProperty("ok_address", contractAddress);
 	        final Resource contractResource = new ClassPathResource("contract.properties");
-	        FileOutputStream fos = new FileOutputStream(contractResource.getFile());
-	        prop.store(fos, "contract address");
+	        PropertiesConfiguration prop = new PropertiesConfiguration(contractResource.getFile());
+	        prop.setProperty("ok_address", contractAddress);
+	        prop.save();
 	        
 	        System.out.println("deploy contract successful!");
 		} 
@@ -71,12 +68,17 @@ public class OkClient {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static void testOk(String[] args) throws Exception {
 
-		Properties prop = new Properties();
 		final Resource contractResource = new ClassPathResource("contract.properties");
-		InputStream fis = contractResource.getInputStream();
-        prop.load(fis);
-        String contractAddress = prop.getProperty("ok_address");
-        
+		PropertiesConfiguration prop = new PropertiesConfiguration(contractResource.getFile());
+        Object addressObj = prop.getProperty("ok_address");
+        if(addressObj != null)
+        {
+        	contractAddress = (String) addressObj; 
+        }
+        else
+        {
+        	deployOk();
+        }
 		ContractGasProvider contractGasProvider = new StaticGasProvider(gasPrice, gasLimit);;
 		Ok ok = Ok.load(contractAddress, web3j, credentials, contractGasProvider);
 		// trans
