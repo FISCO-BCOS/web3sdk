@@ -349,7 +349,7 @@ public class ConsoleClient {
 				Response t = null;
 				try {
 					t = ObjectMapperFactory.getObjectMapper(true).readValue(message.substring(message.indexOf("{"), message.lastIndexOf("}") + 1), Response.class);
-				} catch (IOException e1) {
+				} catch (Exception e1) {
 					System.out.println(e1.getMessage());
 				}
 				ConsoleUtils.printJson(

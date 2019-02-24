@@ -447,11 +447,7 @@ public class ConsoleTest{
         console.getTotalTransactionCount(params4);
     	assertTrue(!"".equals(log.getLog()));
     }
-    @Test(expected= ClassNotFoundException.class) 
-    public void deployTestException() throws Exception {
-    	String[] params = {"d", "ae"};
-    	console.deploy(params);
-    }
+    
     @Test
     public void deployTest() throws Exception {
     	String[] params1 = {};
