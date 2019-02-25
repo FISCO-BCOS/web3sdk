@@ -30,7 +30,6 @@ public class CompileSolToJava {
       System.out.println("Err: '" + res.errors + "'");
       CompilationResult result = CompilationResult.parse(res.output);
       System.out.println("contractname  " + solFile.getName());
-      Path source = Paths.get(solFile.getPath());
       String contractname = solFile.getName().split("\\.")[0];
       CompilationResult.ContractMetadata a = result.getContract(solFile.getName().split("\\.")[0]);
       System.out.println("abi   " + a.abi);
