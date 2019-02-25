@@ -355,17 +355,19 @@ public class ConsoleClient {
                   .readValue(
                       message.substring(message.indexOf("{"), message.lastIndexOf("}") + 1),
                       Response.class);
+          if (t != null) {
+            ConsoleUtils.printJson(
+                "{\"code\":"
+                    + t.getError().getCode()
+                    + ", \"msg\":"
+                    + "\""
+                    + t.getError().getMessage()
+                    + "\"}");
+            System.out.println();
+          }
         } catch (Exception e1) {
           System.out.println(e1.getMessage());
         }
-        ConsoleUtils.printJson(
-            "{\"code\":"
-                + t.getError().getCode()
-                + ", \"msg\":"
-                + "\""
-                + t.getError().getMessage()
-                + "\"}");
-        System.out.println();
       } catch (Exception e) {
         System.out.println(e.getMessage());
         System.out.println();

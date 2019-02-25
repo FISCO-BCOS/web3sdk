@@ -8,7 +8,7 @@ contract TableTest {
     
     //create table
     function create() public {
-        TableFactory tf = TableFactory(0x1001); //TableFactory的地址固定为0x1001
+        TableFactory tf = TableFactory(0x1001); //The fixed address is 0x1001 for TableFactory
         tf.createTable("t_test", "name", "item_id,item_name");
     }
 
