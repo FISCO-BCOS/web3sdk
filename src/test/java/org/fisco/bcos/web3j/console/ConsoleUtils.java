@@ -127,7 +127,7 @@ public class ConsoleUtils {
   }
 
   // dynamic compile target java code
-  public static void dynamicCompileJavaToClass(String name) throws Exception {
+  public static void dynamicCompileJavaToClass() throws Exception {
 
     File sourceDir = new File(JAVAPATH);
     if (!sourceDir.exists()) {
@@ -140,9 +140,6 @@ public class ConsoleUtils {
     }
     File[] javaFiles = sourceDir.listFiles();
     for (File javaFile : javaFiles) {
-      if (!javaFile.getName().equals(name + ".java")) {
-        continue;
-      }
       JavaCompiler javac = ToolProvider.getSystemJavaCompiler();
       int compileResult =
           javac.run(null, null, null, "-d", distDir.getAbsolutePath(), javaFile.getAbsolutePath());
@@ -237,26 +234,6 @@ public class ConsoleUtils {
           Arrays.asList("-a", abiFile, "-b", binFile, "-p", PACKAGENAME, "-o", tempDirPath)
               .toArray(new String[0]));
     }
-  }
-
-  public static boolean isExistJavaContract(String name) {
-    File sourceDir = new File(JAVAPATH);
-    if (!sourceDir.exists()) {
-      return false;
-    }
-
-    File[] javaFiles = sourceDir.listFiles();
-    return Arrays.asList(javaFiles).stream().anyMatch(x -> x.getName().equals(name + ".java"));
-  }
-
-  public static boolean isExistJavaClass(String name) {
-    File sourceDir = new File(CLASSPATH);
-    if (!sourceDir.exists()) {
-      return false;
-    }
-
-    File[] classFiles = sourceDir.listFiles();
-    return Arrays.asList(classFiles).stream().anyMatch(x -> x.getName().equals(name + ".class"));
   }
 
   public static void singleLine() {
