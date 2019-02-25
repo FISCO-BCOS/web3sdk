@@ -30,8 +30,6 @@ googleJavaFormat {
   source 'src/test'
   include '**/*.java'
   exclude 'src/test/java/org/fisco/bcos/temp/*.java'
-  exclude '**/BcosBlock.java'
-  exclude '**/ChannelEthereumService.java'
 }
 
 def spring_version="4.3.18.RELEASE"
@@ -116,7 +114,7 @@ jar {
 
 	doLast {
 		copy {
-			from file('tools/')
+			from file('tools/start.sh')
 			into 'dist/'
 		}
 		copy {
@@ -128,10 +126,12 @@ jar {
 			into 'dist/conf'
 		}
 		copy {
-			from file('src/test/resources/contract/')
+			from file('src/test/resources/contract/Ok.sol')
+			from file('src/test/resources/contract/HelloWorld.sol')
+			from file('src/test/resources/contract/Table.sol')
+			from file('src/test/resources/contract/TableTest.sol')
 			into 'dist/solidity/contracts'
 		}
-		project.file('dist/java/classes').mkdirs()
 	}
 }
 

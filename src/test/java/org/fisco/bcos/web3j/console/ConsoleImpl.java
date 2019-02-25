@@ -686,19 +686,18 @@ public class ConsoleImpl implements ConsoleFace {
       return;
     }
     String name = params[1];
-    if (!ConsoleUtils.isExistJavaContract(name)) {
-      try {
-        ConsoleUtils.dynamicCompileSolFilesToJava();
-      } catch (Exception e) {
-        System.out.println(e.getMessage());
-        System.out.println();
-        return;
-      }
+    try {
+      ConsoleUtils.dynamicCompileSolFilesToJava();
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+      System.out.println();
+      return;
     }
-    if (!ConsoleUtils.isExistJavaClass(name)) {
-      ConsoleUtils.dynamicCompileJavaToClass(name);
-    }
+    ConsoleUtils.dynamicCompileJavaToClass();
     ConsoleUtils.dynamicLoadClass();
+    if (name.endsWith(".sol")) {
+      name = name.substring(0, name.length() - 4);
+    }
     contractName = ConsoleUtils.PACKAGENAME + "." + name;
     try {
       contractClass = ContractClassFactory.getContractClass(contractName);
@@ -732,13 +731,15 @@ public class ConsoleImpl implements ConsoleFace {
       HelpInfo.promptHelp("c");
       return;
     }
-    String name = params[1];
     ConsoleUtils.dynamicLoadClass();
+    String name = params[1];
+    if (name.endsWith(".sol")) {
+      name = name.substring(0, name.length() - 4);
+    }
     contractName = ConsoleUtils.PACKAGENAME + "." + name;
     try {
       contractClass = ContractClassFactory.getContractClass(contractName);
     } catch (Exception e) {
-      e.printStackTrace();
       System.out.println(
           "There is no "
               + name
@@ -774,24 +775,25 @@ public class ConsoleImpl implements ConsoleFace {
     if (argobj == null) {
       return;
     }
-    String returnType = ContractClassFactory.getReturnType(contractClass, funcName, parameterType);
-    if (returnType == null) {
-      HelpInfo.promptNoFunc(params[1], funcName, params.length - 4);
-      return;
-    }
+
     remoteCall = (RemoteCall<?>) func.invoke(contractObject, argobj);
     Object result;
     try {
       result = remoteCall.send();
     } catch (Exception e) {
-      System.out.println(
-          "The contract " + params[1] + " for address " + contractAddress + " doesn't exsit.");
+      System.out.println("Call failed.");
       System.out.println();
       return;
     }
-    String resultStr;
-    resultStr = ContractClassFactory.getReturnObject(returnType, result);
-    System.out.println(resultStr);
+
+    String returnObject =
+        ContractClassFactory.getReturnObject(contractClass, funcName, parameterType, result);
+    if (returnObject == null) {
+      HelpInfo.promptNoFunc(params[1], funcName, params.length - 4);
+      return;
+    }
+
+    System.out.println(returnObject);
     System.out.println();
   }
 
@@ -838,20 +840,19 @@ public class ConsoleImpl implements ConsoleFace {
       System.out.println();
       return;
     }
-    String name = params[1];
-    if (!ConsoleUtils.isExistJavaContract(name)) {
-      try {
-        ConsoleUtils.dynamicCompileSolFilesToJava();
-      } catch (Exception e) {
-        System.out.println(e.getMessage());
-        System.out.println();
-        return;
-      }
+    try {
+      ConsoleUtils.dynamicCompileSolFilesToJava();
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+      System.out.println();
+      return;
     }
-    if (!ConsoleUtils.isExistJavaClass(name)) {
-      ConsoleUtils.dynamicCompileJavaToClass(name);
-    }
+    ConsoleUtils.dynamicCompileJavaToClass();
     ConsoleUtils.dynamicLoadClass();
+    String name = params[1];
+    if (name.endsWith(".sol")) {
+      name = name.substring(0, name.length() - 4);
+    }
     contractName = ConsoleUtils.PACKAGENAME + "." + name;
     try {
       contractClass = ContractClassFactory.getContractClass(contractName);
@@ -896,6 +897,9 @@ public class ConsoleImpl implements ConsoleFace {
     }
     ConsoleUtils.dynamicLoadClass();
     String name = params[1];
+    if (name.endsWith(".sol")) {
+      name = name.substring(0, name.length() - 4);
+    }
     contractName = ConsoleUtils.PACKAGENAME + "." + name;
     try {
       contractClass = ContractClassFactory.getContractClass(contractName);
@@ -946,18 +950,22 @@ public class ConsoleImpl implements ConsoleFace {
     if (argobj == null) {
       return;
     }
-    String returnType = ContractClassFactory.getReturnType(contractClass, funcName, parameterType);
-    if (returnType == null) {
-      HelpInfo.promptNoFunc(params[1], funcName, params.length - 4);
-      return;
-    }
     remoteCall = (RemoteCall<?>) func.invoke(contractObject, argobj);
-    Object result;
-    result = remoteCall.send();
-    String resultStr;
-    resultStr = ContractClassFactory.getReturnObject(returnType, result);
-    System.out.println(resultStr);
-    System.out.println();
+    Object result = null;
+    try {
+      result = remoteCall.send();
+      String returnObject =
+          ContractClassFactory.getReturnObject(contractClass, funcName, parameterType, result);
+      if (returnObject == null) {
+        HelpInfo.promptNoFunc(params[1], funcName, params.length - 4);
+        return;
+      }
+      System.out.println(returnObject);
+      System.out.println();
+    } catch (Exception e) {
+      System.out.println("Call faild.");
+      System.out.println();
+    }
   }
 
   @SuppressWarnings("rawtypes")
