@@ -3,8 +3,6 @@ package org.fisco.bcos.web3j.solidity;
 import static org.fisco.bcos.web3j.solidity.compiler.SolidityCompiler.Options.*;
 
 import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import org.apache.commons.io.FileUtils;
 import org.fisco.bcos.web3j.codegen.SolidityFunctionWrapperGenerator;
