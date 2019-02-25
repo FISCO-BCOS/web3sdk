@@ -1,107 +1,107 @@
 package org.fisco.bcos.channel.dto;
 
 public class ChannelRequest {
-	
-	public String getFromOrg() {
-		return fromOrg;
-	}
 
-	public void setFromOrg(String keyID) {
-		this.fromOrg = keyID;
-	}
+  public String getFromOrg() {
+    return fromOrg;
+  }
 
-	public String getOrgApp() {
-		return orgApp;
-	}
+  public void setFromOrg(String keyID) {
+    this.fromOrg = keyID;
+  }
 
-	public void setOrgApp(String orgApp) {
-		this.orgApp = orgApp;
-	}
+  public String getOrgApp() {
+    return orgApp;
+  }
 
-	public String getVersion() {
-		return version;
-	}
+  public void setOrgApp(String orgApp) {
+    this.orgApp = orgApp;
+  }
 
-	public void setVersion(String version) {
-		this.version = version;
-	}
+  public String getVersion() {
+    return version;
+  }
 
-	public String getBankNO() {
-		return bankNO;
-	}
+  public void setVersion(String version) {
+    this.version = version;
+  }
 
-	public void setBankNO(String bankNO) {
-		this.bankNO = bankNO;
-	}
+  public String getBankNO() {
+    return bankNO;
+  }
 
-	public String getAppName() {
-		return appName;
-	}
+  public void setBankNO(String bankNO) {
+    this.bankNO = bankNO;
+  }
 
-	public void setAppName(String appName) {
-		this.appName = appName;
-	}
+  public String getAppName() {
+    return appName;
+  }
 
-	public String getMessageID() {
-		return messageID;
-	}
+  public void setAppName(String appName) {
+    this.appName = appName;
+  }
 
-	public void setMessageID(String messageID) {
-		this.messageID = messageID;
-	}
+  public String getMessageID() {
+    return messageID;
+  }
 
-	public String getToOrg() {
-		return toOrg;
-	}
+  public void setMessageID(String messageID) {
+    this.messageID = messageID;
+  }
 
-	public void setToOrg(String toOrg) {
-		this.toOrg = toOrg;
-	}
+  public String getToOrg() {
+    return toOrg;
+  }
 
-	public String getToTopic() {
-		return toTopic;
-	}
+  public void setToOrg(String toOrg) {
+    this.toOrg = toOrg;
+  }
 
-	public void setToTopic(String toTopic) {
-		this.toTopic = toTopic;
-	}
+  public String getToTopic() {
+    return toTopic;
+  }
 
-	public Integer getTimeout() {
-		return timeout;
-	}
+  public void setToTopic(String toTopic) {
+    this.toTopic = toTopic;
+  }
 
-	public void setTimeout(Integer timeout) {
-		this.timeout = timeout;
-	}
+  public Integer getTimeout() {
+    return timeout;
+  }
 
-	public Integer getTtl() {
-		return ttl;
-	}
+  public void setTimeout(Integer timeout) {
+    this.timeout = timeout;
+  }
 
-	public void setTtl(Integer ttl) {
-		this.ttl = ttl;
-	}
+  public Integer getTtl() {
+    return ttl;
+  }
 
-	public String getContent() {
-		return content;
-	}
+  public void setTtl(Integer ttl) {
+    this.ttl = ttl;
+  }
 
-	public void setContent(String content) {
-		this.content = content;
-	}
+  public String getContent() {
+    return content;
+  }
 
-	private String fromOrg; //链ID
-	private String orgApp; //来源标识
-	private String version; //版本
-	private String bankNO; //机构标识
-	private String appName; //应用类型
-	
-	private String messageID; //消息的唯一标识id
-	private String toOrg; //目标机构标识
-	private String toTopic; //目标topic
-	
-	private Integer timeout = 0; //超时时间（毫秒）
-	private Integer ttl; //TTL 限制重试的次数
-	
-	private String content; //请求包体
+  public void setContent(String content) {
+    this.content = content;
+  }
+
+  private String fromOrg; // 链ID
+  private String orgApp; // 来源标识
+  private String version; // 版本
+  private String bankNO; // 机构标识
+  private String appName; // 应用类型
+
+  private String messageID; // 消息的唯一标识id
+  private String toOrg; // 目标机构标识
+  private String toTopic; // 目标topic
+
+  private Integer timeout = 0; // 超时时间（毫秒）
+  private Integer ttl; // TTL 限制重试的次数
+
+  private String content; // 请求包体
 }

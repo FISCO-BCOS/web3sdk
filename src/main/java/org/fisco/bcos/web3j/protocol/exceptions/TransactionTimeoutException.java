@@ -5,11 +5,11 @@ package org.fisco.bcos.web3j.protocol.exceptions;
  * transaction to execute.
  */
 public class TransactionTimeoutException extends Exception {
-    public TransactionTimeoutException(String message) {
-        super(message);
-    }
+  public TransactionTimeoutException(String message) {
+    super(message);
+  }
 
-    public TransactionTimeoutException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  public TransactionTimeoutException(String message, Throwable cause) {
+    super(message, cause);
+  }
 }

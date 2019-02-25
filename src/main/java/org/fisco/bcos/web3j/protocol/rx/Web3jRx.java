@@ -1,19 +1,16 @@
 package org.fisco.bcos.web3j.protocol.rx;
 
-import java.util.List;
-
 import io.reactivex.Flowable;
-import org.fisco.bcos.web3j.protocol.websocket.events.LogNotification;
-import org.fisco.bcos.web3j.protocol.websocket.events.NewHeadsNotification;
+import java.util.List;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
 import org.fisco.bcos.web3j.protocol.core.methods.request.BcosFilter;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Log;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
+import org.fisco.bcos.web3j.protocol.websocket.events.LogNotification;
+import org.fisco.bcos.web3j.protocol.websocket.events.NewHeadsNotification;
 
-/**
- * The Observables JSON-RPC client event API.
- */
+/** The Observables JSON-RPC client event API. */
 public interface Web3jRx {
 
     /**

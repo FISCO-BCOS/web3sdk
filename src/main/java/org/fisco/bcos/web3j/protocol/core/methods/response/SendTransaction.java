@@ -2,11 +2,9 @@ package org.fisco.bcos.web3j.protocol.core.methods.response;
 
 import org.fisco.bcos.web3j.protocol.core.Response;
 
-/**
- * sendTransaction.
- */
+/** sendTransaction. */
 public class SendTransaction extends Response<String> {
-    public String getTransactionHash() {
-        return getResult();
-    }
+  public String getTransactionHash() {
+    return getResult();
+  }
 }
