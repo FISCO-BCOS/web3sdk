@@ -3,7 +3,6 @@ contract DBFactory {
     function createTable(string,string,string) public constant returns(int);
 }
 
-//查询条件
 contract Condition {
     function EQ(string, int);
     function EQ(string, string);
@@ -21,7 +20,6 @@ contract Condition {
     function limit(int, int);
 }
 
-//单条数据记录
 contract Entry {
     function getInt(string) public constant returns(int);
     function getAddress(string) public constant returns(address);
@@ -32,13 +30,11 @@ contract Entry {
     function set(string, string) public;
 }
 
-//数据记录集
 contract Entries {
     function get(int) public constant returns(Entry);
     function size() public constant returns(int);
 }
 
-//DB主类
 contract Table {
     function select(string, Condition) public constant returns(Entries);
     
