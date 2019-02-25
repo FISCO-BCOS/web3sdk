@@ -1,10 +1,9 @@
-
-contract DBFactory {
-    function openTable(string) public constant returns (DB);
-    function createTable(string,string,string) public constant returns(DB);
+contract TableFactory {
+    function openTable(string) public constant returns (Table); //打开表
+    function createTable(string,string,string) public constant returns(Table); //创建表
 }
 
-//查询条件
+//select condition
 contract Condition {
     function EQ(string, int);
     function EQ(string, string);
@@ -22,31 +21,32 @@ contract Condition {
     function limit(int, int);
 }
 
-//单条数据记录
+//one record 
 contract Entry {
     function getInt(string) public constant returns(int);
     function getAddress(string) public constant returns(address);
     function getBytes64(string) public constant returns(byte[64]);
     function getBytes32(string) public constant returns(bytes32);
-
+    
     function set(string, int) public;
     function set(string, string) public;
 }
 
-//数据记录集
+//record sets
 contract Entries {
     function get(int) public constant returns(Entry);
     function size() public constant returns(int);
 }
 
-//DB主类
-contract DB {
+//Table main contract
+contract Table {
+    //select api
     function select(string, Condition) public constant returns(Entries);
-    
+    //insert api
     function insert(string, Entry) public returns(int);
-    
+    //update api
     function update(string, Entry, Condition) public returns(int);
-
+    //remove api
     function remove(string, Condition) public returns(int);
     
     function newEntry() public constant returns(Entry);

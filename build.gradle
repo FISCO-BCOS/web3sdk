@@ -1,9 +1,14 @@
+plugins {
+  id 'com.github.sherter.google-java-format' version '0.8'
+}
+
 apply plugin: 'maven'
 apply plugin: 'idea'
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'signing'
 apply plugin:'application'
+apply plugin: 'jacoco'
 
 
 sourceCompatibility = 1.8
@@ -20,6 +25,14 @@ repositories {
     mavenCentral()
 }
 
+googleJavaFormat {
+  source 'src/main'
+  source 'src/test'
+  include '**/*.java'
+  exclude 'src/test/java/org/fisco/bcos/temp/*.java'
+  exclude '**/BcosBlock.java'
+  exclude '**/ChannelEthereumService.java'
+}
 
 def spring_version="4.3.18.RELEASE"
 
@@ -44,7 +57,7 @@ List alibaba = [
 
 // In this section you declare the dependencies for your production and test code
 dependencies {
-   // compile files('lib/solcJ-all-0.4.25-gm.jar')
+// compile files('lib/solcJ-all-0.4.25-gm.jar')
 	//compile	'org.ethereum:solcJ-all:0.5.2'
 	compile	'org.ethereum:solcJ-all:0.4.25'
     compile logger,spring,alibaba
@@ -54,6 +67,8 @@ dependencies {
 	compile 'io.netty:netty-tcnative:2.0.20.Final'
 	compile 'io.netty:netty-tcnative-boringssl-static:2.0.20.Final'
 	compile 'com.google.guava:guava:19.0'
+	compile 'org.jline:jline:3.9.0'
+	compile 'commons-configuration:commons-configuration:1.10'
 
    	// web3j
    	compile 'org.apache.httpcomponents:httpclient:4.5.5',
@@ -112,6 +127,11 @@ jar {
 			from file('src/test/resources/')
 			into 'dist/conf'
 		}
+		copy {
+			from file('src/test/resources/contract/')
+			into 'dist/solidity/contracts'
+		}
+		project.file('dist/java/classes').mkdirs()
 	}
 }
 
@@ -182,5 +202,13 @@ test {
 //	}
 //}
 
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        html.enabled false
+    }
+}
+
+check.dependsOn jacocoTestReport
 
 mainClassName  = System.getProperty("exec.mainClass") ?:  "org.fisco.bcos.channel.test.amop.Channel2Client"

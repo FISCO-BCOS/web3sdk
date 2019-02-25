@@ -1,4 +1,3 @@
-
 contract DBFactory {
     function openTable(string) public constant returns (Table);
     function createTable(string,string,string) public constant returns(int);
@@ -53,7 +52,9 @@ contract Table {
     function newCondition() public constant returns(Condition);
 }
 
-contract DBTest {
+contract MixContract {
+	
+    int public totalKeys;
 	
 	event createResult(int count);
     event insertResult(int count);
@@ -63,13 +64,13 @@ contract DBTest {
     
     function create() public {
         DBFactory df = DBFactory(0x1001);
-        int count = df.createTable("t_test", "name", "item_id,item_name");
+        int count = df.createTable("t_demo", "name", "item_id,item_name");
         createResult(count);
     }
 
     function read(string name) public constant returns(bytes32[], int[], bytes32[]){
         DBFactory df = DBFactory(0x1001);
-        Table table = df.openTable("t_test");
+        Table table = df.openTable("t_demo");
         
         Condition condition = table.newCondition();
         //condition.EQ("name", name);
@@ -92,7 +93,7 @@ contract DBTest {
     
     function insert(string name, int item_id, string item_name) public returns(int) {
         DBFactory df = DBFactory(0x1001);
-        Table table = df.openTable("t_test");
+        Table table = df.openTable("t_demo");
         
         Entry entry = table.newEntry();
         entry.set("name", name);
@@ -102,12 +103,13 @@ contract DBTest {
         int count = table.insert(name, entry);
         insertResult(count);
         
+        ++totalKeys; //increase local variable
         return count;
     }
-    
+
     function update(string name, int item_id, string item_name) public returns(int) {
         DBFactory df = DBFactory(0x1001);
-        Table table = df.openTable("t_test");
+        Table table = df.openTable("t_demo");
         
         Entry entry = table.newEntry();
         entry.set("item_name", item_name);
@@ -124,13 +126,15 @@ contract DBTest {
 
     function remove(string name, int item_id) public returns(int){
         DBFactory df = DBFactory(0x1001);
-        Table table = df.openTable("t_test");
+        Table table = df.openTable("t_demo");
         
         Condition condition = table.newCondition();
         condition.EQ("name", name);
         condition.EQ("item_id", item_id);
         
         int count = table.remove(name, condition);
+        --totalKeys; //descrease local variable
+
         removeResult(count);
         
         return count;

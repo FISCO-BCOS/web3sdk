@@ -1,171 +1,170 @@
 package org.fisco.bcos.channel.dto;
 
+import io.netty.channel.ChannelHandlerContext;
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.channel.handler.ConnectionInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.netty.channel.ChannelHandlerContext;
-
 public class ChannelPush {
-	static Logger logger = LoggerFactory.getLogger(ChannelPush.class);
-	
-	public String getKeyID() {
-		return keyID;
-	}
+  static Logger logger = LoggerFactory.getLogger(ChannelPush.class);
 
-	public void setKeyID(String keyID) {
-		this.keyID = keyID;
-	}
+  public String getKeyID() {
+    return keyID;
+  }
 
-	public String getOrgApp() {
-		return orgApp;
-	}
+  public void setKeyID(String keyID) {
+    this.keyID = keyID;
+  }
 
-	public void setOrgApp(String orgApp) {
-		this.orgApp = orgApp;
-	}
+  public String getOrgApp() {
+    return orgApp;
+  }
 
-	public String getVersion() {
-		return version;
-	}
+  public void setOrgApp(String orgApp) {
+    this.orgApp = orgApp;
+  }
 
-	public void setVersion(String version) {
-		this.version = version;
-	}
+  public String getVersion() {
+    return version;
+  }
 
-	public String getBankNO() {
-		return bankNO;
-	}
+  public void setVersion(String version) {
+    this.version = version;
+  }
 
-	public void setBankNO(String bankNO) {
-		this.bankNO = bankNO;
-	}
+  public String getBankNO() {
+    return bankNO;
+  }
 
-	public String getAppName() {
-		return appName;
-	}
+  public void setBankNO(String bankNO) {
+    this.bankNO = bankNO;
+  }
 
-	public void setAppName(String appName) {
-		this.appName = appName;
-	}
+  public String getAppName() {
+    return appName;
+  }
 
-	public String getMessageID() {
-		return messageID;
-	}
+  public void setAppName(String appName) {
+    this.appName = appName;
+  }
 
-	public void setMessageID(String messageID) {
-		this.messageID = messageID;
-	}
+  public String getMessageID() {
+    return messageID;
+  }
 
-	public String getToOrg() {
-		return toOrg;
-	}
+  public void setMessageID(String messageID) {
+    this.messageID = messageID;
+  }
 
-	public void setToOrg(String toOrg) {
-		this.toOrg = toOrg;
-	}
+  public String getToOrg() {
+    return toOrg;
+  }
 
-	public Integer getTimeout() {
-		return timeout;
-	}
+  public void setToOrg(String toOrg) {
+    this.toOrg = toOrg;
+  }
 
-	public void setTimeout(Integer timeout) {
-		this.timeout = timeout;
-	}
+  public Integer getTimeout() {
+    return timeout;
+  }
 
-	public Integer getTtl() {
-		return ttl;
-	}
+  public void setTimeout(Integer timeout) {
+    this.timeout = timeout;
+  }
 
-	public void setTtl(Integer ttl) {
-		this.ttl = ttl;
-	}
+  public Integer getTtl() {
+    return ttl;
+  }
 
-	public String getContent() {
-		return content;
-	}
+  public void setTtl(Integer ttl) {
+    this.ttl = ttl;
+  }
 
-	public void setContent(String content) {
-		this.content = content;
-	}
-	
-	public void sendResponse(ChannelResponse response) {
-		logger.debug("send ChannelResponse seq:{}", response.getMessageID());
-		
-		response.setMessageID(seq);
-		
-		service.sendResponseMessage(response, info, ctx, fromNode, toNode, seq);
-	}
+  public String getContent() {
+    return content;
+  }
 
-	private String keyID; //链ID
-	private String orgApp; //来源标识
-	private String version; //版本
-	private String bankNO; //机构标识
-	private String appName; //应用类型
-	
-	private String messageID; //消息的唯一标识id
-	private String toOrg; //目标机构标识
-	
-	private Integer timeout; //超时时间（毫秒）
-	private Integer ttl; //TTL
-	
-	private String content; //请求包体
-	
-	//回包用字段
+  public void setContent(String content) {
+    this.content = content;
+  }
 
-	public Service getService() {
-		return service;
-	}
+  public void sendResponse(ChannelResponse response) {
+    logger.debug("send ChannelResponse seq:{}", response.getMessageID());
 
-	public void setService(Service service) {
-		this.service = service;
-	}
+    response.setMessageID(seq);
 
-	public ConnectionInfo getInfo() {
-		return info;
-	}
+    service.sendResponseMessage(response, info, ctx, fromNode, toNode, seq);
+  }
 
-	public void setInfo(ConnectionInfo info) {
-		this.info = info;
-	}
+  private String keyID; // 链ID
+  private String orgApp; // 来源标识
+  private String version; // 版本
+  private String bankNO; // 机构标识
+  private String appName; // 应用类型
 
-	public ChannelHandlerContext getCtx() {
-		return ctx;
-	}
+  private String messageID; // 消息的唯一标识id
+  private String toOrg; // 目标机构标识
 
-	public void setCtx(ChannelHandlerContext ctx) {
-		this.ctx = ctx;
-	}
+  private Integer timeout; // 超时时间（毫秒）
+  private Integer ttl; // TTL
 
-	public String getFromNode() {
-		return fromNode;
-	}
+  private String content; // 请求包体
 
-	public void setFromNode(String fromNode) {
-		this.fromNode = fromNode;
-	}
+  // 回包用字段
 
-	public String getToNode() {
-		return toNode;
-	}
+  public Service getService() {
+    return service;
+  }
 
-	public void setToNode(String toNode) {
-		this.toNode = toNode;
-	}
+  public void setService(Service service) {
+    this.service = service;
+  }
 
-	public String getSeq() {
-		return seq;
-	}
+  public ConnectionInfo getInfo() {
+    return info;
+  }
 
-	public void setSeq(String seq) {
-		this.seq = seq;
-	}
+  public void setInfo(ConnectionInfo info) {
+    this.info = info;
+  }
 
-	private Service service;
-	private ConnectionInfo info;
-	private ChannelHandlerContext ctx;
-	private String fromNode;
-	private String toNode;
-	private String seq;
+  public ChannelHandlerContext getCtx() {
+    return ctx;
+  }
+
+  public void setCtx(ChannelHandlerContext ctx) {
+    this.ctx = ctx;
+  }
+
+  public String getFromNode() {
+    return fromNode;
+  }
+
+  public void setFromNode(String fromNode) {
+    this.fromNode = fromNode;
+  }
+
+  public String getToNode() {
+    return toNode;
+  }
+
+  public void setToNode(String toNode) {
+    this.toNode = toNode;
+  }
+
+  public String getSeq() {
+    return seq;
+  }
+
+  public void setSeq(String seq) {
+    this.seq = seq;
+  }
+
+  private Service service;
+  private ConnectionInfo info;
+  private ChannelHandlerContext ctx;
+  private String fromNode;
+  private String toNode;
+  private String seq;
 }
