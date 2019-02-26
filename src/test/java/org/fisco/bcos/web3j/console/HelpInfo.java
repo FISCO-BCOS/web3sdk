@@ -26,67 +26,67 @@ public class HelpInfo {
 
   public static void helpNoParams(String func) {
     switch (func) {
-      case "h":
+      case "help":
         help();
         break;
-      case "gbn":
+      case "getBlockNumber":
         getBlockNumberHelp();
         break;
-      case "gpv":
+      case "getPbftView":
         getPbftViewHelp();
         break;
-      case "gol":
+      case "getObserverList":
         getObserverListHelp();
         break;
-      case "gsl":
+      case "getSealerList":
         getSealerListHelp();
         break;
-      case "gcs":
+      case "getConsensusStatus":
         getConsensusStatusHelp();
         break;
-      case "gss":
+      case "getSyncStatus":
         getSyncStatusHelp();
         break;
-      case "gcv":
+      case "getClientVersion":
         getClientVersionHelp();
         break;
-      case "gps":
+      case "getPeers":
         getPeersHelp();
         break;
-      case "gnl":
+      case "getNodeIDList":
         getNodeIDListHelp();
         break;
-      case "ggp":
+      case "getGroupPeers":
         getGroupPeersHelp();
         break;
-      case "ggl":
+      case "getGroupList":
         getGroupListHelp();
         break;
-      case "gpt":
+      case "getPendingTransactions":
         getPendingTransactionsHelp();
         break;
-      case "gpts":
+      case "getPendingTxSize":
         getPendingTxSizeHelp();
         break;
-      case "gtc":
+      case "getTotalTransactionCount":
         getTotalTransactionCountHelp();
         break;
-      case "qdm":
+      case "listDeployAndCreateManager":
         listDeployAndCreateManagerHelp();
         break;
-      case "qpm":
-    	listPermissionManagerHelp();
+      case "listPermissionManager":
+        listPermissionManagerHelp();
         break;
-      case "qnm":
+      case "listNodeManager":
         listNodeManagerHelp();
         break;
-      case "qcm":
+      case "listCNSManager":
         listCNSManagerHelp();
         break;
-      case "qsm":
+      case "listSysConfigManager":
         listSysConfigManagerHelp();
         break;
-      case "q":
+      case "quit":
         quitHelp();
         break;
 
@@ -296,128 +296,128 @@ public class HelpInfo {
     System.out.println();
   }
 
-	public static void grantUserTableManagerHelp() {
-	    System.out.println("Grant permisson for user table by table name and address.");
-	    System.out.println("Usage: grantUserTableManager tableName address");
-	    System.out.println("tableName -- name of a table.");
-	    System.out.println("address -- address of tx.origin.");
-	    System.out.println();
-	  }
+  public static void grantUserTableManagerHelp() {
+    System.out.println("Grant permisson for user table by table name and address.");
+    System.out.println("Usage: grantUserTableManager tableName address");
+    System.out.println("tableName -- name of a table.");
+    System.out.println("address -- address of tx.origin.");
+    System.out.println();
+  }
 
-	  public static void revokeUserTableManagerHelp() {
-	    System.out.println("Revoke permisson for user table by table name and address.");
-	    System.out.println("Usage: revokeUserTableManager tableName address");
-	    System.out.println("tableName -- name of a table.");
-	    System.out.println("address -- address of tx.origin.");
-	    System.out.println();
-	  }
+  public static void revokeUserTableManagerHelp() {
+    System.out.println("Revoke permisson for user table by table name and address.");
+    System.out.println("Usage: revokeUserTableManager tableName address");
+    System.out.println("tableName -- name of a table.");
+    System.out.println("address -- address of tx.origin.");
+    System.out.println();
+  }
 
-	  public static void listUserTableManagerHelp() {
-	    System.out.println("Query permisson for user table information.");
-	    System.out.println("Usage: listUserTableManager tableName");
-	    System.out.println("tableName -- name of a table.");
-	    System.out.println();
-	  }
+  public static void listUserTableManagerHelp() {
+    System.out.println("Query permisson for user table information.");
+    System.out.println("Usage: listUserTableManager tableName");
+    System.out.println("tableName -- name of a table.");
+    System.out.println();
+  }
 
-	  public static void grantDeployAndCreateManagerHelp() {
-	    System.out.println("Grant permisson for deploy contract and create user table by address.");
-	    System.out.println("Usage: grantDeployAndCreateManager address");
-	    System.out.println("address -- address of tx.origin.");
-	    System.out.println();
-	  }
+  public static void grantDeployAndCreateManagerHelp() {
+    System.out.println("Grant permisson for deploy contract and create user table by address.");
+    System.out.println("Usage: grantDeployAndCreateManager address");
+    System.out.println("address -- address of tx.origin.");
+    System.out.println();
+  }
 
-	  public static void revokeDeployAndCreateManagerHelp() {
-	    System.out.println("Revoke permisson for deploy contract and create user table by address.");
-	    System.out.println("Usage: revokeDeployAndCreateManager address");
-	    System.out.println("address -- address of tx.origin.");
-	    System.out.println();
-	  }
+  public static void revokeDeployAndCreateManagerHelp() {
+    System.out.println("Revoke permisson for deploy contract and create user table by address.");
+    System.out.println("Usage: revokeDeployAndCreateManager address");
+    System.out.println("address -- address of tx.origin.");
+    System.out.println();
+  }
 
-	  public static void listDeployAndCreateManagerHelp() {
-	    System.out.println("Query permisson information for deploy contract and create user table.");
-	    System.out.println("Usage: listDeployAndCreateManager");
-	    System.out.println();
-	  }
+  public static void listDeployAndCreateManagerHelp() {
+    System.out.println("Query permisson information for deploy contract and create user table.");
+    System.out.println("Usage: listDeployAndCreateManager");
+    System.out.println();
+  }
 
-	  public static void grantPermissionManagerHelp() {
-	    System.out.println("Grant permisson for permisson configuration by address.");
-	    System.out.println("Usage: grantPermissionManager address");
-	    System.out.println("address -- address of tx.origin.");
-	    System.out.println();
-	  }
+  public static void grantPermissionManagerHelp() {
+    System.out.println("Grant permisson for permisson configuration by address.");
+    System.out.println("Usage: grantPermissionManager address");
+    System.out.println("address -- address of tx.origin.");
+    System.out.println();
+  }
 
-	  public static void revokePermissionManagerHelp() {
-	    System.out.println("Revoke permisson for permisson configuration by address.");
-	    System.out.println("Usage: revokePermissionManager address");
-	    System.out.println("address -- address of tx.origin.");
-	    System.out.println();
-	  }
+  public static void revokePermissionManagerHelp() {
+    System.out.println("Revoke permisson for permisson configuration by address.");
+    System.out.println("Usage: revokePermissionManager address");
+    System.out.println("address -- address of tx.origin.");
+    System.out.println();
+  }
 
-	  public static void listPermissionManagerHelp() {
-	    System.out.println("Query permisson information for permisson configuration.");
-	    System.out.println("Usage: listPermissionManager");
-	    System.out.println();
-	  }
+  public static void listPermissionManagerHelp() {
+    System.out.println("Query permisson information for permisson configuration.");
+    System.out.println("Usage: listPermissionManager");
+    System.out.println();
+  }
 
-	  public static void grantNodeManagerHelp() {
-	    System.out.println("Grant permisson for node configuration by address.");
-	    System.out.println("Usage: grantNodeManager address");
-	    System.out.println("address -- address of tx.origin.");
-	    System.out.println();
-	  }
+  public static void grantNodeManagerHelp() {
+    System.out.println("Grant permisson for node configuration by address.");
+    System.out.println("Usage: grantNodeManager address");
+    System.out.println("address -- address of tx.origin.");
+    System.out.println();
+  }
 
-	  public static void revokeNodeManagerHelp() {
-	    System.out.println("Revoke permisson for node configuration by address.");
-	    System.out.println("Usage: revokeNodeManager address");
-	    System.out.println("address -- address of tx.origin.");
-	    System.out.println();
-	  }
+  public static void revokeNodeManagerHelp() {
+    System.out.println("Revoke permisson for node configuration by address.");
+    System.out.println("Usage: revokeNodeManager address");
+    System.out.println("address -- address of tx.origin.");
+    System.out.println();
+  }
 
-	  public static void listNodeManagerHelp() {
-	    System.out.println("Query permisson information for node configuration.");
-	    System.out.println("Usage: listNodeManager");
-	    System.out.println();
-	  }
+  public static void listNodeManagerHelp() {
+    System.out.println("Query permisson information for node configuration.");
+    System.out.println("Usage: listNodeManager");
+    System.out.println();
+  }
 
-	  public static void grantCNSManagerHelp() {
-	    System.out.println("Grant permisson for CNS by address.");
-	    System.out.println("Usage: grantCNSManager address");
-	    System.out.println("address -- address of tx.origin.");
-	    System.out.println();
-	  }
+  public static void grantCNSManagerHelp() {
+    System.out.println("Grant permisson for CNS by address.");
+    System.out.println("Usage: grantCNSManager address");
+    System.out.println("address -- address of tx.origin.");
+    System.out.println();
+  }
 
-	  public static void revokeCNSManagerHelp() {
-	    System.out.println("Revoke permisson for CNS by address.");
-	    System.out.println("Usage: revokeCNSManager address");
-	    System.out.println("address -- address of tx.origin.");
-	    System.out.println();
-	  }
+  public static void revokeCNSManagerHelp() {
+    System.out.println("Revoke permisson for CNS by address.");
+    System.out.println("Usage: revokeCNSManager address");
+    System.out.println("address -- address of tx.origin.");
+    System.out.println();
+  }
 
-	  public static void listCNSManagerHelp() {
-	    System.out.println("Query permisson information for CNS.");
-	    System.out.println("Usage: listCNSManager");
-	    System.out.println();
-	  }
+  public static void listCNSManagerHelp() {
+    System.out.println("Query permisson information for CNS.");
+    System.out.println("Usage: listCNSManager");
+    System.out.println();
+  }
 
-	  public static void grantSysConfigManagerHelp() {
-	    System.out.println("Grant permisson for system configuration by address.");
-	    System.out.println("Usage: grantSysConfigManager address");
-	    System.out.println("address -- address of tx.origin.");
-	    System.out.println();
-	  }
+  public static void grantSysConfigManagerHelp() {
+    System.out.println("Grant permisson for system configuration by address.");
+    System.out.println("Usage: grantSysConfigManager address");
+    System.out.println("address -- address of tx.origin.");
+    System.out.println();
+  }
 
-	  public static void revokeSysConfigManagerHelp() {
-	    System.out.println("Revoke permisson for system configuration by address.");
-	    System.out.println("Usage: revokeSysConfigManager address");
-	    System.out.println("address -- address of tx.origin.");
-	    System.out.println();
-	  }
+  public static void revokeSysConfigManagerHelp() {
+    System.out.println("Revoke permisson for system configuration by address.");
+    System.out.println("Usage: revokeSysConfigManager address");
+    System.out.println("address -- address of tx.origin.");
+    System.out.println();
+  }
 
-	  public static void listSysConfigManagerHelp() {
-	    System.out.println("Query permisson information for system configuration.");
-	    System.out.println("Usage: listSysConfigManager");
-	    System.out.println();
-	  }
+  public static void listSysConfigManagerHelp() {
+    System.out.println("Query permisson information for system configuration.");
+    System.out.println("Usage: listSysConfigManager");
+    System.out.println();
+  }
 
   public static void setSystemConfigByKeyHelp() {
     System.out.println("Set a system config.");

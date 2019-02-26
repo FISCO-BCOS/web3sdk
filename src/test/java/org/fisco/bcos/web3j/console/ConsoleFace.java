@@ -70,41 +70,41 @@ public interface ConsoleFace {
 
   void removeNode(String[] params) throws Exception;
 
-  void addUserTableManager(String[] params) throws Exception;
+  void grantUserTableManager(String[] params) throws Exception;
 
-  void removeUserTableManager(String[] params) throws Exception;
+  void revokeUserTableManager(String[] params) throws Exception;
 
-  void queryUserTableManager(String[] params) throws Exception;
+  void listUserTableManager(String[] params) throws Exception;
 
-  void addDeployAndCreateManager(String[] params) throws Exception;
+  void grantDeployAndCreateManager(String[] params) throws Exception;
 
-  void removeDeployAndCreateManager(String[] params) throws Exception;
+  void revokeDeployAndCreateManager(String[] params) throws Exception;
 
-  void queryDeployAndCreateManager(String[] params) throws Exception;
+  void listDeployAndCreateManager(String[] params) throws Exception;
 
-  void addAuthorityManager(String[] params) throws Exception;
+  void grantPermissionManager(String[] params) throws Exception;
 
-  void removeAuthorityManager(String[] params) throws Exception;
+  void revokePermissionManager(String[] params) throws Exception;
 
-  void queryAuthorityManager(String[] params) throws Exception;
+  void listPermissionManager(String[] params) throws Exception;
 
-  void addNodeManager(String[] params) throws Exception;
+  void grantNodeManager(String[] params) throws Exception;
 
-  void removeNodeManager(String[] params) throws Exception;
+  void revokeNodeManager(String[] params) throws Exception;
 
-  void queryNodeManager(String[] params) throws Exception;
+  void listNodeManager(String[] params) throws Exception;
 
-  void addCNSManager(String[] params) throws Exception;
+  void grantCNSManager(String[] params) throws Exception;
 
-  void removeCNSManager(String[] params) throws Exception;
+  void revokeCNSManager(String[] params) throws Exception;
 
-  void queryCNSManager(String[] params) throws Exception;
+  void listCNSManager(String[] params) throws Exception;
 
-  void addSysConfigManager(String[] params) throws Exception;
+  void grantSysConfigManager(String[] params) throws Exception;
 
-  void removeSysConfigManager(String[] params) throws Exception;
+  void revokeSysConfigManager(String[] params) throws Exception;
 
-  void querySysConfigManager(String[] params) throws Exception;
+  void listSysConfigManager(String[] params) throws Exception;
 
   void setSystemConfigByKey(String[] params) throws Exception;
 
