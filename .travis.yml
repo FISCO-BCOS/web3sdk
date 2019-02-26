@@ -1,7 +1,10 @@
 # safelist
 branches:
-  only:
-  - release-2.0.1
+  only: 
+    - /release-2.*/
+tags:
+  only: 
+    - /v2.*/
 
 language: java
 jdk:
