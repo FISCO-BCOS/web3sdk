@@ -596,45 +596,45 @@ public class ConsoleTest {
   }
 
   @Test
-  public void addUserTableManagerTest() throws Exception {
+  public void grantPermissionManagerTest() throws Exception {
     String[] params1 = {};
-    console.addUserTableManager(params1);
+    console.grantPermissionManager(params1);
     assertTrue(!"".equals(log.getLog()));
     log.clearLog();
 
-    String[] params2 = {"aa", "-h"};
-    console.addUserTableManager(params2);
+    String[] params2 = {"grantPermissionManager", "-h"};
+    console.grantPermissionManager(params2);
     assertTrue(!"".equals(log.getLog()));
     log.clearLog();
   }
 
   @Test
-  public void removeUserTableManagerTest() throws Exception {
+  public void revokePermissionManagerTest() throws Exception {
     String[] params1 = {};
-    console.removeUserTableManager(params1);
+    console.revokePermissionManager(params1);
     assertTrue(!"".equals(log.getLog()));
     log.clearLog();
 
-    String[] params2 = {"ra", "-h"};
-    console.removeUserTableManager(params2);
+    String[] params2 = {"revokePermissionManagert", "-h"};
+    console.revokePermissionManager(params2);
     assertTrue(!"".equals(log.getLog()));
     log.clearLog();
   }
 
   @Test
-  public void queryAuthorityTest() throws Exception {
+  public void listPermissionManagerTest() throws Exception {
     String[] params1 = {};
-    console.queryUserTableManager(params1);
+    console.listPermissionManager(params1);
     assertTrue(!"".equals(log.getLog()));
     log.clearLog();
 
-    String[] params2 = {"qa", "-h"};
-    console.queryUserTableManager(params2);
+    String[] params2 = {"listPermissionManager", "-h"};
+    console.listPermissionManager(params2);
     assertTrue(!"".equals(log.getLog()));
     log.clearLog();
 
-    String[] params3 = {"qa", "t_test"};
-    console.queryUserTableManager(params3);
+    String[] params3 = {"listPermissionManager"};
+    console.listPermissionManager(params3);
     assertTrue(!"".equals(log.getLog()));
   }
 

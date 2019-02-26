@@ -19,13 +19,13 @@ import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.crypto.ECKeyPair;
 import org.fisco.bcos.web3j.crypto.Keys;
 import org.fisco.bcos.web3j.crypto.gm.GenCredential;
-import org.fisco.bcos.web3j.precompile.authority.AuthorityInfo;
-import org.fisco.bcos.web3j.precompile.authority.AuthorityService;
 import org.fisco.bcos.web3j.precompile.cns.CnsInfo;
 import org.fisco.bcos.web3j.precompile.cns.CnsService;
 import org.fisco.bcos.web3j.precompile.common.PrecompiledCommon;
 import org.fisco.bcos.web3j.precompile.config.SystemConfigSerivce;
 import org.fisco.bcos.web3j.precompile.consensus.ConsensusService;
+import org.fisco.bcos.web3j.precompile.permisson.PermissionInfo;
+import org.fisco.bcos.web3j.precompile.permisson.PermissionService;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
@@ -151,7 +151,7 @@ public class ConsoleImpl implements ConsoleFace {
   public void welcome() {
     ConsoleUtils.doubleLine();
     System.out.println("Welcome to FISCO BCOS console!");
-    System.out.println("Type 'help' or 'h' for help. Type 'quit' or 'q' to quit console.");
+    System.out.println("Type 'help' for help. Type 'quit' to quit console.");
     String logo =
         " ________ ______  ______   ______   ______       _______   ______   ______   ______  \n"
             + "|        |      \\/      \\ /      \\ /      \\     |       \\ /      \\ /      \\ /      \\ \n"
@@ -169,23 +169,20 @@ public class ConsoleImpl implements ConsoleFace {
 
   @Override
   public void help(String[] params) {
-    if (HelpInfo.promptNoParams(params, "h")) {
+    if (HelpInfo.promptNoParams(params, "help")) {
       return;
     }
     if (params.length > 2) {
-      HelpInfo.promptHelp("h");
+      HelpInfo.promptHelp("help");
       return;
     }
     ConsoleUtils.singleLine();
     StringBuilder sb = new StringBuilder();
-    sb.append("help                                       Provide help information.\n");
-    sb.append(
-        "getBlockNumber                           Query the number of most recent block.\n");
+    sb.append("help                                     Provide help information.\n");
+    sb.append("getBlockNumber                           Query the number of most recent block.\n");
     sb.append("getPbftView                              Query the pbft view of node.\n");
-    sb.append(
-        "getSealerList                            Query nodeID list for sealer nodes.\n");
-    sb.append(
-        "getObserverList                          Query nodeID list for observer nodes.\n");
+    sb.append("getSealerList                            Query nodeID list for sealer nodes.\n");
+    sb.append("getObserverList                          Query nodeID list for observer nodes.\n");
     sb.append(
         "getNodeIDList                            Query nodeID list for all connected nodes.\n");
     sb.append(
@@ -197,73 +194,69 @@ public class ConsoleImpl implements ConsoleFace {
     sb.append("getClientVersion                         Query the current client version.\n");
     sb.append("getGroupList                             Query group list.\n");
     sb.append(
-        "getBlockByHash                          Query information about a block by hash.\n");
+        "getBlockByHash                           Query information about a block by hash.\n");
     sb.append(
-        "getBlockByNumber                        Query information about a block by block number.\n");
-    sb.append("getBlockHashByNumber                    Query block hash by block number.\n");
+        "getBlockByNumber                         Query information about a block by block number.\n");
+    sb.append("getBlockHashByNumber                     Query block hash by block number.\n");
     sb.append(
-        "getTransactionByHash                    Query information about a transaction requested by transaction hash.\n");
+        "getTransactionByHash                     Query information about a transaction requested by transaction hash.\n");
     sb.append(
-        "getTransactionByBlockHashAndIndex       Query information about a transaction by block hash and transaction index position.\n");
+        "getTransactionByBlockHashAndIndex        Query information about a transaction by block hash and transaction index position.\n");
     sb.append(
-        "getTransactionByBlockNumberAndIndex     Query information about a transaction by block number and transaction index position.\n");
+        "getTransactionByBlockNumberAndIndex      Query information about a transaction by block number and transaction index position.\n");
     sb.append(
         "getTransactionReceipt                    Query the receipt of a transaction by transaction hash.\n");
     sb.append("getPendingTransactions                   Query pending transactions.\n");
-    sb.append("getPendingTxSize                        Query pending transactions size.\n");
-    sb.append("getCode(gc)                                   Query code at a given address.\n");
+    sb.append("getPendingTxSize                         Query pending transactions size.\n");
+    sb.append("getCode(gc)                              Query code at a given address.\n");
     sb.append("getTotalTransactionCount                 Query total transaction count.\n");
-    sb.append("deploy                                     Deploy a contract on blockchain.\n");
+    sb.append("deploy                                   Deploy a contract on blockchain.\n");
     sb.append(
-        "call                                       Call a contract by a function and paramters.\n");
-    sb.append(
-        "deployByCNS                              Deploy a contract on blockchain by CNS.\n");
+        "call                                     Call a contract by a function and paramters.\n");
+    sb.append("deployByCNS                              Deploy a contract on blockchain by CNS.\n");
     sb.append(
         "callByCNS                                Call a contract by a function and paramters by CNS.\n");
     sb.append(
         "queryCNS                                 Query cns information by contract name and contract version.\n");
-    sb.append("addSealer                                 Add a sealer node.\n");
-    sb.append("addObserver                               Add an observer node.\n");
-    sb.append("removeNode                                Remove a node.\n");
+    sb.append("addSealer                                Add a sealer node.\n");
+    sb.append("addObserver                              Add an observer node.\n");
+    sb.append("removeNode                               Remove a node.\n");
     sb.append("setSystemConfigByKey                     Set a system config.\n");
+    sb.append("getSystemConfigByKey                     Query a system config value by key.\n");
     sb.append(
-        "getSystemConfigByKey                     Query a system config value by key.\n");
+        "grantUserTableManager                    Grant permission for user table by table name and grantress.\n");
     sb.append(
-        "addUserTableManager                      Add authority for user table by table name and address.\n");
+        "revokeUserTableManager                   Revoke permission for user table by table name and grantress.\n");
     sb.append(
-        "removeUserTableManager                   Remove authority for user table by table name and address.\n");
+        "listUserTableManager                     Query permission for user table information.\n");
     sb.append(
-        "queryUserTableManager                    Query authority for user table information.\n");
+        "grantDeployAndCreateManager              Grant permission for deploy contract and create user table by grantress.\n");
     sb.append(
-        "addDeployAndCreateManager                Add authority for deploy contract and create user table by address.\n");
+        "revokeDeployAndCreateManager             Revoke permission for deploy contract and create user table by grantress.\n");
     sb.append(
-        "removeDeployAndCreateManager             Remove authority for deploy contract and create user table by address.\n");
+        "listDeployAndCreateManager               Query permission information for deploy contract and create user table.\n");
     sb.append(
-        "queryDeployAndCreateManager              Query authority information for deploy contract and create user table.\n");
+        "grantPermissionManager                   Grant permission for permission configuration by grantress.\n");
     sb.append(
-        "addAuthorityManager                      Add authority for authority configuration by address.\n");
+        "revokePermissionManager                  Revoke permission for permission configuration by grantress.\n");
     sb.append(
-        "removeAuthorityManager                   Remove authority for authority configuration by address.\n");
+        "listPermissionManager                    Query permission information for permission configuration.\n");
     sb.append(
-        "queryAuthorityManager                    Query authority information for authority configuration.\n");
+        "grantNodeManager                         Grant permission for node configuration by grantress.\n");
     sb.append(
-        "addNodeManager                           Add authority for node configuration by address.\n");
+        "revokeNodeManager                        Revoke permission for node configuration by grantress.\n");
     sb.append(
-        "removeNodeManager                        Remove authority for node configuration by address.\n");
+        "listNodeManager                          Query permission information for node configuration.\n");
+    sb.append("grantCNSManager                          Grant permission for CNS by grantress.\n");
+    sb.append("revokeCNSManager                         Revoke permission for CNS by grantress.\n");
+    sb.append("listCNSManager                           Query permission information for CNS.\n");
     sb.append(
-        "queryNodeManager                         Query authority information for node configuration.\n");
-    sb.append("addCNSManager                            Add authority for CNS by address.\n");
+        "grantSysConfigManager                    Grant permission for system configuration by grantress.\n");
     sb.append(
-        "removeCNSManager                         Remove authority for CNS by address.\n");
+        "revokeSysConfigManager                   Revoke permission for system configuration by grantress.\n");
     sb.append(
-        "queryCNSManager                          Query authority information for CNS.\n");
-    sb.append(
-        "addSysConfigManager                      Add authority for system configuration by address.\n");
-    sb.append(
-        "removeSysConfigManager                   Remove authority for system configuration by address.\n");
-    sb.append(
-        "querySysConfigManager                    Query authority information for system configuration.\n");
-    sb.append("quit                                       Quit console.");
+        "listSysConfigManager                     Query permission information for system configuration.\n");
+    sb.append("quit                                     Quit console.");
     System.out.println(sb.toString());
     ConsoleUtils.singleLine();
     System.out.println();
@@ -271,7 +264,7 @@ public class ConsoleImpl implements ConsoleFace {
 
   @Override
   public void getClientVersion(String[] params) throws IOException {
-    if (HelpInfo.promptNoParams(params, "gcv")) {
+    if (HelpInfo.promptNoParams(params, "getClientVersion")) {
       return;
     }
     String clientVersion = web3j.getClientVersion().sendForReturnString();
@@ -281,7 +274,7 @@ public class ConsoleImpl implements ConsoleFace {
 
   @Override
   public void getBlockNumber(String[] params) throws IOException {
-    if (HelpInfo.promptNoParams(params, "gbn")) {
+    if (HelpInfo.promptNoParams(params, "getBlockNumber")) {
       return;
     }
     String blockNumber = web3j.getBlockNumber().sendForReturnString();
@@ -291,7 +284,7 @@ public class ConsoleImpl implements ConsoleFace {
 
   @Override
   public void getPbftView(String[] params) throws IOException {
-    if (HelpInfo.promptNoParams(params, "gpv")) {
+    if (HelpInfo.promptNoParams(params, "getPbftView")) {
       return;
     }
     String pbftView = web3j.getPbftView().sendForReturnString();
@@ -301,7 +294,7 @@ public class ConsoleImpl implements ConsoleFace {
 
   @Override
   public void getObserverList(String[] params) throws IOException {
-    if (HelpInfo.promptNoParams(params, "gol")) {
+    if (HelpInfo.promptNoParams(params, "getObserverList")) {
       return;
     }
     List<String> observerList = web3j.getObserverList().send().getResult();
@@ -316,7 +309,7 @@ public class ConsoleImpl implements ConsoleFace {
 
   @Override
   public void getSealerList(String[] params) throws IOException {
-    if (HelpInfo.promptNoParams(params, "gsl")) {
+    if (HelpInfo.promptNoParams(params, "getSealerList")) {
       return;
     }
     List<String> sealerList = web3j.getSealerList().send().getResult();
@@ -331,7 +324,7 @@ public class ConsoleImpl implements ConsoleFace {
 
   @Override
   public void getConsensusStatus(String[] params) throws IOException {
-    if (HelpInfo.promptNoParams(params, "gcs")) {
+    if (HelpInfo.promptNoParams(params, "getConsensusStatus")) {
       return;
     }
     String consensusStatus = web3j.getConsensusStatus().sendForReturnString();
@@ -341,7 +334,7 @@ public class ConsoleImpl implements ConsoleFace {
 
   @Override
   public void getSyncStatus(String[] params) throws IOException {
-    if (HelpInfo.promptNoParams(params, "gss")) {
+    if (HelpInfo.promptNoParams(params, "getSyncStatus")) {
       return;
     }
     String syncStatus = web3j.getSyncStatus().sendForReturnString();
@@ -351,7 +344,7 @@ public class ConsoleImpl implements ConsoleFace {
 
   @Override
   public void getPeers(String[] params) throws IOException {
-    if (HelpInfo.promptNoParams(params, "gps")) {
+    if (HelpInfo.promptNoParams(params, "getPeers")) {
       return;
     }
     String peers = web3j.getPeers().sendForReturnString();
@@ -361,7 +354,7 @@ public class ConsoleImpl implements ConsoleFace {
 
   @Override
   public void getNodeIDList(String[] params) throws IOException {
-    if (HelpInfo.promptNoParams(params, "gnl")) {
+    if (HelpInfo.promptNoParams(params, "getNodeIDList")) {
       return;
     }
     List<String> nodeIDs = web3j.getNodeIDList().send().getResult();
@@ -371,7 +364,7 @@ public class ConsoleImpl implements ConsoleFace {
 
   @Override
   public void getGroupPeers(String[] params) throws IOException {
-    if (HelpInfo.promptNoParams(params, "ggp")) {
+    if (HelpInfo.promptNoParams(params, "getGroupPeers")) {
       return;
     }
     List<String> groupPeers = web3j.getGroupPeers().send().getResult();
@@ -381,7 +374,7 @@ public class ConsoleImpl implements ConsoleFace {
 
   @Override
   public void getGroupList(String[] params) throws IOException {
-    if (HelpInfo.promptNoParams(params, "ggl")) {
+    if (HelpInfo.promptNoParams(params, "getGroupList")) {
       return;
     }
     List<String> groupList = web3j.getGroupList().send().getResult();
@@ -392,11 +385,11 @@ public class ConsoleImpl implements ConsoleFace {
   @Override
   public void getBlockByHash(String[] params) throws IOException {
     if (params.length < 2) {
-      HelpInfo.promptHelp("gbbh");
+      HelpInfo.promptHelp("getBlockByHash");
       return;
     }
     if (params.length > 3) {
-      HelpInfo.promptHelp("gbbh");
+      HelpInfo.promptHelp("getBlockByHash");
       return;
     }
     String blockHash = params[1];
@@ -425,11 +418,11 @@ public class ConsoleImpl implements ConsoleFace {
   @Override
   public void getBlockByNumber(String[] params) throws IOException {
     if (params.length < 2) {
-      HelpInfo.promptHelp("gbbn");
+      HelpInfo.promptHelp("getBlockByNumber");
       return;
     }
     if (params.length > 3) {
-      HelpInfo.promptHelp("gbbn");
+      HelpInfo.promptHelp("getBlockByNumber");
       return;
     }
     String blockNumberStr1 = params[1];
@@ -469,11 +462,11 @@ public class ConsoleImpl implements ConsoleFace {
   @Override
   public void getBlockHashByNumber(String[] params) throws IOException {
     if (params.length < 2) {
-      HelpInfo.promptHelp("ghbn");
+      HelpInfo.promptHelp("getBlockHashByNumber");
       return;
     }
     if (params.length > 2) {
-      HelpInfo.promptHelp("ghbn");
+      HelpInfo.promptHelp("getBlockHashByNumber");
       return;
     }
     String blockNumberStr = params[1];
@@ -501,11 +494,11 @@ public class ConsoleImpl implements ConsoleFace {
   @Override
   public void getTransactionByHash(String[] params) throws IOException {
     if (params.length < 2) {
-      HelpInfo.promptHelp("gtbh");
+      HelpInfo.promptHelp("getTransactionByHash");
       return;
     }
     if (params.length > 2) {
-      HelpInfo.promptHelp("gtbh");
+      HelpInfo.promptHelp("getTransactionByHash");
       return;
     }
     String transactionHash = params[1];
@@ -526,11 +519,11 @@ public class ConsoleImpl implements ConsoleFace {
   @Override
   public void getTransactionByBlockHashAndIndex(String[] params) throws IOException {
     if (params.length < 2) {
-      HelpInfo.promptHelp("gthi");
+      HelpInfo.promptHelp("getTransactionByBlockHashAndIndex");
       return;
     }
     if (params.length > 3) {
-      HelpInfo.promptHelp("gthi");
+      HelpInfo.promptHelp("getTransactionByBlockHashAndIndex");
       return;
     }
     String blockHash = params[1];
@@ -539,7 +532,7 @@ public class ConsoleImpl implements ConsoleFace {
       return;
     }
     if (params.length < 3) {
-      HelpInfo.promptHelp("gthi");
+      HelpInfo.promptHelp("getTransactionByBlockHashAndIndex");
       return;
     }
     if (ConsoleUtils.isInvalidHash(blockHash)) return;
@@ -555,11 +548,11 @@ public class ConsoleImpl implements ConsoleFace {
   @Override
   public void getTransactionByBlockNumberAndIndex(String[] params) throws IOException {
     if (params.length < 2) {
-      HelpInfo.promptHelp("gtni");
+      HelpInfo.promptHelp("getTransactionByBlockNumberAndIndex");
       return;
     }
     if (params.length > 3) {
-      HelpInfo.promptHelp("gtni");
+      HelpInfo.promptHelp("getTransactionByBlockNumberAndIndex");
       return;
     }
     String blockNumberStr = params[1];
@@ -568,7 +561,7 @@ public class ConsoleImpl implements ConsoleFace {
       return;
     }
     if (params.length < 3) {
-      HelpInfo.promptHelp("gtni");
+      HelpInfo.promptHelp("getTransactionByBlockNumberAndIndex");
       return;
     }
     if (ConsoleUtils.isInvalidNumber(blockNumberStr, 0)) return;
@@ -587,11 +580,11 @@ public class ConsoleImpl implements ConsoleFace {
   @Override
   public void getTransactionReceipt(String[] params) throws IOException {
     if (params.length < 2) {
-      HelpInfo.promptHelp("gtr");
+      HelpInfo.promptHelp("getTransactionReceipt");
       return;
     }
     if (params.length > 2) {
-      HelpInfo.promptHelp("gtr");
+      HelpInfo.promptHelp("getTransactionReceipt");
       return;
     }
     String transactionHash = params[1];
@@ -611,7 +604,7 @@ public class ConsoleImpl implements ConsoleFace {
 
   @Override
   public void getPendingTxSize(String[] params) throws IOException {
-    if (HelpInfo.promptNoParams(params, "gpts")) {
+    if (HelpInfo.promptNoParams(params, "getPendingTxSize")) {
       return;
     }
     String size = web3j.getPendingTxSize().sendForReturnString();
@@ -621,7 +614,7 @@ public class ConsoleImpl implements ConsoleFace {
 
   @Override
   public void getPendingTransactions(String[] params) throws IOException {
-    if (HelpInfo.promptNoParams(params, "gpt")) {
+    if (HelpInfo.promptNoParams(params, "getPendingTransactions")) {
       return;
     }
     String pendingTransactions = web3j.getPendingTransaction().sendForReturnString();
@@ -633,11 +626,11 @@ public class ConsoleImpl implements ConsoleFace {
   @Override
   public void getCode(String[] params) throws IOException {
     if (params.length < 2) {
-      HelpInfo.promptHelp("gc");
+      HelpInfo.promptHelp("getCode");
       return;
     }
     if (params.length > 2) {
-      HelpInfo.promptHelp("gc");
+      HelpInfo.promptHelp("getCode");
       return;
     }
     String address = params[1];
@@ -660,7 +653,7 @@ public class ConsoleImpl implements ConsoleFace {
 
   @Override
   public void getTotalTransactionCount(String[] params) throws IOException {
-    if (HelpInfo.promptNoParams(params, "gtc")) {
+    if (HelpInfo.promptNoParams(params, "getTotalTransactionCount")) {
       return;
     }
     String transactionCount = web3j.getTotalTransactionCount().sendForReturnString();
@@ -674,11 +667,11 @@ public class ConsoleImpl implements ConsoleFace {
   @Override
   public void deploy(String[] params) throws Exception {
     if (params.length < 2) {
-      HelpInfo.promptHelp("d");
+      HelpInfo.promptHelp("deploy");
       return;
     }
     if (params.length > 2) {
-      HelpInfo.promptHelp("d");
+      HelpInfo.promptHelp("deploy");
       return;
     }
     if ("-h".equals(params[1]) || "--help".equals(params[1])) {
@@ -693,11 +686,11 @@ public class ConsoleImpl implements ConsoleFace {
       System.out.println();
       return;
     }
-    ConsoleUtils.dynamicCompileJavaToClass();
-    ConsoleUtils.dynamicLoadClass();
     if (name.endsWith(".sol")) {
       name = name.substring(0, name.length() - 4);
     }
+    ConsoleUtils.dynamicCompileJavaToClass(name);
+    ConsoleUtils.dynamicLoadClass();
     contractName = ConsoleUtils.PACKAGENAME + "." + name;
     try {
       contractClass = ContractClassFactory.getContractClass(contractName);
@@ -720,7 +713,7 @@ public class ConsoleImpl implements ConsoleFace {
   @Override
   public void call(String[] params) throws Exception {
     if (params.length < 2) {
-      HelpInfo.promptHelp("c");
+      HelpInfo.promptHelp("call");
       return;
     }
     if ("-h".equals(params[1]) || "--help".equals(params[1])) {
@@ -728,15 +721,15 @@ public class ConsoleImpl implements ConsoleFace {
       return;
     }
     if (params.length < 4) {
-      HelpInfo.promptHelp("c");
+      HelpInfo.promptHelp("call");
       return;
     }
-    ConsoleUtils.dynamicLoadClass();
     String name = params[1];
     if (name.endsWith(".sol")) {
       name = name.substring(0, name.length() - 4);
     }
     contractName = ConsoleUtils.PACKAGENAME + "." + name;
+    ConsoleUtils.dynamicLoadClass();
     try {
       contractClass = ContractClassFactory.getContractClass(contractName);
     } catch (Exception e) {
@@ -800,11 +793,11 @@ public class ConsoleImpl implements ConsoleFace {
   @Override
   public void deployByCNS(String[] params) throws Exception {
     if (params.length < 2) {
-      HelpInfo.promptHelp("dbc");
+      HelpInfo.promptHelp("deployByCNS");
       return;
     }
     if (params.length > 3) {
-      HelpInfo.promptHelp("dbc");
+      HelpInfo.promptHelp("deployByCNS");
       return;
     }
     if ("-h".equals(params[1]) || "--help".equals(params[1])) {
@@ -812,17 +805,17 @@ public class ConsoleImpl implements ConsoleFace {
       return;
     }
     if (params.length < 3) {
-      HelpInfo.promptHelp("dbc");
+      HelpInfo.promptHelp("deployByCNS");
       return;
     }
-    AuthorityService authorityTableService = new AuthorityService(web3j, credentials);
-    List<AuthorityInfo> authoritys = authorityTableService.queryCNSManager();
+    PermissionService permissionTableService = new PermissionService(web3j, credentials);
+    List<PermissionInfo> permissions = permissionTableService.listCNSManager();
     boolean flag = false;
-    if (authoritys.size() == 0) {
+    if (permissions.size() == 0) {
       flag = true;
     } else {
-      for (AuthorityInfo authority : authoritys) {
-        if ((credentials.getAddress()).equals(authority.getAddress())) {
+      for (PermissionInfo permission : permissions) {
+        if ((credentials.getAddress()).equals(permission.getAddress())) {
           flag = true;
           break;
         }
@@ -847,13 +840,14 @@ public class ConsoleImpl implements ConsoleFace {
       System.out.println();
       return;
     }
-    ConsoleUtils.dynamicCompileJavaToClass();
-    ConsoleUtils.dynamicLoadClass();
+
     String name = params[1];
     if (name.endsWith(".sol")) {
       name = name.substring(0, name.length() - 4);
     }
     contractName = ConsoleUtils.PACKAGENAME + "." + name;
+    ConsoleUtils.dynamicCompileJavaToClass(name);
+    ConsoleUtils.dynamicLoadClass();
     try {
       contractClass = ContractClassFactory.getContractClass(contractName);
     } catch (Exception e) {
@@ -884,7 +878,7 @@ public class ConsoleImpl implements ConsoleFace {
   @Override
   public void callByCNS(String[] params) throws Exception {
     if (params.length < 2) {
-      HelpInfo.promptHelp("cbc");
+      HelpInfo.promptHelp("callByCNS");
       return;
     }
     if ("-h".equals(params[1]) || "--help".equals(params[1])) {
@@ -892,7 +886,7 @@ public class ConsoleImpl implements ConsoleFace {
       return;
     }
     if (params.length < 4) {
-      HelpInfo.promptHelp("cbc");
+      HelpInfo.promptHelp("callByCNS");
       return;
     }
     ConsoleUtils.dynamicLoadClass();
@@ -972,11 +966,11 @@ public class ConsoleImpl implements ConsoleFace {
   @Override
   public void queryCNS(String[] params) throws Exception {
     if (params.length < 2) {
-      HelpInfo.promptHelp("qcs");
+      HelpInfo.promptHelp("queryCNS");
       return;
     }
     if (params.length > 3) {
-      HelpInfo.promptHelp("qcs");
+      HelpInfo.promptHelp("queryCNS");
       return;
     }
     if ("-h".equals(params[1]) || "--help".equals(params[1])) {
@@ -1017,11 +1011,11 @@ public class ConsoleImpl implements ConsoleFace {
   @Override
   public void addSealer(String[] params) throws Exception {
     if (params.length < 2) {
-      HelpInfo.promptHelp("as");
+      HelpInfo.promptHelp("addSealer");
       return;
     }
     if (params.length > 2) {
-      HelpInfo.promptHelp("as");
+      HelpInfo.promptHelp("addSealer");
       return;
     }
     String nodeID = params[1];
@@ -1043,11 +1037,11 @@ public class ConsoleImpl implements ConsoleFace {
   public void addObserver(String[] params) throws Exception {
 
     if (params.length < 2) {
-      HelpInfo.promptHelp("ao");
+      HelpInfo.promptHelp("addObserver");
       return;
     }
     if (params.length > 2) {
-      HelpInfo.promptHelp("ao");
+      HelpInfo.promptHelp("addObserver");
       return;
     }
     String nodeID = params[1];
@@ -1068,11 +1062,11 @@ public class ConsoleImpl implements ConsoleFace {
   @Override
   public void removeNode(String[] params) throws Exception {
     if (params.length < 2) {
-      HelpInfo.promptHelp("rn");
+      HelpInfo.promptHelp("removeNode");
       return;
     }
     if (params.length > 2) {
-      HelpInfo.promptHelp("rn");
+      HelpInfo.promptHelp("removeNode");
       return;
     }
     String nodeID = params[1];
@@ -1091,13 +1085,13 @@ public class ConsoleImpl implements ConsoleFace {
   }
 
   @Override
-  public void addUserTableManager(String[] params) throws Exception {
+  public void grantUserTableManager(String[] params) throws Exception {
     if (params.length < 2) {
-      HelpInfo.promptHelp("aum");
+      HelpInfo.promptHelp("grantUserTableManager");
       return;
     }
     if (params.length > 3) {
-      HelpInfo.promptHelp("aum");
+      HelpInfo.promptHelp("grantUserTableManager");
       return;
     }
     String tableName = params[1];
@@ -1106,27 +1100,27 @@ public class ConsoleImpl implements ConsoleFace {
       return;
     }
     if (params.length < 3) {
-      HelpInfo.promptHelp("aum");
+      HelpInfo.promptHelp("grantUserTableManager");
       return;
     }
     String addr = params[2];
     if (ConsoleUtils.isInvalidAddress(addr)) {
       return;
     }
-    AuthorityService authority = new AuthorityService(web3j, credentials);
-    String result = authority.addUserTableManager(tableName, addr);
+    PermissionService permission = new PermissionService(web3j, credentials);
+    String result = permission.grantUserTableManager(tableName, addr);
     ConsoleUtils.printJson(result);
     System.out.println();
   }
 
   @Override
-  public void removeUserTableManager(String[] params) throws Exception {
+  public void revokeUserTableManager(String[] params) throws Exception {
     if (params.length < 2) {
-      HelpInfo.promptHelp("rum");
+      HelpInfo.promptHelp("revokeUserTableManager");
       return;
     }
     if (params.length > 3) {
-      HelpInfo.promptHelp("rum");
+      HelpInfo.promptHelp("revokeUserTableManager");
       return;
     }
     String tableName = params[1];
@@ -1135,27 +1129,27 @@ public class ConsoleImpl implements ConsoleFace {
       return;
     }
     if (params.length < 3) {
-      HelpInfo.promptHelp("rum");
+      HelpInfo.promptHelp("revokeUserTableManager");
       return;
     }
     String addr = params[2];
     if (ConsoleUtils.isInvalidAddress(addr)) {
       return;
     }
-    AuthorityService authority = new AuthorityService(web3j, credentials);
-    String result = authority.removeUserTableManager(tableName, addr);
+    PermissionService permission = new PermissionService(web3j, credentials);
+    String result = permission.revokeUserTableManager(tableName, addr);
     ConsoleUtils.printJson(result);
     System.out.println();
   }
 
   @Override
-  public void queryUserTableManager(String[] params) throws Exception {
+  public void listUserTableManager(String[] params) throws Exception {
     if (params.length < 2) {
-      HelpInfo.promptHelp("qum");
+      HelpInfo.promptHelp("listUserTableManager");
       return;
     }
     if (params.length > 2) {
-      HelpInfo.promptHelp("qum");
+      HelpInfo.promptHelp("listUserTableManager");
       return;
     }
     String tableName = params[1];
@@ -1163,19 +1157,19 @@ public class ConsoleImpl implements ConsoleFace {
       HelpInfo.listUserTableManagerHelp();
       return;
     }
-    AuthorityService authorityTableService = new AuthorityService(web3j, credentials);
-    List<AuthorityInfo> authoritys = authorityTableService.queryUserTableManager(tableName);
-    printAuthorityInfo(authoritys);
+    PermissionService permissionTableService = new PermissionService(web3j, credentials);
+    List<PermissionInfo> permissions = permissionTableService.listUserTableManager(tableName);
+    printPermissionInfo(permissions);
   }
 
   @Override
-  public void addDeployAndCreateManager(String[] params) throws Exception {
+  public void grantDeployAndCreateManager(String[] params) throws Exception {
     if (params.length < 2) {
-      HelpInfo.promptHelp("adm");
+      HelpInfo.promptHelp("grantDeployAndCreateManager");
       return;
     }
     if (params.length > 2) {
-      HelpInfo.promptHelp("adm");
+      HelpInfo.promptHelp("grantDeployAndCreateManager");
       return;
     }
     String address = params[1];
@@ -1186,20 +1180,20 @@ public class ConsoleImpl implements ConsoleFace {
     if (ConsoleUtils.isInvalidAddress(address)) {
       return;
     }
-    AuthorityService authority = new AuthorityService(web3j, credentials);
-    String result = authority.addDeployAndCreateManager(address);
+    PermissionService permission = new PermissionService(web3j, credentials);
+    String result = permission.grantDeployAndCreateManager(address);
     ConsoleUtils.printJson(result);
     System.out.println();
   }
 
   @Override
-  public void removeDeployAndCreateManager(String[] params) throws Exception {
+  public void revokeDeployAndCreateManager(String[] params) throws Exception {
     if (params.length < 2) {
-      HelpInfo.promptHelp("rdm");
+      HelpInfo.promptHelp("revokeDeployAndCreateManager");
       return;
     }
     if (params.length > 2) {
-      HelpInfo.promptHelp("rdm");
+      HelpInfo.promptHelp("revokeDeployAndCreateManager");
       return;
     }
     String address = params[1];
@@ -1210,30 +1204,30 @@ public class ConsoleImpl implements ConsoleFace {
     if (ConsoleUtils.isInvalidAddress(address)) {
       return;
     }
-    AuthorityService authority = new AuthorityService(web3j, credentials);
-    String result = authority.removeDeployAndCreateManager(address);
+    PermissionService permission = new PermissionService(web3j, credentials);
+    String result = permission.revokeDeployAndCreateManager(address);
     ConsoleUtils.printJson(result);
     System.out.println();
   }
 
   @Override
-  public void queryDeployAndCreateManager(String[] params) throws Exception {
-    if (HelpInfo.promptNoParams(params, "qdm")) {
+  public void listDeployAndCreateManager(String[] params) throws Exception {
+    if (HelpInfo.promptNoParams(params, "listyDeployAndCreateManager")) {
       return;
     }
-    AuthorityService authorityTableService = new AuthorityService(web3j, credentials);
-    List<AuthorityInfo> authoritys = authorityTableService.queryDeployAndCreateManager();
-    printAuthorityInfo(authoritys);
+    PermissionService permissionTableService = new PermissionService(web3j, credentials);
+    List<PermissionInfo> permissions = permissionTableService.listDeployAndCreateManager();
+    printPermissionInfo(permissions);
   }
 
   @Override
-  public void addAuthorityManager(String[] params) throws Exception {
+  public void grantPermissionManager(String[] params) throws Exception {
     if (params.length < 2) {
-      HelpInfo.promptHelp("aam");
+      HelpInfo.promptHelp("grantPermissionManager");
       return;
     }
     if (params.length > 2) {
-      HelpInfo.promptHelp("aam");
+      HelpInfo.promptHelp("grantPermissionManager");
       return;
     }
     String address = params[1];
@@ -1244,20 +1238,20 @@ public class ConsoleImpl implements ConsoleFace {
     if (ConsoleUtils.isInvalidAddress(address)) {
       return;
     }
-    AuthorityService authority = new AuthorityService(web3j, credentials);
-    String result = authority.addAuthorityManager(address);
+    PermissionService permission = new PermissionService(web3j, credentials);
+    String result = permission.grantPermissionManager(address);
     ConsoleUtils.printJson(result);
     System.out.println();
   }
 
   @Override
-  public void removeAuthorityManager(String[] params) throws Exception {
+  public void revokePermissionManager(String[] params) throws Exception {
     if (params.length < 2) {
-      HelpInfo.promptHelp("ram");
+      HelpInfo.promptHelp("revokePermissionManager");
       return;
     }
     if (params.length > 2) {
-      HelpInfo.promptHelp("ram");
+      HelpInfo.promptHelp("revokePermissionManager");
       return;
     }
     String address = params[1];
@@ -1268,30 +1262,30 @@ public class ConsoleImpl implements ConsoleFace {
     if (ConsoleUtils.isInvalidAddress(address)) {
       return;
     }
-    AuthorityService authority = new AuthorityService(web3j, credentials);
-    String result = authority.removeAuthorityManager(address);
+    PermissionService permission = new PermissionService(web3j, credentials);
+    String result = permission.revokePermissionManager(address);
     ConsoleUtils.printJson(result);
     System.out.println();
   }
 
   @Override
-  public void queryAuthorityManager(String[] params) throws Exception {
-    if (HelpInfo.promptNoParams(params, "qpm")) {
+  public void listPermissionManager(String[] params) throws Exception {
+    if (HelpInfo.promptNoParams(params, "listPermissionManager")) {
       return;
     }
-    AuthorityService authorityTableService = new AuthorityService(web3j, credentials);
-    List<AuthorityInfo> authoritys = authorityTableService.queryAuthorityManager();
-    printAuthorityInfo(authoritys);
+    PermissionService permissionTableService = new PermissionService(web3j, credentials);
+    List<PermissionInfo> permissions = permissionTableService.listPermissionManager();
+    printPermissionInfo(permissions);
   }
 
   @Override
-  public void addNodeManager(String[] params) throws Exception {
+  public void grantNodeManager(String[] params) throws Exception {
     if (params.length < 2) {
-      HelpInfo.promptHelp("anm");
+      HelpInfo.promptHelp("grantNodeManager");
       return;
     }
     if (params.length > 2) {
-      HelpInfo.promptHelp("anm");
+      HelpInfo.promptHelp("grantNodeManager");
       return;
     }
     String address = params[1];
@@ -1302,20 +1296,20 @@ public class ConsoleImpl implements ConsoleFace {
     if (ConsoleUtils.isInvalidAddress(address)) {
       return;
     }
-    AuthorityService authority = new AuthorityService(web3j, credentials);
-    String result = authority.addNodeManager(address);
+    PermissionService permission = new PermissionService(web3j, credentials);
+    String result = permission.grantNodeManager(address);
     ConsoleUtils.printJson(result);
     System.out.println();
   }
 
   @Override
-  public void removeNodeManager(String[] params) throws Exception {
+  public void revokeNodeManager(String[] params) throws Exception {
     if (params.length < 2) {
-      HelpInfo.promptHelp("rnm");
+      HelpInfo.promptHelp("revokeNodeManager");
       return;
     }
     if (params.length > 2) {
-      HelpInfo.promptHelp("rnm");
+      HelpInfo.promptHelp("revokeNodeManager");
       return;
     }
     String address = params[1];
@@ -1326,30 +1320,30 @@ public class ConsoleImpl implements ConsoleFace {
     if (ConsoleUtils.isInvalidAddress(address)) {
       return;
     }
-    AuthorityService authority = new AuthorityService(web3j, credentials);
-    String result = authority.removeNodeManager(address);
+    PermissionService permission = new PermissionService(web3j, credentials);
+    String result = permission.revokeNodeManager(address);
     ConsoleUtils.printJson(result);
     System.out.println();
   }
 
   @Override
-  public void queryNodeManager(String[] params) throws Exception {
-    if (HelpInfo.promptNoParams(params, "qnm")) {
+  public void listNodeManager(String[] params) throws Exception {
+    if (HelpInfo.promptNoParams(params, "listNodeManager")) {
       return;
     }
-    AuthorityService authorityTableService = new AuthorityService(web3j, credentials);
-    List<AuthorityInfo> authoritys = authorityTableService.queryNodeManager();
-    printAuthorityInfo(authoritys);
+    PermissionService permissionTableService = new PermissionService(web3j, credentials);
+    List<PermissionInfo> permissions = permissionTableService.listNodeManager();
+    printPermissionInfo(permissions);
   }
 
   @Override
-  public void addCNSManager(String[] params) throws Exception {
+  public void grantCNSManager(String[] params) throws Exception {
     if (params.length < 2) {
-      HelpInfo.promptHelp("acm");
+      HelpInfo.promptHelp("grantCNSManager");
       return;
     }
     if (params.length > 2) {
-      HelpInfo.promptHelp("acm");
+      HelpInfo.promptHelp("grantCNSManager");
       return;
     }
     String address = params[1];
@@ -1360,20 +1354,20 @@ public class ConsoleImpl implements ConsoleFace {
     if (ConsoleUtils.isInvalidAddress(address)) {
       return;
     }
-    AuthorityService authority = new AuthorityService(web3j, credentials);
-    String result = authority.addCNSManager(address);
+    PermissionService permission = new PermissionService(web3j, credentials);
+    String result = permission.grantCNSManager(address);
     ConsoleUtils.printJson(result);
     System.out.println();
   }
 
   @Override
-  public void removeCNSManager(String[] params) throws Exception {
+  public void revokeCNSManager(String[] params) throws Exception {
     if (params.length < 2) {
-      HelpInfo.promptHelp("rcm");
+      HelpInfo.promptHelp("revokeCNSManager");
       return;
     }
     if (params.length > 2) {
-      HelpInfo.promptHelp("rcm");
+      HelpInfo.promptHelp("revokeCNSManager");
       return;
     }
     String address = params[1];
@@ -1384,30 +1378,30 @@ public class ConsoleImpl implements ConsoleFace {
     if (ConsoleUtils.isInvalidAddress(address)) {
       return;
     }
-    AuthorityService authority = new AuthorityService(web3j, credentials);
-    String result = authority.removeCNSManager(address);
+    PermissionService permission = new PermissionService(web3j, credentials);
+    String result = permission.revokeCNSManager(address);
     ConsoleUtils.printJson(result);
     System.out.println();
   }
 
   @Override
-  public void queryCNSManager(String[] params) throws Exception {
-    if (HelpInfo.promptNoParams(params, "qcm")) {
+  public void listCNSManager(String[] params) throws Exception {
+    if (HelpInfo.promptNoParams(params, "listCNSManager")) {
       return;
     }
-    AuthorityService authorityTableService = new AuthorityService(web3j, credentials);
-    List<AuthorityInfo> authoritys = authorityTableService.queryCNSManager();
-    printAuthorityInfo(authoritys);
+    PermissionService permissionTableService = new PermissionService(web3j, credentials);
+    List<PermissionInfo> permissions = permissionTableService.listCNSManager();
+    printPermissionInfo(permissions);
   }
 
   @Override
-  public void addSysConfigManager(String[] params) throws Exception {
+  public void grantSysConfigManager(String[] params) throws Exception {
     if (params.length < 2) {
-      HelpInfo.promptHelp("asm");
+      HelpInfo.promptHelp("grantSysConfigManager");
       return;
     }
     if (params.length > 2) {
-      HelpInfo.promptHelp("asm");
+      HelpInfo.promptHelp("grantSysConfigManager");
       return;
     }
     String address = params[1];
@@ -1418,20 +1412,20 @@ public class ConsoleImpl implements ConsoleFace {
     if (ConsoleUtils.isInvalidAddress(address)) {
       return;
     }
-    AuthorityService authority = new AuthorityService(web3j, credentials);
-    String result = authority.addSysConfigManager(address);
+    PermissionService permission = new PermissionService(web3j, credentials);
+    String result = permission.grantSysConfigManager(address);
     ConsoleUtils.printJson(result);
     System.out.println();
   }
 
   @Override
-  public void removeSysConfigManager(String[] params) throws Exception {
+  public void revokeSysConfigManager(String[] params) throws Exception {
     if (params.length < 2) {
-      HelpInfo.promptHelp("rsm");
+      HelpInfo.promptHelp("revokeSysConfigManager");
       return;
     }
     if (params.length > 2) {
-      HelpInfo.promptHelp("rsm");
+      HelpInfo.promptHelp("revokeSysConfigManager");
       return;
     }
     String address = params[1];
@@ -1442,30 +1436,30 @@ public class ConsoleImpl implements ConsoleFace {
     if (ConsoleUtils.isInvalidAddress(address)) {
       return;
     }
-    AuthorityService authority = new AuthorityService(web3j, credentials);
-    String result = authority.removeSysConfigManager(address);
+    PermissionService permission = new PermissionService(web3j, credentials);
+    String result = permission.revokeSysConfigManager(address);
     ConsoleUtils.printJson(result);
     System.out.println();
   }
 
   @Override
-  public void querySysConfigManager(String[] params) throws Exception {
-    if (HelpInfo.promptNoParams(params, "qsm")) {
+  public void listSysConfigManager(String[] params) throws Exception {
+    if (HelpInfo.promptNoParams(params, "listSysConfigManager")) {
       return;
     }
-    AuthorityService authorityTableService = new AuthorityService(web3j, credentials);
-    List<AuthorityInfo> authoritys = authorityTableService.querySysConfigManager();
-    printAuthorityInfo(authoritys);
+    PermissionService permissionTableService = new PermissionService(web3j, credentials);
+    List<PermissionInfo> permissions = permissionTableService.listSysConfigManager();
+    printPermissionInfo(permissions);
   }
 
   @Override
   public void setSystemConfigByKey(String[] params) throws Exception {
     if (params.length < 2) {
-      HelpInfo.promptHelp("ssc");
+      HelpInfo.promptHelp("setSystemConfigByKey");
       return;
     }
     if (params.length > 3) {
-      HelpInfo.promptHelp("ssc");
+      HelpInfo.promptHelp("setSystemConfigByKey");
       return;
     }
     String key = params[1];
@@ -1474,7 +1468,7 @@ public class ConsoleImpl implements ConsoleFace {
       return;
     }
     if (params.length < 3) {
-      HelpInfo.promptHelp("ssc");
+      HelpInfo.promptHelp("setSystemConfigByKey");
       return;
     }
     String value = params[2];
@@ -1489,11 +1483,11 @@ public class ConsoleImpl implements ConsoleFace {
   @Override
   public void getSystemConfigByKey(String[] params) throws Exception {
     if (params.length < 2) {
-      HelpInfo.promptHelp("gsc");
+      HelpInfo.promptHelp("getSystemConfigByKey");
       return;
     }
     if (params.length > 2) {
-      HelpInfo.promptHelp("gsc");
+      HelpInfo.promptHelp("getSystemConfigByKey");
       return;
     }
     String key = params[1];
@@ -1507,19 +1501,19 @@ public class ConsoleImpl implements ConsoleFace {
     System.out.println();
   }
 
-  private void printAuthorityInfo(List<AuthorityInfo> authoritys) {
-    if (authoritys.isEmpty()) {
+  private void printPermissionInfo(List<PermissionInfo> permissionInfos) {
+    if (permissionInfos.isEmpty()) {
       System.out.println("Empty set.");
       System.out.println();
       return;
     }
     ConsoleUtils.singleLineForTable();
     String[] headers = {"address", "enable_num"};
-    int size = authoritys.size();
+    int size = permissionInfos.size();
     String[][] data = new String[size][2];
     for (int i = 0; i < size; i++) {
-      data[i][0] = authoritys.get(i).getAddress();
-      data[i][1] = authoritys.get(i).getEnableNum();
+      data[i][0] = permissionInfos.get(i).getAddress();
+      data[i][1] = permissionInfos.get(i).getEnableNum();
     }
     ColumnFormatter<String> cf = ColumnFormatter.text(Alignment.CENTER, 45);
     Table table = Table.of(headers, data, cf);

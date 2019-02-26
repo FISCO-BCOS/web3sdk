@@ -127,7 +127,7 @@ public class ConsoleUtils {
   }
 
   // dynamic compile target java code
-  public static void dynamicCompileJavaToClass() throws Exception {
+  public static void dynamicCompileJavaToClass(String name) throws Exception {
 
     File sourceDir = new File(JAVAPATH);
     if (!sourceDir.exists()) {
@@ -140,6 +140,9 @@ public class ConsoleUtils {
     }
     File[] javaFiles = sourceDir.listFiles();
     for (File javaFile : javaFiles) {
+      if (!javaFile.getName().equals(name + ".java")) {
+        continue;
+      }
       JavaCompiler javac = ToolProvider.getSystemJavaCompiler();
       int compileResult =
           javac.run(null, null, null, "-d", distDir.getAbsolutePath(), javaFile.getAbsolutePath());

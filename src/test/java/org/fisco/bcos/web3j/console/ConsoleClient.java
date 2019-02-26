@@ -65,24 +65,24 @@ public class ConsoleClient {
       completers.add(new ArgumentCompleter(new StringsCompleter("addSealer")));
       completers.add(new ArgumentCompleter(new StringsCompleter("addObserver")));
       completers.add(new ArgumentCompleter(new StringsCompleter("removeNode")));
-      completers.add(new ArgumentCompleter(new StringsCompleter("addUserTableManager")));
+      completers.add(new ArgumentCompleter(new StringsCompleter("grantUserTableManager")));
       completers.add(new ArgumentCompleter(new StringsCompleter("removeUserTableManager")));
-      completers.add(new ArgumentCompleter(new StringsCompleter("queryUserTableManager")));
-      completers.add(new ArgumentCompleter(new StringsCompleter("addDeployAndCreateManager")));
+      completers.add(new ArgumentCompleter(new StringsCompleter("listUserTableManager")));
+      completers.add(new ArgumentCompleter(new StringsCompleter("grantDeployAndCreateManager")));
       completers.add(new ArgumentCompleter(new StringsCompleter("removeDeployAndCreateManager")));
-      completers.add(new ArgumentCompleter(new StringsCompleter("queryDeployAndCreateManager")));
-      completers.add(new ArgumentCompleter(new StringsCompleter("addAuthorityManager")));
-      completers.add(new ArgumentCompleter(new StringsCompleter("removeAuthorityManager")));
-      completers.add(new ArgumentCompleter(new StringsCompleter("queryAuthorityManager")));
-      completers.add(new ArgumentCompleter(new StringsCompleter("addNodeManager")));
+      completers.add(new ArgumentCompleter(new StringsCompleter("listDeployAndCreateManager")));
+      completers.add(new ArgumentCompleter(new StringsCompleter("grantPermissionManager")));
+      completers.add(new ArgumentCompleter(new StringsCompleter("removePermissionManager")));
+      completers.add(new ArgumentCompleter(new StringsCompleter("listPermissionManager")));
+      completers.add(new ArgumentCompleter(new StringsCompleter("grantNodeManager")));
       completers.add(new ArgumentCompleter(new StringsCompleter("removeNodeManager")));
-      completers.add(new ArgumentCompleter(new StringsCompleter("queryNodeManager")));
-      completers.add(new ArgumentCompleter(new StringsCompleter("addCNSManager")));
+      completers.add(new ArgumentCompleter(new StringsCompleter("listNodeManager")));
+      completers.add(new ArgumentCompleter(new StringsCompleter("grantCNSManager")));
       completers.add(new ArgumentCompleter(new StringsCompleter("removeCNSManager")));
-      completers.add(new ArgumentCompleter(new StringsCompleter("queryCNSManager")));
-      completers.add(new ArgumentCompleter(new StringsCompleter("addSysConfigManager")));
+      completers.add(new ArgumentCompleter(new StringsCompleter("listCNSManager")));
+      completers.add(new ArgumentCompleter(new StringsCompleter("grantSysConfigManager")));
       completers.add(new ArgumentCompleter(new StringsCompleter("removeSysConfigManager")));
-      completers.add(new ArgumentCompleter(new StringsCompleter("querySysConfigManager")));
+      completers.add(new ArgumentCompleter(new StringsCompleter("listSysConfigManager")));
       completers.add(new ArgumentCompleter(new StringsCompleter("setSystemConfigByKey")));
       completers.add(new ArgumentCompleter(new StringsCompleter("getSystemConfigByKey")));
       completers.add(new ArgumentCompleter(new StringsCompleter("quit")));
@@ -214,60 +214,60 @@ public class ConsoleClient {
           case "removeNode":
             console.removeNode(params);
             break;
-          case "addUserTableManager":
-            console.addUserTableManager(params);
+          case "grantUserTableManager":
+            console.grantUserTableManager(params);
             break;
-          case "removeUserTableManager":
-            console.removeUserTableManager(params);
+          case "revokeUserTableManager":
+            console.revokeUserTableManager(params);
             break;
-          case "queryUserTableManager":
-            console.queryUserTableManager(params);
+          case "listUserTableManager":
+            console.listUserTableManager(params);
             break;
-          case "addDeployAndCreateManager":
-            console.addDeployAndCreateManager(params);
+          case "grantDeployAndCreateManager":
+            console.grantDeployAndCreateManager(params);
             break;
-          case "removeDeployAndCreateManager":
-            console.removeDeployAndCreateManager(params);
+          case "revokeDeployAndCreateManager":
+            console.revokeDeployAndCreateManager(params);
             break;
-          case "queryDeployAndCreateManager":
-            console.queryDeployAndCreateManager(params);
+          case "listDeployAndCreateManager":
+            console.listDeployAndCreateManager(params);
             break;
-          case "addAuthorityManager":
-            console.addAuthorityManager(params);
+          case "grantPermissionManager":
+            console.grantPermissionManager(params);
             break;
-          case "removeAuthorityManager":
-            console.removeAuthorityManager(params);
+          case "revokePermissionManager":
+            console.revokePermissionManager(params);
             break;
-          case "queryAuthorityManager":
-            console.queryAuthorityManager(params);
+          case "listPermissionManager":
+            console.listPermissionManager(params);
             break;
-          case "addNodeManager":
-            console.addNodeManager(params);
+          case "grantNodeManager":
+            console.grantNodeManager(params);
             break;
-          case "removeNodeManager":
-            console.removeNodeManager(params);
+          case "revokeNodeManager":
+            console.revokeNodeManager(params);
             break;
-          case "queryNodeManager":
-            console.queryNodeManager(params);
+          case "listNodeManager":
+            console.listNodeManager(params);
             break;
-          case "addCNSManager":
-            console.addCNSManager(params);
+          case "grantCNSManager":
+            console.grantCNSManager(params);
             break;
-          case "removeCNSManager":
-            console.removeCNSManager(params);
+          case "revokeCNSManager":
+            console.revokeCNSManager(params);
             break;
-          case "queryCNSManager":
-            console.queryCNSManager(params);
+          case "listCNSManager":
+            console.listCNSManager(params);
             break;
-          case "addSysConfigManager":
-            console.addSysConfigManager(params);
+          case "grantSysConfigManager":
+            console.grantSysConfigManager(params);
             break;
           case "removeSysConfigManager":
           case "rsm":
-            console.removeSysConfigManager(params);
+            console.revokeSysConfigManager(params);
             break;
-          case "querySysConfigManager":
-            console.querySysConfigManager(params);
+          case "listSysConfigManager":
+            console.revokeSysConfigManager(params);
             break;
           case "setSystemConfigByKey":
             console.setSystemConfigByKey(params);
@@ -276,7 +276,7 @@ public class ConsoleClient {
             console.getSystemConfigByKey(params);
             break;
           default:
-            System.out.println("Undefined command: \"" + params[0] + "\".  Try \"help\".\n");
+            System.out.println("Undefined command: \"" + params[0] + "\". Try \"help\".\n");
             break;
         }
       } catch (ResponseExcepiton e) {
@@ -317,6 +317,7 @@ public class ConsoleClient {
           }
         } catch (Exception e1) {
           System.out.println(e1.getMessage());
+          System.out.println();
         }
       } catch (Exception e) {
         System.out.println(e.getMessage());
