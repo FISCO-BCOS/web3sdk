@@ -178,92 +178,92 @@ public class ConsoleImpl implements ConsoleFace {
     }
     ConsoleUtils.singleLine();
     StringBuilder sb = new StringBuilder();
-    sb.append("help(h)                                       Provide help information.\n");
+    sb.append("help                                       Provide help information.\n");
     sb.append(
-        "getBlockNumber(gbn)                           Query the number of most recent block.\n");
-    sb.append("getPbftView(gpv)                              Query the pbft view of node.\n");
+        "getBlockNumber                           Query the number of most recent block.\n");
+    sb.append("getPbftView                              Query the pbft view of node.\n");
     sb.append(
-        "getSealerList(gsl)                            Query nodeID list for sealer nodes.\n");
+        "getSealerList                            Query nodeID list for sealer nodes.\n");
     sb.append(
-        "getObserverList(gol)                          Query nodeID list for observer nodes.\n");
+        "getObserverList                          Query nodeID list for observer nodes.\n");
     sb.append(
-        "getNodeIDList(gnl)                            Query nodeID list for all connected nodes.\n");
+        "getNodeIDList                            Query nodeID list for all connected nodes.\n");
     sb.append(
-        "getGroupPeers(ggp)                            Query nodeID list for sealer and observer nodes.\n");
+        "getGroupPeers                            Query nodeID list for sealer and observer nodes.\n");
     sb.append(
-        "getPeers(gps)                                 Query peers currently connected to the client.\n");
-    sb.append("getConsensusStatus(gcs)                       Query consensus status.\n");
-    sb.append("getSyncStatus(gss)                            Query sync status.\n");
-    sb.append("getClientVersion(gcv)                         Query the current client version.\n");
-    sb.append("getGroupList(ggl)                             Query group list.\n");
+        "getPeers                                 Query peers currently connected to the client.\n");
+    sb.append("getConsensusStatus                       Query consensus status.\n");
+    sb.append("getSyncStatus                            Query sync status.\n");
+    sb.append("getClientVersion                         Query the current client version.\n");
+    sb.append("getGroupList                             Query group list.\n");
     sb.append(
-        "getBlockByHash(gbbh)                          Query information about a block by hash.\n");
+        "getBlockByHash                          Query information about a block by hash.\n");
     sb.append(
-        "getBlockByNumber(gbbn)                        Query information about a block by block number.\n");
-    sb.append("getBlockHashByNumber(ghbn)                    Query block hash by block number.\n");
+        "getBlockByNumber                        Query information about a block by block number.\n");
+    sb.append("getBlockHashByNumber                    Query block hash by block number.\n");
     sb.append(
-        "getTransactionByHash(gtbh)                    Query information about a transaction requested by transaction hash.\n");
+        "getTransactionByHash                    Query information about a transaction requested by transaction hash.\n");
     sb.append(
-        "getTransactionByBlockHashAndIndex(gthi)       Query information about a transaction by block hash and transaction index position.\n");
+        "getTransactionByBlockHashAndIndex       Query information about a transaction by block hash and transaction index position.\n");
     sb.append(
-        "getTransactionByBlockNumberAndIndex(gtni)     Query information about a transaction by block number and transaction index position.\n");
+        "getTransactionByBlockNumberAndIndex     Query information about a transaction by block number and transaction index position.\n");
     sb.append(
-        "getTransactionReceipt(gtr)                    Query the receipt of a transaction by transaction hash.\n");
-    sb.append("getPendingTransactions(gpt)                   Query pending transactions.\n");
-    sb.append("getPendingTxSize(gpts)                        Query pending transactions size.\n");
+        "getTransactionReceipt                    Query the receipt of a transaction by transaction hash.\n");
+    sb.append("getPendingTransactions                   Query pending transactions.\n");
+    sb.append("getPendingTxSize                        Query pending transactions size.\n");
     sb.append("getCode(gc)                                   Query code at a given address.\n");
-    sb.append("getTotalTransactionCount(gtc)                 Query total transaction count.\n");
-    sb.append("deploy(d)                                     Deploy a contract on blockchain.\n");
+    sb.append("getTotalTransactionCount                 Query total transaction count.\n");
+    sb.append("deploy                                     Deploy a contract on blockchain.\n");
     sb.append(
-        "call(c)                                       Call a contract by a function and paramters.\n");
+        "call                                       Call a contract by a function and paramters.\n");
     sb.append(
-        "deployByCNS(dbc)                              Deploy a contract on blockchain by CNS.\n");
+        "deployByCNS                              Deploy a contract on blockchain by CNS.\n");
     sb.append(
-        "callByCNS(cbc)                                Call a contract by a function and paramters by CNS.\n");
+        "callByCNS                                Call a contract by a function and paramters by CNS.\n");
     sb.append(
-        "queryCNS(qcs)                                 Query cns information by contract name and contract version.\n");
-    sb.append("addSealer(as)                                 Add a sealer node.\n");
-    sb.append("addObserver(ao)                               Add an observer node.\n");
-    sb.append("removeNode(rn)                                Remove a node.\n");
-    sb.append("setSystemConfigByKey(ssc)                     Set a system config.\n");
+        "queryCNS                                 Query cns information by contract name and contract version.\n");
+    sb.append("addSealer                                 Add a sealer node.\n");
+    sb.append("addObserver                               Add an observer node.\n");
+    sb.append("removeNode                                Remove a node.\n");
+    sb.append("setSystemConfigByKey                     Set a system config.\n");
     sb.append(
-        "getSystemConfigByKey(gsc)                     Query a system config value by key.\n");
+        "getSystemConfigByKey                     Query a system config value by key.\n");
     sb.append(
-        "addUserTableManager(aum)                      Add authority for user table by table name and address.\n");
+        "addUserTableManager                      Add authority for user table by table name and address.\n");
     sb.append(
-        "removeUserTableManager(rum)                   Remove authority for user table by table name and address.\n");
+        "removeUserTableManager                   Remove authority for user table by table name and address.\n");
     sb.append(
-        "queryUserTableManager(qum)                    Query authority for user table information.\n");
+        "queryUserTableManager                    Query authority for user table information.\n");
     sb.append(
-        "addDeployAndCreateManager(adm)                Add authority for deploy contract and create user table by address.\n");
+        "addDeployAndCreateManager                Add authority for deploy contract and create user table by address.\n");
     sb.append(
-        "removeDeployAndCreateManager(rdm)             Remove authority for deploy contract and create user table by address.\n");
+        "removeDeployAndCreateManager             Remove authority for deploy contract and create user table by address.\n");
     sb.append(
-        "queryDeployAndCreateManager(qdm)              Query authority information for deploy contract and create user table.\n");
+        "queryDeployAndCreateManager              Query authority information for deploy contract and create user table.\n");
     sb.append(
-        "addAuthorityManager(aam)                      Add authority for authority configuration by address.\n");
+        "addAuthorityManager                      Add authority for authority configuration by address.\n");
     sb.append(
-        "removeAuthorityManager(ram)                   Remove authority for authority configuration by address.\n");
+        "removeAuthorityManager                   Remove authority for authority configuration by address.\n");
     sb.append(
-        "queryAuthorityManager(qam)                    Query authority information for authority configuration.\n");
+        "queryAuthorityManager                    Query authority information for authority configuration.\n");
     sb.append(
-        "addNodeManager(anm)                           Add authority for node configuration by address.\n");
+        "addNodeManager                           Add authority for node configuration by address.\n");
     sb.append(
-        "removeNodeManager(rnm)                        Remove authority for node configuration by address.\n");
+        "removeNodeManager                        Remove authority for node configuration by address.\n");
     sb.append(
-        "queryNodeManager(qnm)                         Query authority information for node configuration.\n");
-    sb.append("addCNSManager(acm)                            Add authority for CNS by address.\n");
+        "queryNodeManager                         Query authority information for node configuration.\n");
+    sb.append("addCNSManager                            Add authority for CNS by address.\n");
     sb.append(
-        "removeCNSManager(rcm)                         Remove authority for CNS by address.\n");
+        "removeCNSManager                         Remove authority for CNS by address.\n");
     sb.append(
-        "queryCNSManager(qcm)                          Query authority information for CNS.\n");
+        "queryCNSManager                          Query authority information for CNS.\n");
     sb.append(
-        "addSysConfigManager(asm)                      Add authority for system configuration by address.\n");
+        "addSysConfigManager                      Add authority for system configuration by address.\n");
     sb.append(
-        "removeSysConfigManager(rsm)                   Remove authority for system configuration by address.\n");
+        "removeSysConfigManager                   Remove authority for system configuration by address.\n");
     sb.append(
-        "querySysConfigManager(qsm)                    Query authority information for system configuration.\n");
-    sb.append("quit(q)                                       Quit console.");
+        "querySysConfigManager                    Query authority information for system configuration.\n");
+    sb.append("quit                                       Quit console.");
     System.out.println(sb.toString());
     ConsoleUtils.singleLine();
     System.out.println();
@@ -1102,7 +1102,7 @@ public class ConsoleImpl implements ConsoleFace {
     }
     String tableName = params[1];
     if ("-h".equals(tableName) || "--help".equals(tableName)) {
-      HelpInfo.addUserTableManagerHelp();
+      HelpInfo.grantUserTableManagerHelp();
       return;
     }
     if (params.length < 3) {
@@ -1131,7 +1131,7 @@ public class ConsoleImpl implements ConsoleFace {
     }
     String tableName = params[1];
     if ("-h".equals(tableName) || "--help".equals(tableName)) {
-      HelpInfo.removeUserTableManagerHelp();
+      HelpInfo.revokeUserTableManagerHelp();
       return;
     }
     if (params.length < 3) {
@@ -1160,7 +1160,7 @@ public class ConsoleImpl implements ConsoleFace {
     }
     String tableName = params[1];
     if ("-h".equals(tableName) || "--help".equals(tableName)) {
-      HelpInfo.queryUserTableManagerHelp();
+      HelpInfo.listUserTableManagerHelp();
       return;
     }
     AuthorityService authorityTableService = new AuthorityService(web3j, credentials);
@@ -1180,7 +1180,7 @@ public class ConsoleImpl implements ConsoleFace {
     }
     String address = params[1];
     if ("-h".equals(address) || "--help".equals(address)) {
-      HelpInfo.addDeployAndCreateManagerHelp();
+      HelpInfo.grantDeployAndCreateManagerHelp();
       return;
     }
     if (ConsoleUtils.isInvalidAddress(address)) {
@@ -1204,7 +1204,7 @@ public class ConsoleImpl implements ConsoleFace {
     }
     String address = params[1];
     if ("-h".equals(address) || "--help".equals(address)) {
-      HelpInfo.removeDeployAndCreateManagerHelp();
+      HelpInfo.revokeDeployAndCreateManagerHelp();
       return;
     }
     if (ConsoleUtils.isInvalidAddress(address)) {
@@ -1238,7 +1238,7 @@ public class ConsoleImpl implements ConsoleFace {
     }
     String address = params[1];
     if ("-h".equals(address) || "--help".equals(address)) {
-      HelpInfo.addAuthorityManagerHelp();
+      HelpInfo.grantPermissionManagerHelp();
       return;
     }
     if (ConsoleUtils.isInvalidAddress(address)) {
@@ -1262,7 +1262,7 @@ public class ConsoleImpl implements ConsoleFace {
     }
     String address = params[1];
     if ("-h".equals(address) || "--help".equals(address)) {
-      HelpInfo.removeAuthorityManagerHelp();
+      HelpInfo.revokePermissionManagerHelp();
       return;
     }
     if (ConsoleUtils.isInvalidAddress(address)) {
@@ -1276,7 +1276,7 @@ public class ConsoleImpl implements ConsoleFace {
 
   @Override
   public void queryAuthorityManager(String[] params) throws Exception {
-    if (HelpInfo.promptNoParams(params, "qam")) {
+    if (HelpInfo.promptNoParams(params, "qpm")) {
       return;
     }
     AuthorityService authorityTableService = new AuthorityService(web3j, credentials);
@@ -1296,7 +1296,7 @@ public class ConsoleImpl implements ConsoleFace {
     }
     String address = params[1];
     if ("-h".equals(address) || "--help".equals(address)) {
-      HelpInfo.addNodeManagerHelp();
+      HelpInfo.grantNodeManagerHelp();
       return;
     }
     if (ConsoleUtils.isInvalidAddress(address)) {
@@ -1320,7 +1320,7 @@ public class ConsoleImpl implements ConsoleFace {
     }
     String address = params[1];
     if ("-h".equals(address) || "--help".equals(address)) {
-      HelpInfo.removeNodeManagerHelp();
+      HelpInfo.revokeNodeManagerHelp();
       return;
     }
     if (ConsoleUtils.isInvalidAddress(address)) {
@@ -1354,7 +1354,7 @@ public class ConsoleImpl implements ConsoleFace {
     }
     String address = params[1];
     if ("-h".equals(address) || "--help".equals(address)) {
-      HelpInfo.addCNSManagerHelp();
+      HelpInfo.grantCNSManagerHelp();
       return;
     }
     if (ConsoleUtils.isInvalidAddress(address)) {
@@ -1378,7 +1378,7 @@ public class ConsoleImpl implements ConsoleFace {
     }
     String address = params[1];
     if ("-h".equals(address) || "--help".equals(address)) {
-      HelpInfo.removeCNSManagerHelp();
+      HelpInfo.revokeCNSManagerHelp();
       return;
     }
     if (ConsoleUtils.isInvalidAddress(address)) {
@@ -1412,7 +1412,7 @@ public class ConsoleImpl implements ConsoleFace {
     }
     String address = params[1];
     if ("-h".equals(address) || "--help".equals(address)) {
-      HelpInfo.addSysConfigManagerHelp();
+      HelpInfo.grantSysConfigManagerHelp();
       return;
     }
     if (ConsoleUtils.isInvalidAddress(address)) {
@@ -1436,7 +1436,7 @@ public class ConsoleImpl implements ConsoleFace {
     }
     String address = params[1];
     if ("-h".equals(address) || "--help".equals(address)) {
-      HelpInfo.removeSysConfigManagerHelp();
+      HelpInfo.revokeSysConfigManagerHelp();
       return;
     }
     if (ConsoleUtils.isInvalidAddress(address)) {
