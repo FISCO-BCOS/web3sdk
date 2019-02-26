@@ -105,7 +105,7 @@ sourceSets {
 	}
 }
 
-//  1 dist jar
+//   dist jar
 jar {
 	destinationDir file('dist/apps')
 	archiveName project.name + '.jar'
