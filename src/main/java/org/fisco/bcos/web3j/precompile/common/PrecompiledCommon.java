@@ -27,22 +27,22 @@ public class PrecompiledCommon {
         msg = "table name and address does not exist";
         break;
       case -40:
-        msg = "invalid nodeID";
+        msg = "invalid nodeId";
         break;
       case -41:
         msg = "last sealer cannot be removed";
         break;
       case -42:
-        msg = "nodeID is not in network";
+        msg = "nodeId is not in network";
         break;
       case -43:
-        msg = "nodeID is not in group peers";
+        msg = "nodeId is not in group peers";
         break;
       case -44:
-        msg = "nodeID is already in sealer list";
+        msg = "nodeId is already in sealer list";
         break;
       case -45:
-        msg = "nodeID is already in observer list";
+        msg = "nodeId is already in observer list";
         break;
       case -50:
         msg = "address and version exist";
