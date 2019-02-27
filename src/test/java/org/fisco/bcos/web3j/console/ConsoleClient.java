@@ -32,6 +32,7 @@ public class ConsoleClient {
       completers.add(new ArgumentCompleter(new StringsCompleter("getBlockNumber")));
       completers.add(new ArgumentCompleter(new StringsCompleter("getPbftView")));
       completers.add(new ArgumentCompleter(new StringsCompleter("getSealerList")));
+      completers.add(new ArgumentCompleter(new StringsCompleter("getObserverList")));
       completers.add(new ArgumentCompleter(new StringsCompleter("getConsensusStatus")));
       completers.add(new ArgumentCompleter(new StringsCompleter("getSyncStatus")));
       completers.add(new ArgumentCompleter(new StringsCompleter("getClientVersion")));
@@ -214,6 +215,12 @@ public class ConsoleClient {
           case "removeNode":
             console.removeNode(params);
             break;
+          case "setSystemConfigByKey":
+            console.setSystemConfigByKey(params);
+            break;
+          case "getSystemConfigByKey":
+            console.getSystemConfigByKey(params);
+            break;
           case "grantUserTableManager":
             console.grantUserTableManager(params);
             break;
@@ -262,18 +269,11 @@ public class ConsoleClient {
           case "grantSysConfigManager":
             console.grantSysConfigManager(params);
             break;
-          case "removeSysConfigManager":
-          case "rsm":
+          case "revokeSysConfigManager":
             console.revokeSysConfigManager(params);
             break;
           case "listSysConfigManager":
-            console.revokeSysConfigManager(params);
-            break;
-          case "setSystemConfigByKey":
-            console.setSystemConfigByKey(params);
-            break;
-          case "getSystemConfigByKey":
-            console.getSystemConfigByKey(params);
+            console.listSysConfigManager(params);
             break;
           default:
             System.out.println("Undefined command: \"" + params[0] + "\". Try \"help\".\n");
