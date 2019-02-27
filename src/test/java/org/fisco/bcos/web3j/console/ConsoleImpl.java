@@ -32,6 +32,8 @@ import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameterName;
 import org.fisco.bcos.web3j.protocol.core.RemoteCall;
 import org.fisco.bcos.web3j.tx.Contract;
+import org.fisco.bcos.web3j.tx.gas.ContractGasProvider;
+import org.fisco.bcos.web3j.tx.gas.StaticGasProvider;
 import org.fisco.bcos.web3j.utils.Numeric;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -115,6 +117,7 @@ public class ConsoleImpl implements ConsoleFace {
       close();
     }
     channelEthereumService.setChannelService(service);
+    channelEthereumService.setTimeout(60000);
     web3j = Web3j.build(channelEthereumService, groupID);
     try {
       web3j.getBlockNumber().send().getBlockNumber();
@@ -181,12 +184,12 @@ public class ConsoleImpl implements ConsoleFace {
     sb.append("help                                     Provide help information.\n");
     sb.append("getBlockNumber                           Query the number of most recent block.\n");
     sb.append("getPbftView                              Query the pbft view of node.\n");
-    sb.append("getSealerList                            Query nodeID list for sealer nodes.\n");
-    sb.append("getObserverList                          Query nodeID list for observer nodes.\n");
+    sb.append("getSealerList                            Query nodeId list for sealer nodes.\n");
+    sb.append("getObserverList                          Query nodeId list for observer nodes.\n");
     sb.append(
-        "getNodeIDList                            Query nodeID list for all connected nodes.\n");
+        "getNodeIDList                            Query nodeId list for all connected nodes.\n");
     sb.append(
-        "getGroupPeers                            Query nodeID list for sealer and observer nodes.\n");
+        "getGroupPeers                            Query nodeId list for sealer and observer nodes.\n");
     sb.append(
         "getPeers                                 Query peers currently connected to the client.\n");
     sb.append("getConsensusStatus                       Query consensus status.\n");
@@ -217,43 +220,43 @@ public class ConsoleImpl implements ConsoleFace {
     sb.append(
         "callByCNS                                Call a contract by a function and paramters by CNS.\n");
     sb.append(
-        "queryCNS                                 Query cns information by contract name and contract version.\n");
+        "queryCNS                                 Query CNS information by contract name and contract version.\n");
     sb.append("addSealer                                Add a sealer node.\n");
     sb.append("addObserver                              Add an observer node.\n");
     sb.append("removeNode                               Remove a node.\n");
     sb.append("setSystemConfigByKey                     Set a system config.\n");
     sb.append("getSystemConfigByKey                     Query a system config value by key.\n");
     sb.append(
-        "grantUserTableManager                    Grant permission for user table by table name and grantress.\n");
+        "grantPermissionManager                   Grant permission for permission configuration by address.\n");
     sb.append(
-        "revokeUserTableManager                   Revoke permission for user table by table name and grantress.\n");
-    sb.append(
-        "listUserTableManager                     Query permission for user table information.\n");
-    sb.append(
-        "grantDeployAndCreateManager              Grant permission for deploy contract and create user table by grantress.\n");
-    sb.append(
-        "revokeDeployAndCreateManager             Revoke permission for deploy contract and create user table by grantress.\n");
-    sb.append(
-        "listDeployAndCreateManager               Query permission information for deploy contract and create user table.\n");
-    sb.append(
-        "grantPermissionManager                   Grant permission for permission configuration by grantress.\n");
-    sb.append(
-        "revokePermissionManager                  Revoke permission for permission configuration by grantress.\n");
+        "revokePermissionManager                  Revoke permission for permission configuration by address.\n");
     sb.append(
         "listPermissionManager                    Query permission information for permission configuration.\n");
     sb.append(
-        "grantNodeManager                         Grant permission for node configuration by grantress.\n");
+        "grantUserTableManager                    Grant permission for user table by table name and address.\n");
     sb.append(
-        "revokeNodeManager                        Revoke permission for node configuration by grantress.\n");
+        "revokeUserTableManager                   Revoke permission for user table by table name and address.\n");
+    sb.append(
+        "listUserTableManager                     Query permission for user table information.\n");
+    sb.append(
+        "grantDeployAndCreateManager              Grant permission for deploy contract and create user table by address.\n");
+    sb.append(
+        "revokeDeployAndCreateManager             Revoke permission for deploy contract and create user table by address.\n");
+    sb.append(
+        "listDeployAndCreateManager               Query permission information for deploy contract and create user table.\n");
+    sb.append(
+        "grantNodeManager                         Grant permission for node configuration by address.\n");
+    sb.append(
+        "revokeNodeManager                        Revoke permission for node configuration by address.\n");
     sb.append(
         "listNodeManager                          Query permission information for node configuration.\n");
-    sb.append("grantCNSManager                          Grant permission for CNS by grantress.\n");
-    sb.append("revokeCNSManager                         Revoke permission for CNS by grantress.\n");
+    sb.append("grantCNSManager                          Grant permission for CNS by address.\n");
+    sb.append("revokeCNSManager                         Revoke permission for CNS by address.\n");
     sb.append("listCNSManager                           Query permission information for CNS.\n");
     sb.append(
-        "grantSysConfigManager                    Grant permission for system configuration by grantress.\n");
+        "grantSysConfigManager                    Grant permission for system configuration by address.\n");
     sb.append(
-        "revokeSysConfigManager                   Revoke permission for system configuration by grantress.\n");
+        "revokeSysConfigManager                   Revoke permission for system configuration by address.\n");
     sb.append(
         "listSysConfigManager                     Query permission information for system configuration.\n");
     sb.append("quit                                     Quit console.");
@@ -357,8 +360,8 @@ public class ConsoleImpl implements ConsoleFace {
     if (HelpInfo.promptNoParams(params, "getNodeIDList")) {
       return;
     }
-    List<String> nodeIDs = web3j.getNodeIDList().send().getResult();
-    ConsoleUtils.printJson(nodeIDs.toString());
+    List<String> nodeIds = web3j.getNodeIDList().send().getResult();
+    ConsoleUtils.printJson(nodeIds.toString());
     System.out.println();
   }
 
@@ -700,10 +703,11 @@ public class ConsoleImpl implements ConsoleFace {
       System.out.println();
       return;
     }
+    ContractGasProvider gasProvider = new StaticGasProvider(gasPrice, gasLimit);
     Method deploy =
         contractClass.getMethod(
-            "deploy", Web3j.class, Credentials.class, BigInteger.class, BigInteger.class);
-    remoteCall = (RemoteCall<?>) deploy.invoke(null, web3j, credentials, gasPrice, gasLimit);
+            "deploy", Web3j.class, Credentials.class, ContractGasProvider.class);
+    remoteCall = (RemoteCall<?>) deploy.invoke(null, web3j, credentials, gasProvider);
     Contract contract = (Contract) remoteCall.send();
     contractAddress = contract.getContractAddress();
     System.out.println(contractAddress);
@@ -856,10 +860,11 @@ public class ConsoleImpl implements ConsoleFace {
       System.out.println();
       return;
     }
+    ContractGasProvider gasProvider = new StaticGasProvider(gasPrice, gasLimit);
     Method deploy =
         contractClass.getMethod(
-            "deploy", Web3j.class, Credentials.class, BigInteger.class, BigInteger.class);
-    remoteCall = (RemoteCall<?>) deploy.invoke(null, web3j, credentials, gasPrice, gasLimit);
+            "deploy", Web3j.class, Credentials.class, ContractGasProvider.class);
+    remoteCall = (RemoteCall<?>) deploy.invoke(null, web3j, credentials, gasProvider);
     contractVersion = params[2];
     if (contractVersion.length() > CnsService.MAX_VERSION_LENGTH) {
       ConsoleUtils.printJson(PrecompiledCommon.transferToJson(-51));
@@ -869,7 +874,7 @@ public class ConsoleImpl implements ConsoleFace {
     Contract contract = (Contract) remoteCall.send();
     contractAddress = contract.getContractAddress();
     // register cns
-    String result = cnsService.registerCns(params[1], contractVersion, contractAddress, "");
+    String result = cnsService.registerCns(name, contractVersion, contractAddress, "");
     System.out.println(contractAddress);
     System.out.println();
   }
@@ -917,7 +922,7 @@ public class ConsoleImpl implements ConsoleFace {
     Object contractObject;
 
     // get address from cns
-    contractName = params[1];
+    contractName = name;
     contractVersion = params[2];
     CnsService cnsResolver = new CnsService(web3j, credentials);
     try {
@@ -981,6 +986,9 @@ public class ConsoleImpl implements ConsoleFace {
     CnsService cnsService = new CnsService(web3j, credentials);
     List<CnsInfo> cnsInfos = new ArrayList<>();
     contractName = params[1];
+    if (contractName.endsWith(".sol")) {
+      contractName = contractName.substring(0, contractName.length() - 4);
+    }
     if (params.length == 3) {
       contractVersion = params[2];
       cnsInfos = cnsService.queryCnsByNameAndVersion(contractName, contractVersion);
@@ -1018,16 +1026,16 @@ public class ConsoleImpl implements ConsoleFace {
       HelpInfo.promptHelp("addSealer");
       return;
     }
-    String nodeID = params[1];
-    if ("-h".equals(nodeID) || "--help".equals(nodeID)) {
+    String nodeId = params[1];
+    if ("-h".equals(nodeId) || "--help".equals(nodeId)) {
       HelpInfo.addSealerHelp();
       return;
     }
-    if (nodeID.length() != 128) {
+    if (nodeId.length() != 128) {
       ConsoleUtils.printJson(PrecompiledCommon.transferToJson(-40));
     } else {
       ConsensusService consensusService = new ConsensusService(web3j, credentials);
-      String result = consensusService.addSealer(nodeID);
+      String result = consensusService.addSealer(nodeId);
       ConsoleUtils.printJson(result);
     }
     System.out.println();
@@ -1044,16 +1052,16 @@ public class ConsoleImpl implements ConsoleFace {
       HelpInfo.promptHelp("addObserver");
       return;
     }
-    String nodeID = params[1];
-    if ("-h".equals(nodeID) || "--help".equals(nodeID)) {
+    String nodeId = params[1];
+    if ("-h".equals(nodeId) || "--help".equals(nodeId)) {
       HelpInfo.addObserverHelp();
       return;
     }
-    if (nodeID.length() != 128) {
+    if (nodeId.length() != 128) {
       ConsoleUtils.printJson(PrecompiledCommon.transferToJson(-40));
     } else {
       ConsensusService consensusService = new ConsensusService(web3j, credentials);
-      String result = consensusService.addObserver(nodeID);
+      String result = consensusService.addObserver(nodeId);
       ConsoleUtils.printJson(result);
     }
     System.out.println();
@@ -1069,16 +1077,16 @@ public class ConsoleImpl implements ConsoleFace {
       HelpInfo.promptHelp("removeNode");
       return;
     }
-    String nodeID = params[1];
-    if ("-h".equals(nodeID) || "--help".equals(nodeID)) {
+    String nodeId = params[1];
+    if ("-h".equals(nodeId) || "--help".equals(nodeId)) {
       HelpInfo.removeNodeHelp();
       return;
     }
-    if (nodeID.length() != 128) {
+    if (nodeId.length() != 128) {
       ConsoleUtils.printJson(PrecompiledCommon.transferToJson(-40));
     } else {
       ConsensusService consensusService = new ConsensusService(web3j, credentials);
-      String result = consensusService.removeNode(nodeID);
+      String result = consensusService.removeNode(nodeId);
       ConsoleUtils.printJson(result);
     }
     System.out.println();
