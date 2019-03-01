@@ -1,4 +1,4 @@
-package org.fisco.bcos.web3j.solidity;
+package org.fisco.bcos.web3j.console;
 
 import static org.fisco.bcos.web3j.solidity.compiler.SolidityCompiler.Options.*;
 

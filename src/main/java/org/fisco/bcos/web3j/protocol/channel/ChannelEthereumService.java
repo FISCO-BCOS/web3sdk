@@ -20,6 +20,7 @@ public class ChannelEthereumService extends org.fisco.bcos.web3j.protocol.Servic
 	private static Logger logger = LoggerFactory.getLogger(ChannelEthereumService.class);
 
 	private Service channelService;
+    private Integer timeout;
 
     public ChannelEthereumService( boolean includeRawResponses) {
         super(includeRawResponses);
@@ -130,7 +131,6 @@ public class ChannelEthereumService extends org.fisco.bcos.web3j.protocol.Servic
 		this.timeout = timeout;
 	}
 
-	private Integer timeout = 0;
 
     @Override
     public void close() throws IOException {
