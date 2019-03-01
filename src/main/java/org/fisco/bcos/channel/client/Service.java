@@ -663,16 +663,29 @@ public class Service {
   public void onReceiveBlockNotify(ChannelHandlerContext ctx, ChannelMessage2 message) {
     try {
       String data = new String(message.getData());
+      logger.debug("Receive block notify: {}", data);
       String[] split = data.split(",");
       if (split.length != 2) {
         logger.error("Block notify format error: {}", data);
         return;
       }
 
-      // Integer groupID = Integer.parseInt(split[0]);
+      Integer groupID = Integer.parseInt(split[0]);
+      
+      if(!groupID.equals(getGroupId())) {
+    	  logger.error("Received groupID[{}] not match groupID[{}]", groupID, getGroupId());
+    	  
+    	  return;
+      }
+      
       Integer number = Integer.parseInt(split[1]);
 
-      setNumber(BigInteger.valueOf((long) number));
+      if(number.compareTo(getNumber().intValue()) > 0) {
+    	  setNumber(BigInteger.valueOf((long) number));
+      }
+      else {
+    	  //logger.warn("Received number[{}] less than current number[{}]", number, getNumber().intValue());
+      }
     } catch (Exception e) {
       logger.error("Block notify error", e);
     }
