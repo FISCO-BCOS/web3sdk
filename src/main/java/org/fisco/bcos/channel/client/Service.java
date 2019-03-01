@@ -682,9 +682,6 @@ public class Service {
 
       if (number.compareTo(getNumber().intValue()) > 0) {
         setNumber(BigInteger.valueOf((long) number));
-      } else {
-        // logger.warn("Received number[{}] less than current number[{}]", number,
-        // getNumber().intValue());
       }
     } catch (Exception e) {
       logger.error("Block notify error", e);
