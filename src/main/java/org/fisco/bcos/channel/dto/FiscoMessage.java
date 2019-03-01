@@ -3,12 +3,12 @@ package org.fisco.bcos.channel.dto;
 import io.netty.buffer.ByteBuf;
 import org.fisco.bcos.channel.handler.Message;
 
-public class EthereumMessage extends Message {
+public class FiscoMessage extends Message {
   private static final long serialVersionUID = 3763237749437810546L;
 
-  public EthereumMessage() {}
+  public FiscoMessage() {}
 
-  public EthereumMessage(Message msg) {
+  public FiscoMessage(Message msg) {
     length = msg.getLength();
     type = msg.getType();
     seq = msg.getSeq();
