@@ -21,7 +21,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLException;
-import org.fisco.bcos.channel.dto.EthereumMessage;
+import org.fisco.bcos.channel.dto.FiscoMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -42,10 +42,8 @@ public class ChannelConnections {
   private ThreadPoolTaskExecutor threadPool;
   private long idleTimeout = (long) 10000;
   private long heartBeatDelay = (long) 2000;
-  public Map<String, ChannelHandlerContext> networkConnections =
-      new HashMap<String, ChannelHandlerContext>();
+  public Map<String, ChannelHandlerContext> networkConnections = new HashMap<String, ChannelHandlerContext>();
   private int groupId;
-
   private Bootstrap bootstrap = new Bootstrap();
   ServerBootstrap serverBootstrap = new ServerBootstrap();
 
@@ -389,16 +387,16 @@ public class ChannelConnections {
       } else {
         logger.trace("send heart beat to {}", ctx.getKey());
         // 连接还在，发送心跳
-        EthereumMessage ethereumMessage = new EthereumMessage();
+        FiscoMessage fiscoMessage = new FiscoMessage();
 
-        ethereumMessage.setSeq(UUID.randomUUID().toString().replaceAll("-", ""));
-        ethereumMessage.setResult(0);
-        ethereumMessage.setType((short) 0x13);
-        ethereumMessage.setData("0".getBytes());
+        fiscoMessage.setSeq(UUID.randomUUID().toString().replaceAll("-", ""));
+        fiscoMessage.setResult(0);
+        fiscoMessage.setType((short) 0x13);
+        fiscoMessage.setData("0".getBytes());
 
         ByteBuf out = ctx.getValue().alloc().buffer();
-        ethereumMessage.writeHeader(out);
-        ethereumMessage.writeExtra(out);
+        fiscoMessage.writeHeader(out);
+        fiscoMessage.writeExtra(out);
 
         ctx.getValue().writeAndFlush(out);
       }
