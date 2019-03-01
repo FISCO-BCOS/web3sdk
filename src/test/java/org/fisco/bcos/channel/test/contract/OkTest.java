@@ -1,18 +1,21 @@
 package org.fisco.bcos.channel.test.contract;
 
+import org.fisco.bcos.channel.test.TestBase;
+import org.fisco.bcos.web3j.console.ContractClassFactory;
+import org.fisco.bcos.web3j.crypto.Credentials;
+import org.fisco.bcos.web3j.protocol.Web3j;
+import org.fisco.bcos.web3j.protocol.core.RemoteCall;
+import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.fisco.bcos.web3j.tx.Contract;
+import org.junit.Test;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.math.BigInteger;
-import org.fisco.bcos.channel.test.TestBase;
-import org.fisco.bcos.temp.HelloWorld;
-import org.fisco.bcos.web3j.console.ContractClassFactory;
-import org.fisco.bcos.web3j.crypto.Credentials;
-import org.fisco.bcos.web3j.protocol.Web3j;
-import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameterName;
-import org.fisco.bcos.web3j.protocol.core.RemoteCall;
-import org.fisco.bcos.web3j.tx.Contract;
-import org.junit.Test;
+import java.util.concurrent.TimeUnit;
+
+import static org.junit.Assert.assertTrue;
 
 public class OkTest extends TestBase {
 
@@ -26,12 +29,19 @@ public class OkTest extends TestBase {
   @Test
   public void testOkContract() throws Exception {
 
-    HelloWorld helloWorld = HelloWorld.deploy(web3j, credentials, gasPrice, gasLimit).send();
+    Ok okDemo = Ok.deploy(web3j, credentials, gasPrice, gasLimit).send();
 
-    if (helloWorld != null) {
-      System.out.println("####contract address is: " + helloWorld.getContractAddress());
-      web3j.getCode(helloWorld.getContractAddress(), DefaultBlockParameterName.LATEST);
-      // TransactionReceipt receipt = okDemo.trans(new BigInteger("4")).send();
+    if (okDemo != null) {
+      System.out.println("####contract address is: " + okDemo.getContractAddress());
+      TransactionReceipt receipt = okDemo.trans(new BigInteger("4")).send();
+      assertTrue(receipt.getBlockNumber().intValue() > 0);
+      assertTrue(receipt.getTransactionIndex().intValue() >= 0);
+      assertTrue(receipt.getGasUsed().intValue() > 0);
+      BigInteger oldBalance = okDemo.get().sendAsync().get(60000, TimeUnit.MILLISECONDS);
+      okDemo.trans(new BigInteger("4")).sendAsync().get(60000, TimeUnit.MILLISECONDS);
+      BigInteger newBalance = okDemo.get().sendAsync().get(60000, TimeUnit.MILLISECONDS);
+      System.out.println("####newBalance is: " + oldBalance.intValue());
+      assertTrue(newBalance.intValue() == oldBalance.intValue() + 4);
     }
   }
 
