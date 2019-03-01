@@ -1,12 +1,9 @@
 package org.fisco.bcos.channel.test.contract;
 
-import static org.junit.Assert.assertTrue;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.math.BigInteger;
-import java.util.concurrent.TimeUnit;
 import org.fisco.bcos.channel.test.TestBase;
 import org.fisco.bcos.temp.HelloWorld;
 import org.fisco.bcos.web3j.console.ContractClassFactory;
@@ -14,7 +11,6 @@ import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameterName;
 import org.fisco.bcos.web3j.protocol.core.RemoteCall;
-import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.tx.Contract;
 import org.junit.Test;
 
@@ -35,7 +31,7 @@ public class OkTest extends TestBase {
     if (helloWorld != null) {
       System.out.println("####contract address is: " + helloWorld.getContractAddress());
       web3j.getCode(helloWorld.getContractAddress(), DefaultBlockParameterName.LATEST);
-     // TransactionReceipt receipt = okDemo.trans(new BigInteger("4")).send();
+      // TransactionReceipt receipt = okDemo.trans(new BigInteger("4")).send();
     }
   }
 
