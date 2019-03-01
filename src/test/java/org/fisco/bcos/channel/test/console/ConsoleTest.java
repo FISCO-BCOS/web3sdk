@@ -3,6 +3,8 @@ package org.fisco.bcos.channel.test.console;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.Arrays;
+
 import org.fisco.bcos.web3j.console.ConsoleFace;
 import org.fisco.bcos.web3j.console.ConsoleImpl;
 import org.junit.Rule;

@@ -604,7 +604,7 @@ public class SolidityFunctionWrapper extends Generator {
         return "new "
             + parameterSpecType
             + "(\n"
-            + "        Utils.typeMap("
+            + "        org.fisco.bcos.web3j.abi.Utils.typeMap("
             + parameterSpec.name
             + ", "
             + typeMapInput

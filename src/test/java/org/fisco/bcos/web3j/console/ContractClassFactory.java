@@ -4,7 +4,10 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+
 import org.fisco.bcos.web3j.abi.datatypes.Type;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.tuples.Tuple;
@@ -387,12 +390,14 @@ public class ContractClassFactory {
       String[] str = null;
       if (resultObj != null) {
         classResult = resultObj.getClass();
+        System.out.println(classResult.getCanonicalName());
         str = new String[resultObj.getSize()];
       }
       if (classResult != null && str != null) {
         for (int i = 1; i <= resultObj.getSize(); i++) {
           Method get = classResult.getMethod("getValue" + i);
           str[i - 1] = new String((byte[]) get.invoke(result)).trim();
+          System.out.println("*******" + str[i - 1]);
         }
         resultStr = Arrays.toString(str);
       }
