@@ -19,9 +19,9 @@ import org.fisco.bcos.web3j.solidity.compiler.SolidityCompiler;
 
 public class ConsoleUtils {
 
-  public static final String JAVAPATH = "java/org/fisco/bcos/temp";
-  public static final String CLASSPATH = "java/classes/org/fisco/bcos/temp";
-  public static final String TARGETCLASSPATH = "java/classes";
+  public static final String JAVAPATH = "solidity/java/org/fisco/bcos/temp";
+  public static final String CLASSPATH = "solidity/java/classes/org/fisco/bcos/temp";
+  public static final String TARGETCLASSPATH = "solidity/java/classes";
   public static final String PACKAGENAME = "org.fisco.bcos.temp";
 
   public static void printJson(String jsonStr) {
@@ -213,7 +213,10 @@ public class ConsoleUtils {
     File[] solFiles = solFileList.listFiles();
 
     for (File solFile : solFiles) {
-
+      if(!solFile.getName().endsWith(".sol"))
+  	  {
+  			continue;
+  	  }
       SolidityCompiler.Result res =
           SolidityCompiler.compile(
               solFile,
@@ -229,7 +232,7 @@ public class ConsoleUtils {
       FileUtils.writeStringToFile(new File("solidity/bin/" + contractname + ".bin"), a.bin);
       String binFile;
       String abiFile;
-      String tempDirPath = new File("java").getAbsolutePath();
+      String tempDirPath = new File("solidity/java").getAbsolutePath();
       String filename = contractname;
       abiFile = "solidity/abi/" + filename + ".abi";
       binFile = "solidity/bin/" + filename + ".bin";

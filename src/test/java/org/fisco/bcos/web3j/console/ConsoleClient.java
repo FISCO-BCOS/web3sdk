@@ -35,7 +35,7 @@ public class ConsoleClient {
       completers.add(new ArgumentCompleter(new StringsCompleter("getObserverList")));
       completers.add(new ArgumentCompleter(new StringsCompleter("getConsensusStatus")));
       completers.add(new ArgumentCompleter(new StringsCompleter("getSyncStatus")));
-      completers.add(new ArgumentCompleter(new StringsCompleter("getClientVersion")));
+      completers.add(new ArgumentCompleter(new StringsCompleter("getNodeVersion")));
       completers.add(new ArgumentCompleter(new StringsCompleter("getPeers")));
       completers.add(new ArgumentCompleter(new StringsCompleter("getNodeIDList")));
       completers.add(new ArgumentCompleter(new StringsCompleter("getGroupPeers")));
@@ -110,7 +110,7 @@ public class ConsoleClient {
         System.out.print("");
         continue;
       }
-      if ("quit".equals(params[0])) {
+      if ("quit".equals(params[0]) || "q".equals(params[0])) {
         if (HelpInfo.promptNoParams(params, "q")) {
           continue;
         } else if (params.length > 2) {
@@ -123,6 +123,7 @@ public class ConsoleClient {
       try {
         switch (params[0]) {
           case "help":
+          case "h":
             console.help(params);
             break;
           case "getBlockNumber":
@@ -143,8 +144,8 @@ public class ConsoleClient {
           case "getSyncStatus":
             console.getSyncStatus(params);
             break;
-          case "getClientVersion":
-            console.getClientVersion(params);
+          case "getNodeVersion":
+            console.getNodeVersion(params);
             break;
           case "getPeers":
             console.getPeers(params);
