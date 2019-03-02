@@ -22,7 +22,7 @@ public interface ConsoleFace {
 
   void getSyncStatus(String[] params) throws IOException;
 
-  void getClientVersion(String[] params) throws IOException;
+  void getNodeVersion(String[] params) throws IOException;
 
   void getPeers(String[] params) throws IOException;
 

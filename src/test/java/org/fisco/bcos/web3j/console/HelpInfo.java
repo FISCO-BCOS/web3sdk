@@ -27,6 +27,7 @@ public class HelpInfo {
   public static void helpNoParams(String func) {
     switch (func) {
       case "help":
+      case "h":
         help();
         break;
       case "getBlockNumber":
@@ -87,6 +88,7 @@ public class HelpInfo {
         listSysConfigManagerHelp();
         break;
       case "quit":
+      case "q":
         quitHelp();
         break;
 

@@ -154,24 +154,24 @@ public class ConsoleTest {
   }
 
   @Test
-  public void getClientVersionTest() throws IOException {
+  public void getNodeVersionTest() throws IOException {
     String[] params1 = {};
-    console.getClientVersion(params1);
+    console.getNodeVersion(params1);
     assertTrue(!"".equals(log.getLog()));
     log.clearLog();
 
     String[] params2 = {"-h"};
-    console.getClientVersion(params2);
+    console.getNodeVersion(params2);
     assertTrue(!"".equals(log.getLog()));
     log.clearLog();
 
     String[] params3 = {"--help"};
-    console.getClientVersion(params3);
+    console.getNodeVersion(params3);
     assertTrue(!"".equals(log.getLog()));
     log.clearLog();
 
     String[] params4 = {"k"};
-    console.getClientVersion(params4);
+    console.getNodeVersion(params4);
     assertTrue(!"".equals(log.getLog()));
   }
 

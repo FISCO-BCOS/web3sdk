@@ -194,7 +194,7 @@ public class ConsoleImpl implements ConsoleFace {
         "getPeers                                 Query peers currently connected to the client.\n");
     sb.append("getConsensusStatus                       Query consensus status.\n");
     sb.append("getSyncStatus                            Query sync status.\n");
-    sb.append("getClientVersion                         Query the current client version.\n");
+    sb.append("getNodeVersion                           Query the current node version.\n");
     sb.append("getGroupList                             Query group list.\n");
     sb.append(
         "getBlockByHash                           Query information about a block by hash.\n");
@@ -266,7 +266,7 @@ public class ConsoleImpl implements ConsoleFace {
   }
 
   @Override
-  public void getClientVersion(String[] params) throws IOException {
+  public void getNodeVersion(String[] params) throws IOException {
     if (HelpInfo.promptNoParams(params, "getClientVersion")) {
       return;
     }
