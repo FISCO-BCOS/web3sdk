@@ -267,11 +267,11 @@ public class ConsoleImpl implements ConsoleFace {
 
   @Override
   public void getNodeVersion(String[] params) throws IOException {
-    if (HelpInfo.promptNoParams(params, "getClientVersion")) {
+    if (HelpInfo.promptNoParams(params, "getNodeVersion")) {
       return;
     }
-    String clientVersion = web3j.getClientVersion().sendForReturnString();
-    ConsoleUtils.printJson(clientVersion);
+    String nodeVersion = web3j.getNodeVersion().sendForReturnString();
+    ConsoleUtils.printJson(nodeVersion);
     System.out.println();
   }
 

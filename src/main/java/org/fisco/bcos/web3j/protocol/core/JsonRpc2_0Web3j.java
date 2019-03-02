@@ -68,8 +68,8 @@ public class JsonRpc2_0Web3j implements Web3j {
   }
 
   @Override
-  public Request<?, ClientVersion> getClientVersion() {
-    return new Request<>("getClientVersion", Arrays.asList(), web3jService, ClientVersion.class);
+  public Request<?, NodeVersion> getNodeVersion() {
+    return new Request<>("getClientVersion", Arrays.asList(), web3jService, NodeVersion.class);
   }
 
   @Override
