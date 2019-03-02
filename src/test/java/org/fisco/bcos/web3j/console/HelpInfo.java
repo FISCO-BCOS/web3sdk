@@ -48,8 +48,8 @@ public class HelpInfo {
       case "getSyncStatus":
         getSyncStatusHelp();
         break;
-      case "getClientVersion":
-        getClientVersionHelp();
+      case "getNodeVersion":
+    	getNodeVersionHelp();
         break;
       case "getPeers":
         getPeersHelp();
@@ -133,9 +133,9 @@ public class HelpInfo {
     System.out.println("Usage: getSyncStatus");
   }
 
-  public static void getClientVersionHelp() {
-    System.out.println("Query the current client version.");
-    System.out.println("Usage: getClientVersion");
+  public static void getNodeVersionHelp() {
+    System.out.println("Query the current node version.");
+    System.out.println("Usage: getNodeVersion");
   }
 
   public static void getPeersHelp() {
