@@ -1,14 +1,13 @@
 package org.fisco.bcos.web3j.console;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.lang.reflect.ParameterizedType;
 import java.math.BigInteger;
-import java.util.Arrays;
-import org.fisco.bcos.web3j.abi.datatypes.Type;
+import java.util.ArrayList;
+import java.util.List;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.tuples.Tuple;
-import org.fisco.bcos.web3j.tuples.generated.*;
 
 public class ContractClassFactory {
 
@@ -73,7 +72,7 @@ public class ContractClassFactory {
         }
       } else if (type[i] == byte[].class) {
         if (params[i + 4].startsWith("\"") && params[i + 4].endsWith("\"")) {
-          byte[] bytes1 = new byte[Type.MAX_BYTE_LENGTH];
+          byte[] bytes1 = new byte[Integer.MAX_VALUE];
           byte[] bytes2 = params[i + 4].substring(1, params[i + 4].length() - 1).getBytes();
           for (int j = 0; j < bytes2.length; j++) {
             bytes1[j] = bytes2[j];
@@ -90,87 +89,63 @@ public class ContractClassFactory {
   }
 
   @SuppressWarnings("rawtypes")
-  public static String getReturnType(Class clazz, String methodName, Class[] parameterType) {
+  public static String getReturnObject(
+      Class clazz, String methodName, Class[] parameterType, Object result)
+      throws  IllegalAccessException, IllegalArgumentException,
+          InvocationTargetException, NoSuchMethodException, SecurityException {
     Method[] methods = clazz.getDeclaredMethods();
-    String returnType = null;
     for (Method method : methods) {
       if (methodName.equals(method.getName())
           && (method.getParameterTypes()).length == parameterType.length) {
         java.lang.reflect.Type genericReturnType = method.getGenericReturnType();
-        if (genericReturnType instanceof ParameterizedType) {
-          java.lang.reflect.Type[] actualTypeArguments =
-              ((ParameterizedType) genericReturnType).getActualTypeArguments();
-          for (java.lang.reflect.Type type : actualTypeArguments) {
-            String str = type.getTypeName();
-            int i = str.indexOf("Tuple");
-            if (i == -1) {
-              String[] split = str.split("\\.");
-              returnType = split[split.length - 1];
-              break;
+        String typeName = genericReturnType.getTypeName();
+        int n = 0;
+        if (typeName.contains("org.fisco.bcos.web3j.tuples.generated.Tuple")) {
+
+          String temp = typeName.split("org.fisco.bcos.web3j.tuples.generated.Tuple")[1];
+          if (typeName.contains("org.fisco.bcos.web3j.tuples.generated.Tuple")) {
+            n = temp.charAt(0) - '0';
+          }
+          int len = temp.length();
+          String detailTypeList = temp.substring(2, len - 1);
+          String[] ilist = detailTypeList.split(",");
+
+          Tuple resultObj = (Tuple) result;
+          Class<? extends Tuple> classResult = resultObj.getClass();
+          List<Object> finalList = new ArrayList<>();
+
+          for (int i = 0; i < n; i++) {
+            Method get = classResult.getMethod("getValue" + (i + 1));
+            if (ilist[i].contains("List")) {
+              if (ilist[i].contains("byte")) {
+                List<byte[]> list1 = (List<byte[]>) get.invoke(resultObj);
+                List<Object> resultList = new ArrayList<>();
+                for (byte[] list : list1) {
+                  resultList.add(new String(list).trim());
+                }
+                finalList.add(resultList);
+              } else {
+                finalList.add(get.invoke(resultObj));
+              }
             } else {
-              returnType = str.substring(i, str.length());
-              break;
+              if (ilist[i].contains("byte")) {
+                byte[] byte1 = (byte[]) get.invoke(resultObj);
+                finalList.add(new String(byte1).trim());
+              } else {
+                finalList.add(get.invoke(resultObj));
+              }
             }
           }
+          return finalList.toString();
+
+        } else if (typeName.contains("TransactionReceipt")) {
+          TransactionReceipt resultTx = (TransactionReceipt) result;
+          return resultTx.getTransactionHash();
+        } else {
+          return result.toString();
         }
-        break;
       }
     }
-    return returnType;
-  }
-
-  @SuppressWarnings("unchecked")
-  public static String getReturnObject(String returnType, Object result) throws Exception {
-    String resultStr = "";
-    if (returnType.startsWith("Tuple") && "byte[]".equals(returnType.substring(7, 13))) {
-      int n = Integer.parseInt(returnType.substring(5, 6));
-      Tuple resultObj = null;
-      switch (n) {
-        case 1:
-          resultObj = (Tuple1<byte[]>) result;
-          break;
-        case 2:
-          resultObj = (Tuple2<byte[], byte[]>) result;
-          break;
-        case 3:
-          resultObj = (Tuple3<byte[], byte[], byte[]>) result;
-          break;
-        case 4:
-          resultObj = (Tuple4<byte[], byte[], byte[], byte[]>) result;
-          break;
-        case 5:
-          resultObj = (Tuple5<byte[], byte[], byte[], byte[], byte[]>) result;
-          break;
-        case 6:
-          resultObj = (Tuple6<byte[], byte[], byte[], byte[], byte[], byte[]>) result;
-          break;
-        case 7:
-          resultObj = (Tuple7<byte[], byte[], byte[], byte[], byte[], byte[], byte[]>) result;
-          break;
-      }
-      Class<? extends Tuple> classResult = null;
-      String[] str = null;
-      if (resultObj != null) {
-        classResult = resultObj.getClass();
-        str = new String[resultObj.getSize()];
-      }
-      if (classResult != null && str != null) {
-        for (int i = 1; i <= resultObj.getSize(); i++) {
-          Method get = classResult.getMethod("getValue" + i);
-          str[i - 1] = new String((byte[]) get.invoke(result)).trim();
-        }
-        resultStr = Arrays.toString(str);
-      }
-    } else if ("BigInteger".equals(returnType)) {
-      BigInteger resultB = (BigInteger) result;
-      resultStr = resultB.toString();
-    } else if ("TransactionReceipt".equals(returnType)) {
-      TransactionReceipt resultTx = (TransactionReceipt) result;
-      resultStr = resultTx.getTransactionHash();
-    } else {
-      resultStr = result.toString();
-    }
-
-    return resultStr;
+    return null;
   }
 }
