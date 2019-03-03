@@ -701,7 +701,7 @@ public class ConsoleImpl implements ConsoleFace {
     ConsoleUtils.dynamicLoadClass();
     contractName = ConsoleUtils.PACKAGENAME + "." + name;
     try {
-      contractClass = ContractClassFactory.getContractClass(contractName);
+      contractClass = Class.forName(contractName);
     } catch (Exception e) {
       System.out.println(
           "There is no " + name + ".sol" + " in the directory of solidity/contracts.");
@@ -736,7 +736,7 @@ public class ConsoleImpl implements ConsoleFace {
     ConsoleUtils.dynamicLoadClass();
     contractName = ConsoleUtils.PACKAGENAME + "." + name;
     try {
-      contractClass = ContractClassFactory.getContractClass(contractName);
+      contractClass = Class.forName(contractName);
     } catch (Exception e) {
       e.printStackTrace();
       System.out.println(
@@ -854,7 +854,7 @@ public class ConsoleImpl implements ConsoleFace {
     ConsoleUtils.dynamicLoadClass();
     contractName = ConsoleUtils.PACKAGENAME + "." + name;
     try {
-      contractClass = ContractClassFactory.getContractClass(contractName);
+      contractClass = Class.forName(contractName);
     } catch (Exception e) {
       System.out.println(
           "There is no " + name + ".sol" + " in the directory of solidity/contracts.");
@@ -898,7 +898,7 @@ public class ConsoleImpl implements ConsoleFace {
     String name = params[1];
     contractName = ConsoleUtils.PACKAGENAME + "." + name;
     try {
-      contractClass = ContractClassFactory.getContractClass(contractName);
+      contractClass = Class.forName(contractName);
     } catch (Exception e) {
       System.out.println(
           "There is no "
