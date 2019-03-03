@@ -31,6 +31,7 @@ import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameterName;
 import org.fisco.bcos.web3j.protocol.core.RemoteCall;
+import org.fisco.bcos.web3j.protocol.core.methods.response.GroupList;
 import org.fisco.bcos.web3j.tx.Contract;
 import org.fisco.bcos.web3j.tx.gas.ContractGasProvider;
 import org.fisco.bcos.web3j.tx.gas.StaticGasProvider;
@@ -54,13 +55,14 @@ public class ConsoleImpl implements ConsoleFace {
   private Class<?> contractClass;
   private RemoteCall<?> remoteCall;
   private String privateKey = "";
+  public static int groupID;
   private ChannelEthereumService channelEthereumService = new ChannelEthereumService();
 
   public void init(String[] args) {
     ApplicationContext context =
         new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
     service = context.getBean(Service.class);
-    int groupID = service.getGroupId();
+    groupID = service.getGroupId();
     if (args.length < 2) {
       InputStream is = null;
       OutputStream os = null;
@@ -144,7 +146,7 @@ public class ConsoleImpl implements ConsoleFace {
     try {
       groupID = Integer.parseInt(args[0]);
     } catch (NumberFormatException e) {
-      System.out.println("Please provide groupID by decimal format (default 1).");
+      System.out.println("Please provide groupID by integer format.");
       System.exit(0);
     }
     return groupID;
@@ -181,7 +183,8 @@ public class ConsoleImpl implements ConsoleFace {
     }
     ConsoleUtils.singleLine();
     StringBuilder sb = new StringBuilder();
-    sb.append("help                                     Provide help information.\n");
+    sb.append("help(h)                                  Provide help information.\n");
+    sb.append("switch(s)                                Switch to a specific group by group ID.\n");
     sb.append("getBlockNumber                           Query the number of most recent block.\n");
     sb.append("getPbftView                              Query the pbft view of node.\n");
     sb.append("getSealerList                            Query nodeId list for sealer nodes.\n");
@@ -259,7 +262,7 @@ public class ConsoleImpl implements ConsoleFace {
         "revokeSysConfigManager                   Revoke permission for system configuration by address.\n");
     sb.append(
         "listSysConfigManager                     Query permission information for system configuration.\n");
-    sb.append("quit                                     Quit console.");
+    sb.append("quit(q)                                  Quit console.");
     System.out.println(sb.toString());
     ConsoleUtils.singleLine();
     System.out.println();
@@ -275,6 +278,42 @@ public class ConsoleImpl implements ConsoleFace {
     System.out.println();
   }
 
+  @Override
+  public void switchGroupID(String[] params) throws IOException {
+      if (params.length < 2) {
+        HelpInfo.promptHelp("switch");
+        return;
+      }
+      if (params.length > 2) {
+        HelpInfo.promptHelp("switch");
+        return;
+      }
+      String groupIDStr = params[1];
+      if ("-h".equals(groupIDStr) || "--help".equals(groupIDStr)) {
+        HelpInfo.switchGroupIDHelp();
+        return;
+      }
+      int toGroupID = 1;
+	  try {
+		  toGroupID = Integer.parseInt(groupIDStr);
+	   } catch (NumberFormatException e) {
+		System.out.println("Please provide group ID by positive integer mode.");
+		System.out.println();
+		return;
+	   }
+	  List<String> groupList = web3j.getGroupList().send().getGroupList();
+	  if(!groupList.contains(groupIDStr))
+	  {
+		  System.out.println("Group "+ toGroupID + " does not exist. The group list is " + groupList +".");
+		  System.out.println();
+		  return;
+	  }
+	  groupID = toGroupID;
+	  web3j = Web3j.build(channelEthereumService, groupID);
+	  System.out.println("Switched to group " + groupID +".");
+	  System.out.println();
+  }
+  
   @Override
   public void getBlockNumber(String[] params) throws IOException {
     if (HelpInfo.promptNoParams(params, "getBlockNumber")) {
