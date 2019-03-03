@@ -10,6 +10,8 @@ public interface ConsoleFace {
 
   void help(String[] params);
 
+  void switchGroupID(String[] params) throws IOException;
+  
   void getBlockNumber(String[] params) throws IOException;
 
   void getPbftView(String[] params) throws IOException;
