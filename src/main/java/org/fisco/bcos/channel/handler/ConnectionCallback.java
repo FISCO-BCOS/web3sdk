@@ -53,7 +53,7 @@ public class ConnectionCallback implements ChannelConnections.Callback {
 
       logger.debug("connection established，send topic to the connection:{}", message.getSeq());
 
-      topics.add("_block_notify_" + channelService.getGroupId());
+      topics.add("_block_notify_" + String.valueOf(channelService.getGroupId()));
       message.setData(objectMapper.writeValueAsBytes(topics.toArray()));
 
       logger.debug("topics: {}", new String(message.getData()));
