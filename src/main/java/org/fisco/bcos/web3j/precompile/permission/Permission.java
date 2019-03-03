@@ -1,4 +1,4 @@
-package org.fisco.bcos.web3j.precompile.permisson;
+package org.fisco.bcos.web3j.precompile.permission;
 
 import java.math.BigInteger;
 import java.util.Arrays;

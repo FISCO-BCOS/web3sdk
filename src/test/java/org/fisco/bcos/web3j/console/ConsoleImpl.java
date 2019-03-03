@@ -24,8 +24,8 @@ import org.fisco.bcos.web3j.precompile.cns.CnsService;
 import org.fisco.bcos.web3j.precompile.common.PrecompiledCommon;
 import org.fisco.bcos.web3j.precompile.config.SystemConfigSerivce;
 import org.fisco.bcos.web3j.precompile.consensus.ConsensusService;
-import org.fisco.bcos.web3j.precompile.permisson.PermissionInfo;
-import org.fisco.bcos.web3j.precompile.permisson.PermissionService;
+import org.fisco.bcos.web3j.precompile.permission.PermissionInfo;
+import org.fisco.bcos.web3j.precompile.permission.PermissionService;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
@@ -747,7 +747,21 @@ public class ConsoleImpl implements ConsoleFace {
         contractClass.getMethod(
             "deploy", Web3j.class, Credentials.class, ContractGasProvider.class);
     remoteCall = (RemoteCall<?>) deploy.invoke(null, web3j, credentials, gasProvider);
-    Contract contract = (Contract) remoteCall.send();
+    Contract contract;
+	try {
+		contract = (Contract) remoteCall.send();
+	} catch (Exception e) {
+		if(e.getMessage().contains("0x19"))
+		{
+			ConsoleUtils.printJson(PrecompiledCommon.transferToJson(50000));
+		}
+		else
+		{
+			System.out.println(e.getMessage());
+		}
+        System.out.println();
+        return;
+	}
     contractAddress = contract.getContractAddress();
     System.out.println(contractAddress);
     System.out.println();
@@ -865,14 +879,19 @@ public class ConsoleImpl implements ConsoleFace {
       }
     }
     if (!flag) {
-      ConsoleUtils.printJson(PrecompiledCommon.transferToJson(-1));
+      ConsoleUtils.printJson(PrecompiledCommon.transferToJson(50000));
       System.out.println();
       return;
     }
+
+    String name = params[1];
+    if (name.endsWith(".sol")) {
+      name = name.substring(0, name.length() - 4);
+    }
     CnsService cnsService = new CnsService(web3j, credentials);
-    List<CnsInfo> qcns = cnsService.queryCnsByNameAndVersion(params[1], params[2]);
+    List<CnsInfo> qcns = cnsService.queryCnsByNameAndVersion(name, params[2]);
     if (qcns.size() != 0) {
-      ConsoleUtils.printJson(PrecompiledCommon.transferToJson(-50));
+      ConsoleUtils.printJson(PrecompiledCommon.transferToJson(51200));
       System.out.println();
       return;
     }
@@ -882,11 +901,6 @@ public class ConsoleImpl implements ConsoleFace {
       System.out.println(e.getMessage());
       System.out.println();
       return;
-    }
-
-    String name = params[1];
-    if (name.endsWith(".sol")) {
-      name = name.substring(0, name.length() - 4);
     }
     contractName = ConsoleUtils.PACKAGENAME + "." + name;
     ConsoleUtils.dynamicCompileJavaToClass(name);
@@ -906,11 +920,25 @@ public class ConsoleImpl implements ConsoleFace {
     remoteCall = (RemoteCall<?>) deploy.invoke(null, web3j, credentials, gasProvider);
     contractVersion = params[2];
     if (contractVersion.length() > CnsService.MAX_VERSION_LENGTH) {
-      ConsoleUtils.printJson(PrecompiledCommon.transferToJson(-51));
+      ConsoleUtils.printJson(PrecompiledCommon.transferToJson(51201));
       System.out.println();
       return;
     }
-    Contract contract = (Contract) remoteCall.send();
+    Contract contract;
+	try {
+		contract = (Contract) remoteCall.send();
+	} catch (Exception e) {
+		if(e.getMessage().contains("0x19"))
+		{
+			ConsoleUtils.printJson(PrecompiledCommon.transferToJson(50000));
+		}
+		else
+		{
+			System.out.println(e.getMessage());
+		}
+        System.out.println();
+        return;
+	}
     contractAddress = contract.getContractAddress();
     // register cns
     String result = cnsService.registerCns(name, contractVersion, contractAddress, "");
@@ -1071,7 +1099,7 @@ public class ConsoleImpl implements ConsoleFace {
       return;
     }
     if (nodeId.length() != 128) {
-      ConsoleUtils.printJson(PrecompiledCommon.transferToJson(-40));
+      ConsoleUtils.printJson(PrecompiledCommon.transferToJson(51100));
     } else {
       ConsensusService consensusService = new ConsensusService(web3j, credentials);
       String result = consensusService.addSealer(nodeId);
@@ -1097,7 +1125,7 @@ public class ConsoleImpl implements ConsoleFace {
       return;
     }
     if (nodeId.length() != 128) {
-      ConsoleUtils.printJson(PrecompiledCommon.transferToJson(-40));
+      ConsoleUtils.printJson(PrecompiledCommon.transferToJson(51100));
     } else {
       ConsensusService consensusService = new ConsensusService(web3j, credentials);
       String result = consensusService.addObserver(nodeId);
@@ -1122,7 +1150,7 @@ public class ConsoleImpl implements ConsoleFace {
       return;
     }
     if (nodeId.length() != 128) {
-      ConsoleUtils.printJson(PrecompiledCommon.transferToJson(-40));
+      ConsoleUtils.printJson(PrecompiledCommon.transferToJson(51100));
     } else {
       ConsensusService consensusService = new ConsensusService(web3j, credentials);
       String result = consensusService.removeNode(nodeId);

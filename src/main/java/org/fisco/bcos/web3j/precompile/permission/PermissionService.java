@@ -1,4 +1,4 @@
-package org.fisco.bcos.web3j.precompile.permisson;
+package org.fisco.bcos.web3j.precompile.permission;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigInteger;
