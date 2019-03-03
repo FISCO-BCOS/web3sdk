@@ -107,6 +107,13 @@ public class HelpInfo {
     System.out.println("Query the number of most recent block.");
     System.out.println("Usage: getBlockNumber");
   }
+  
+  public static void switchGroupIDHelp() {
+	  System.out.println("Switch to a specific group by group ID.");
+	  System.out.println("Usage: switch groupId ");
+	  System.out.println("groupId -- The ID of a group.");
+	  System.out.println();
+  }
 
   public static void getPbftViewHelp() {
     System.out.println("Query the pbft view of node.");
@@ -114,12 +121,12 @@ public class HelpInfo {
   }
 
   public static void getObserverListHelp() {
-    System.out.println("Query nodeID list for observer nodes.");
+    System.out.println("Query nodeId list for observer nodes.");
     System.out.println("Usage: getObserverList");
   }
 
   public static void getSealerListHelp() {
-    System.out.println("Query nodeID list for sealer nodes.");
+    System.out.println("Query nodeId list for sealer nodes.");
     System.out.println("Usage: getSealerList");
   }
 
@@ -144,12 +151,12 @@ public class HelpInfo {
   }
 
   public static void getNodeIDListHelp() {
-    System.out.println("Query nodeID list for all connected nodes.");
+    System.out.println("Query nodeId list for all connected nodes.");
     System.out.println("Usage: getNodeIDList");
   }
 
   public static void getGroupPeersHelp() {
-    System.out.println("Query nodeID list for sealer and observer nodes.");
+    System.out.println("Query nodeId list for sealer and observer nodes.");
     System.out.println("Usage: getGroupPeers");
   }
 
@@ -279,22 +286,22 @@ public class HelpInfo {
 
   public static void addObserverHelp() {
     System.out.println("Add an observer node.");
-    System.out.println("Usage: addObserver nodeID");
-    System.out.println("nodeID -- nodeID of node.");
+    System.out.println("Usage: addObserver nodeId");
+    System.out.println("nodeId -- nodeId of node.");
     System.out.println();
   }
 
   public static void addSealerHelp() {
     System.out.println("Add a sealer node.");
-    System.out.println("Usage: addSealer nodeID");
-    System.out.println("nodeID -- nodeID of a node.");
+    System.out.println("Usage: addSealer nodeId");
+    System.out.println("nodeId -- nodeId of a node.");
     System.out.println();
   }
 
   public static void removeNodeHelp() {
     System.out.println("Remove a node.");
-    System.out.println("Usage: removeNode nodeID");
-    System.out.println("nodeID -- nodeID of a node.");
+    System.out.println("Usage: removeNode nodeId");
+    System.out.println("nodeId -- nodeId of a node.");
     System.out.println();
   }
 
@@ -426,7 +433,7 @@ public class HelpInfo {
     System.out.println("Usage: setSystemConfigByKey key value");
     System.out.println(
         "key -- the name of system config(tx_count_limit/tx_gas_limit supported currently).");
-    System.out.println("value -- the value of system config to be set.");
+    System.out.println("value -- The value of system config to be set.");
     System.out.println();
   }
 
@@ -434,7 +441,7 @@ public class HelpInfo {
     System.out.println("Query a system config value by key.");
     System.out.println("Usage: getSystemConfigByKey key");
     System.out.println(
-        "key -- the name of system config(tx_count_limit/tx_gas_limit supported currently).");
+        "key -- The name of system config(tx_count_limit/tx_gas_limit supported currently).");
     System.out.println();
   }
 

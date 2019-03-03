@@ -29,6 +29,7 @@ public class ConsoleClient {
     try {
       List<Completer> completers = new ArrayList<Completer>();
       completers.add(new ArgumentCompleter(new StringsCompleter("help")));
+      completers.add(new ArgumentCompleter(new StringsCompleter("switch")));
       completers.add(new ArgumentCompleter(new StringsCompleter("getBlockNumber")));
       completers.add(new ArgumentCompleter(new StringsCompleter("getPbftView")));
       completers.add(new ArgumentCompleter(new StringsCompleter("getSealerList")));
@@ -100,7 +101,7 @@ public class ConsoleClient {
     }
 
     while (true) {
-      String request = lineReader.readLine(">").trim().replaceAll(" +", " ");
+      String request = lineReader.readLine(ConsoleImpl.groupID+"> ").trim().replaceAll(" +", " ");
       String[] params = request.split(" ");
       if (params.length < 1) {
         System.out.print("");
@@ -126,9 +127,13 @@ public class ConsoleClient {
           case "h":
             console.help(params);
             break;
-          case "getBlockNumber":
-            console.getBlockNumber(params);
+          case "switch":
+          case "s":
+            console.switchGroupID(params);
             break;
+          case "getBlockNumber":
+        	  console.getBlockNumber(params);
+        	  break;
           case "getPbftView":
             console.getPbftView(params);
             break;
