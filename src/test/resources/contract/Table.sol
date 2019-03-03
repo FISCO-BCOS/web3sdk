@@ -1,6 +1,6 @@
 contract TableFactory {
-    function openTable(string) public constant returns (Table); //打开表
-    function createTable(string,string,string) public constant returns(Table); //创建表
+    function openTable(string) public constant returns (Table); //open table
+    function createTable(string,string,string) public constant returns(Table); //create table
 }
 
 //select condition
