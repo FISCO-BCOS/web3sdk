@@ -82,7 +82,7 @@ public class PrecompiledCommon {
       code = new BigInteger(output.substring(2, output.length()), 16).intValue();
       if(code == 1)
       {
-    	  code = PermissionDenied;
+    	  code = Success;
       }
       if(code == 56)
       {
