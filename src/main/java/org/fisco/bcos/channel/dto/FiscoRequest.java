@@ -1,6 +1,16 @@
 package org.fisco.bcos.channel.dto;
 
-public class EthereumRequest {
+public class FiscoRequest {
+  private String keyID; // chain ID
+  private String orgApp; // org identification
+  private String version;
+  private String bankNO; // institution identification
+  private String appName; // application kinds
+
+  private String messageID;
+  private Integer timeout = 0; // ms
+
+  private String content;
 
   public String getKeyID() {
     return keyID;
@@ -66,14 +76,5 @@ public class EthereumRequest {
     this.content = content;
   }
 
-  private String keyID; // 链ID
-  private String orgApp; // 来源标识
-  private String version; // 版本
-  private String bankNO; // 机构标识
-  private String appName; // 应用类型
 
-  private String messageID; // 消息的唯一标识id
-  private Integer timeout = 0; // 超时时间，毫秒
-
-  private String content; // 请求包体
 }
