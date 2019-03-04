@@ -16,7 +16,7 @@ public interface Web3jRx {
   /**
    * Create an flowable to filter for specific log events on the blockchain.
    *
-   * @param ethFilter filter criteria
+   * @param filter filter criteria
    * @return a {@link Flowable} instance that emits all Log events matching the filter
    */
   Flowable<Log> logFlowable(BcosFilter filter);

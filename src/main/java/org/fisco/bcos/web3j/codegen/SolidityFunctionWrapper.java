@@ -10,6 +10,7 @@ import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Modifier;
 import org.fisco.bcos.web3j.abi.EventEncoder;
 import org.fisco.bcos.web3j.abi.FunctionEncoder;
@@ -604,7 +605,7 @@ public class SolidityFunctionWrapper extends Generator {
         return "new "
             + parameterSpecType
             + "(\n"
-            + "        Utils.typeMap("
+            + "        org.fisco.bcos.web3j.abi.Utils.typeMap("
             + parameterSpec.name
             + ", "
             + typeMapInput
@@ -650,20 +651,20 @@ public class SolidityFunctionWrapper extends Generator {
 
     String simpleName = ((ClassName) typeName).simpleName();
 
-    if ("Address".equals(simpleName)) {
+    if (simpleName.equals(Address.class.getSimpleName())) {
       return TypeName.get(String.class);
     } else if (simpleName.startsWith("Uint")) {
       return TypeName.get(BigInteger.class);
     } else if (simpleName.startsWith("Int")) {
       return TypeName.get(BigInteger.class);
-    } else if ("Utf8String".equals(simpleName)) {
+    } else if (simpleName.equals(Utf8String.class.getSimpleName())) {
       return TypeName.get(String.class);
     } else if (simpleName.startsWith("Bytes")) {
       return TypeName.get(byte[].class);
-    } else if ("DynamicBytes".equals(simpleName)) {
+    } else if (simpleName.equals(DynamicBytes.class.getSimpleName())) {
       return TypeName.get(byte[].class);
-    } else if ("Bool".equals(simpleName)) {
-      return TypeName.get(Boolean.class); // boolean cannot be a parameterized type
+    } else if (simpleName.equals(Bool.class.getSimpleName())) {
+      return TypeName.get(Boolean.class);  // boolean cannot be a parameterized type
     } else {
       throw new UnsupportedOperationException(
           "Unsupported type: " + typeName + ", no native type mapping exists.");
@@ -733,6 +734,10 @@ public class SolidityFunctionWrapper extends Generator {
   MethodSpec buildFunction(AbiDefinition functionDefinition) throws ClassNotFoundException {
     String functionName = functionDefinition.getName();
 
+    if(!SourceVersion.isName(functionName)) {
+      functionName = "_" + functionName;
+    }
+
     MethodSpec.Builder methodBuilder =
         MethodSpec.methodBuilder(functionName).addModifiers(Modifier.PUBLIC);
 
@@ -762,7 +767,7 @@ public class SolidityFunctionWrapper extends Generator {
       buildConstantFunction(functionDefinition, methodBuilder, outputParameterTypes, inputParams);
     } else {
       // functionDefinition.getInputs().add(new NamedType("callback",
-      // "org.fisco.bcos.channel.dto.EthereumResponse.TransactionSucCallback"));
+      // "org.fisco.bcos.channel.dto.FiscoResponse.TransactionSucCallback"));
       String inputParams = addParameters(methodBuilder, functionDefinition.getInputs());
       methodBuilder.addParameter(
           ParameterSpec.builder(buildTypeName("TransactionSucCallback"), "callback").build());
