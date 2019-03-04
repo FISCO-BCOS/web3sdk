@@ -1,4 +1,4 @@
-package org.fisco.bcos.web3j.precompile.authority;
+package org.fisco.bcos.web3j.precompile.permission;
 
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -26,7 +26,7 @@ import org.fisco.bcos.web3j.tx.gas.ContractGasProvider;
  *
  * <p>Generated with web3j version none.
  */
-public class Authority extends Contract {
+public class Permission extends Contract {
   private static final String BINARY = "";
 
   public static final String FUNC_INSERT = "insert";
@@ -36,7 +36,7 @@ public class Authority extends Contract {
   public static final String FUNC_REMOVE = "remove";
 
   @Deprecated
-  protected Authority(
+  protected Permission(
       String contractAddress,
       Web3j web3j,
       Credentials credentials,
@@ -45,7 +45,7 @@ public class Authority extends Contract {
     super(BINARY, contractAddress, web3j, credentials, gasPrice, gasLimit);
   }
 
-  protected Authority(
+  protected Permission(
       String contractAddress,
       Web3j web3j,
       Credentials credentials,
@@ -54,7 +54,7 @@ public class Authority extends Contract {
   }
 
   @Deprecated
-  protected Authority(
+  protected Permission(
       String contractAddress,
       Web3j web3j,
       TransactionManager transactionManager,
@@ -63,7 +63,7 @@ public class Authority extends Contract {
     super(BINARY, contractAddress, web3j, transactionManager, gasPrice, gasLimit);
   }
 
-  protected Authority(
+  protected Permission(
       String contractAddress,
       Web3j web3j,
       TransactionManager transactionManager,
@@ -99,65 +99,65 @@ public class Authority extends Contract {
   }
 
   @Deprecated
-  public static Authority load(
+  public static Permission load(
       String contractAddress,
       Web3j web3j,
       Credentials credentials,
       BigInteger gasPrice,
       BigInteger gasLimit) {
-    return new Authority(contractAddress, web3j, credentials, gasPrice, gasLimit);
+    return new Permission(contractAddress, web3j, credentials, gasPrice, gasLimit);
   }
 
   @Deprecated
-  public static Authority load(
+  public static Permission load(
       String contractAddress,
       Web3j web3j,
       TransactionManager transactionManager,
       BigInteger gasPrice,
       BigInteger gasLimit) {
-    return new Authority(contractAddress, web3j, transactionManager, gasPrice, gasLimit);
+    return new Permission(contractAddress, web3j, transactionManager, gasPrice, gasLimit);
   }
 
-  public static Authority load(
+  public static Permission load(
       String contractAddress,
       Web3j web3j,
       Credentials credentials,
       ContractGasProvider contractGasProvider) {
-    return new Authority(contractAddress, web3j, credentials, contractGasProvider);
+    return new Permission(contractAddress, web3j, credentials, contractGasProvider);
   }
 
-  public static Authority load(
+  public static Permission load(
       String contractAddress,
       Web3j web3j,
       TransactionManager transactionManager,
       ContractGasProvider contractGasProvider) {
-    return new Authority(contractAddress, web3j, transactionManager, contractGasProvider);
+    return new Permission(contractAddress, web3j, transactionManager, contractGasProvider);
   }
 
-  public static RemoteCall<Authority> deploy(
+  public static RemoteCall<Permission> deploy(
       Web3j web3j, Credentials credentials, ContractGasProvider contractGasProvider) {
-    return deployRemoteCall(Authority.class, web3j, credentials, contractGasProvider, BINARY, "");
+    return deployRemoteCall(Permission.class, web3j, credentials, contractGasProvider, BINARY, "");
   }
 
   @Deprecated
-  public static RemoteCall<Authority> deploy(
+  public static RemoteCall<Permission> deploy(
       Web3j web3j, Credentials credentials, BigInteger gasPrice, BigInteger gasLimit) {
-    return deployRemoteCall(Authority.class, web3j, credentials, gasPrice, gasLimit, BINARY, "");
+    return deployRemoteCall(Permission.class, web3j, credentials, gasPrice, gasLimit, BINARY, "");
   }
 
-  public static RemoteCall<Authority> deploy(
+  public static RemoteCall<Permission> deploy(
       Web3j web3j, TransactionManager transactionManager, ContractGasProvider contractGasProvider) {
     return deployRemoteCall(
-        Authority.class, web3j, transactionManager, contractGasProvider, BINARY, "");
+        Permission.class, web3j, transactionManager, contractGasProvider, BINARY, "");
   }
 
   @Deprecated
-  public static RemoteCall<Authority> deploy(
+  public static RemoteCall<Permission> deploy(
       Web3j web3j,
       TransactionManager transactionManager,
       BigInteger gasPrice,
       BigInteger gasLimit) {
     return deployRemoteCall(
-        Authority.class, web3j, transactionManager, gasPrice, gasLimit, BINARY, "");
+        Permission.class, web3j, transactionManager, gasPrice, gasLimit, BINARY, "");
   }
 }

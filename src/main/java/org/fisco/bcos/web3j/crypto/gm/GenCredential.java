@@ -51,7 +51,6 @@ public class GenCredential {
   private static ECKeyPair createGuomiKeyPair(String privKey) {
     SM2KeyGenerator generator = new SM2KeyGenerator();
     final KeyPair keyPairData = generator.generateKeyPair(privKey);
-    System.out.println("generate keypair data succeed");
     if (keyPairData != null) return genEcPairFromKeyPair(keyPairData);
     return null;
   }
