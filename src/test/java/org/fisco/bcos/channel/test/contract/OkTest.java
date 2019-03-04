@@ -12,6 +12,7 @@ import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.util.concurrent.TimeUnit;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class OkTest extends TestBase {
@@ -65,6 +66,7 @@ public class OkTest extends TestBase {
             BigInteger.class);
     Object contractObject =
         load.invoke(null, contractAddress, web3j, credentials, gasPrice, gasLimit);
+    assertNotNull(contractObject);
     System.out.println(contractObject.toString());
   }
 }
