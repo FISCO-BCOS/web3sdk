@@ -7,8 +7,11 @@ jobs:
   build:
     working_directory: ~/web3sdk
     branches:
-      only:
-        - release-2.0.1
+      only: 
+        - /release-2.*/
+    tags:
+      only: 
+        - /v2.*/
     docker:
       # specify the version you desire here
       - image: circleci/openjdk:8-jdk
