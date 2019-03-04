@@ -26,11 +26,11 @@ public class ConsensusService {
 
   public String addSealer(String nodeID) throws Exception {
     if (!isValidNodeID(nodeID)) {
-      return PrecompiledCommon.transferToJson(-42);
+      return PrecompiledCommon.transferToJson(51102);
     }
     List<String> sealerList = web3j.getSealerList().send().getResult();
     if (sealerList.contains(nodeID)) {
-      return PrecompiledCommon.transferToJson(-44);
+      return PrecompiledCommon.transferToJson(51104);
     }
     TransactionReceipt receipt = consensus.addSealer(nodeID).send();
     return PrecompiledCommon.getJsonStr(receipt.getOutput());
@@ -38,11 +38,11 @@ public class ConsensusService {
 
   public String addObserver(String nodeID) throws Exception {
     if (!isValidNodeID(nodeID)) {
-      return PrecompiledCommon.transferToJson(-42);
+      return PrecompiledCommon.transferToJson(51102);
     }
     List<String> observerList = web3j.getObserverList().send().getResult();
     if (observerList.contains(nodeID)) {
-      return PrecompiledCommon.transferToJson(-45);
+      return PrecompiledCommon.transferToJson(51105);
     }
     TransactionReceipt receipt = consensus.addObserver(nodeID).send();
     return PrecompiledCommon.getJsonStr(receipt.getOutput());
@@ -51,7 +51,7 @@ public class ConsensusService {
   public String removeNode(String nodeId) throws Exception {
     List<String> groupPeers = web3j.getGroupPeers().send().getResult();
     if (!groupPeers.contains(nodeId)) {
-      return PrecompiledCommon.transferToJson(-43);
+      return PrecompiledCommon.transferToJson(51103);
     }
     TransactionReceipt receipt = new TransactionReceipt();
     try {
@@ -61,8 +61,8 @@ public class ConsensusService {
       // susscces
       // because the exception is throwed by getTransactionReceipt, we need ignore it.
       if (e.getMessage()
-          .contains("Don't send requests to this group, the node doesn't belong to the group")) {
-        return PrecompiledCommon.transferToJson(1);
+          .contains("Don't send requests to this group")) {
+        return PrecompiledCommon.transferToJson(0);
       } else {
         throw e;
       }
