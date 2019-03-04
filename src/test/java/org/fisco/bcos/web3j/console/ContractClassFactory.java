@@ -11,11 +11,6 @@ import org.fisco.bcos.web3j.tuples.Tuple;
 
 public class ContractClassFactory {
 
-  public static Class<?> getContractClass(String contractName)
-      throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-    return (Class<?>) Class.forName(contractName);
-  }
-
   @SuppressWarnings("rawtypes")
   public static Class[] getParameterType(Class clazz, String methodName, int paramsLen)
       throws ClassNotFoundException {
@@ -96,7 +91,7 @@ public class ContractClassFactory {
   @SuppressWarnings("rawtypes")
   public static String getReturnObject(
       Class clazz, String methodName, Class[] parameterType, Object result)
-      throws ClassNotFoundException, IllegalAccessException, IllegalArgumentException,
+      throws  IllegalAccessException, IllegalArgumentException,
           InvocationTargetException, NoSuchMethodException, SecurityException {
     Method[] methods = clazz.getDeclaredMethods();
     for (Method method : methods) {
@@ -141,7 +136,6 @@ public class ContractClassFactory {
               }
             }
           }
-
           return finalList.toString();
 
         } else if (typeName.contains("TransactionReceipt")) {
