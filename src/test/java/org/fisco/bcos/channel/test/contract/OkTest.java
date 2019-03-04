@@ -1,7 +1,6 @@
 package org.fisco.bcos.channel.test.contract;
 
 import org.fisco.bcos.channel.test.TestBase;
-import org.fisco.bcos.web3j.console.ContractClassFactory;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.RemoteCall;
@@ -9,9 +8,7 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.tx.Contract;
 import org.junit.Test;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.math.BigInteger;
 import java.util.concurrent.TimeUnit;
 
@@ -53,12 +50,6 @@ public class OkTest extends TestBase {
     Method deploy =
         contractClass.getMethod(
             "deploy", Web3j.class, Credentials.class, BigInteger.class, BigInteger.class);
-    Method deploy1 =
-        contractClass.getDeclaredMethod(
-            "deploy", Web3j.class, Credentials.class, BigInteger.class, BigInteger.class);
-    //    Object obj = contractClass.newInstance();
-    // Method m =  contractClass.getMethod("get",)
-    //     m.invoke()
     remoteCall = (RemoteCall<?>) deploy.invoke(null, web3j, credentials, gasPrice, gasLimit);
     Contract contract = (Contract) remoteCall.send();
     contractAddress = contract.getContractAddress();
@@ -74,27 +65,6 @@ public class OkTest extends TestBase {
             BigInteger.class);
     Object contractObject =
         load.invoke(null, contractAddress, web3j, credentials, gasPrice, gasLimit);
-  }
-
-  public static Class[] getParameterType(Class clazz, String methodName)
-      throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException,
-          InvocationTargetException, InstantiationException {
-    Method[] methods = clazz.getDeclaredMethods();
-    Class[] type = null;
-    for (Method method : methods) {
-      if (methodName.equals(method.getName())) {
-        Parameter[] params = method.getParameters();
-        type = new Class[params.length];
-        for (int i = 0; i < params.length; i++) {
-          System.out.println(params[i].getParameterizedType().getTypeName());
-          type[i] = Class.forName(params[i].getParameterizedType().getTypeName());
-          Class.forName(params[i].getParameterizedType().getTypeName())
-              .getDeclaredConstructor(String.class)
-              .newInstance("124");
-        }
-      }
-    }
-
-    return type;
+    System.out.println(contractObject.toString());
   }
 }
