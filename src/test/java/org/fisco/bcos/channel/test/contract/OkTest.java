@@ -49,7 +49,7 @@ public class OkTest extends TestBase {
   public void testLoadClass() throws Exception {
 
     contractName = "org.fisco.bcos.channel.test.contract." + "Ok";
-    contractClass = ContractClassFactory.getContractClass(contractName);
+    contractClass = Class.forName(contractName);
     Method deploy =
         contractClass.getMethod(
             "deploy", Web3j.class, Credentials.class, BigInteger.class, BigInteger.class);

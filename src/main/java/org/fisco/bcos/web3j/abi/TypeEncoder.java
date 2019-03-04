@@ -5,6 +5,8 @@ import java.nio.charset.StandardCharsets;
 import org.fisco.bcos.web3j.abi.datatypes.*;
 import org.fisco.bcos.web3j.utils.Numeric;
 
+import static org.fisco.bcos.web3j.abi.datatypes.Type.MAX_BYTE_LENGTH;
+
 /**
  * Ethereum Contract Application Binary Interface (ABI) encoding for types. Further details are
  * available <a href="https://github.com/ethereum/wiki/wiki/Ethereum-Contract-ABI">here</a>.
@@ -49,7 +51,7 @@ public class TypeEncoder {
   static String encodeNumeric(NumericType numericType) {
     byte[] rawValue = toByteArray(numericType);
     byte paddingValue = getPaddingValue(numericType);
-    byte[] paddedRawValue = new byte[Type.MAX_BYTE_LENGTH];
+    byte[] paddedRawValue = new byte[MAX_BYTE_LENGTH];
     if (paddingValue != 0) {
       for (int i = 0; i < paddedRawValue.length; i++) {
         paddedRawValue[i] = paddingValue;
@@ -57,7 +59,7 @@ public class TypeEncoder {
     }
 
     System.arraycopy(
-        rawValue, 0, paddedRawValue, Type.MAX_BYTE_LENGTH - rawValue.length, rawValue.length);
+        rawValue, 0, paddedRawValue, MAX_BYTE_LENGTH - rawValue.length, rawValue.length);
     return Numeric.toHexStringNoPrefix(paddedRawValue);
   }
 
@@ -76,8 +78,8 @@ public class TypeEncoder {
         // As BigInteger is signed, if we have a 256 bit value, the resultant byte array
         // will contain a sign byte in it's MSB, which we should ignore for this unsigned
         // integer type.
-        byte[] byteArray = new byte[Type.MAX_BYTE_LENGTH];
-        System.arraycopy(value.toByteArray(), 1, byteArray, 0, Type.MAX_BYTE_LENGTH);
+        byte[] byteArray = new byte[MAX_BYTE_LENGTH];
+        System.arraycopy(value.toByteArray(), 1, byteArray, 0, MAX_BYTE_LENGTH);
         return byteArray;
       }
     }
@@ -85,7 +87,7 @@ public class TypeEncoder {
   }
 
   static String encodeBool(Bool value) {
-    byte[] rawValue = new byte[Type.MAX_BYTE_LENGTH];
+    byte[] rawValue = new byte[MAX_BYTE_LENGTH];
     if (value.getValue()) {
       rawValue[rawValue.length - 1] = 1;
     }
@@ -99,7 +101,7 @@ public class TypeEncoder {
 
     byte[] dest;
     if (mod != 0) {
-      int padding = Type.MAX_BYTE_LENGTH - mod;
+      int padding = MAX_BYTE_LENGTH - mod;
       dest = new byte[length + padding];
       System.arraycopy(value, 0, dest, 0, length);
     } else {
@@ -135,11 +137,45 @@ public class TypeEncoder {
   static <T extends Type> String encodeDynamicArray(DynamicArray<T> value) {
     int size = value.getValue().size();
     String encodedLength = encode(new Uint(BigInteger.valueOf(size)));
+    String valuesOffsets = encodeArrayValuesOffsets(value);
     String encodedValues = encodeArrayValues(value);
 
     StringBuilder result = new StringBuilder();
     result.append(encodedLength);
+    result.append(valuesOffsets);
     result.append(encodedValues);
     return result.toString();
   }
+
+  private static <T extends Type> String encodeArrayValuesOffsets(DynamicArray<T> value) {
+    StringBuilder result = new StringBuilder();
+    boolean arrayOfBytes = !value.getValue().isEmpty()
+            && value.getValue().get(0) instanceof DynamicBytes;
+    boolean arrayOfString = !value.getValue().isEmpty()
+            && value.getValue().get(0) instanceof Utf8String;
+    if (arrayOfBytes || arrayOfString) {
+      long offset = 0;
+      for (int i = 0; i < value.getValue().size(); i++) {
+        if (i == 0) {
+          offset = value.getValue().size() * MAX_BYTE_LENGTH;
+        } else {
+          int bytesLength = arrayOfBytes
+                  ? ((byte[]) value.getValue().get(i - 1).getValue()).length
+                  : ((String) value.getValue().get(i - 1).getValue()).length();
+          int numberOfWords = (bytesLength + MAX_BYTE_LENGTH - 1) / MAX_BYTE_LENGTH;
+          int totalBytesLength = numberOfWords * MAX_BYTE_LENGTH;
+          offset += totalBytesLength + MAX_BYTE_LENGTH;
+        }
+        result.append(
+                Numeric.toHexStringNoPrefix(
+                        Numeric.toBytesPadded(
+                                new BigInteger(Long.toString(offset)), MAX_BYTE_LENGTH
+                        )
+                )
+        );
+      }
+    }
+    return result.toString();
+  }
+
 }
