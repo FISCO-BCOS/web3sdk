@@ -102,10 +102,7 @@ jar {
 	exclude '**/*.key'
 
 	doLast {
-		copy {
-			from file('tools/start.sh')
-			into 'dist/'
-		}
+	
 		copy {
 			from file('tools/sol2java.sh')
 			into 'dist/tools/'
@@ -119,10 +116,8 @@ jar {
 			into 'dist/conf'
 		}
 		copy {
-			from file('src/test/resources/contract/HelloWorld.sol')
 			from file('src/test/resources/contract/Table.sol')
-			from file('src/test/resources/contract/TableTest.sol')
-			into 'dist/solidity/contracts'
+			into 'dist/tools/contracts'
 		}
 	}
 }
