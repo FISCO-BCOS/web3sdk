@@ -26,11 +26,11 @@ public class ConsensusService {
 
   public String addSealer(String nodeID) throws Exception {
     if (!isValidNodeID(nodeID)) {
-      return PrecompiledCommon.transferToJson(51102);
+      return PrecompiledCommon.transferToJson(PrecompiledCommon.P2pNetwork);
     }
     List<String> sealerList = web3j.getSealerList().send().getResult();
     if (sealerList.contains(nodeID)) {
-      return PrecompiledCommon.transferToJson(51104);
+      return PrecompiledCommon.transferToJson(PrecompiledCommon.SealerList);
     }
     TransactionReceipt receipt = consensus.addSealer(nodeID).send();
     return PrecompiledCommon.getJsonStr(receipt.getOutput());
@@ -38,11 +38,11 @@ public class ConsensusService {
 
   public String addObserver(String nodeID) throws Exception {
     if (!isValidNodeID(nodeID)) {
-      return PrecompiledCommon.transferToJson(51102);
+      return PrecompiledCommon.transferToJson(PrecompiledCommon.P2pNetwork);
     }
     List<String> observerList = web3j.getObserverList().send().getResult();
     if (observerList.contains(nodeID)) {
-      return PrecompiledCommon.transferToJson(51105);
+      return PrecompiledCommon.transferToJson(PrecompiledCommon.ObserverList);
     }
     TransactionReceipt receipt = consensus.addObserver(nodeID).send();
     return PrecompiledCommon.getJsonStr(receipt.getOutput());
@@ -51,7 +51,7 @@ public class ConsensusService {
   public String removeNode(String nodeId) throws Exception {
     List<String> groupPeers = web3j.getGroupPeers().send().getResult();
     if (!groupPeers.contains(nodeId)) {
-      return PrecompiledCommon.transferToJson(51103);
+      return PrecompiledCommon.transferToJson(PrecompiledCommon.GroupPeers);
     }
     TransactionReceipt receipt = new TransactionReceipt();
     try {
