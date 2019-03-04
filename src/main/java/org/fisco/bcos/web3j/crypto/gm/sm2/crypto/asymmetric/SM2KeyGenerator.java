@@ -89,7 +89,6 @@ public class SM2KeyGenerator {
   }
 
   public KeyPair generateKeyPair(String privKey) {
-    System.out.println("====generate kepair from private key:" + privKey);
     SM2PrivateKey privateKey = new SM2PrivateKey(new BigInteger(privKey, 16));
     byte[] privateKeyBytes = privateKey.getEncoded();
     privateKey.setD(new BigInteger(Hex.toHexString(privateKeyBytes), 16));

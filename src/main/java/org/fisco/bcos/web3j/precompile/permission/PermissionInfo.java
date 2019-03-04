@@ -1,8 +1,8 @@
-package org.fisco.bcos.web3j.precompile.authority;
+package org.fisco.bcos.web3j.precompile.permission;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class AuthorityInfo {
+public class PermissionInfo {
 
   @JsonProperty("table_name")
   private String tableName;

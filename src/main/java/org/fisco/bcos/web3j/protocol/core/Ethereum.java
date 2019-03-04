@@ -6,7 +6,7 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.*;
 /** Core FISCO BCOS JSON-RPC API. */
 public interface Ethereum {
 
-  Request<?, ClientVersion> getClientVersion();
+  Request<?, NodeVersion> getNodeVersion();
 
   Request<?, BlockNumber> getBlockNumber();
 
