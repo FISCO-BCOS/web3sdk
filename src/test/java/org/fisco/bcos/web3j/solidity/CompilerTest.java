@@ -83,7 +83,7 @@ public class CompilerTest {
     CompilationResult result = CompilationResult.parse(res.output);
 
     CompilationResult.ContractMetadata a = result.getContract("a");
-    //        CallTransaction.Contract contract = new CallTransaction.Contract(a.abi);
+     //       CallTransaction.Contract contract = new CallTransaction.Contract(a.abi);
     //        System.out.print(contract.functions[0].toString());
   }
 
