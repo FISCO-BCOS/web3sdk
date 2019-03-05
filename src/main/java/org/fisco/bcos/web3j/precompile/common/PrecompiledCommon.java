@@ -14,47 +14,61 @@ public class PrecompiledCommon {
   public static final String SYSCONSENSUS = "_sys_consensus_";
   public static final String SYSCNS = "_sys_cns_";
   public static final String SYSCONFIG = "_sys_config_";
+  
+  public static final int Success = 0;
+  public static final int PermissionDenied = 50000;
+  public static final int TableNameAndAddressExist = 51000;
+  public static final int TableNameAndAddressNotExist = 51001;
+  public static final int InvalidNodeId = 51100;
+  public static final int LastSealer = 51101;
+  public static final int P2pNetwork = 51102;
+  public static final int GroupPeers = 51103;
+  public static final int SealerList = 51104;
+  public static final int ObserverList = 51105;
+  public static final int ContractNameAndVersionExist = 51200;
+  public static final int VersionExceeds = 51201;
+  public static final int InvalidKey = 51300;
 
   public static String transferToJson(int code) throws JsonProcessingException {
     String msg = "";
     switch (code) {
-      case 0:
+      case Success:
         msg = "success";
         break;
-      case 50000:
+      case PermissionDenied:
         msg = "permission denied";
         break;
-      case 51000:
+      case TableNameAndAddressExist:
         msg = "table name and address exist";
         break;
-      case 51001:
+      case TableNameAndAddressNotExist:
         msg = "table name and address does not exist";
         break;
-      case 51100:
+      case InvalidNodeId:
         msg = "invalid nodeId";
         break;
-      case 51101:
+      case LastSealer:
         msg = "the last sealer cannot be removed";
         break;
-      case 51102:
+      case P2pNetwork:
         msg = "the node is not in p2p network";
         break;
-      case 51103:
+      case GroupPeers:
         msg = "the node is not in group peers";
         break;
-      case 51104:
+      case SealerList:
         msg = "the node is already in sealer list";
         break;
-      case 51105:
+      case ObserverList:
         msg = "the node is already in observer list";
         break;
-      case 51200:
+      case ContractNameAndVersionExist:
         msg = "contract name and version exist";
         break;
-      case 51201:
+      case VersionExceeds:
         msg = "version exceeds maximum(40) length";
         break;
-      case 51300:
+      case InvalidKey:
         msg = "invalid configuration key";
         break;
     }
@@ -68,27 +82,27 @@ public class PrecompiledCommon {
       code = new BigInteger(output.substring(2, output.length()), 16).intValue();
       if(code == 1)
       {
-    	  code = 0;
+    	  code = Success;
       }
       if(code == 56)
       {
-    	  code = 51000;
+    	  code = TableNameAndAddressExist;
       }
       if(code == 57)
       {
-    	  code = 51001;
+    	  code = TableNameAndAddressNotExist;
       }
       if(code == 80)
       {
-    	  code = 50000;
+    	  code = PermissionDenied;
       }
       if(code == 100)
       {
-    	  code = 51300;
+    	  code = InvalidKey;
       }
       if(code == 157)
       {
-    	  code = 51101;
+    	  code = LastSealer;
       }
       return transferToJson(code);
     } catch (NumberFormatException e) {

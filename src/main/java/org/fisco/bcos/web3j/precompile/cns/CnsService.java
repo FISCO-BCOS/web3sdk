@@ -93,7 +93,7 @@ public class CnsService {
       throws Exception {
     CNS cns = lookupResolver();
     if (version.length() > MAX_VERSION_LENGTH) {
-      return PrecompiledCommon.transferToJson(51201);
+      return PrecompiledCommon.transferToJson(PrecompiledCommon.VersionExceeds);
     }
     TransactionReceipt receipt = cns.insert(name, version, address, abi).send();
     return PrecompiledCommon.getJsonStr(receipt.getOutput());
