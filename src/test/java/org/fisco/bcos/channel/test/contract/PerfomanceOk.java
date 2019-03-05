@@ -91,7 +91,7 @@ public class PerfomanceOk {
 							ok.trans(new BigInteger("4"), callback);
 						} catch (Exception e) {
 							TransactionReceipt receipt = new TransactionReceipt();
-							receipt.setStatus("Error sending!");
+							receipt.setStatus("-1");
 							
 							callback.onResponse(receipt);
 							logger.info(e.getMessage());
