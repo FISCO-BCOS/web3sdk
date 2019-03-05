@@ -154,8 +154,8 @@ public class Service {
     }
   }
 
-  public EthereumResponse sendEthereumMessage(EthereumRequest request) {
-    class Callback extends EthereumResponseCallback {
+  public FiscoResponse sendEthereumMessage(FiscoRequest request) {
+    class Callback extends FiscoResponseCallback {
       Callback() {
         try {
           semaphore.acquire(1);
@@ -167,19 +167,19 @@ public class Service {
       }
 
       @Override
-      public void onResponse(EthereumResponse response) {
-        ethereumResponse = response;
+      public void onResponse(FiscoResponse response) {
+        fiscoResponse = response;
 
-        if (ethereumResponse != null && ethereumResponse.getContent() != null) {
+        if (fiscoResponse != null && fiscoResponse.getContent() != null) {
           logger.debug("response: {}", response.getContent());
         } else {
-          logger.error("ethereum error");
+          logger.error("fisco error");
         }
 
         semaphore.release();
       }
 
-      public EthereumResponse ethereumResponse;
+      public FiscoResponse fiscoResponse;
       public Semaphore semaphore = new Semaphore(1, true);
     };
 
@@ -193,13 +193,13 @@ public class Service {
       Thread.currentThread().interrupt();
     }
 
-    return callback.ethereumResponse;
+    return callback.fiscoResponse;
   }
 
-  public EthereumResponse sendEthereumMessage(
-      EthereumRequest request, TransactionSucCallback transactionSucCallback) {
-    class Callback extends EthereumResponseCallback {
-      public EthereumResponse ethereumResponse;
+  public FiscoResponse sendEthereumMessage(
+          FiscoRequest request, TransactionSucCallback transactionSucCallback) {
+    class Callback extends FiscoResponseCallback {
+      public FiscoResponse ethereumResponse;
       public Semaphore semaphore = new Semaphore(1, true);
 
       Callback() {
@@ -212,7 +212,7 @@ public class Service {
       }
 
       @Override
-      public void onResponse(EthereumResponse response) {
+      public void onResponse(FiscoResponse response) {
         ethereumResponse = response;
 
         logger.info("response: {}", response.getContent());
@@ -234,10 +234,10 @@ public class Service {
   }
 
   public void asyncSendEthereumMessage(
-      EthereumRequest request,
-      EthereumResponseCallback ethereumResponseCallback,
+      FiscoRequest request,
+      FiscoResponseCallback fiscoResponseCallback,
       TransactionSucCallback transactionSucCallback) {
-    this.asyncSendEthereumMessage(request, ethereumResponseCallback);
+    this.asyncSendEthereumMessage(request, fiscoResponseCallback);
     if (request.getTimeout() > 0) {
       final TransactionSucCallback callbackInner = transactionSucCallback;
       callbackInner.setTimeout(
@@ -297,17 +297,17 @@ public class Service {
     return callback.channelResponse;
   }
 
-  public void asyncSendEthereumMessage(EthereumRequest request, EthereumResponseCallback callback) {
-    logger.debug("Ethereum message: " + request.getMessageID());
+  public void asyncSendEthereumMessage(FiscoRequest request, FiscoResponseCallback callback) {
+    logger.debug("fisco message: " + request.getMessageID());
 
     Boolean sended = false;
 
-    EthereumMessage ethereumMessage = new EthereumMessage();
+    FiscoMessage fiscoMessage = new FiscoMessage();
 
-    ethereumMessage.setSeq(request.getMessageID());
-    ethereumMessage.setResult(0);
-    ethereumMessage.setType((short) 0x12);
-    ethereumMessage.setData(request.getContent().getBytes());
+    fiscoMessage.setSeq(request.getMessageID());
+    fiscoMessage.setResult(0);
+    fiscoMessage.setType((short) 0x12);
+    fiscoMessage.setData(request.getContent().getBytes());
 
     // 选取发送节点
     try {
@@ -331,17 +331,17 @@ public class Service {
       ChannelHandlerContext ctx = fromChannelConnections.randomNetworkConnection();
 
       ByteBuf out = ctx.alloc().buffer();
-      ethereumMessage.writeHeader(out);
-      ethereumMessage.writeExtra(out);
+      fiscoMessage.writeHeader(out);
+      fiscoMessage.writeExtra(out);
 
       seq2Callback.put(request.getMessageID(), callback);
 
       if (request.getTimeout() > 0) {
-        final EthereumResponseCallback callbackInner = callback; // ethereum名字可能会搞混，换成channel
+        final FiscoResponseCallback callbackInner = callback; // ethereum名字可能会搞混，换成channel
         callback.setTimeout(
             timeoutHandler.newTimeout(
                 new TimerTask() {
-                  EthereumResponseCallback _callback = callbackInner;
+                  FiscoResponseCallback _callback = callbackInner;
 
                   @Override
                   public void run(Timeout timeout) throws Exception {
@@ -356,7 +356,7 @@ public class Service {
       ctx.writeAndFlush(out);
 
       logger.debug(
-          "send Ethereum message to "
+          "send fisco message to "
               + ((SocketChannel) ctx.channel()).remoteAddress().getAddress().getHostAddress()
               + ":"
               + ((SocketChannel) ctx.channel()).remoteAddress().getPort()
@@ -366,7 +366,7 @@ public class Service {
     } catch (Exception e) {
       logger.error("system error: " + e.getMessage());
 
-      EthereumResponse response = new EthereumResponse();
+      FiscoResponse response = new FiscoResponse();
       response.setErrorCode(-1);
       response.setErrorMessage(
           e.getMessage()
@@ -572,21 +572,21 @@ public class Service {
     }
   }
 
-  public void onReceiveEthereumMessage(ChannelHandlerContext ctx, EthereumMessage message) {
-    EthereumResponseCallback callback =
-        (EthereumResponseCallback) seq2Callback.get(message.getSeq());
-    logger.debug("EthereumResponse seq:{}", message.getSeq());
+  public void onReceiveEthereumMessage(ChannelHandlerContext ctx, FiscoMessage message) {
+    FiscoResponseCallback callback =
+        (FiscoResponseCallback) seq2Callback.get(message.getSeq());
+    logger.debug("FiscoResponse seq:{}", message.getSeq());
 
     if (callback != null) {
-      logger.debug("found callback EthereumResponse");
+      logger.debug("found callback FiscoResponse");
 
       if (callback.getTimeout() != null) {
         callback.getTimeout().cancel();
       }
 
-      EthereumResponse response = new EthereumResponse();
+      FiscoResponse response = new FiscoResponse();
       if (message.getResult() != 0) {
-        response.setErrorMessage("EthereumResponse error");
+        response.setErrorMessage("FiscoResponse error");
       }
 
       response.setErrorCode(message.getResult());
@@ -671,27 +671,24 @@ public class Service {
       }
 
       Integer groupID = Integer.parseInt(split[0]);
-      
-      if(!groupID.equals(getGroupId())) {
-    	  logger.error("Received groupID[{}] not match groupID[{}]", groupID, getGroupId());
-    	  
-    	  return;
+
+      if (!groupID.equals(getGroupId())) {
+        logger.error("Received groupID[{}] not match groupID[{}]", groupID, getGroupId());
+
+        return;
       }
-      
+
       Integer number = Integer.parseInt(split[1]);
 
-      if(number.compareTo(getNumber().intValue()) > 0) {
-    	  setNumber(BigInteger.valueOf((long) number));
-      }
-      else {
-    	  //logger.warn("Received number[{}] less than current number[{}]", number, getNumber().intValue());
+      if (number.compareTo(getNumber().intValue()) > 0) {
+        setNumber(BigInteger.valueOf((long) number));
       }
     } catch (Exception e) {
       logger.error("Block notify error", e);
     }
   }
 
-  public void onReceiveTransactionMessage(ChannelHandlerContext ctx, EthereumMessage message) {
+  public void onReceiveTransactionMessage(ChannelHandlerContext ctx, FiscoMessage message) {
     TransactionSucCallback callback =
         (TransactionSucCallback) seq2TransactionCallback.get(message.getSeq());
     logger.info("receive transaction success seq:{}", message.getSeq());

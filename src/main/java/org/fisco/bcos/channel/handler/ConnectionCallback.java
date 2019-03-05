@@ -10,7 +10,7 @@ import java.util.UUID;
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.channel.dto.ChannelMessage;
 import org.fisco.bcos.channel.dto.ChannelMessage2;
-import org.fisco.bcos.channel.dto.EthereumMessage;
+import org.fisco.bcos.channel.dto.FiscoMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,12 +94,12 @@ public class ConnectionCallback implements ChannelConnections.Callback {
 
         channelService.onReceiveChannelMessage2(ctx, channelMessage);
       } else if (msg.getType() == 0x12) {
-        logger.debug("Ethereum message");
+        logger.debug("fisco message");
 
-        EthereumMessage ethereumMessage = new EthereumMessage(msg);
-        ethereumMessage.readExtra(message);
+        FiscoMessage fiscoMessage = new FiscoMessage(msg);
+        fiscoMessage.readExtra(message);
 
-        channelService.onReceiveEthereumMessage(ctx, ethereumMessage);
+        channelService.onReceiveEthereumMessage(ctx, fiscoMessage);
       } else if (msg.getType() == 0x13) {
         msg.readExtra(message);
 
@@ -130,11 +130,11 @@ public class ConnectionCallback implements ChannelConnections.Callback {
           logger.trace("heartbeat response");
         }
       } else if (msg.getType() == 0x1000) {
-        EthereumMessage ethereumMessage = new EthereumMessage(msg);
-        logger.trace("TransactionReceipt notify: {}", ethereumMessage.getSeq());
+        FiscoMessage fiscoMessage = new FiscoMessage(msg);
+        logger.trace("TransactionReceipt notify: {}", fiscoMessage.getSeq());
 
-        ethereumMessage.readExtra(message);
-        channelService.onReceiveTransactionMessage(ctx, ethereumMessage);
+        fiscoMessage.readExtra(message);
+        channelService.onReceiveTransactionMessage(ctx, fiscoMessage);
       } else if (msg.getType() == 0x1001) {
         // new block notify
         ChannelMessage2 channelMessage = new ChannelMessage2(msg);
