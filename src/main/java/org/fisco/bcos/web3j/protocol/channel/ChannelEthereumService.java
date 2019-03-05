@@ -2,8 +2,8 @@ package org.fisco.bcos.web3j.protocol.channel;
 
 import java.io.IOException;
 import org.fisco.bcos.channel.client.Service;
-import org.fisco.bcos.channel.dto.EthereumRequest;
-import org.fisco.bcos.channel.dto.EthereumResponse;
+import org.fisco.bcos.channel.dto.FiscoRequest;
+import org.fisco.bcos.channel.dto.FiscoResponse;
 import org.fisco.bcos.web3j.protocol.core.Request;
 import org.fisco.bcos.web3j.protocol.core.Response;
 import org.fisco.bcos.web3j.protocol.exceptions.MessageDecodingException;
@@ -19,40 +19,40 @@ public class ChannelEthereumService extends org.fisco.bcos.web3j.protocol.Servic
   public ChannelEthereumService(boolean includeRawResponses) {
     super(includeRawResponses);
   }
-
   public ChannelEthereumService() {
     super(false);
   }
+    private Integer timeout=0;
 
   @Override
   public <T extends Response> T send(Request request, Class<T> responseType) throws IOException {
     byte[] payload = objectMapper.writeValueAsBytes(request);
 
-    EthereumRequest ethereumRequest = new EthereumRequest();
-    ethereumRequest.setKeyID(channelService.getOrgID());
-    ethereumRequest.setBankNO("");
-    ethereumRequest.setContent(new String(payload));
-    ethereumRequest.setMessageID(channelService.newSeq());
+    FiscoRequest fiscoRequest = new FiscoRequest();
+    fiscoRequest.setKeyID(channelService.getOrgID());
+    fiscoRequest.setBankNO("");
+    fiscoRequest.setContent(new String(payload));
+    fiscoRequest.setMessageID(channelService.newSeq());
 
     if (timeout != 0) {
-      ethereumRequest.setTimeout(timeout);
+      fiscoRequest.setTimeout(timeout);
     }
 
-    EthereumResponse response;
+    FiscoResponse response;
     if (!request.isNeedTransCallback()) {
-      response = channelService.sendEthereumMessage(ethereumRequest);
+      response = channelService.sendEthereumMessage(fiscoRequest);
     } else {
       response =
-          channelService.sendEthereumMessage(ethereumRequest, request.getTransactionSucCallback());
+          channelService.sendEthereumMessage(fiscoRequest, request.getTransactionSucCallback());
     }
 
     logger.debug(
-        "Ethereum Request:{} {}",
-        ethereumRequest.getMessageID(),
+        "fisco Request:{} {}",
+        fiscoRequest.getMessageID(),
         objectMapper.writeValueAsString(request));
     logger.debug(
-        "Ethereum Response:{} {} {}",
-        ethereumRequest.getMessageID(),
+        "fisco Response:{} {} {}",
+        fiscoRequest.getMessageID(),
         response.getErrorCode(),
         response.getContent());
     if (response.getErrorCode() == 0) {
@@ -73,31 +73,31 @@ public class ChannelEthereumService extends org.fisco.bcos.web3j.protocol.Servic
   public String sendSpecial(Request request) throws IOException {
     byte[] payload = objectMapper.writeValueAsBytes(request);
 
-    EthereumRequest ethereumRequest = new EthereumRequest();
-    ethereumRequest.setKeyID(channelService.getOrgID());
-    ethereumRequest.setBankNO("");
-    ethereumRequest.setContent(new String(payload));
-    ethereumRequest.setMessageID(channelService.newSeq());
+    FiscoRequest fiscoRequest = new FiscoRequest();
+    fiscoRequest.setKeyID(channelService.getOrgID());
+    fiscoRequest.setBankNO("");
+    fiscoRequest.setContent(new String(payload));
+    fiscoRequest.setMessageID(channelService.newSeq());
 
     if (timeout != 0) {
-      ethereumRequest.setTimeout(timeout);
+      fiscoRequest.setTimeout(timeout);
     }
 
-    EthereumResponse response;
+    FiscoResponse response;
     if (!request.isNeedTransCallback()) {
-      response = channelService.sendEthereumMessage(ethereumRequest);
+      response = channelService.sendEthereumMessage(fiscoRequest);
     } else {
       response =
-          channelService.sendEthereumMessage(ethereumRequest, request.getTransactionSucCallback());
+          channelService.sendEthereumMessage(fiscoRequest, request.getTransactionSucCallback());
     }
 
     logger.debug(
-        "Ethereum Request:{} {}",
-        ethereumRequest.getMessageID(),
+        "fisco Request:{} {}",
+        fiscoRequest.getMessageID(),
         objectMapper.writeValueAsString(request));
     logger.debug(
-        "Ethereum Response:{} {} {}",
-        ethereumRequest.getMessageID(),
+        "fisco Response:{} {} {}",
+        fiscoRequest.getMessageID(),
         response.getErrorCode(),
         response.getContent());
     if (response.getErrorCode() == 0) {
@@ -131,8 +131,6 @@ public class ChannelEthereumService extends org.fisco.bcos.web3j.protocol.Servic
   public void setTimeout(Integer timeout) {
     this.timeout = timeout;
   }
-
-  private Integer timeout = 0;
 
   @Override
   public void close() throws IOException {}
