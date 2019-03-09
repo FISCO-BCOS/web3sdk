@@ -1,9 +1,13 @@
 package org.fisco.bcos.web3j.utils;
 
-import static org.fisco.bcos.web3j.solidity.compiler.SolidityCompiler.Options.*;
+import static org.fisco.bcos.web3j.solidity.compiler.SolidityCompiler.Options.ABI;
+import static org.fisco.bcos.web3j.solidity.compiler.SolidityCompiler.Options.BIN;
+import static org.fisco.bcos.web3j.solidity.compiler.SolidityCompiler.Options.INTERFACE;
+import static org.fisco.bcos.web3j.solidity.compiler.SolidityCompiler.Options.METADATA;
 
 import java.io.File;
 import java.util.Arrays;
+
 import org.apache.commons.io.FileUtils;
 import org.fisco.bcos.web3j.codegen.SolidityFunctionWrapperGenerator;
 import org.fisco.bcos.web3j.solidity.compiler.CompilationResult;
@@ -31,7 +35,10 @@ public class CompileSolToJava {
 	  }
       SolidityCompiler.Result res =
           SolidityCompiler.compile(solFile, true, ABI, BIN, INTERFACE, METADATA);
-      System.out.println("Err: '" + res.errors + "'");
+      if(!"".equals(res.errors))
+      {
+      	System.out.println("Compile Info: '" + res.errors + "'");
+      }
       CompilationResult result = CompilationResult.parse(res.output);
       String contractname = solFile.getName().split("\\.")[0];
       CompilationResult.ContractMetadata a = result.getContract(solFile.getName().split("\\.")[0]);
@@ -52,6 +59,6 @@ public class CompileSolToJava {
                   "-o", tempDirPath)
               .toArray(new String[0]));
     }
-    System.out.println("Compile solidity files to java files compeleted!");
+    System.out.println("\nCompile solidity contract files to java contract files successfully!");
   }
 }
