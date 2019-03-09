@@ -1,10 +1,13 @@
 package org.fisco.bcos.web3j.precompile.common;
 
+import java.math.BigInteger;
+
+import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
+import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.fisco.bcos.web3j.protocol.exceptions.TransactionException;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.math.BigInteger;
-import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
-import org.fisco.bcos.web3j.solidity.Abi;
 
 public class PrecompiledCommon {
 
@@ -109,4 +112,23 @@ public class PrecompiledCommon {
       return "The call function does not exist.";
     }
   }
+  
+	public static String handleTransactionReceipt(TransactionReceipt receipt)
+			throws TransactionException, JsonProcessingException {
+		if("Receipt timeout".equals(receipt.getStatus()))
+    {
+    	throw new TransactionException("Transaction receipt timeout.");
+    }
+    else 
+    {
+    	if(receipt.getOutput() != null)
+    	{
+    		return PrecompiledCommon.getJsonStr(receipt.getOutput());
+    	}
+    	else 
+    	{
+    		throw new TransactionException("Transaction is handled failure.");
+			}
+    }
+	}
 }
