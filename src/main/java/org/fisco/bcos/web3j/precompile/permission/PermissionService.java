@@ -1,8 +1,8 @@
 package org.fisco.bcos.web3j.precompile.permission;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigInteger;
 import java.util.List;
+
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.precompile.common.PrecompiledCommon;
 import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
@@ -10,6 +10,8 @@ import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.tx.gas.ContractGasProvider;
 import org.fisco.bcos.web3j.tx.gas.StaticGasProvider;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class PermissionService {
   private static BigInteger gasPrice = new BigInteger("300000000");
@@ -97,12 +99,12 @@ public class PermissionService {
 
   private String grant(String tableName, String grantress) throws Exception {
     TransactionReceipt receipt = permission.insert(tableName, grantress).send();
-    return PrecompiledCommon.getJsonStr(receipt.getOutput());
+    return PrecompiledCommon.handleTransactionReceipt(receipt);
   }
 
   private String revoke(String tableName, String address) throws Exception {
     TransactionReceipt receipt = permission.remove(tableName, address).send();
-    return PrecompiledCommon.getJsonStr(receipt.getOutput());
+    return PrecompiledCommon.handleTransactionReceipt(receipt);
   }
 
   private List<PermissionInfo> list(String tableName) throws Exception {
