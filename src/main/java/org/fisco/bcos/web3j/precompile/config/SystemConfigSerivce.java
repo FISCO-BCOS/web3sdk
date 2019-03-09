@@ -1,6 +1,7 @@
 package org.fisco.bcos.web3j.precompile.config;
 
 import java.math.BigInteger;
+
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.precompile.common.PrecompiledCommon;
 import org.fisco.bcos.web3j.protocol.Web3j;
@@ -23,6 +24,6 @@ public class SystemConfigSerivce {
 
   public String setValueByKey(String key, String value) throws Exception {
     TransactionReceipt receipt = systemConfig.setValueByKey(key, value).send();
-    return PrecompiledCommon.getJsonStr(receipt.getOutput());
+    return PrecompiledCommon.handleTransactionReceipt(receipt);
   }
 }
