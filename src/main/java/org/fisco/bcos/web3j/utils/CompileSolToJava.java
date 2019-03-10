@@ -30,14 +30,15 @@ public class CompileSolToJava {
     }
     for (File solFile : solFiles) {
       if(!solFile.getName().endsWith(".sol"))
-	  {
-			continue;
-	  }
+			{
+				continue;
+			}
       SolidityCompiler.Result res =
           SolidityCompiler.compile(solFile, true, ABI, BIN, INTERFACE, METADATA);
-      if(!"".equals(res.errors))
+      if("".equals(res.output))
       {
-      	System.out.println("Compile Info: '" + res.errors + "'");
+      	System.out.println("Compile error: " + res.errors);
+      	return;
       }
       CompilationResult result = CompilationResult.parse(res.output);
       String contractname = solFile.getName().split("\\.")[0];
