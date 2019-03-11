@@ -2,6 +2,7 @@ package org.fisco.bcos.channel.test.amop;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.channel.dto.ChannelRequest;
 import org.fisco.bcos.channel.dto.ChannelResponse;
@@ -15,7 +16,7 @@ public class Channel2Client {
 
   public static void main(String[] args) throws Exception {
     if (args.length < 2) {
-      System.out.println("param: target topic         total number of request");
+      System.out.println("param: target topic total number of request");
       return;
     }
     String topic = args[0];
