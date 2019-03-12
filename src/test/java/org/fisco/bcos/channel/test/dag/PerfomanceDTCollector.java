@@ -16,7 +16,14 @@ public class PerfomanceDTCollector {
 	
 	private Integer total = 0;
 	private DagUserMgr dagUserMrg;
+	private PerfomanceDTTest perfomanceDTTest;
 	
+	public PerfomanceDTTest getPerfomanceDTTest() {
+		return perfomanceDTTest;
+	}
+	public void setPerfomanceDTTest(PerfomanceDTTest perfomanceDTTest) {
+		this.perfomanceDTTest = perfomanceDTTest;
+	}
 	public Integer getTotal() {
 		return total;
 	}
@@ -109,6 +116,12 @@ public class PerfomanceDTCollector {
 						+ String.valueOf((double) less2000.get() / total * 100) + "%");
 				System.out.println("2000 < time           : " + String.valueOf(timeout2000) + "  : "
 						+ String.valueOf((double) timeout2000.get() / total * 100) + "%");
+				
+				if(dagUserMrg.getTestType().compareTo("add") == 0) {
+					dagUserMrg.writeDagTransferUser();
+				} else {
+					perfomanceDTTest.veryTransferData();
+				}
 			}
 			
 		} catch (Exception e) {

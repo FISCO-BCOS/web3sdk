@@ -52,19 +52,20 @@ public class PerfomanceDT {
 		collector.setTotal(count.intValue());
 		collector.setDagUserMrg(d);
 		
-		PerfomanceDTTest p = new PerfomanceDTTest();
-		p.setCollector(collector);
-		p.setDagUserMgr(d);
+		PerfomanceDTTest perfomanceDTTest = new PerfomanceDTTest();
+		perfomanceDTTest.setCollector(collector);
+		perfomanceDTTest.setDagUserMgr(d);
+		collector.setPerfomanceDTTest(perfomanceDTTest);
 
 		switch (command) {
 		case "add":
 			d.setTestType("add");
-			p.userAddTest(count, tps);
+			perfomanceDTTest.userAddTest(count, tps);
 			break;
 		case "transfer":
 			d.setTestType("transfer");
 			d.loadDagTransferUser();
-			p.userTransferTest(count, tps, deci);
+			perfomanceDTTest.userTransferTest(count, tps, deci);
 			break;
 		default:
 			Usage();
