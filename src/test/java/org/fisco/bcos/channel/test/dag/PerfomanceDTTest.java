@@ -133,7 +133,7 @@ public class PerfomanceDTTest {
 							dagTransfer.userAdd(user, amount, callback);
 						} catch (Exception e) {
 							TransactionReceipt receipt = new TransactionReceipt();
-							receipt.setStatus("Error sending!");
+							receipt.setStatus("-1");
 
 							callback.onResponse(receipt);
 							logger.info(e.getMessage());
@@ -197,7 +197,7 @@ public class PerfomanceDTTest {
 							dagTransfer.userTransfer(from.getUser(), to.getUser(), amount, callback);
 						} catch (Exception e) {
 							TransactionReceipt receipt = new TransactionReceipt();
-							receipt.setStatus("Error sending!");
+							receipt.setStatus("-1");
 
 							callback.onResponse(receipt);
 							logger.info(e.getMessage());
