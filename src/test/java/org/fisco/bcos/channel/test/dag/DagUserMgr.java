@@ -52,7 +52,7 @@ public class DagUserMgr {
 	
 	public DagTransferUser getTo(int idx) {
 		assert !isEmpty() : "Has no user.";
-		int mid = userList.size();
+		int mid = userList.size() / 2;
 		return userList.get((idx + mid) % userList.size());
 	}
 
