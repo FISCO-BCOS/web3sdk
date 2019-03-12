@@ -8,19 +8,19 @@ import java.util.concurrent.CompletableFuture;
  * @param <T> type of a data item that should be returned by the sent request
  */
 class WebSocketRequest<T> {
-    private CompletableFuture<T> onReply;
-    private Class<T> responseType;
+  private CompletableFuture<T> onReply;
+  private Class<T> responseType;
 
-    public WebSocketRequest(CompletableFuture<T> onReply, Class<T> responseType) {
-        this.onReply = onReply;
-        this.responseType = responseType;
-    }
+  public WebSocketRequest(CompletableFuture<T> onReply, Class<T> responseType) {
+    this.onReply = onReply;
+    this.responseType = responseType;
+  }
 
-    public CompletableFuture<T> getOnReply() {
-        return onReply;
-    }
+  public CompletableFuture<T> getOnReply() {
+    return onReply;
+  }
 
-    public Class<T> getResponseType() {
-        return responseType;
-    }
+  public Class<T> getResponseType() {
+    return responseType;
+  }
 }
