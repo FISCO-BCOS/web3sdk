@@ -1,10 +1,13 @@
 package org.fisco.bcos.web3j.precompile.common;
 
+import java.math.BigInteger;
+
+import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
+import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.fisco.bcos.web3j.protocol.exceptions.TransactionException;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.math.BigInteger;
-import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
-import org.fisco.bcos.web3j.solidity.Abi;
 
 public class PrecompiledCommon {
 
@@ -39,37 +42,37 @@ public class PrecompiledCommon {
         msg = "permission denied";
         break;
       case TableNameAndAddressExist:
-        msg = "table name and address exist";
+        msg = "table name and address already exist";
         break;
       case TableNameAndAddressNotExist:
         msg = "table name and address does not exist";
         break;
       case InvalidNodeId:
-        msg = "invalid nodeId";
+        msg = "invalid node ID";
         break;
       case LastSealer:
         msg = "the last sealer cannot be removed";
         break;
       case P2pNetwork:
-        msg = "the node is not in p2p network";
+        msg = "the node is not reachable";
         break;
       case GroupPeers:
-        msg = "the node is not in group peers";
+        msg = "the node is not a group peer";
         break;
       case SealerList:
-        msg = "the node is already in sealer list";
+        msg = "the node is already in the sealer list";
         break;
       case ObserverList:
-        msg = "the node is already in observer list";
+        msg = "the node is already in the observer list";
         break;
       case ContractNameAndVersionExist:
-        msg = "contract name and version exist";
+        msg = "contract name and version already exist";
         break;
       case VersionExceeds:
-        msg = "version exceeds maximum(40) length";
+        msg = "version string length exceeds the maximum limit";
         break;
       case InvalidKey:
-        msg = "invalid configuration key";
+        msg = "invalid configuration entry";
         break;
     }
     ObjectMapper mapper = ObjectMapperFactory.getObjectMapper();
@@ -109,4 +112,23 @@ public class PrecompiledCommon {
       return "The call function does not exist.";
     }
   }
+  
+	public static String handleTransactionReceipt(TransactionReceipt receipt)
+			throws TransactionException, JsonProcessingException {
+		if("Receipt timeout".equals(receipt.getStatus()))
+    {
+    	throw new TransactionException("Transaction receipt timeout.");
+    }
+    else 
+    {
+    	if(receipt.getOutput() != null)
+    	{
+    		return PrecompiledCommon.getJsonStr(receipt.getOutput());
+    	}
+    	else 
+    	{
+    		throw new TransactionException("Transaction is handled failure.");
+			}
+    }
+	}
 }
