@@ -196,6 +196,14 @@ public class PerfomanceDTTest {
 				});
 			}
 			
+			
+			// end or not
+			while(!collector.isEnd()) {
+				Thread.sleep(3000);
+			}
+			
+			dagUserMgr.writeDagTransferUser();
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.exit(0);
@@ -277,6 +285,14 @@ public class PerfomanceDTTest {
 					}
 				});
 			}
+			
+			
+			// end or not
+			while(!collector.isEnd()) {
+				Thread.sleep(3000);
+			}
+			
+			veryTransferData();
 			
 		} catch (Exception e) {
 			e.printStackTrace();
