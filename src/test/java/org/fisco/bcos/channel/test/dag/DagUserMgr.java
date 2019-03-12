@@ -16,15 +16,17 @@ public class DagUserMgr {
 	private static Logger logger = LoggerFactory.getLogger(DagUserMgr.class);
 
 	private List<DagTransferUser> userList = new ArrayList<DagTransferUser>();
+	
 	private String file = null;
-	private boolean transfer = false;
-
-	public boolean isTransfer() {
-		return transfer;
+	
+	private String testType = "transfer";
+	
+	public List<DagTransferUser> getUserList() {
+		return userList;
 	}
 
-	public void setTransfer(boolean transfer) {
-		this.transfer = transfer;
+	public void setUserList(List<DagTransferUser> userList) {
+		this.userList = userList;
 	}
 
 	public String getFile() {
@@ -50,7 +52,7 @@ public class DagUserMgr {
 	
 	public DagTransferUser getTo(int idx) {
 		assert !isEmpty() : "Has no user.";
-		int mid = userList.size();
+		int mid = userList.size() / 2;
 		return userList.get((idx + mid) % userList.size());
 	}
 
@@ -59,17 +61,9 @@ public class DagUserMgr {
 	}
 
 	public void writeDagTransferUser() throws IOException {
-
-		if (null == file) {
-			logger.info("file null, return.");
-			return;
+		if (file == null) {
+			return ;
 		}
-
-		if (isTransfer()) {
-			logger.info("not transfer test, return.");
-			return;
-		}
-
 		logger.info("file {}, begin load.", file);
 
 		BufferedWriter bw = null;
@@ -94,17 +88,9 @@ public class DagUserMgr {
 	}
 
 	public void loadDagTransferUser() throws IOException {
-
-		if (null == file) {
-			logger.info("file null, return.");
-			return;
+		if (file == null) {
+			return ;
 		}
-
-		if (!isTransfer()) {
-			logger.info("transfer test, return.");
-			return;
-		}
-
 		BufferedReader br = null;
 		try {
 			br = new BufferedReader(new FileReader(new File(file)));
@@ -129,5 +115,13 @@ public class DagUserMgr {
 		logger.info("file {}, load end, count is {}.", file, userList.size());
 
 		System.out.println(" # load DagTransferUser end, count is " + userList.size());
+	}
+
+	public String getTestType() {
+		return testType;
+	}
+
+	public void setTestType(String testType) {
+		this.testType = testType;
 	}
 }
