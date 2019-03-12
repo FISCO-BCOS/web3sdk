@@ -18,8 +18,16 @@ public class DagTransferUser {
 	}
 	public BigInteger getAmount() {
 		return amount;
-	}
-	public void setAmount(BigInteger amount) {
+	}  
+	synchronized public void setAmount(BigInteger amount) {
 		this.amount = amount;
+	}
+	
+	synchronized public void increase(BigInteger amount) {
+		this.amount = this.amount.add(amount);
+	}
+	
+	synchronized public void decrease(BigInteger amount) {
+		this.amount = this.amount.subtract(amount);
 	}
 }
