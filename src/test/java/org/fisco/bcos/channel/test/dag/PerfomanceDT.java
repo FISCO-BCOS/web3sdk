@@ -39,7 +39,7 @@ public class PerfomanceDT {
 		
 		// deci can not bigger than 10.
 		if (deci.compareTo(new BigInteger("10")) > 0) {
-			deci = new BigInteger("0");
+			deci = new BigInteger("10");
 		}
 
 		logger.info(" dag transfer test begin, command is {}, count is {}, tps is {}, file is {}, deci is {}",
@@ -52,18 +52,20 @@ public class PerfomanceDT {
 		collector.setTotal(count.intValue());
 		collector.setDagUserMrg(d);
 		
-		PerfomanceDTTest p = new PerfomanceDTTest();
-		p.setCollector(collector);
-		p.setDagUserMgr(d);
+		PerfomanceDTTest perfomanceDTTest = new PerfomanceDTTest();
+		perfomanceDTTest.setCollector(collector);
+		perfomanceDTTest.setDagUserMgr(d);
+		collector.setPerfomanceDTTest(perfomanceDTTest);
 
 		switch (command) {
 		case "add":
-			p.userAddTest(count, tps);
+			d.setTestType("add");
+			perfomanceDTTest.userAddTest(count, tps);
 			break;
 		case "transfer":
-			d.setTransfer(true);
+			d.setTestType("transfer");
 			d.loadDagTransferUser();
-			p.userTransferTest(count, tps, deci);
+			perfomanceDTTest.userTransferTest(count, tps, deci);
 			break;
 		default:
 			Usage();
