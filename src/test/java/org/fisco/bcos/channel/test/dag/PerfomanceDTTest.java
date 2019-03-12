@@ -30,6 +30,8 @@ public class PerfomanceDTTest {
 	private static String groupId = "1";
 
 	private Web3j web3;
+	private DagTransfer dagTransfer;
+	
 	private Credentials credentials;
 	private DagUserMgr dagUserMgr;
 	private PerfomanceDTCollector collector;
@@ -76,14 +78,11 @@ public class PerfomanceDTTest {
 		int total_user = allUser.size();
 		
 		int verify_success = 0;
+		
 		int verify_failed  = 0;
 		
 		allUser = dagUserMgr.getUserList();
-		
-		@SuppressWarnings("deprecation")
-		DagTransfer dagTransfer = DagTransfer.load(dagTransferAddr, getWeb3(), getCredentials(),
-				new StaticGasProvider(new BigInteger("30000000"), new BigInteger("30000000")));
-		
+
 		try {
 			for(int i = 0;i<allUser.size();++i) {
 				Tuple2<BigInteger, BigInteger> result = dagTransfer.userBalance(allUser.get(i).getUser()).send();
@@ -135,9 +134,10 @@ public class PerfomanceDTTest {
 
 		Credentials credentials = Credentials
 				.create("b83261efa42895c38c6c2364ca878f43e77f3cddbc922bf57d0d48070f79feb6");
-
-		setWeb3(web3);
-		setCredentials(credentials);
+		
+		dagTransfer = DagTransfer.load(dagTransferAddr, web3, credentials,
+				new StaticGasProvider(new BigInteger("30000000"), new BigInteger("30000000")));
+		
 	}
 
 	public void userAddTest(BigInteger count, BigInteger qps) {
@@ -156,10 +156,6 @@ public class PerfomanceDTTest {
 
 			RateLimiter limiter = RateLimiter.create(qps.intValue());
 			Integer area = count.intValue() / 10;
-
-			@SuppressWarnings("deprecation")
-			DagTransfer dagTransfer = DagTransfer.load(dagTransferAddr, getWeb3(), getCredentials(),
-					new BigInteger("30000000"), new BigInteger("30000000"));
 
 			long seconds = System.currentTimeMillis() / 1000l;
 
@@ -224,10 +220,6 @@ public class PerfomanceDTTest {
 			RateLimiter limiter = RateLimiter.create(qps.intValue());
 			Integer area = count.intValue() / 10;
 
-			@SuppressWarnings("deprecation")
-			DagTransfer dagTransfer = DagTransfer.load(dagTransferAddr, getWeb3(), getCredentials(),
-					new BigInteger("30000000"), new BigInteger("30000000"));
-			
 			// query all account balance info
 			List<DagTransferUser> allUser = dagUserMgr.getUserList();
 			for(int i = 0;i<allUser.size();++i) {
@@ -290,5 +282,13 @@ public class PerfomanceDTTest {
 			e.printStackTrace();
 			System.exit(0);
 		}
+	}
+
+	public DagTransfer getDagTransfer() {
+		return dagTransfer;
+	}
+
+	public void setDagTransfer(DagTransfer dagTransfer) {
+		this.dagTransfer = dagTransfer;
 	}
 }
