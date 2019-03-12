@@ -17,7 +17,7 @@
 
 ### Issue
 
-可直接去[issues page](https://github.com/FISCO-BCOS/web3sdk/issues)提issue。
+可直接去[issues page](https://github.com/FISCO-BCOS/console/issues)提issue。
 
 ### 修复bug
 
