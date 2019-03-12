@@ -73,7 +73,7 @@ public class PerfomanceDTTest {
 	}
 	
 	public void veryTransferData() {
-		System.out.println(" data  validation => ");
+		//System.out.println(" data  validation => ");
 		List<DagTransferUser> allUser = dagUserMgr.getUserList();
 		int total_user = allUser.size();
 		
@@ -203,6 +203,7 @@ public class PerfomanceDTTest {
 			}
 			
 			dagUserMgr.writeDagTransferUser();
+			System.exit(0);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -293,6 +294,7 @@ public class PerfomanceDTTest {
 			}
 			
 			veryTransferData();
+			System.exit(0);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
