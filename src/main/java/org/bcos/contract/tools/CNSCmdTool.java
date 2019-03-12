@@ -2,7 +2,6 @@ package org.bcos.contract.tools;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigInteger;
@@ -24,6 +23,7 @@ import com.alibaba.fastjson.JSONObject;
 public class CNSCmdTool {
 	
 	static Logger logger = LoggerFactory.getLogger(CNSCmdTool.class);
+	static int MAX_STR_LEN = 1024 * 1024;
 	
 	/**
 	 * 
@@ -166,6 +166,7 @@ public class CNSCmdTool {
 				return;
 			}
 			
+			BufferedReader reader = null;
 			try {
 				String contract = args[2];
 				String abi = getAbi(args[3]);
@@ -178,17 +179,31 @@ public class CNSCmdTool {
 				}
 				
 				System.out.println(" ====> Are you sure update the cns of the contract ?(Y/N) ");
-				
-				BufferedReader br = new BufferedReader(new InputStreamReader(System.in));  
-				String s = br.readLine().trim(); 
-				br.close();
-				if (!s.equals("Y")) {
-					System.out.println("nothing to be done, if you want update operation , you must input 'Y'!");
-					return ;
+
+				reader = new BufferedReader(new InputStreamReader(System.in));
+
+				StringBuffer sb = new StringBuffer();
+				int intC;
+				while ((intC = reader.read()) != -1) {
+					char c = (char) intC;
+					if (c == '\n') {
+						break;
+					}
+					if (sb.length() >= MAX_STR_LEN) {
+						throw new Exception("input too long");
+					}
+					sb.append(c);
 				}
-				
-				logger.debug("cns update operation , contract = " + contract + " ,address = " + address + " ,abi = " + abi);
-				
+
+				String content = sb.toString().trim();
+				if (!content.equals("Y")) {
+					System.out.println("nothing to be done, if you want update operation , you must input 'Y'!");
+					return;
+				}
+
+				logger.debug(
+						"cns update operation , contract = " + contract + " ,address = " + address + " ,abi = " + abi);
+
 				CNSBaseOpr.updateBase(abiMgr, contract, version, address, abi);
 				
 				System.out.println("cns update operation success.");
@@ -197,6 +212,15 @@ public class CNSCmdTool {
 				System.out.println(e.getMessage());
 			} catch (Exception e) {
 				System.out.println("cns update operation failed, msg = " + e.getMessage());
+			} finally {
+				if(reader != null) {
+					try {
+						reader.close();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
 			}
 			
 			break;
