@@ -206,6 +206,7 @@ public class PerfomanceDTTest {
 					// account not exist??
 					System.out.println(" Query failed, user is " + allUser.get(i).getUser());
 				}
+				logger.debug(" query user " + allUser.get(i).getUser() + " ret " + result.getValue1() + " amount " + result.getValue2());
 			}
 			
 			
@@ -234,6 +235,7 @@ public class PerfomanceDTTest {
 						callback.setAmount(amount);
 
 						try {
+							logger.debug(" transfer from is " + from + " to is " + to + " amount is " + amount);
 							dagTransfer.userTransfer(from.getUser(), to.getUser(), amount, callback);
 						} catch (Exception e) {
 							TransactionReceipt receipt = new TransactionReceipt();
