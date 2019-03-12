@@ -1,24 +1,22 @@
 package org.fisco.bcos.web3j.crypto.gm.sm2.util;
 
 public interface StringList extends Iterable<String> {
-	
-	boolean add(String s);
 
-	String get(int index);
+  boolean add(String s);
 
-	int size();
+  String get(int index);
 
-	String[] toStringArray();
+  int size();
 
-	/**
-	 * Return a section of the contents of the list. If the list is too short
-	 * the array is filled with nulls.
-	 *
-	 * @param from
-	 *            the initial index of the range to be copied, inclusive
-	 * @param to
-	 *            the final index of the range to be copied, exclusive.
-	 * @return an array of length to - from
-	 */
-	String[] toStringArray(int from, int to);
+  String[] toStringArray();
+
+  /**
+   * Return a section of the contents of the list. If the list is too short the array is filled with
+   * nulls.
+   *
+   * @param from the initial index of the range to be copied, inclusive
+   * @param to the final index of the range to be copied, exclusive.
+   * @return an array of length to - from
+   */
+  String[] toStringArray(int from, int to);
 }

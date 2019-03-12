@@ -1,7 +1,10 @@
 # safelist
 branches:
-  only:
-  - release-2.0.1
+  only: 
+    - /release-2.*/
+tags:
+  only: 
+    - /v2.*/
 
 language: java
 jdk:
@@ -21,3 +24,7 @@ before_install:
 
 script: 
   - ./gradlew build -x test
+  - ./gradlew jacocoTestReport
+  
+after_success:
+  - bash <(curl -s https://codecov.io/bash)

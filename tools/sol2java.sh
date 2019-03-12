@@ -24,15 +24,15 @@ function LOG_INFO()
 }
 
 function Usage() {
-    LOG_INFO "# Console TOOLS"
-    LOG_INFO "--Start console: \t./start [groupID] [privateKey]\n"
+    LOG_INFO "# Compile Solidity TOOLS"
+    LOG_INFO "./sol2java [packageName]\n"
 }
 
 if [ "${1}" == "-h" ] || [ "${1}" == "--help" ] || [ "${1}" == "help" ];then
     Usage
     exit 0
 else
-	java -cp "apps/*:conf/:lib/*" org.fisco.bcos.web3j.console.ConsoleClient $1 $2    
+	java -cp "../apps/*:../lib/*" org.fisco.bcos.web3j.utils.CompileSolToJava $1    
 fi
 
 
