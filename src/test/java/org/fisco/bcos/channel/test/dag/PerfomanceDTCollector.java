@@ -16,7 +16,14 @@ public class PerfomanceDTCollector {
 	
 	private Integer total = 0;
 	private DagUserMgr dagUserMrg;
+	private PerfomanceDTTest perfomanceDTTest;
 	
+	public PerfomanceDTTest getPerfomanceDTTest() {
+		return perfomanceDTTest;
+	}
+	public void setPerfomanceDTTest(PerfomanceDTTest perfomanceDTTest) {
+		this.perfomanceDTTest = perfomanceDTTest;
+	}
 	public Integer getTotal() {
 		return total;
 	}
@@ -29,6 +36,11 @@ public class PerfomanceDTCollector {
 	}
 	public void setDagUserMrg(DagUserMgr dagUserMrg) {
 		this.dagUserMrg = dagUserMrg;
+	}
+	
+	
+	public boolean isEnd() {
+		return received.intValue() >= total;
 	}
 	
 	public void onMessage(TransactionReceipt receipt, Long cost) {
@@ -74,7 +86,7 @@ public class PerfomanceDTCollector {
 			
 			totalCost.addAndGet(cost);
 
-			if (received.intValue() >= total) {
+			if (isEnd()) {
 				System.out.println("total");
 
 				// 
@@ -104,13 +116,11 @@ public class PerfomanceDTCollector {
 						+ String.valueOf((double) less2000.get() / total * 100) + "%");
 				System.out.println("2000 < time           : " + String.valueOf(timeout2000) + "  : "
 						+ String.valueOf((double) timeout2000.get() / total * 100) + "%");
-				
-				dagUserMrg.writeDagTransferUser();
-				
-				System.exit(0);
 			}
+			
 		} catch (Exception e) {
 			logger.error("error:", e);
+			 System.exit(0);
 		}
 	}
 	
@@ -125,6 +135,15 @@ public class PerfomanceDTCollector {
 	private AtomicLong totalCost = new AtomicLong(0);
 
 	private AtomicInteger received = new AtomicInteger(0);
+	
+	public AtomicInteger getReceived() {
+		return received;
+	}
+	public void setReceived(AtomicInteger received) {
+		this.received = received;
+	}
+
+
 	private AtomicInteger error = new AtomicInteger(0);
 	private AtomicInteger ret_error = new AtomicInteger(0);
 	private Long startTimestamp = System.currentTimeMillis();
