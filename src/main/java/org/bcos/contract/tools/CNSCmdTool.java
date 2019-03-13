@@ -22,8 +22,8 @@ import com.alibaba.fastjson.JSONObject;
 
 public class CNSCmdTool {
 	
-	static Logger logger = LoggerFactory.getLogger(CNSCmdTool.class);
-	static int MAX_STR_LEN = 1024 * 1024;
+	private static Logger logger = LoggerFactory.getLogger(CNSCmdTool.class);
+	private static int MAX_STR_LEN = 1024 * 1024;
 	
 	/**
 	 * 
@@ -196,7 +196,7 @@ public class CNSCmdTool {
 				}
 
 				String content = sb.toString().trim();
-				if (!content.equals("Y")) {
+				if (!"Y".equals(content)) {
 					System.out.println("nothing to be done, if you want update operation , you must input 'Y'!");
 					return;
 				}
