@@ -147,4 +147,11 @@ public class PerfomanceDTCollector {
 	private AtomicInteger error = new AtomicInteger(0);
 	private AtomicInteger ret_error = new AtomicInteger(0);
 	private Long startTimestamp = System.currentTimeMillis();
+
+	public Long getStartTimestamp() {
+		return startTimestamp;
+	}
+	public void setStartTimestamp(Long startTimestamp) {
+		this.startTimestamp = startTimestamp;
+	}
 }
