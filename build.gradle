@@ -1,4 +1,3 @@
-
 apply plugin: 'maven'
 apply plugin: 'idea'
 apply plugin: 'java'
@@ -81,6 +80,11 @@ archivesBaseName = 'web3sdk'
 group = 'org.fisco-bcos'
 version = '2.0.2'
 
+configurations {
+    integrationTestCompile.extendsFrom testCompile
+    integrationTestRuntime.extendsFrom testRuntime
+}
+    
 // for old sdk
 sourceSets {
 	main {
@@ -92,7 +96,34 @@ sourceSets {
 			srcDir 'src/test/resources'
 		}
 	}
+	integrationTest {
+        java {
+            compileClasspath += main.output + test.output
+            runtimeClasspath += main.output + test.output
+            srcDir file('src/integration-test/java')
+        }
+        resources.srcDir file('src/integration-test/resources')
+    }
 }
+
+jacocoTestReport {
+
+    afterEvaluate {
+        classDirectories = files(classDirectories.files.collect {
+            fileTree(dir: it,
+                    exclude: ['**/test/**','**/integration-test/**', '**/temp/**'])
+        })
+    }
+}
+task integrationTest(type: Test) {
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    outputs.upToDateWhen { false }
+}
+
+check.dependsOn integrationTest
+check.dependsOn jacocoTestReport
+integrationTest.mustRunAfter test
 
 //  1 dist jar
 jar {
@@ -190,14 +221,4 @@ test {
 //		}
 //	}
 //}
-
-jacocoTestReport {
-    reports {
-        xml.enabled true
-        html.enabled false
-    }
-}
-
-check.dependsOn jacocoTestReport
-
 mainClassName  = System.getProperty("exec.mainClass") ?:  "org.fisco.bcos.channel.test.amop.Channel2Client"
