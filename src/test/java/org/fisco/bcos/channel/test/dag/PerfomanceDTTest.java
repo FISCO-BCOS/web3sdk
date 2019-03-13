@@ -158,6 +158,8 @@ public class PerfomanceDTTest {
 			Integer area = count.intValue() / 10;
 
 			long seconds = System.currentTimeMillis() / 1000l;
+			
+			this.collector.setStartTimestamp(System.currentTimeMillis());
 
 			for (Integer i = 0; i < count.intValue(); ++i) {
 				final int index = i;
@@ -242,6 +244,7 @@ public class PerfomanceDTTest {
 				logger.debug(" query user " + allUser.get(i).getUser() + " ret " + result.getValue1() + " amount " + result.getValue2());
 			}
 			
+			this.collector.setStartTimestamp(System.currentTimeMillis());
 			
 			for (Integer i = 0; i < count.intValue(); ++i) {
 				final int index = i;
