@@ -1,10 +1,11 @@
-package org.fisco.bcos.channel.test.precompile;
+package org.fisco.bcos.precompile;
 
 import static org.junit.Assert.assertEquals;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
-import org.fisco.bcos.channel.test.TestBase;
+
+import org.fisco.bcos.TestBase;
 import org.fisco.bcos.channel.test.contract.Ok;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.precompile.cns.CnsService;

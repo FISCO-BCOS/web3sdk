@@ -1,19 +1,19 @@
-package org.fisco.bcos.channel.test.contract;
+package org.fisco.bcos.contract;
 
-import org.fisco.bcos.channel.test.TestBase;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.lang.reflect.Method;
+import java.math.BigInteger;
+import java.util.concurrent.TimeUnit;
+
+import org.fisco.bcos.TestBase;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.RemoteCall;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.tx.Contract;
 import org.junit.Test;
-
-import java.lang.reflect.Method;
-import java.math.BigInteger;
-import java.util.concurrent.TimeUnit;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 public class OkTest extends TestBase {
 
