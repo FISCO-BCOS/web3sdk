@@ -17,7 +17,6 @@ repositories {
     maven {
         url "http://maven.aliyun.com/nexus/content/groups/public/"
     }
-	maven { url 'https://dl.bintray.com/ethereum/maven/' }
     mavenCentral()
 }
 
@@ -47,7 +46,7 @@ List alibaba = [
 dependencies {
 // compile files('lib/solcJ-all-0.4.25-gm.jar')
 	//compile	'org.ethereum:solcJ-all:0.5.2'
-	compile	'org.ethereum:solcJ-all:0.4.25'
+	compile 'org.ethereum:solcJ-all:0.4.25'
     compile logger,spring,alibaba
     compile 'org.apache.commons:commons-lang3:3.1'
     compile "com.fasterxml.jackson.core:jackson-databind:2.9.6"
