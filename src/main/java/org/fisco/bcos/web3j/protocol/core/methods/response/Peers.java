@@ -1,18 +1,16 @@
 package org.fisco.bcos.web3j.protocol.core.methods.response;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
+
 import org.fisco.bcos.web3j.protocol.core.Response;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /** getPeers */
 public class Peers extends Response<List<Peers.Peer>> {
 
-  public List<Peers.Peer> getValue() {
+  public List<Peers.Peer> getPeers() {
     return getResult();
-  }
-
-  public void setResult(List<Peers.Peer> result) {
-    super.setResult(result);
   }
 
   public static class Peer {
