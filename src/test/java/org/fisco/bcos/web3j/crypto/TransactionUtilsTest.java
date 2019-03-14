@@ -4,11 +4,10 @@ import static org.fisco.bcos.web3j.crypto.TransactionUtils.generateTransactionHa
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-import org.fisco.bcos.channel.test.TestBase;
 import org.junit.Ignore;
 import org.junit.Test;
 
-public class TransactionUtilsTest extends TestBase {
+public class TransactionUtilsTest{
 
   @Ignore
   @Test

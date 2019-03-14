@@ -5,70 +5,67 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.List;
 
 import org.fisco.bcos.TestBase;
-import org.fisco.bcos.channel.test.contract.Ok;
-import org.fisco.bcos.web3j.crypto.Credentials;
-import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BlockNumber;
 import org.fisco.bcos.web3j.protocol.core.methods.response.GroupList;
 import org.fisco.bcos.web3j.protocol.core.methods.response.GroupPeers;
+import org.fisco.bcos.web3j.protocol.core.methods.response.NodeVersion;
+import org.fisco.bcos.web3j.protocol.core.methods.response.PbftView;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Peers;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
-import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.junit.Ignore;
 import org.junit.Test;
 
 public class Web3jApITest extends TestBase {
-  private static BigInteger gasPrice = new BigInteger("300000000");
-  private static BigInteger gasLimit = new BigInteger("300000000");
-
-  @Ignore
+  
   @Test
-  public void pbftViewTest() throws Exception {
-    int i = web3j.getPbftView().send().getPbftView().intValue();
-    System.out.println(i);
-    assertNotNull(i > 0);
+  public void getNodeVersion() throws IOException {
+  	NodeVersion nodeVersion = web3j.getNodeVersion().send();
+    assertNotNull(nodeVersion.getNodeVersion());
+  }
+  
+  @Test
+  public void getBlockNumber() throws IOException {
+  	BlockNumber blockNumber = web3j.getBlockNumber().send();
+    assertTrue(blockNumber.getBlockNumber().compareTo(new BigInteger("0")) >= 0);
+  }
+  
+  @Test
+  public void pbftView() throws Exception {
+    PbftView pbftView = web3j.getPbftView().send();
+    assertTrue(pbftView.getPbftView().compareTo(new BigInteger("0")) >= 0);
   }
 
   @Test
-  public void consensusStatusTest() throws Exception {
+  public void consensusStatus() throws Exception {
     System.out.println(web3j.getConsensusStatus().sendForReturnString());
     assertNotNull(web3j.getConsensusStatus().sendForReturnString());
   }
 
   @Test
-  public void syncTest() throws Exception {
-    System.out.println(web3j.getSyncStatus().send().isSyncing());
-    assertNotNull(web3j.getSyncStatus().send().isSyncing());
+  public void sync() throws Exception {
+  	String syncStatus = web3j.getSyncStatus().sendForReturnString();
+    assertNotNull(syncStatus);
   }
 
   @Test
-  public void versionTest() throws Exception {
-    String web3ClientVersion = web3j.getNodeVersion().sendForReturnString();
-    System.out.println(web3ClientVersion);
-    assertNotNull(web3ClientVersion);
-  }
-
-  // getPeers
-  @Ignore
-  @Test
-  public void peersTest() throws Exception {
+  public void peers() throws Exception {
     Peers ethPeers = web3j.getPeers().send();
     System.out.println(ethPeers.getValue().get(0).getNodeID());
     assertNotNull(ethPeers);
   }
 
   @Test
-  public void groupPeersTest() throws Exception {
+  public void groupPeers() throws Exception {
     GroupPeers groupPeers = web3j.getGroupPeers().send();
     groupPeers.getGroupPeers().stream().forEach(System.out::println);
     assertNotNull(groupPeers.getResult());
   }
 
   @Test
-  public void groupListTest() throws Exception {
+  public void groupList() throws Exception {
     GroupList groupList = web3j.getGroupList().send();
     groupList.getGroupList().stream().forEach(System.out::println);
     assertTrue((groupList.getGroupList().size() > 0));
@@ -76,7 +73,7 @@ public class Web3jApITest extends TestBase {
 
   @Ignore
   @Test
-  public void getTransactionByBlockNumberAndIndexTest() throws IOException {
+  public void getTransactionByBlockNumberAndIndex() throws IOException {
     Transaction transaction =
         web3j
             .getTransactionByBlockNumberAndIndex(
@@ -87,53 +84,4 @@ public class Web3jApITest extends TestBase {
     assertTrue(transaction.getBlockNumber().intValue() == 1);
   }
 
-  @Test
-  public void basicTest() throws Exception {
-    try {
-      testDeployContract(web3j, credentials);
-    } catch (Exception e) {
-      e.printStackTrace();
-      throw new Exception("Execute basic test failed");
-    }
-  }
-
-  private void testDeployContract(Web3j web3j, Credentials credentials) throws Exception {
-    Ok okDemo = Ok.deploy(web3j, credentials, gasPrice, gasLimit).send();
-    if (okDemo != null) {
-      System.out.println(
-          "####get nonce from Block: "
-              + web3j
-                  .getBlockByNumber(DefaultBlockParameter.valueOf(new BigInteger("0")), true)
-                  .send()
-                  .getBlock()
-                  .getNonce());
-      System.out.println(
-          "####get block number by index from Block: "
-              + web3j
-                  .getBlockByNumber(DefaultBlockParameter.valueOf(new BigInteger("1")), true)
-                  .send()
-                  .getBlock()
-                  .getNumber());
-
-      System.out.println("####contract address is: " + okDemo.getContractAddress());
-      // TransactionReceipt receipt = okDemo.trans(new
-      // BigInteger("4")).sendAsync().get(60000, TimeUnit.MILLISECONDS);
-      TransactionReceipt receipt = okDemo.trans(new BigInteger("4")).send();
-      List<Ok.TransEventEventResponse> events = okDemo.getTransEventEvents(receipt);
-      events.stream().forEach(System.out::println);
-
-      System.out.println("###callback trans success");
-
-      System.out.println(
-          "####get block number from TransactionReceipt: " + receipt.getBlockNumber());
-      System.out.println(
-          "####get transaction index from TransactionReceipt: " + receipt.getTransactionIndex());
-      System.out.println("####get gas used from TransactionReceipt: " + receipt.getGasUsed());
-      // System.out.println("####get cumulative gas used from TransactionReceipt: " +
-      // receipt.getCumulativeGasUsed());
-
-      BigInteger toBalance = okDemo.get().send();
-      System.out.println("============to balance:" + toBalance.intValue());
-    }
-  }
 }
