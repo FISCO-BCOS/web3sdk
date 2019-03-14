@@ -29,7 +29,7 @@ public class CompileSolToJava {
     	return;
     }
     for (File solFile : solFiles) {
-      if(!solFile.getName().endsWith(".sol"))
+      if(!solFile.getName().endsWith(".sol") || solFile.getName().contains("Lib"))
 			{
 				continue;
 			}
