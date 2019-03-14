@@ -20,7 +20,7 @@ public abstract class TransactionManager {
 
   // configurable
   public static final int DEFAULT_POLLING_ATTEMPTS_PER_TX_HASH = AttemptsConf.sleepDuration;
-  public static final long DEFAULT_POLLING_FREQUENCY = AttemptsConf.attempts; // 15 * 100
+  public static final int DEFAULT_POLLING_FREQUENCY = AttemptsConf.attempts; // 15 * 100
 
   private final TransactionReceiptProcessor transactionReceiptProcessor;
   final Credentials credentials;
@@ -34,7 +34,7 @@ public abstract class TransactionManager {
   protected TransactionManager(Web3j web3j, Credentials credentials) {
     this(
         new PollingTransactionReceiptProcessor(
-            web3j, DEFAULT_POLLING_FREQUENCY, DEFAULT_POLLING_ATTEMPTS_PER_TX_HASH),
+            web3j, DEFAULT_POLLING_ATTEMPTS_PER_TX_HASH ,DEFAULT_POLLING_FREQUENCY),
         credentials);
   }
 
