@@ -16,7 +16,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class TestBase {
   public static ApplicationContext context = null;
   public static Credentials credentials =
-      Credentials.create("b83261efa42895c38c6c2364ca878f43e77f3cddbc922bf57d0d48070f79feb6");
+      Credentials.create("3bed914595c159cbce70ec5fb6aff3d6797e0c5ee5a7a9224a21cae8932d84a4");
   protected static Web3j web3j;
   protected static BigInteger gasPrice = new BigInteger("30000000");
   protected static BigInteger gasLimit = new BigInteger("30000000");
