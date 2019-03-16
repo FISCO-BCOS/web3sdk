@@ -45,8 +45,8 @@ Go to [issues page](https://github.com/FISCO-BCOS/web3sdk/issues)
 
 **Continous integration platform**
 
-* travis-ci: [![Build Status](https://travis-ci.org/FISCO-BCOS/web3sdk.svg?branch=release-2.0.1)](https://travis-ci.org/FISCO-BCOS/web3sdk)
-* circleci: [![CircleCI](https://circleci.com/gh/FISCO-BCOS/web3sdk/tree/release-2.0.1.svg?style=shield)](https://circleci.com/gh/FISCO-BCOS/web3sdk/tree/release-2.0.1)
+* travis-ci: [![Build Status](https://travis-ci.org/FISCO-BCOS/web3sdk.svg?branch=master)](https://travis-ci.org/FISCO-BCOS/web3sdk)
+* circleci: [![CircleCI](https://circleci.com/gh/FISCO-BCOS/web3sdk/tree/master.svg?style=shield)](https://circleci.com/gh/FISCO-BCOS/web3sdk/tree/master)
 
 
 **Code quality**

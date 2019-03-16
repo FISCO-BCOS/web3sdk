@@ -3,8 +3,8 @@
 # Web3SDK
 
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
-[![Build Status](https://travis-ci.org/FISCO-BCOS/web3sdk.svg?branch=release-2.0.1)](https://travis-ci.org/FISCO-BCOS/web3sdk)
-[![CircleCI](https://circleci.com/gh/FISCO-BCOS/web3sdk/tree/release-2.0.1.svg?style=shield)](https://circleci.com/gh/FISCO-BCOS/web3sdk/tree/release-2.0.1)
+[![Build Status](https://travis-ci.org/FISCO-BCOS/web3sdk.svg?branch=master)](https://travis-ci.org/FISCO-BCOS/web3sdk)
+[![CircleCI](https://circleci.com/gh/FISCO-BCOS/web3sdk/tree/master.svg?style=shield)](https://circleci.com/gh/FISCO-BCOS/web3sdk/tree/master)
 [![CodeFactor](https://www.codefactor.io/repository/github/fisco-bcos/web3sdk/badge)](https://www.codefactor.io/repository/github/fisco-bcos/web3sdk)
 ---
 Web3SDK为[FISCO BCOS](https://github.com/FISCO-BCOS/FISCO-BCOS/tree/master)提供Java API。利用FISCO BCOS JAVA SDK可以简单快捷的基于FISCO-BCOS进行区块链应用开发。
@@ -16,7 +16,7 @@ Web3SDK为[FISCO BCOS](https://github.com/FISCO-BCOS/FISCO-BCOS/tree/master)提�
 ## 关键特性
 
 - 实现FISCO BCOS的[JSON-RPC](https://fisco-bcos-documentation.readthedocs.io/zh_CN/release-2.0/docs/api.html)的Java API。
-- 支持[预编译合约](https://fisco-bcos-documentation.readthedocs.io/zh_CN/release-2.0/docs/manual/smart_contract.html#id2)管理区块链.
+- 支持[预编译合约](https://fisco-bcos-documentation.readthedocs.io/zh_CN/release-2.0/docs/manual/smart_contract.html#id2)管理区块链。
 - 支持[链上信使协议](https://fisco-bcos-documentation.readthedocs.io/zh_CN/release-2.0/docs/manual/amop_protocol.html)为联盟链提供安全高效的消息信道。
 - 支持使用[国密算法](https://fisco-bcos-documentation.readthedocs.io/zh_CN/release-2.0/docs/manual/guomi_crypto.html)发送交易。
 
