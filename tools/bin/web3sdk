@@ -38,6 +38,9 @@ function execute_cmd()
 }
 
 function Usage() {
+    LOG_INFO "###### Console TOOLS"
+    LOG_INFO "--Start console: \n\t./web3sdk -c [groupID] [privateKey]\n"
+    
     LOG_INFO "###### SystemContract TOOLS(please refer to https://fisco-bcos-test.readthedocs.io/zh/latest/docs/web3sdk/advanced/index.html)"
     LOG_INFO "--Deploy system contract: \n\t./web3sdk InitSystemContract\n"
     LOG_INFO "--Get system contract routers: \n\t./web3sdk SystemProxy\n"
@@ -278,27 +281,11 @@ function splitJvmOpts() {
 }
 eval splitJvmOpts $DEFAULT_JVM_OPTS $JAVA_OPTS $WEB3J_OPTS
 
-if [ $1 == "InitSystemContract" ] ; then
-	exec "$JAVACMD" "${JVM_OPTS[@]}" -classpath "$CLASSPATH" org.bcos.contract.tools.InitSystemContract "$@"
-	
-elif [ $1 == "SystemProxy" -o $1 == "NodeAction" -o $1 == "CAAction" -o $1 == "ConfigAction" -o $1 == "ConsensusControl" -o $1 == "CNSAction" ] ; then
-    command="$JAVACMD ${JVM_OPTS[@]} -classpath $CLASSPATH org.bcos.contract.tools.SystemContractTools $@"
-    execute_cmd "${command}"
-	
-elif [ $1 == "eth_accounts" -o $1 == "web3_clientVersion" -o $1 == "eth_blockNumber" -o $1 == "eth_pbftView" -o $1 == "eth_getCode" -o $1 == "eth_getBlockTransactionCountByHash" -o $1 == "eth_getTransactionCount" -o $1 == "eth_getBlockTransactionCountByNumber" -o $1 == "eth_sendRawTransaction" -o $1 == "eth_getBlockByHash" -o $1 == "eth_getBlockByNumber" -o $1 == "eth_getTransactionByBlockNumberAndIndex" -o $1 == "eth_getTransactionByBlockHashAndIndex" -o $1 == "eth_getTransactionReceipt" ] ; then
-	exec "$JAVACMD" "${JVM_OPTS[@]}" -classpath "$CLASSPATH" org.bcos.web3j.console.Web3RpcApi "$@"
-	
-elif [ $1 == "ARPI_Model" ] ; then
-    exec "$JAVACMD" "${JVM_OPTS[@]}" -classpath "$CLASSPATH" org.bcos.contract.tools.ARPI_Model "$@"
-    
-elif [ $1 == "PermissionInfo" -o $1 == "FilterChain" -o $1 == "Filter" -o $1 == "Group" ] ; then
-    exec "$JAVACMD" "${JVM_OPTS[@]}" -classpath "$CLASSPATH" org.bcos.contract.tools.AuthorityManager "$@" 
-
-elif [ $1 == "InitTokens" -o $1 == "SendSelectedTokens" -o $1 == "RegisterAccount" -o $1 == "TokenTracking" -o $1 == "GetBalance" -o $1 == "SelectTokens" -o $1 == "GetToken" -o $1 == "GetTx" -o $1 == "GetVault" ] ; then
-    exec "$JAVACMD" "${JVM_OPTS[@]}" -classpath "$CLASSPATH" org.bcos.contract.tools.UTXODemo "$@" 
+if [ $1 == "-c" ]; then	
+	java -cp "../apps/*:../conf/:../lib/*" org.fisco.bcos.web3j.console.ConsoleClient $2 $3
 	
 else	
-	exec "$JAVACMD" "${JVM_OPTS[@]}" -classpath "$CLASSPATH" org.bcos.web3j.console.Runner "$@"
+	exec "$JAVACMD" "${JVM_OPTS[@]}" -classpath "$CLASSPATH" Runner "$@"
 fi	
 
 
