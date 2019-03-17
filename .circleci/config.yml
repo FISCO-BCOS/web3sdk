@@ -8,6 +8,7 @@ jobs:
     working_directory: ~/web3sdk
     branches:
       only: 
+        - master
         - /release-2.*/
     tags:
       only: 
@@ -39,8 +40,8 @@ jobs:
             command: |
               sudo apt-get update 
               sudo apt install -y openssl curl
-              curl -LO https://raw.githubusercontent.com/FISCO-BCOS/FISCO-BCOS/release-2.0.1/tools/build_chain.sh && chmod u+x build_chain.sh
-              bash <(curl -s https://raw.githubusercontent.com/FISCO-BCOS/FISCO-BCOS/release-2.0.1/tools/ci/download_bin.sh) -b release-2.0.1
+              curl -LO https://raw.githubusercontent.com/FISCO-BCOS/FISCO-BCOS/master/tools/build_chain.sh && chmod u+x build_chain.sh
+              bash <(curl -s https://raw.githubusercontent.com/FISCO-BCOS/FISCO-BCOS/master/tools/ci/download_bin.sh) -b master
               ./bin/fisco-bcos -v
               ./build_chain.sh -e bin/fisco-bcos -l "127.0.0.1:4" -p 30300,20200,8545
               cd nodes/127.0.0.1
