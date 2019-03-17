@@ -4,9 +4,10 @@
 
 
 # Package Files #
-*.jar
 *.war
 *.ear
+*.bin
+*.abi
 
 ### Gradle template
 .gradle
@@ -33,3 +34,8 @@ gradle.properties
 /out
 /log
 /dist
+/src/test/resources/ca.crt
+/src/test/resources/node.crt
+/src/test/resources/node.key
+/src/test/java/org/fisco/bcos/temp
+build.gradle.bak
