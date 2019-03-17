@@ -23,11 +23,11 @@ Web3SDK为[FISCO BCOS](https://github.com/FISCO-BCOS/FISCO-BCOS/tree/master)提�
 ## 快速入门
 提供基于SDK的[spring boot starter](https://github.com/FISCO-BCOS/spring-boot-starter)示例项目，示例项目使用了SDK的核心特性, 包括:
 
-- 如何连接FISCO BCOS区块链节点
-- 在区块链网络中部署合约
-- 读取部署合约的变量值
-- 更新部署合约的变量值
-- 提供SDk API接口的测试案例
+- 如何连接FISCO BCOS区块链节点。
+- 在区块链网络中部署合约。
+- 读取部署合约的变量值。
+- 更新部署合约的变量值。
+- 提供SDK API接口的测试案例。
 
 ## 文档
 - [**中文**](https://fisco-bcos-documentation.readthedocs.io/zh_CN/release-2.0/docs/sdk/sdk.html)
