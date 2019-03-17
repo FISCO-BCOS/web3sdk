@@ -23,10 +23,10 @@ Web3SDK provides the Java API for [FISCO-BCOS](https://github.com/FISCO-BCOS/FIS
 ## Quickstart
 A [spring boot starter](https://github.com/FISCO-BCOS/spring-boot-starter) for SDK is available that demonstrates a number of core features, including:
 
-- Connecting to a node on the FISCO BCOS network
-- Deploying a smart contract to the network
-- Reading a value from the deployed smart contract
-- Updating a value in the deployed smart contract
+- Connecting to a node on the FISCO BCOS network.
+- Deploying a smart contract to the network.
+- Reading a value from the deployed smart contract.
+- Updating a value in the deployed smart contract.
 - Providing integration tests demonstrating for the above features.
 
 ## Documentation
