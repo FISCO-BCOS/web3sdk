@@ -16,7 +16,7 @@ before_install:
   - gradle wrapper
 
 script: 
-  - ./gradlew test
+  - ./gradlew clean test
   - ./gradlew jacocoTestReport
   
 after_success:
