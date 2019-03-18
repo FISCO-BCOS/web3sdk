@@ -1,12 +1,4 @@
 # safelist
-branches:
-  only: 
-    - master
-    - /release-2.*/
-tags:
-  only: 
-    - /v2.*/
-
 language: java
 jdk:
   - oraclejdk8
@@ -24,7 +16,7 @@ before_install:
   - gradle wrapper
 
 script: 
-  - ./gradlew build -x test
+  - ./gradlew test
   - ./gradlew jacocoTestReport
   
 after_success:
