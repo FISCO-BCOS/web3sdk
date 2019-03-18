@@ -14,9 +14,8 @@ targetCompatibility = 1.8
 
 // In this section you declare where to find the dependencies of your project
 repositories {
-    maven {
-        url "http://maven.aliyun.com/nexus/content/groups/public/"
-    }
+    maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
+	maven { url 'https://dl.bintray.com/ethereum/maven/' }
     mavenCentral()
 }
 
@@ -73,9 +72,9 @@ dependencies {
 			'org.mockito:mockito-core:2.23.0'
 }
 
-archivesBaseName = 'web3sdk'
-group = 'org.fisco-bcos'
-version = '2.0.2'
+//archivesBaseName = 'web3sdk'
+//group = 'org.fisco-bcos'
+//version = '2.0.2'
 
 configurations {
     integrationTestCompile.extendsFrom testCompile
