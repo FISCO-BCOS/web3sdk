@@ -6,10 +6,6 @@ version: 2
 jobs:            
   build:
     working_directory: ~/web3sdk
-    branches:
-      only: 
-        - master
-        - /release-2.*/
     tags:
       only: 
         - /v2.*/
