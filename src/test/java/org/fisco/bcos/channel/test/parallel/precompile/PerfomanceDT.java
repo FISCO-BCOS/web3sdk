@@ -1,12 +1,12 @@
-package org.fisco.bcos.channel.test.dag;
+package org.fisco.bcos.channel.test.parallel.precompile;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
 
-import org.fisco.bcos.channel.test.dag.PerfomanceDTTest;
-import org.fisco.bcos.channel.test.dag.DagUserMgr;
+import org.fisco.bcos.channel.test.parallel.precompile.PerfomanceDTTest;
+import org.fisco.bcos.channel.test.parallel.precompile.DagUserMgr;
 
 public class PerfomanceDT {
 	private static Logger logger = LoggerFactory.getLogger(PerfomanceDT.class);
@@ -14,9 +14,9 @@ public class PerfomanceDT {
 	public static void Usage() {
 		System.out.println(" Usage:");
 		System.out.println(
-				" \t java -cp conf/:lib/*:apps/* org.fisco.bcos.channel.test.dag.PerfomanceDT add count tps file.");
+				" \t java -cp conf/:lib/*:apps/* org.fisco.bcos.channel.test.parallel.precompile.PerfomanceDT add count tps file.");
 		System.out.println(
-				" \t java -cp conf/:lib/*:apps/* org.fisco.bcos.channel.test.dag.PerfomanceDT transfer count tps file strategy.");
+				" \t java -cp conf/:lib/*:apps/* org.fisco.bcos.channel.test.parallel.precompile.PerfomanceDT transfer count tps file strategy.");
 		System.exit(0);
 	}
 
@@ -36,22 +36,22 @@ public class PerfomanceDT {
 				deci = new BigInteger(args[4]);
 			}
 		}
-		
+
 		// deci can not bigger than 10.
 		if (deci.compareTo(new BigInteger("10")) > 0) {
 			deci = new BigInteger("10");
 		}
 
-		logger.info(" dag transfer test begin, command is {}, count is {}, tps is {}, file is {}, deci is {}",
-				command, count, tps, file, deci);
+		logger.info(" dag transfer test begin, command is {}, count is {}, tps is {}, file is {}, deci is {}", command,
+				count, tps, file, deci);
 
 		DagUserMgr d = new DagUserMgr();
 		d.setFile(file);
-		
+
 		PerfomanceDTCollector collector = new PerfomanceDTCollector();
 		collector.setTotal(count.intValue());
 		collector.setDagUserMrg(d);
-		
+
 		PerfomanceDTTest perfomanceDTTest = new PerfomanceDTTest();
 		perfomanceDTTest.setCollector(collector);
 		perfomanceDTTest.setDagUserMgr(d);
