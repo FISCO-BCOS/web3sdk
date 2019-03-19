@@ -1,4 +1,4 @@
-package org.fisco.bcos.channel.test.dag;
+package org.fisco.bcos.channel.test.parallel.precompile;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -16,11 +16,11 @@ public class DagUserMgr {
 	private static Logger logger = LoggerFactory.getLogger(DagUserMgr.class);
 
 	private List<DagTransferUser> userList = new ArrayList<DagTransferUser>();
-	
+
 	private String file = null;
-	
+
 	private String testType = "transfer";
-	
+
 	public List<DagTransferUser> getUserList() {
 		return userList;
 	}
@@ -44,12 +44,12 @@ public class DagUserMgr {
 	public boolean isEmpty() {
 		return userList.isEmpty();
 	}
-	
+
 	public DagTransferUser getFrom(int idx) {
 		assert !isEmpty() : "Has no user.";
 		return userList.get(idx % userList.size());
 	}
-	
+
 	public DagTransferUser getTo(int idx) {
 		assert !isEmpty() : "Has no user.";
 		int mid = userList.size() / 2;
@@ -62,7 +62,7 @@ public class DagUserMgr {
 
 	public void writeDagTransferUser() throws IOException {
 		if (file == null) {
-			return ;
+			return;
 		}
 		logger.info("file {}, begin load.", file);
 
@@ -89,7 +89,7 @@ public class DagUserMgr {
 
 	public void loadDagTransferUser() throws IOException {
 		if (file == null) {
-			return ;
+			return;
 		}
 		BufferedReader br = null;
 		try {

@@ -1,4 +1,4 @@
-package org.fisco.bcos.channel.test.dag;
+package org.fisco.bcos.channel.test.parallel.precompile;
 
 import com.google.common.util.concurrent.RateLimiter;
 import org.fisco.bcos.channel.client.Service;
@@ -31,7 +31,7 @@ public class PerfomanceDTTest {
 
 	private Web3j web3;
 	private DagTransfer dagTransfer;
-	
+
 	private Credentials credentials;
 	private DagUserMgr dagUserMgr;
 	private PerfomanceDTCollector collector;
@@ -63,7 +63,7 @@ public class PerfomanceDTTest {
 	public void setCredentials(Credentials credentials) {
 		this.credentials = credentials;
 	}
-	
+
 	public PerfomanceDTCollector getCollector() {
 		return collector;
 	}
@@ -71,41 +71,42 @@ public class PerfomanceDTTest {
 	public void setCollector(PerfomanceDTCollector collector) {
 		this.collector = collector;
 	}
-	
+
 	public void veryTransferData() {
-		//System.out.println(" data  validation => ");
+		// System.out.println(" data validation => ");
 		List<DagTransferUser> allUser = dagUserMgr.getUserList();
 		int total_user = allUser.size();
-		
+
 		int verify_success = 0;
-		
-		int verify_failed  = 0;
-		
+
+		int verify_failed = 0;
+
 		allUser = dagUserMgr.getUserList();
 
 		try {
-			for(int i = 0;i<allUser.size();++i) {
+			for (int i = 0; i < allUser.size(); ++i) {
 				Tuple2<BigInteger, BigInteger> result = dagTransfer.userBalance(allUser.get(i).getUser()).send();
-				
+
 				String user = allUser.get(i).getUser();
 				BigInteger local = allUser.get(i).getAmount();
 				BigInteger remote = result.getValue2();
-		
+
 				if (result.getValue1().compareTo(new BigInteger("0")) != 0) {
 					logger.error(" query failed, user " + user + " ret code " + result.getValue1());
 					verify_failed++;
 					continue;
 				}
-				
+
 				logger.debug(" user  " + user + " local amount  " + local + " remote amount " + remote);
-				if(local.compareTo(remote) != 0) {
+				if (local.compareTo(remote) != 0) {
 					verify_failed++;
-					logger.error(" local amount is not same as remote, user " + user + " local " + local + " remote " + remote);
+					logger.error(" local amount is not same as remote, user " + user + " local " + local + " remote "
+							+ remote);
 				} else {
 					verify_success++;
 				}
 			}
-			
+
 			System.out.println("validation:");
 			System.out.println(" \tuser count is " + total_user);
 			System.out.println(" \tverify_success count is " + verify_success);
@@ -115,7 +116,7 @@ public class PerfomanceDTTest {
 			System.exit(0);
 		}
 	}
-	
+
 	public void initialize(String groupId) throws Exception {
 
 		ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
@@ -134,10 +135,10 @@ public class PerfomanceDTTest {
 
 		Credentials credentials = Credentials
 				.create("b83261efa42895c38c6c2364ca878f43e77f3cddbc922bf57d0d48070f79feb6");
-		
+
 		dagTransfer = DagTransfer.load(dagTransferAddr, web3, credentials,
 				new StaticGasProvider(new BigInteger("30000000"), new BigInteger("30000000")));
-		
+
 	}
 
 	public void userAddTest(BigInteger count, BigInteger qps) {
@@ -158,7 +159,7 @@ public class PerfomanceDTTest {
 			Integer area = count.intValue() / 10;
 
 			long seconds = System.currentTimeMillis() / 1000l;
-			
+
 			this.collector.setStartTimestamp(System.currentTimeMillis());
 
 			for (Integer i = 0; i < count.intValue(); ++i) {
@@ -197,16 +198,15 @@ public class PerfomanceDTTest {
 					}
 				});
 			}
-			
-			
+
 			// end or not
-			while(!collector.isEnd()) {
+			while (!collector.isEnd()) {
 				Thread.sleep(3000);
 			}
-			
+
 			dagUserMgr.writeDagTransferUser();
 			System.exit(0);
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.exit(0);
@@ -215,7 +215,7 @@ public class PerfomanceDTTest {
 	}
 
 	public void userTransferTest(BigInteger count, BigInteger qps, BigInteger deci) {
-		
+
 		try {
 
 			ThreadPoolTaskExecutor threadPool = new ThreadPoolTaskExecutor();
@@ -233,19 +233,20 @@ public class PerfomanceDTTest {
 
 			// query all account balance info
 			List<DagTransferUser> allUser = dagUserMgr.getUserList();
-			for(int i = 0;i<allUser.size();++i) {
+			for (int i = 0; i < allUser.size(); ++i) {
 				Tuple2<BigInteger, BigInteger> result = dagTransfer.userBalance(allUser.get(i).getUser()).send();
-				if(result.getValue1().compareTo(new BigInteger("0")) == 0) {
+				if (result.getValue1().compareTo(new BigInteger("0")) == 0) {
 					allUser.get(i).setAmount(result.getValue2());
 				} else {
 					// account not exist??
 					System.out.println(" Query failed, user is " + allUser.get(i).getUser());
 				}
-				logger.debug(" query user " + allUser.get(i).getUser() + " ret " + result.getValue1() + " amount " + result.getValue2());
+				logger.debug(" query user " + allUser.get(i).getUser() + " ret " + result.getValue1() + " amount "
+						+ result.getValue2());
 			}
-			
+
 			this.collector.setStartTimestamp(System.currentTimeMillis());
-			
+
 			for (Integer i = 0; i < count.intValue(); ++i) {
 				final int index = i;
 				threadPool.execute(new Runnable() {
@@ -257,7 +258,7 @@ public class PerfomanceDTTest {
 						if ((deci.intValue() > 0) && (deci.intValue() >= (index % 10 + 1))) {
 							to = dagUserMgr.getNext(index);
 						}
-						
+
 						Random random = new Random();
 						int r = random.nextInt(100);
 						BigInteger amount = BigInteger.valueOf(r);
@@ -289,16 +290,15 @@ public class PerfomanceDTTest {
 					}
 				});
 			}
-			
-			
+
 			// end or not
-			while(!collector.isEnd()) {
+			while (!collector.isEnd()) {
 				Thread.sleep(3000);
 			}
-			
+
 			veryTransferData();
 			System.exit(0);
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.exit(0);
