@@ -33,9 +33,6 @@ public class TestBase {
     Service service = context.getBean(Service.class);
     service.run();
 
-    System.out.println("start...");
-    System.out.println("===================================================================");
-
     ChannelEthereumService channelEthereumService = new ChannelEthereumService();
     channelEthereumService.setChannelService(service);
 
