@@ -1,13 +1,5 @@
 package org.fisco.bcos.channel.client;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.socket.SocketChannel;
-import io.netty.util.HashedWheelTimer;
-import io.netty.util.Timeout;
-import io.netty.util.Timer;
-import io.netty.util.TimerTask;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -18,7 +10,16 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
-import org.fisco.bcos.channel.dto.*;
+
+import org.fisco.bcos.channel.dto.ChannelMessage;
+import org.fisco.bcos.channel.dto.ChannelMessage2;
+import org.fisco.bcos.channel.dto.ChannelPush;
+import org.fisco.bcos.channel.dto.ChannelPush2;
+import org.fisco.bcos.channel.dto.ChannelRequest;
+import org.fisco.bcos.channel.dto.ChannelResponse;
+import org.fisco.bcos.channel.dto.FiscoMessage;
+import org.fisco.bcos.channel.dto.FiscoRequest;
+import org.fisco.bcos.channel.dto.FiscoResponse;
 import org.fisco.bcos.channel.handler.ChannelConnections;
 import org.fisco.bcos.channel.handler.ConnectionCallback;
 import org.fisco.bcos.channel.handler.ConnectionInfo;
@@ -28,11 +29,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.util.HashedWheelTimer;
+import io.netty.util.Timeout;
+import io.netty.util.Timer;
+import io.netty.util.TimerTask;
+
 public class Service {
   private static Logger logger = LoggerFactory.getLogger(Service.class);
   private Integer connectSeconds = 30;
   private Integer connectSleepPerMillis = 1;
   private String orgID;
+  private String agencyName;
   private GroupChannelConnectionsConfig allChannelConnections;
   private ChannelPushCallback pushCallback;
   private Map<String, Object> seq2Callback = new ConcurrentHashMap<String, Object>();
@@ -80,7 +92,15 @@ public class Service {
     this.orgID = orgID;
   }
 
-  public ChannelPushCallback getPushCallback() {
+  public String getAgencyName() {
+		return agencyName;
+	}
+
+	public void setAgencyName(String agencyName) {
+		this.agencyName = agencyName;
+	}
+
+	public ChannelPushCallback getPushCallback() {
     return pushCallback;
   }
 
@@ -323,9 +343,16 @@ public class Service {
       if (fromChannelConnections == null) {
         // 没有找到对应的链
         // 返回错误
-        logger.error("not found:{}", orgID);
-
-        throw new Exception("not found orgID");
+      	if(orgID != null)
+      	{
+      		logger.error("not found:{}", orgID);
+          throw new Exception("not found orgID");
+      	}
+      	else 
+      	{
+      		logger.error("not found:{}", agencyName);
+      		throw new Exception("not found agencyName");
+      	}
       }
 
       ChannelHandlerContext ctx = fromChannelConnections.randomNetworkConnection();
@@ -408,9 +435,16 @@ public class Service {
         if (fromChannelConnections == null) {
           // 没有找到对应的链
           // 返回错误
-          logger.error("not found orgID:{}", orgID);
-
-          throw new Exception("not found orgID");
+        	if(orgID != null)
+        	{
+        		logger.error("not found:{}", orgID);
+            throw new Exception("not found orgID");
+        	}
+        	else 
+        	{
+        		logger.error("not found:{}", agencyName);
+        		throw new Exception("not found agencyName");
+        	}
         }
         fromConnectionInfos.addAll(fromChannelConnections.getConnections());
         logger.debug(
