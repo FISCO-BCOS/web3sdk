@@ -51,7 +51,7 @@ jobs:
       - run:
           name: sdk
           command: |
-            cp nodes/127.0.0.1/sdk/* src/test/resources/
+            cp nodes/127.0.0.1/sdk/* src/integration-test/resources/
             gradle clean integrationTest
       - run:
           name: Upload Coverage
