@@ -1,4 +1,3 @@
-
 apply plugin: 'maven'
 apply plugin: 'idea'
 apply plugin: 'java'
@@ -15,9 +14,7 @@ targetCompatibility = 1.8
 
 // In this section you declare where to find the dependencies of your project
 repositories {
-    maven {
-        url "http://maven.aliyun.com/nexus/content/groups/public/"
-    }
+    maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
 	maven { url 'https://dl.bintray.com/ethereum/maven/' }
     mavenCentral()
 }
@@ -26,8 +23,8 @@ repositories {
 def spring_version="4.3.18.RELEASE"
 
 List logger = [
-		'org.slf4j:slf4j-log4j12:1.7.25'
-		// 'org.slf4j:slf4j-api:1.7.25'
+		//'org.slf4j:slf4j-log4j12:1.7.25'
+		 'org.slf4j:slf4j-api:1.7.25'
 ]
 
 List spring =[ 
@@ -48,15 +45,13 @@ List alibaba = [
 dependencies {
 // compile files('lib/solcJ-all-0.4.25-gm.jar')
 	//compile	'org.ethereum:solcJ-all:0.5.2'
-	compile	'org.ethereum:solcJ-all:0.4.25'
+	compile 'org.ethereum:solcJ-all:0.4.25'
     compile logger,spring,alibaba
     compile 'org.apache.commons:commons-lang3:3.1'
     compile "com.fasterxml.jackson.core:jackson-databind:2.9.6"
-    compile 'io.netty:netty-all:4.1.32.Final'
-	compile 'io.netty:netty-tcnative:2.0.20.Final'
-	compile 'io.netty:netty-tcnative-boringssl-static:2.0.20.Final'
+    compile 'io.netty:netty-all:4.1.15.Final'
+	compile 'io.netty:netty-tcnative:2.0.0.Final'
 	compile 'com.google.guava:guava:19.0'
-	compile 'org.jline:jline:3.9.0'
 	compile 'commons-configuration:commons-configuration:1.10'
 
    	// web3j
@@ -73,14 +68,19 @@ dependencies {
 			"commons-io:commons-io:2.4",
 			'com.github.stefanbirkner:system-rules:1.18.0',
 			'io.bretty:console-table-builder:1.2',
-	  		'junit:junit:4.12',
+			'junit:junit:4.12',
 			'org.mockito:mockito-core:2.23.0'
 }
 
-archivesBaseName = 'web3sdk'
-group = 'org.fisco-bcos'
-version = '2.0.2'
+//archivesBaseName = 'web3sdk'
+//group = 'org.fisco-bcos'
+//version = '2.0.2'
 
+configurations {
+    integrationTestCompile.extendsFrom testCompile
+    integrationTestRuntime.extendsFrom testRuntime
+}
+    
 // for old sdk
 sourceSets {
 	main {
@@ -92,7 +92,34 @@ sourceSets {
 			srcDir 'src/test/resources'
 		}
 	}
+	integrationTest {
+        java {
+            compileClasspath += main.output + test.output
+            runtimeClasspath += main.output + test.output
+            srcDir file('src/integration-test/java')
+        }
+        resources.srcDir file('src/integration-test/resources')
+    }
 }
+
+jacocoTestReport {
+
+    afterEvaluate {
+        classDirectories = files(classDirectories.files.collect {
+            fileTree(dir: it,
+                    exclude: ['**/test/**','**/integration-test/**', '**/temp/**'])
+        })
+    }
+}
+task integrationTest(type: Test) {
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    outputs.upToDateWhen { false }
+}
+
+check.dependsOn integrationTest
+check.dependsOn jacocoTestReport
+integrationTest.mustRunAfter test
 
 //  1 dist jar
 jar {
@@ -190,14 +217,4 @@ test {
 //		}
 //	}
 //}
-
-jacocoTestReport {
-    reports {
-        xml.enabled true
-        html.enabled false
-    }
-}
-
-check.dependsOn jacocoTestReport
-
 mainClassName  = System.getProperty("exec.mainClass") ?:  "org.fisco.bcos.channel.test.amop.Channel2Client"

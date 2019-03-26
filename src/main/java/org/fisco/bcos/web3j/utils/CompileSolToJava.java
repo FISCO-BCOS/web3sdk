@@ -29,10 +29,10 @@ public class CompileSolToJava {
     	return;
     }
     for (File solFile : solFiles) {
-      if(!solFile.getName().endsWith(".sol"))
-			{
-				continue;
-			}
+      if(!solFile.getName().endsWith(".sol") || solFile.getName().contains("Lib"))
+      {
+          continue;
+      }
       SolidityCompiler.Result res =
           SolidityCompiler.compile(solFile, true, ABI, BIN, INTERFACE, METADATA);
       if("".equals(res.output))
