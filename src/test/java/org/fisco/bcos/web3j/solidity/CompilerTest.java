@@ -94,14 +94,15 @@ public class CompilerTest {
     File[] solFiles = solFileList.listFiles();
 
     for (File solFile : solFiles) {
-
+      if(!solFile.getName().endsWith(".sol") || solFile.getName().contains("Lib"))
+      {
+        continue;
+      }
       SolidityCompiler.Result res =
           SolidityCompiler.compile(solFile, true, ABI, BIN, INTERFACE, METADATA);
       System.out.println("Out: '" + res.output + "'");
       System.out.println("Err: '" + res.errors + "'");
       CompilationResult result = CompilationResult.parse(res.output);
-      //   Assert.assertEquals(solFile.getName(), result.getContractName()+".sol");
-      //     Assert.assertEquals(solFile.getAbsolutePath(), result.getContractPath());
       System.out.println("contractname  " + solFile.getName());
       Path source = Paths.get(solFile.getPath());
       // todo
@@ -144,8 +145,7 @@ public class CompilerTest {
     CompilationResult result = CompilationResult.parse(res.output);
 
     CompilationResult.ContractMetadata a = result.getContract(source, "test2");
-    //        CallTransaction.Contract contract = new CallTransaction.Contract(a.abi);
-    //        System.out.print(contract.functions[0].toString());
+
   }
 
   @Test
@@ -187,8 +187,7 @@ public class CompilerTest {
     CompilationResult result = CompilationResult.parse(res.output);
 
     CompilationResult.ContractMetadata a = result.getContract(source, "test3");
-    //        CallTransaction.Contract contract = new CallTransaction.Contract(a.abi);
-    //        System.out.print(contract.functions[0].toString());
+
   }
 
   @Test
@@ -206,11 +205,7 @@ public class CompilerTest {
     CompilationResult result = CompilationResult.parse(res.output);
 
     CompilationResult.ContractMetadata a = result.getContract("test3");
-    //        CallTransaction.Contract contract = new CallTransaction.Contract(a.abi);
-    //        System.out.print(contract.functions[0].toString());
+
   }
 
-  public static void main(String[] args) throws Exception {
-    new CompilerTest().simpleTest();
-  }
 }
