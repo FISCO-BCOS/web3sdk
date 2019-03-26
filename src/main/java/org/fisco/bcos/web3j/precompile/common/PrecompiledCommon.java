@@ -113,6 +113,18 @@ public class PrecompiledCommon {
     }
   }
   
+  public static int handleTransactionReceiptForCRUD(TransactionReceipt receipt) throws TransactionException{
+  		String output = receipt.getOutput();
+			if(!"0x".equals(output))
+  		{
+				return new BigInteger(output.substring(2, output.length()), 16).intValue();
+  		}
+			else 
+			{
+				throw new TransactionException("CRUD call failed!");
+			}
+  }
+  
 	public static String handleTransactionReceipt(TransactionReceipt receipt)
 			throws TransactionException, JsonProcessingException {
 		if("Receipt timeout".equals(receipt.getStatus()))
