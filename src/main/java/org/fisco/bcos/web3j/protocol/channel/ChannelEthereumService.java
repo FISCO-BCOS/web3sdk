@@ -1,6 +1,7 @@
 package org.fisco.bcos.web3j.protocol.channel;
 
 import java.io.IOException;
+
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.channel.dto.FiscoRequest;
 import org.fisco.bcos.channel.dto.FiscoResponse;
@@ -29,7 +30,14 @@ public class ChannelEthereumService extends org.fisco.bcos.web3j.protocol.Servic
     byte[] payload = objectMapper.writeValueAsBytes(request);
 
     FiscoRequest fiscoRequest = new FiscoRequest();
-    fiscoRequest.setKeyID(channelService.getOrgID());
+    if(channelService.getOrgID() != null)
+    {
+    	fiscoRequest.setKeyID(channelService.getOrgID());
+    }
+    else 
+    {
+    	fiscoRequest.setKeyID(channelService.getAgencyName());
+    }
     fiscoRequest.setBankNO("");
     fiscoRequest.setContent(new String(payload));
     fiscoRequest.setMessageID(channelService.newSeq());
@@ -74,7 +82,14 @@ public class ChannelEthereumService extends org.fisco.bcos.web3j.protocol.Servic
     byte[] payload = objectMapper.writeValueAsBytes(request);
 
     FiscoRequest fiscoRequest = new FiscoRequest();
-    fiscoRequest.setKeyID(channelService.getOrgID());
+    if(channelService.getOrgID() != null)
+    {
+    	fiscoRequest.setKeyID(channelService.getOrgID());
+    }
+    else 
+    {
+    	fiscoRequest.setKeyID(channelService.getAgencyName());
+    }
     fiscoRequest.setBankNO("");
     fiscoRequest.setContent(new String(payload));
     fiscoRequest.setMessageID(channelService.newSeq());

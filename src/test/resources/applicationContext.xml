@@ -43,7 +43,7 @@
 
 	<bean id="channelService" class="org.fisco.bcos.channel.client.Service" depends-on="groupChannelConnectionsConfig">
 		<property name="groupId" value="1" />
-		<property name="orgID" value="fisco" />
+		<property name="agencyName" value="fisco" />
 		<property name="allChannelConnections" ref="groupChannelConnectionsConfig"></property>
 	</bean>
 
