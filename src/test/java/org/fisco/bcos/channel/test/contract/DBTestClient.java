@@ -2,6 +2,7 @@ package org.fisco.bcos.channel.test.contract;
 
 import java.math.BigInteger;
 import java.util.List;
+
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.channel.test.contract.DBTest.CreateResultEventResponse;
@@ -29,7 +30,7 @@ import org.springframework.core.io.Resource;
 public class DBTestClient {
   static Logger logger = LoggerFactory.getLogger(DBTestClient.class);
   public static Web3j web3j;
-  // 初始化交易参数
+
   public static java.math.BigInteger gasPrice = new BigInteger("1");
   public static java.math.BigInteger gasLimit = new BigInteger("30000000");
   public static ECKeyPair keyPair;

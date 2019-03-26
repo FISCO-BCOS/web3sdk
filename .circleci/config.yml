@@ -6,13 +6,6 @@ version: 2
 jobs:            
   build:
     working_directory: ~/web3sdk
-    branches:
-      only: 
-        - master
-        - /release-2.*/
-    tags:
-      only: 
-        - /v2.*/
     docker:
       # specify the version you desire here
       - image: circleci/openjdk:8-jdk
@@ -58,8 +51,8 @@ jobs:
       - run:
           name: sdk
           command: |
-            cp nodes/127.0.0.1/sdk/* src/test/resources/
-            gradle test
+            cp nodes/127.0.0.1/sdk/* src/integration-test/resources/
+            gradle clean integrationTest
       - run:
           name: Upload Coverage
           command: |
