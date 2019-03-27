@@ -28,6 +28,7 @@ public final class Numeric {
   public static BigInteger decodeQuantity(String value) {
     if (!isValidHexQuantity(value)) {
       try {
+        if (value == null) return new BigInteger("0");
         return new BigInteger(value);
       } catch (NumberFormatException e) {
         throw new MessageDecodingException("Negative ", e);
