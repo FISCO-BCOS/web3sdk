@@ -14,6 +14,13 @@ contract ParallelOk is ParallelContract
         _balance[to] += num;
     }
 
+    function transferWithRevert(string from, string to, uint256 num) public
+    {
+        // To test whether the parallel revert function is working well
+        transfer(from, to, num);
+        require(num <= 100);
+    }
+
     function set(string name, uint256 num) public
     {
         _balance[name] = num;

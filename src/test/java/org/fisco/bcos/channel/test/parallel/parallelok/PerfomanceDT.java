@@ -17,6 +17,8 @@ public class PerfomanceDT {
 				" \t java -cp conf/:lib/*:apps/* org.fisco.bcos.channel.test.parallel.parallelok.PerfomanceDT add count tps file.");
 		System.out.println(
 				" \t java -cp conf/:lib/*:apps/* org.fisco.bcos.channel.test.parallel.parallelok.PerfomanceDT transfer count tps file strategy.");
+		System.out.println(
+				" \t java -cp conf/:lib/*:apps/* org.fisco.bcos.channel.test.parallel.parallelok.PerfomanceDT transferRevert count tps file strategy.");
 		System.exit(0);
 	}
 
@@ -36,22 +38,22 @@ public class PerfomanceDT {
 				deci = new BigInteger(args[4]);
 			}
 		}
-		
+
 		// deci can not bigger than 10.
 		if (deci.compareTo(new BigInteger("10")) > 0) {
 			deci = new BigInteger("10");
 		}
 
-		logger.info(" dag transfer test begin, command is {}, count is {}, tps is {}, file is {}, deci is {}",
-				command, count, tps, file, deci);
+		logger.info(" dag transfer test begin, command is {}, count is {}, tps is {}, file is {}, deci is {}", command,
+				count, tps, file, deci);
 
 		DagUserMgr d = new DagUserMgr();
 		d.setFile(file);
-		
+
 		PerfomanceDTCollector collector = new PerfomanceDTCollector();
 		collector.setTotal(count.intValue());
 		collector.setDagUserMrg(d);
-		
+
 		PerfomanceDTTest perfomanceDTTest = new PerfomanceDTTest();
 		perfomanceDTTest.setCollector(collector);
 		perfomanceDTTest.setDagUserMgr(d);
@@ -67,6 +69,10 @@ public class PerfomanceDT {
 			d.loadDagTransferUser();
 			perfomanceDTTest.userTransferTest(count, tps, deci);
 			break;
+		case "transferRevert":
+			d.setTestType("transferRevert");
+			d.loadDagTransferUser();
+			perfomanceDTTest.userTransferRevertTest(count, tps, deci);
 		default:
 			Usage();
 		}

@@ -214,7 +214,105 @@ public class PerfomanceDTTest {
 			e.printStackTrace();
 			System.exit(0);
 		}
+	}
 
+	public void userTransferRevertTest(BigInteger count, BigInteger qps, BigInteger deci) {
+
+		try {
+
+			ThreadPoolTaskExecutor threadPool = new ThreadPoolTaskExecutor();
+			threadPool.setCorePoolSize(200);
+			threadPool.setMaxPoolSize(500);
+			threadPool.setQueueCapacity(count.intValue());
+
+			threadPool.initialize();
+
+			RateLimiter limiter = RateLimiter.create(qps.intValue());
+			Integer area = count.intValue() / 10;
+
+			parallelokAddr = dagUserMgr.getContractAddr();
+			parallelok = ParallelOk.load(parallelokAddr, web3, credentials,
+					new StaticGasProvider(new BigInteger("30000000"), new BigInteger("30000000")));
+
+			System.out.println("ParallelOk address: " + parallelokAddr);
+
+			// query all account balance info
+			List<DagTransferUser> allUser = dagUserMgr.getUserList();
+			for (int i = 0; i < allUser.size(); ++i) {
+				BigInteger result = parallelok.balanceOf(allUser.get(i).getUser()).send();
+
+				allUser.get(i).setAmount(result);
+
+				logger.debug(" query user " + allUser.get(i).getUser() + " amount " + result);
+			}
+
+			System.out.println("Start UserTransferRevert test...");
+			System.out.println("===================================================================");
+
+			this.collector.setStartTimestamp(System.currentTimeMillis());
+
+			for (Integer i = 0; i < count.intValue(); ++i) {
+				final int index = i;
+				threadPool.execute(new Runnable() {
+					@Override
+					public void run() {
+						boolean success = false;
+						while (!success) {
+							limiter.acquire();
+							DagTransferUser from = dagUserMgr.getFrom(index);
+							DagTransferUser to = dagUserMgr.getTo(index);
+
+							/*
+							 * if ((deci.intValue() > 0) && (deci.intValue() >= (index % 10 + 1))) { to =
+							 * dagUserMgr.getNext(index); }
+							 */
+
+							Random random = new Random();
+							int value = random.nextInt(101);
+							int prob = random.nextInt(10);
+							if (prob < deci.intValue()) {
+								value += 101;
+							}
+							BigInteger amount = BigInteger.valueOf(value);
+
+							PerfomanceDTCallback callback = new PerfomanceDTCallback();
+							callback.setCallBackType("transferRevert");
+							callback.setCollector(collector);
+							callback.setDagUserMgr(getDagUserMgr());
+							callback.setFromUser(from);
+							callback.setToUser(to);
+							callback.setAmount(amount);
+
+							try {
+								logger.debug(" transfer from is " + from + " to is " + to + " amount is " + amount);
+								parallelok.transferWithRevert(from.getUser(), to.getUser(), amount, callback);
+								success = true;
+							} catch (Exception e) {
+								success = false;
+								continue;
+							}
+						}
+						int current = sended.incrementAndGet();
+
+						if (current >= area && ((current % area) == 0)) {
+							System.out.println("Already sended: " + current + "/" + count + " transactions");
+						}
+					}
+				});
+			}
+
+			// end or not
+			while (!collector.isEnd()) {
+				Thread.sleep(3000);
+			}
+
+			veryTransferData();
+			System.exit(0);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(0);
+		}
 	}
 
 	public void userTransferTest(BigInteger count, BigInteger qps, BigInteger deci) {
@@ -247,7 +345,7 @@ public class PerfomanceDTTest {
 				logger.debug(" query user " + allUser.get(i).getUser() + " amount " + result);
 			}
 
-			System.out.println("Start UserTransfer test...");
+			System.out.println("Start UserTransferRevert test...");
 			System.out.println("===================================================================");
 
 			this.collector.setStartTimestamp(System.currentTimeMillis());
@@ -262,9 +360,10 @@ public class PerfomanceDTTest {
 							limiter.acquire();
 							DagTransferUser from = dagUserMgr.getFrom(index);
 							DagTransferUser to = dagUserMgr.getTo(index);
-							if ((deci.intValue() > 0) && (deci.intValue() >= (index % 10 + 1))) {
-								to = dagUserMgr.getNext(index);
-							}
+							/*
+							 * if ((deci.intValue() > 0) && (deci.intValue() >= (index % 10 + 1))) { to =
+							 * dagUserMgr.getNext(index); }
+							 */
 
 							Random random = new Random();
 							int r = random.nextInt(100);
@@ -292,7 +391,6 @@ public class PerfomanceDTTest {
 						if (current >= area && ((current % area) == 0)) {
 							System.out.println("Already sended: " + current + "/" + count + " transactions");
 						}
-
 					}
 				});
 			}
