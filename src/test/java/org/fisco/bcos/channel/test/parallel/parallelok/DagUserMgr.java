@@ -21,7 +21,7 @@ public class DagUserMgr {
 
 	private String testType = "transfer";
 
-	private String parallelokAddr = "0x0000000000000000000000000000000000001006";
+	private String parallelokAddr = "";
 
 	public void setContractAddr(String addr) {
 		this.parallelokAddr = addr;
