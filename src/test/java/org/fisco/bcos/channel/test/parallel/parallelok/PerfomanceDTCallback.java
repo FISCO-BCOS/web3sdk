@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.util.concurrent.locks.Lock;
+
 public class PerfomanceDTCallback extends TransactionSucCallback {
 	static private ObjectMapper objectMapper = new ObjectMapper();
 	private Long startTime = System.currentTimeMillis();
@@ -23,6 +25,7 @@ public class PerfomanceDTCallback extends TransactionSucCallback {
 	private BigInteger amount = null;
 
 	private String callBackType = "transfer";
+	private Lock lock;
 
 	public String getCallBackType() {
 		return callBackType;
@@ -81,6 +84,7 @@ public class PerfomanceDTCallback extends TransactionSucCallback {
 			}
 
 			if (callBackType.compareTo("transferRevert") == 0) {
+				lock.lock();
 				System.out.print("[RevertTest-TxSent]");
 				System.out.print("\t[TxHash]=" + receipt.getTransactionHash());
 				System.out.print("\t[From]=" + fromUser.getUser());
@@ -88,6 +92,7 @@ public class PerfomanceDTCallback extends TransactionSucCallback {
 				System.out.print("\t[To]=" + toUser.getUser());
 				System.out.print("\t[ToBalance]=" + toUser.getAmount());
 				System.out.println("\t[Status]=" + receipt.getStatus());
+				lock.unlock();
 			}
 
 			collector.onMessage(receipt, cost);

@@ -22,6 +22,7 @@ import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Lock;
 
 public class PerfomanceDTTest {
 	private static Logger logger = LoggerFactory.getLogger(PerfomanceDTTest.class);
@@ -30,7 +31,7 @@ public class PerfomanceDTTest {
 
 	private Web3j web3;
 	private ParallelOk parallelok;
-	private ParallelRevert parallelrevert;
+	private Lock lock;
 
 	private Credentials credentials;
 	private DagUserMgr dagUserMgr;
@@ -285,12 +286,14 @@ public class PerfomanceDTTest {
 							callback.setAmount(amount);
 
 							try {
+								lock.lock();
 								System.out.print("[RevertTest-SendTx]");
 								System.out.print("\t[From]=" + from.getUser());
 								System.out.print("\t[FromBalance]=" + from.getAmount());
 								System.out.print("\t[To]=" + to.getUser());
 								System.out.print("\t[ToBalance]=" + to.getAmount());
 								System.out.println("\t[Amount]=" + amount);
+								lock.unlock();
 
 								parallelok.transferWithRevert(from.getUser(), to.getUser(), amount, callback);
 								success = true;
