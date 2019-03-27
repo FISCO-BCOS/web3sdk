@@ -23,6 +23,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class PerfomanceDTTest {
 	private static Logger logger = LoggerFactory.getLogger(PerfomanceDTTest.class);
@@ -31,7 +32,7 @@ public class PerfomanceDTTest {
 
 	private Web3j web3;
 	private ParallelOk parallelok;
-	private Lock lock;
+	private Lock lock = new ReentrantLock(false);
 
 	private Credentials credentials;
 	private DagUserMgr dagUserMgr;
