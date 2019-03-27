@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class PerfomanceDTTest {
 	private static Logger logger = LoggerFactory.getLogger(PerfomanceDTTest.class);
 	private static AtomicInteger sended = new AtomicInteger(0);
-	private static final String dagTransferAddr = "0x0000000000000000000000000000000000001006";
+	private static final String dagTransferAddr = "0x0000000000000000000000000000000000005002";
 	private static String groupId = "1";
 
 	private Web3j web3;
