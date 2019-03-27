@@ -285,16 +285,16 @@ public class PerfomanceDTTest {
 							callback.setToUser(to);
 							callback.setAmount(amount);
 
-							try {
-								lock.lock();
-								System.out.print("[RevertTest-SendTx]");
-								System.out.print("\t[From]=" + from.getUser());
-								System.out.print("\t[FromBalance]=" + from.getAmount());
-								System.out.print("\t[To]=" + to.getUser());
-								System.out.print("\t[ToBalance]=" + to.getAmount());
-								System.out.println("\t[Amount]=" + amount);
-								lock.unlock();
+							lock.lock();
+							System.out.print("[RevertTest-SendTx]");
+							System.out.print("\t[From]=" + from.getUser());
+							System.out.print("\t[FromBalance]=" + from.getAmount());
+							System.out.print("\t[To]=" + to.getUser());
+							System.out.print("\t[ToBalance]=" + to.getAmount());
+							System.out.println("\t[Amount]=" + amount);
+							lock.unlock();
 
+							try {
 								parallelok.transferWithRevert(from.getUser(), to.getUser(), amount, callback);
 								success = true;
 							} catch (Exception e) {
