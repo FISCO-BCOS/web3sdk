@@ -34,7 +34,7 @@ public class PerfomanceDTTest {
 	private Credentials credentials;
 	private DagUserMgr dagUserMgr;
 	private PerfomanceDTCollector collector;
-	private String parallelokAddr = "0x0000000000000000000000000000000000001006";
+	private String parallelokAddr = "";
 
 	public PerfomanceDTTest() throws Exception {
 		initialize(groupId);
