@@ -79,6 +79,17 @@ public class PerfomanceDTCallback extends TransactionSucCallback {
 					toUser.increase(amount);
 				}
 			}
+
+			if (callBackType.compareTo("transferRevert") == 0) {
+				System.out.print("[RevertTest-TxSent]");
+				System.out.print("\t[TxHash]=" + receipt.getTransactionHash());
+				System.out.print("\t[From]=" + fromUser.getUser());
+				System.out.print("\t[FromBalance]=" + fromUser.getAmount());
+				System.out.print("\t[To]=" + toUser.getUser());
+				System.out.print("\t[ToBalance]=" + toUser.getAmount());
+				System.out.println("\t[Status]=" + receipt.getStatus());
+			}
+
 			collector.onMessage(receipt, cost);
 		} catch (Exception e) {
 			logger.error("onMessage error: ", e);
