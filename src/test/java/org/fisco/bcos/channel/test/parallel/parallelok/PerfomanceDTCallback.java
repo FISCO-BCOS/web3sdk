@@ -74,6 +74,9 @@ public class PerfomanceDTCallback extends TransactionSucCallback {
 				} else if (callBackType.compareTo("transfer") == 0) { // transfer test
 					fromUser.decrease(amount);
 					toUser.increase(amount);
+				} else if (callBackType.compareTo("transferRevert") == 0) { // tranfer revert test
+					fromUser.decrease(amount);
+					toUser.increase(amount);
 				}
 			}
 			collector.onMessage(receipt, cost);
