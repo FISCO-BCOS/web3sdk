@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class PerfomanceDTCallback extends TransactionSucCallback {
 	static private ObjectMapper objectMapper = new ObjectMapper();
@@ -25,7 +26,7 @@ public class PerfomanceDTCallback extends TransactionSucCallback {
 	private BigInteger amount = null;
 
 	private String callBackType = "transfer";
-	private Lock lock;
+	private Lock lock = new ReentrantLock(false);
 
 	public String getCallBackType() {
 		return callBackType;
