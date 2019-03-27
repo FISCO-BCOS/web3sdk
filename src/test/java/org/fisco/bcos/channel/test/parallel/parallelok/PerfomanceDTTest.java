@@ -30,6 +30,7 @@ public class PerfomanceDTTest {
 
 	private Web3j web3;
 	private ParallelOk parallelok;
+	private ParallelRevert parallelrevert;
 
 	private Credentials credentials;
 	private DagUserMgr dagUserMgr;
@@ -284,7 +285,13 @@ public class PerfomanceDTTest {
 							callback.setAmount(amount);
 
 							try {
-								logger.debug(" transfer from is " + from + " to is " + to + " amount is " + amount);
+								System.out.print("[RevertTest-SendTx]");
+								System.out.print("\t[From]=" + from.getUser());
+								System.out.print("\t[FromBalance]=" + from.getAmount());
+								System.out.print("\t[To]=" + to.getUser());
+								System.out.print("\t[ToBalance]=" + to.getAmount());
+								System.out.println("\t[Amount]=" + amount);
+
 								parallelok.transferWithRevert(from.getUser(), to.getUser(), amount, callback);
 								success = true;
 							} catch (Exception e) {
