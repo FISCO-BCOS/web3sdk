@@ -265,11 +265,6 @@ public class PerfomanceDTTest {
 							DagTransferUser from = dagUserMgr.getFrom(index);
 							DagTransferUser to = dagUserMgr.getNext(index);
 
-							/*
-							 * if ((deci.intValue() > 0) && (deci.intValue() >= (index % 10 + 1))) { to =
-							 * dagUserMgr.getNext(index); }
-							 */
-
 							Random random = new Random();
 							int value = random.nextInt(101);
 							int prob = random.nextInt(10);
@@ -286,14 +281,10 @@ public class PerfomanceDTTest {
 							callback.setToUser(to);
 							callback.setAmount(amount);
 
-
-                            String info = "[RevertTest-SendTx]" + 
-                                "\t[From]=" + from.getUser() + 
-                                "\t[FromBalance]=" + from.getAmount() + 
-                                "\t[To]=" + to.getUser() + 
-                                "\t[ToBalance]=" + to.getAmount() +
-                                "\t[Amount]=" + amount;
-                            System.out.println(info);
+							String info = "[RevertTest-SendTx]" + "\t[From]=" + from.getUser() + "\t[FromBalance]="
+									+ from.getAmount() + "\t[To]=" + to.getUser() + "\t[ToBalance]=" + to.getAmount()
+									+ "\t[Amount]=" + amount;
+							System.out.println(info);
 
 							try {
 								parallelok.transferWithRevert(from.getUser(), to.getUser(), amount, callback);
@@ -303,13 +294,6 @@ public class PerfomanceDTTest {
 								continue;
 							}
 						}
-                        /*
-						int current = sended.incrementAndGet();
-
-						if (current >= area && ((current % area) == 0)) {
-							System.out.println("Already sended: " + current + "/" + count + " transactions");
-						}
-                        */
 					}
 				});
 			}
@@ -358,7 +342,7 @@ public class PerfomanceDTTest {
 				logger.debug(" query user " + allUser.get(i).getUser() + " amount " + result);
 			}
 
-			System.out.println("Start UserTransferRevert test...");
+			System.out.println("Start UserTransfer test...");
 			System.out.println("===================================================================");
 
 			this.collector.setStartTimestamp(System.currentTimeMillis());
@@ -373,10 +357,10 @@ public class PerfomanceDTTest {
 							limiter.acquire();
 							DagTransferUser from = dagUserMgr.getFrom(index);
 							DagTransferUser to = dagUserMgr.getTo(index);
-							/*
-							 * if ((deci.intValue() > 0) && (deci.intValue() >= (index % 10 + 1))) { to =
-							 * dagUserMgr.getNext(index); }
-							 */
+
+							if ((deci.intValue() > 0) && (deci.intValue() >= (index % 10 + 1))) {
+								to = dagUserMgr.getNext(index);
+							}
 
 							Random random = new Random();
 							int r = random.nextInt(100);
