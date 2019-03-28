@@ -10,10 +10,7 @@ import java.util.Random;
 import org.fisco.bcos.TestBase;
 import org.fisco.bcos.web3j.precompile.crud.CRUDSerivce;
 import org.fisco.bcos.web3j.precompile.crud.Condition;
-import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 import org.junit.Test;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class CRUDServiceTest extends TestBase {
 
@@ -26,7 +23,6 @@ public class CRUDServiceTest extends TestBase {
     
   	String tableName = "t_test" + new Random().nextInt(100000);
   	String key = "name";
-  	ObjectMapper objectMapper = ObjectMapperFactory.getObjectMapper();
   	
   	// create table
   	String valueField = "item_id, item_name";
@@ -34,21 +30,27 @@ public class CRUDServiceTest extends TestBase {
     assertEquals(resultCreate, Common.SUSSCESS);
   	
     // insert records
-    Map<String, String> insertEntry = new HashMap<>();
-    insertEntry.put(key, "fruit");
-    insertEntry.put("item_id", "1");
-    insertEntry.put("item_name", "apple");
-		int insertResult = crudSerivce.insert(tableName, key, insertEntry, "");
-    assertEquals(insertResult, 1);
+    int insertResult = 0;
+    int num = 5;
+    for(int i = 1; i <= num; i++)
+    {
+	    Map<String, String> insertEntry = new HashMap<>();
+	    insertEntry.put(key, "fruit");
+	    insertEntry.put("item_id", "1");
+    	insertEntry.put("item_name", "apple"+i);
+    	insertResult += crudSerivce.insert(tableName, key, insertEntry, "");
+    }
+    assertEquals(insertResult, num);
 		
     // select records
 		Condition condition1 = new Condition();
 		condition1.EQ("item_id", "1");
-		condition1.EQ("item_name", "apple");
+		condition1.Limit(2, 3);
+		
 		List<Map<String, String>> resultSelect1 = crudSerivce.select(tableName, key, condition1, "");
 		assertEquals(resultSelect1.get(0).get("name"), "fruit");
 		assertEquals(resultSelect1.get(0).get("item_id"), "1");
-		assertEquals(resultSelect1.get(0).get("item_name"), "apple");
+		assertEquals(resultSelect1.get(0).get("item_name"), "apple3");
   	
 	  // update records
 	  Map<String, String> updateEntry = new HashMap<>();
@@ -58,12 +60,12 @@ public class CRUDServiceTest extends TestBase {
 		Condition updateCondition = new Condition();
 		updateCondition.EQ("item_id", "1");
 		int updateResult = crudSerivce.update(tableName, key, updateEntry, updateCondition, "");
-		assertEquals(updateResult, 1);
+		assertEquals(updateResult, num);
 		
 	  // select records
 		Condition condition2 = new Condition();
 		condition2.EQ("item_id", "1");
-		condition2.EQ("item_name", "orange");
+		condition2.Limit(1);;
 		List<Map<String, String>> resultSelect2 = crudSerivce.select(tableName, key, condition2, "");
 		assertEquals(resultSelect2.get(0).get("name"), "fruit");
 		assertEquals(resultSelect2.get(0).get("item_id"), "1");
@@ -73,7 +75,7 @@ public class CRUDServiceTest extends TestBase {
 		Condition removeCondition = new Condition();
 		removeCondition.EQ("item_id", "1");
 		int removeResult = crudSerivce.remove(tableName, key, removeCondition, "");
-		assertEquals(removeResult, 1);
+		assertEquals(removeResult, num);
 		
 	  // select records
 		Condition condition3 = new Condition();
