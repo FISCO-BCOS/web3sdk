@@ -32,7 +32,7 @@ contract ParallelOk is ParallelContract
         registerParallelFunction("set(string,uint256)", 1); // critical: string
     } 
 
-    // Un-Register parallel function
+    // Disable register parallel function
     function disableParallel() public
     {
         unregisterParallelFunction("transfer(string,string,uint256)"); 
