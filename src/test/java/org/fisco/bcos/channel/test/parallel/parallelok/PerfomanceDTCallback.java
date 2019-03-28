@@ -85,15 +85,14 @@ public class PerfomanceDTCallback extends TransactionSucCallback {
 			}
 
 			if (callBackType.compareTo("transferRevert") == 0) {
-				lock.lock();
-				System.out.print("[RevertTest-TxSent]");
-				System.out.print("\t[TxHash]=" + receipt.getTransactionHash());
-				System.out.print("\t[From]=" + fromUser.getUser());
-				System.out.print("\t[FromBalance]=" + fromUser.getAmount());
-				System.out.print("\t[To]=" + toUser.getUser());
-				System.out.print("\t[ToBalance]=" + toUser.getAmount());
-				System.out.println("\t[Status]=" + receipt.getStatus());
-				lock.unlock();
+                String info = "[RevertTest-TxSent]" + 
+                    "\t[TxHash]=" + receipt.getTransactionHash() +
+                    "\t[From]=" + fromUser.getUser() +
+                    "\t[FromBalance]=" + fromUser.getAmount() +
+                    "\t[To]=" + toUser.getUser() +
+                    "\t[ToBalance]=" + toUser.getAmount() + 
+                    "\t[Status]=" + receipt.getStatus();
+                System.out.println(info);
 			}
 
 			collector.onMessage(receipt, cost);
