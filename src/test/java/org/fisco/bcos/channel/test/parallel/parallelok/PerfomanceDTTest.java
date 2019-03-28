@@ -254,7 +254,7 @@ public class PerfomanceDTTest {
 
 			this.collector.setStartTimestamp(System.currentTimeMillis());
 
-			for (Integer i = 0; i < count.intValue(); ++i) {
+			for (Integer i = 0; i < 2 * count.intValue(); i += 2) {
 				final int index = i;
 				threadPool.execute(new Runnable() {
 					@Override
@@ -263,7 +263,7 @@ public class PerfomanceDTTest {
 						while (!success) {
 							limiter.acquire();
 							DagTransferUser from = dagUserMgr.getFrom(index);
-							DagTransferUser to = dagUserMgr.getTo(index);
+							DagTransferUser to = dagUserMgr.getNext(index);
 
 							/*
 							 * if ((deci.intValue() > 0) && (deci.intValue() >= (index % 10 + 1))) { to =
@@ -286,14 +286,14 @@ public class PerfomanceDTTest {
 							callback.setToUser(to);
 							callback.setAmount(amount);
 
-							lock.lock();
-							System.out.print("[RevertTest-SendTx]");
-							System.out.print("\t[From]=" + from.getUser());
-							System.out.print("\t[FromBalance]=" + from.getAmount());
-							System.out.print("\t[To]=" + to.getUser());
-							System.out.print("\t[ToBalance]=" + to.getAmount());
-							System.out.println("\t[Amount]=" + amount);
-							lock.unlock();
+
+                            String info = "[RevertTest-SendTx]" + 
+                                "\t[From]=" + from.getUser() + 
+                                "\t[FromBalance]=" + from.getAmount() + 
+                                "\t[To]=" + to.getUser() + 
+                                "\t[ToBalance]=" + to.getAmount() +
+                                "\t[Amount]=" + amount;
+                            System.out.println(info);
 
 							try {
 								parallelok.transferWithRevert(from.getUser(), to.getUser(), amount, callback);
@@ -303,11 +303,13 @@ public class PerfomanceDTTest {
 								continue;
 							}
 						}
+                        /*
 						int current = sended.incrementAndGet();
 
 						if (current >= area && ((current % area) == 0)) {
 							System.out.println("Already sended: " + current + "/" + count + " transactions");
 						}
+                        */
 					}
 				});
 			}
