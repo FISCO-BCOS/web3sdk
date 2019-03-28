@@ -45,12 +45,12 @@ public class CRUDServiceTest extends TestBase {
     // select records
 		Condition condition1 = new Condition();
 		condition1.EQ("item_id", "1");
-		condition1.Limit(2, 3);
+		condition1.Limit(1);
 		
 		List<Map<String, String>> resultSelect1 = crudSerivce.select(tableName, key, condition1, "");
 		assertEquals(resultSelect1.get(0).get("name"), "fruit");
 		assertEquals(resultSelect1.get(0).get("item_id"), "1");
-		assertEquals(resultSelect1.get(0).get("item_name"), "apple3");
+		assertEquals(resultSelect1.get(0).get("item_name"), "apple1");
   	
 	  // update records
 	  Map<String, String> updateEntry = new HashMap<>();
