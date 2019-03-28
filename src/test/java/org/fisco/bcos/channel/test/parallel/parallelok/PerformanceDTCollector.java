@@ -1,4 +1,4 @@
-package org.fisco.bcos.channel.test.parallel.precompile;
+package org.fisco.bcos.channel.test.parallel.parallelok;
 
 import java.math.BigInteger;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -8,22 +8,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
-import org.fisco.bcos.channel.test.parallel.precompile.DagUserMgr;
+import org.fisco.bcos.channel.test.parallel.parallelok.DagUserMgr;
 
-public class PerfomanceDTCollector {
+public class PerformanceDTCollector {
 
-	static Logger logger = LoggerFactory.getLogger(PerfomanceDTCollector.class);
+	static Logger logger = LoggerFactory.getLogger(PerformanceDTCollector.class);
 
 	private Integer total = 0;
 	private DagUserMgr dagUserMrg;
-	private PerfomanceDTTest perfomanceDTTest;
+	private PerformanceDTTest PerformanceDTTest;
 
-	public PerfomanceDTTest getPerfomanceDTTest() {
-		return perfomanceDTTest;
+	public PerformanceDTTest getPerformanceDTTest() {
+		return PerformanceDTTest;
 	}
 
-	public void setPerfomanceDTTest(PerfomanceDTTest perfomanceDTTest) {
-		this.perfomanceDTTest = perfomanceDTTest;
+	public void setPerformanceDTTest(PerformanceDTTest PerformanceDTTest) {
+		this.PerformanceDTTest = PerformanceDTTest;
 	}
 
 	public Integer getTotal() {
@@ -48,18 +48,8 @@ public class PerfomanceDTCollector {
 
 	public void onMessage(TransactionReceipt receipt, Long cost) {
 		try {
-			if (receipt.isStatusOK()) {
-				String output = receipt.getOutput();
-				if (!output.isEmpty()) {
-					int code = new BigInteger(output.substring(2, output.length()), 16).intValue();
-					if (0 != code) {
-						error.addAndGet(1);
-						ret_error.addAndGet(1);
-					}
-				} else {
-					error.addAndGet(1);
-				}
-			} else {
+			if (!receipt.isStatusOK()) {
+				System.out.println("receipt error! status: " + receipt.getStatus());
 				error.addAndGet(1);
 			}
 

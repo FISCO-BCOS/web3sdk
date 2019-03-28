@@ -22,24 +22,21 @@ import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
-public class PerfomanceDTTest {
-	private static Logger logger = LoggerFactory.getLogger(PerfomanceDTTest.class);
+public class PerformanceDTTest {
+	private static Logger logger = LoggerFactory.getLogger(PerformanceDTTest.class);
 	private static AtomicInteger sended = new AtomicInteger(0);
 	private static String groupId = "1";
 
 	private Web3j web3;
 	private ParallelOk parallelok;
-	private Lock lock = new ReentrantLock(false);
 
 	private Credentials credentials;
 	private DagUserMgr dagUserMgr;
-	private PerfomanceDTCollector collector;
+	private PerformanceDTCollector collector;
 	private String parallelokAddr = "0x0000000000000000000000000000000000001006";
 
-	public PerfomanceDTTest() throws Exception {
+	public PerformanceDTTest() throws Exception {
 		initialize(groupId);
 	}
 
@@ -67,11 +64,11 @@ public class PerfomanceDTTest {
 		this.credentials = credentials;
 	}
 
-	public PerfomanceDTCollector getCollector() {
+	public PerformanceDTCollector getCollector() {
 		return collector;
 	}
 
-	public void setCollector(PerfomanceDTCollector collector) {
+	public void setCollector(PerformanceDTCollector collector) {
 		this.collector = collector;
 	}
 
@@ -181,7 +178,7 @@ public class PerfomanceDTTest {
 							dtu.setUser(user);
 							dtu.setAmount(amount);
 
-							PerfomanceDTCallback callback = new PerfomanceDTCallback();
+							PerformanceDTCallback callback = new PerformanceDTCallback();
 							callback.setCollector(collector);
 							callback.setDagTransferUser(dtu);
 							callback.setDagUserMgr(getDagUserMgr());
@@ -273,7 +270,7 @@ public class PerfomanceDTTest {
 							}
 							BigInteger amount = BigInteger.valueOf(value);
 
-							PerfomanceDTCallback callback = new PerfomanceDTCallback();
+							PerformanceDTCallback callback = new PerformanceDTCallback();
 							callback.setCallBackType("transferRevert");
 							callback.setCollector(collector);
 							callback.setDagUserMgr(getDagUserMgr());
@@ -366,7 +363,7 @@ public class PerfomanceDTTest {
 							int r = random.nextInt(100);
 							BigInteger amount = BigInteger.valueOf(r);
 
-							PerfomanceDTCallback callback = new PerfomanceDTCallback();
+							PerformanceDTCallback callback = new PerformanceDTCallback();
 							callback.setCallBackType("transfer");
 							callback.setCollector(collector);
 							callback.setDagUserMgr(getDagUserMgr());
