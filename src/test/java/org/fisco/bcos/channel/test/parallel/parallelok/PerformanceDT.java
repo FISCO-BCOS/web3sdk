@@ -5,20 +5,20 @@ import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
 
-import org.fisco.bcos.channel.test.parallel.parallelok.PerfomanceDTTest;
+import org.fisco.bcos.channel.test.parallel.parallelok.PerformanceDTTest;
 import org.fisco.bcos.channel.test.parallel.parallelok.DagUserMgr;
 
-public class PerfomanceDT {
-	private static Logger logger = LoggerFactory.getLogger(PerfomanceDT.class);
+public class PerformanceDT {
+	private static Logger logger = LoggerFactory.getLogger(PerformanceDT.class);
 
 	public static void Usage() {
 		System.out.println(" Usage:");
 		System.out.println(
-				" \t java -cp conf/:lib/*:apps/* org.fisco.bcos.channel.test.parallel.parallelok.PerfomanceDT add count tps file.");
+				" \t java -cp conf/:lib/*:apps/* org.fisco.bcos.channel.test.parallel.parallelok.PerformanceDT add count tps file.");
 		System.out.println(
-				" \t java -cp conf/:lib/*:apps/* org.fisco.bcos.channel.test.parallel.parallelok.PerfomanceDT transfer count tps file strategy.");
+				" \t java -cp conf/:lib/*:apps/* org.fisco.bcos.channel.test.parallel.parallelok.PerformanceDT transfer count tps file strategy.");
 		System.out.println(
-				" \t java -cp conf/:lib/*:apps/* org.fisco.bcos.channel.test.parallel.parallelok.PerfomanceDT transferRevert count tps file strategy.");
+				" \t java -cp conf/:lib/*:apps/* org.fisco.bcos.channel.test.parallel.parallelok.PerformanceDT transferRevert count tps file strategy.");
 		System.exit(0);
 	}
 
@@ -50,29 +50,29 @@ public class PerfomanceDT {
 		DagUserMgr d = new DagUserMgr();
 		d.setFile(file);
 
-		PerfomanceDTCollector collector = new PerfomanceDTCollector();
+		PerformanceDTCollector collector = new PerformanceDTCollector();
 		collector.setTotal(count.intValue());
 		collector.setDagUserMrg(d);
 
-		PerfomanceDTTest perfomanceDTTest = new PerfomanceDTTest();
-		perfomanceDTTest.setCollector(collector);
-		perfomanceDTTest.setDagUserMgr(d);
-		collector.setPerfomanceDTTest(perfomanceDTTest);
+		PerformanceDTTest PerformanceDTTest = new PerformanceDTTest();
+		PerformanceDTTest.setCollector(collector);
+		PerformanceDTTest.setDagUserMgr(d);
+		collector.setPerformanceDTTest(PerformanceDTTest);
 
 		switch (command) {
 		case "add":
 			d.setTestType("add");
-			perfomanceDTTest.userAddTest(count, tps);
+			PerformanceDTTest.userAddTest(count, tps);
 			break;
 		case "transfer":
 			d.setTestType("transfer");
 			d.loadDagTransferUser();
-			perfomanceDTTest.userTransferTest(count, tps, deci);
+			PerformanceDTTest.userTransferTest(count, tps, deci);
 			break;
 		case "transferRevert":
 			d.setTestType("transferRevert");
 			d.loadDagTransferUser();
-			perfomanceDTTest.userTransferRevertTest(count, tps, deci);
+			PerformanceDTTest.userTransferRevertTest(count, tps, deci);
 		default:
 			Usage();
 		}
