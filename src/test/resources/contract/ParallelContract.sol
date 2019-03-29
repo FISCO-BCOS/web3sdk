@@ -8,7 +8,7 @@ contract ParallelConfigPrecompiled
 
 contract ParallelContract
 {
-    ParallelConfigPrecompiled precompiled = ParallelConfigPrecompiled(0x1007);
+    ParallelConfigPrecompiled precompiled = ParallelConfigPrecompiled(0x1006);
     
     function registerParallelFunction(string functionName, uint256 criticalSize) public 
     {
