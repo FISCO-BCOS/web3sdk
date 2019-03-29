@@ -6,8 +6,8 @@ import org.fisco.bcos.channel.dto.ChannelResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PerfomanceCollector {
-  static Logger logger = LoggerFactory.getLogger(PerfomanceCollector.class);
+public class PerformanceCollector {
+  static Logger logger = LoggerFactory.getLogger(PerformanceCollector.class);
   public Map<Integer, RequestTimer> resultMap;
   public Integer total;
   public AtomicInteger received = new AtomicInteger(0);
@@ -21,11 +21,8 @@ public class PerfomanceCollector {
       Integer currentError = 0;
 
       if (response.getErrorCode() != 0) {
-        System.out.println(
-            "response error:"
-                + String.valueOf(response.getErrorCode())
-                + ", "
-                + response.getErrorMessage());
+        System.out
+            .println("response error:" + String.valueOf(response.getErrorCode()) + ", " + response.getErrorMessage());
 
         currentError = 1;
       }
@@ -34,8 +31,7 @@ public class PerfomanceCollector {
       if (response.getMessageID() != null) {
         timer = resultMap.get(response.getMessageID());
         if (timer == null) {
-          System.out.println(
-              "response error，seq:" + String.valueOf(response.getMessageID()) + " not found");
+          System.out.println("response error，seq:" + String.valueOf(response.getMessageID()) + " not found");
           currentError = 1;
         }
       } else {
@@ -50,19 +46,12 @@ public class PerfomanceCollector {
 
       received.incrementAndGet();
 
-      logger.debug(
-          "response: {} {} {}, total:{}/{}",
-          response.getErrorCode(),
-          response.getMessageID(),
-          response.getContent(),
-          received,
-          total);
+      logger.debug("response: {} {} {}, total:{}/{}", response.getErrorCode(), response.getMessageID(),
+          response.getContent(), received, total);
 
       if ((received.get() + 1) % (total / 10) == 0) {
-        System.out.println(
-            "                                                       |received:"
-                + String.valueOf((received.get() + 1) * 100 / total)
-                + "%");
+        System.out.println("                                                       |received:"
+            + String.valueOf((received.get() + 1) * 100 / total) + "%");
       }
 
       if (received.intValue() >= total) {
@@ -113,55 +102,25 @@ public class PerfomanceCollector {
         System.out.println("total: " + String.valueOf(total));
         System.out.println("packageSize: " + String.valueOf(packageSize) + " byte");
         System.out.println("tps: " + String.valueOf(tps));
-        System.out.println(
-            "total/totalTime: " + String.valueOf(total / ((double) totalTime / 1000)));
+        System.out.println("total/totalTime: " + String.valueOf(total / ((double) totalTime / 1000)));
         System.out.println("totalCost/total:" + String.valueOf(totalCost / total) + "ms");
-        System.out.println(
-            "error/received: " + String.valueOf((error.get() / received.get()) * 100) + "%");
+        System.out.println("error/received: " + String.valueOf((error.get() / received.get()) * 100) + "%");
 
         System.out.println("time:");
-        System.out.println(
-            "0    < time <  50ms   : "
-                + String.valueOf(less50)
-                + "  : "
-                + String.valueOf((double) less50 / total * 100)
-                + "%");
-        System.out.println(
-            "50   < time <  100ms  : "
-                + String.valueOf(less100)
-                + "  : "
-                + String.valueOf((double) less100 / total * 100)
-                + "%");
-        System.out.println(
-            "100  < time <  200ms  : "
-                + String.valueOf(less200)
-                + "  : "
-                + String.valueOf((double) less200 / total * 100)
-                + "%");
-        System.out.println(
-            "200  < time <  400ms  : "
-                + String.valueOf(less400)
-                + "  : "
-                + String.valueOf((double) less400 / total * 100)
-                + "%");
-        System.out.println(
-            "400  < time <  1000ms : "
-                + String.valueOf(less1000)
-                + "  : "
-                + String.valueOf((double) less1000 / total * 100)
-                + "%");
-        System.out.println(
-            "1000 < time <  2000ms : "
-                + String.valueOf(less2000)
-                + "  : "
-                + String.valueOf((double) less2000 / total * 100)
-                + "%");
-        System.out.println(
-            "2000 < time           : "
-                + String.valueOf(timeout2000)
-                + "  : "
-                + String.valueOf((double) timeout2000 / total * 100)
-                + "%");
+        System.out.println("0    < time <  50ms   : " + String.valueOf(less50) + "  : "
+            + String.valueOf((double) less50 / total * 100) + "%");
+        System.out.println("50   < time <  100ms  : " + String.valueOf(less100) + "  : "
+            + String.valueOf((double) less100 / total * 100) + "%");
+        System.out.println("100  < time <  200ms  : " + String.valueOf(less200) + "  : "
+            + String.valueOf((double) less200 / total * 100) + "%");
+        System.out.println("200  < time <  400ms  : " + String.valueOf(less400) + "  : "
+            + String.valueOf((double) less400 / total * 100) + "%");
+        System.out.println("400  < time <  1000ms : " + String.valueOf(less1000) + "  : "
+            + String.valueOf((double) less1000 / total * 100) + "%");
+        System.out.println("1000 < time <  2000ms : " + String.valueOf(less2000) + "  : "
+            + String.valueOf((double) less2000 / total * 100) + "%");
+        System.out.println("2000 < time           : " + String.valueOf(timeout2000) + "  : "
+            + String.valueOf((double) timeout2000 / total * 100) + "%");
       }
     } catch (Exception e) {
       logger.error("error:", e);
