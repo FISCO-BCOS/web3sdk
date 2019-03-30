@@ -2,7 +2,6 @@ package org.fisco.bcos.precompile;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -10,6 +9,8 @@ import java.util.Random;
 import org.fisco.bcos.TestBase;
 import org.fisco.bcos.web3j.precompile.crud.CRUDSerivce;
 import org.fisco.bcos.web3j.precompile.crud.Condition;
+import org.fisco.bcos.web3j.precompile.crud.Entry;
+import org.fisco.bcos.web3j.precompile.crud.Table;
 import org.junit.Test;
 
 public class CRUDServiceTest extends TestBase {
@@ -23,10 +24,11 @@ public class CRUDServiceTest extends TestBase {
     
   	String tableName = "t_test" + new Random().nextInt(100000);
   	String key = "name";
-  	
+  	String valueFields  = "item_id, item_name";
+  	Table table = new Table(tableName, key, valueFields);
+
   	// create table
-  	String valueField = "item_id, item_name";
-    String resultCreate = crudSerivce.createTable(tableName, key, valueField);
+    String resultCreate = crudSerivce.createTable(table);
     assertEquals(resultCreate, Common.SUSSCESS);
   	
     // insert records
@@ -34,54 +36,54 @@ public class CRUDServiceTest extends TestBase {
     int num = 5;
     for(int i = 1; i <= num; i++)
     {
-	    Map<String, String> insertEntry = new HashMap<>();
+	    Entry insertEntry = table.getEntry();
 	    insertEntry.put(key, "fruit");
 	    insertEntry.put("item_id", "1");
     	insertEntry.put("item_name", "apple"+i);
-    	insertResult += crudSerivce.insert(tableName, key, insertEntry, "");
+    	insertResult += crudSerivce.insert(table, insertEntry);
     }
     assertEquals(insertResult, num);
 		
     // select records
-		Condition condition1 = new Condition();
+		Condition condition1 = table.getCondition();
 		condition1.EQ("item_id", "1");
 		condition1.Limit(1);
 		
-		List<Map<String, String>> resultSelect1 = crudSerivce.select(tableName, key, condition1, "");
+		List<Map<String, String>> resultSelect1 = crudSerivce.select(table, condition1);
 		assertEquals(resultSelect1.get(0).get("name"), "fruit");
 		assertEquals(resultSelect1.get(0).get("item_id"), "1");
 		assertEquals(resultSelect1.get(0).get("item_name"), "apple1");
   	
 	  // update records
-	  Map<String, String> updateEntry = new HashMap<>();
+	  Entry updateEntry = table.getEntry();
 	  updateEntry.put(key, "fruit");
 	  updateEntry.put("item_id", "1");
 	  updateEntry.put("item_name", "orange");
-		Condition updateCondition = new Condition();
+		Condition updateCondition = table.getCondition();
 		updateCondition.EQ("item_id", "1");
-		int updateResult = crudSerivce.update(tableName, key, updateEntry, updateCondition, "");
+		int updateResult = crudSerivce.update(table, updateEntry, updateCondition);
 		assertEquals(updateResult, num);
 		
 	  // select records
-		Condition condition2 = new Condition();
+		Condition condition2 = table.getCondition();
 		condition2.EQ("item_id", "1");
 		condition2.Limit(1);;
-		List<Map<String, String>> resultSelect2 = crudSerivce.select(tableName, key, condition2, "");
+		List<Map<String, String>> resultSelect2 = crudSerivce.select(table, condition2);
 		assertEquals(resultSelect2.get(0).get("name"), "fruit");
 		assertEquals(resultSelect2.get(0).get("item_id"), "1");
 		assertEquals(resultSelect2.get(0).get("item_name"), "orange");
 		
 	  // remove records
-		Condition removeCondition = new Condition();
+		Condition removeCondition = table.getCondition();
 		removeCondition.EQ("item_id", "1");
-		int removeResult = crudSerivce.remove(tableName, key, removeCondition, "");
+		int removeResult = crudSerivce.remove(table, removeCondition);
 		assertEquals(removeResult, num);
 		
 	  // select records
-		Condition condition3 = new Condition();
+		Condition condition3 = table.getCondition();
 		condition3.EQ("item_id", "1");
 		condition3.EQ("item_name", "orange");
-		List<Map<String, String>> selectResult3 = crudSerivce.select(tableName, key, condition3, "");
+		List<Map<String, String>> selectResult3 = crudSerivce.select(table, condition3);
 		assertEquals(selectResult3.size(), 0);
 		
   }
