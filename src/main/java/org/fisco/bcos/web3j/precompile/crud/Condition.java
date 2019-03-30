@@ -5,8 +5,12 @@ import java.util.Map;
 
 public class Condition {
 	
-	private Map<String, Map<EnumOP, String>> conditions = new HashMap<>();
+	private Map<String, Map<EnumOP, String>> conditions;
 	
+	public Condition() {
+		conditions = new HashMap<>();
+	}
+
 	public void EQ(String key, String value)
 	{
 		HashMap<EnumOP, String> map = new HashMap<EnumOP, String>();
@@ -65,8 +69,8 @@ public class Condition {
 		{
 			count = 0;
 		}
-		map.put(EnumOP.lit, offset+","+count);
-		conditions.put("lit", map);
+		map.put(EnumOP.limit, offset+","+count);
+		conditions.put("limit", map);
 	}
 
 	public Map<String, Map<EnumOP, String>> getConditions() {

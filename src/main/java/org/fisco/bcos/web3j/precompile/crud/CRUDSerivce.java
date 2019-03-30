@@ -23,45 +23,46 @@ public class CRUDSerivce {
   private CRUD crud;
 
   public CRUDSerivce(Web3j web3j, Credentials credentials) {
-    ContractGasProvider contractGasProvider = new StaticGasProvider(gasPrice, gasLimit);
+    
+  	ContractGasProvider contractGasProvider = new StaticGasProvider(gasPrice, gasLimit);
     tableFactory = TableFactory.load(TableFactoryPrecompileAddress, web3j, credentials, contractGasProvider);
     crud = CRUD.load(CRUDPrecompileAddress, web3j, credentials, contractGasProvider);
   }
 
-  public String createTable(String tableName, String key, String valueField) throws Exception {
+  public String createTable(Table table) throws Exception {
     
-  	TransactionReceipt receipt = tableFactory.createTable(tableName, key, valueField).send();
+  	TransactionReceipt receipt = tableFactory.createTable(table.getTableName(), table.getKey(), table.getValueFields()).send();
     return PrecompiledCommon.handleTransactionReceipt(receipt);
   }
   
-  public int insert(String tableName, String key, Map<String, String> entry, String optional) throws Exception{
+  public int insert(Table table, Entry entry) throws Exception{
   	
-  	String entryJsonStr = ObjectMapperFactory.getObjectMapper().writeValueAsString(entry);
-  	TransactionReceipt receipt = crud.insert(tableName, key, entryJsonStr, optional).send();
+  	String entryJsonStr = ObjectMapperFactory.getObjectMapper().writeValueAsString(entry.getFields());
+  	TransactionReceipt receipt = crud.insert(table.getTableName(), table.getKey(), entryJsonStr, table.getOptional()).send();
   	return PrecompiledCommon.handleTransactionReceiptForCRUD(receipt);
   }
   
-  public int update(String tableName, String key, Map<String, String> entry, Condition condition, String optional) throws Exception {
+  public int update(Table table, Entry entry, Condition condition) throws Exception {
   	
-  	String entryJsonStr = ObjectMapperFactory.getObjectMapper().writeValueAsString(entry);
+  	String entryJsonStr = ObjectMapperFactory.getObjectMapper().writeValueAsString(entry.getFields());
   	String conditionStr = ObjectMapperFactory.getObjectMapper().writeValueAsString(condition.getConditions());
-  	TransactionReceipt receipt = crud.update(tableName, key, entryJsonStr, conditionStr, optional).send();
+  	TransactionReceipt receipt = crud.update(table.getTableName(), table.getKey(), entryJsonStr, conditionStr, table.getOptional()).send();
   	return PrecompiledCommon.handleTransactionReceiptForCRUD(receipt);
   }
   
-  public int remove(String tableName, String key, Condition condition, String optional) throws Exception {
+  public int remove(Table table, Condition condition) throws Exception {
   	
   	String conditionStr = ObjectMapperFactory.getObjectMapper().writeValueAsString(condition.getConditions());
-  	TransactionReceipt receipt = crud.remove(tableName, key, conditionStr, optional).send();
+  	TransactionReceipt receipt = crud.remove(table.getTableName(), table.getKey(), conditionStr, table.getOptional()).send();
   	return PrecompiledCommon.handleTransactionReceiptForCRUD(receipt);
   }
   
   @SuppressWarnings("unchecked")
-	public List<Map<String, String>> select(String tableName, String key, Condition condition, String optional) throws Exception {
+	public List<Map<String, String>> select(Table table, Condition condition) throws Exception {
   	
   	ObjectMapper objectMapper = ObjectMapperFactory.getObjectMapper();
 		String conditionJsonStr = objectMapper.writeValueAsString(condition.getConditions());
-  	String resultStr = crud.select(tableName, key, conditionJsonStr, optional).send();
+  	String resultStr = crud.select(table.getTableName(), table.getKey(), conditionJsonStr, table.getOptional()).send();
   	List<Map<String, String>> result = (List<Map<String, String>>)objectMapper.readValue(resultStr, objectMapper.getTypeFactory().constructCollectionType(List.class, Map.class));
   	return result;
   }
