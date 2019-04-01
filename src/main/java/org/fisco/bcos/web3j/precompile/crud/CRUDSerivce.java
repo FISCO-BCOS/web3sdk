@@ -29,10 +29,10 @@ public class CRUDSerivce {
     crud = CRUD.load(CRUDPrecompileAddress, web3j, credentials, contractGasProvider);
   }
 
-  public String createTable(Table table) throws Exception {
+  public int createTable(Table table) throws Exception {
     
   	TransactionReceipt receipt = tableFactory.createTable(table.getTableName(), table.getKey(), table.getValueFields()).send();
-    return PrecompiledCommon.handleTransactionReceipt(receipt);
+    return PrecompiledCommon.handleTransactionReceiptForCRUD(receipt);
   }
   
   public int insert(Table table, Entry entry) throws Exception{
