@@ -28,8 +28,8 @@ public class CRUDServiceTest extends TestBase {
   	Table table = new Table(tableName, key, valueFields);
 
   	// create table
-    String resultCreate = crudSerivce.createTable(table);
-    assertEquals(resultCreate, Common.SUSSCESS);
+    int resultCreate = crudSerivce.createTable(table);
+    assertEquals(resultCreate, 0);
   	
     // insert records
     int insertResult = 0;
