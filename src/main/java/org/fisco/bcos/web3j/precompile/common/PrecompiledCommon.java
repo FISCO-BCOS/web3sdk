@@ -20,6 +20,7 @@ public class PrecompiledCommon {
   
   public static final int Success = 0;
   public static final int PermissionDenied = 50000;
+  public static final int TableExist = 50001;
   public static final int TableNameAndAddressExist = 51000;
   public static final int TableNameAndAddressNotExist = 51001;
   public static final int InvalidNodeId = 51100;
@@ -74,6 +75,9 @@ public class PrecompiledCommon {
       case InvalidKey:
         msg = "invalid configuration entry";
         break;
+      case TableExist:
+      	msg = "table already exist";
+      	break;
     }
     ObjectMapper mapper = ObjectMapperFactory.getObjectMapper();
     return mapper.writeValueAsString(new PrecompiledResponse(code, msg));
@@ -87,23 +91,24 @@ public class PrecompiledCommon {
       {
     	  code = Success;
       }
-      if(code == 56)
+      // adapt fisco-bcos rc1 || rc2 
+      if(code == 56 || code == TableNameAndAddressExist)
       {
     	  code = TableNameAndAddressExist;
       }
-      if(code == 57)
+      if(code == 57 || code == TableNameAndAddressNotExist)
       {
     	  code = TableNameAndAddressNotExist;
       }
-      if(code == 80)
+      if(code == 80 || code == PermissionDenied)
       {
     	  code = PermissionDenied;
       }
-      if(code == 100)
+      if(code == 100 || code == InvalidKey)
       {
     	  code = InvalidKey;
       }
-      if(code == 157)
+      if(code == 157  || code == LastSealer)
       {
     	  code = LastSealer;
       }
