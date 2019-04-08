@@ -23,8 +23,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class PerfomanceDTTest {
-	private static Logger logger = LoggerFactory.getLogger(PerfomanceDTTest.class);
+public class PerformanceDTTest {
+	private static Logger logger = LoggerFactory.getLogger(PerformanceDTTest.class);
 	private static AtomicInteger sended = new AtomicInteger(0);
 	private static String groupId = "1";
 
@@ -33,10 +33,10 @@ public class PerfomanceDTTest {
 
 	private Credentials credentials;
 	private DagUserMgr dagUserMgr;
-	private PerfomanceDTCollector collector;
+	private PerformanceDTCollector collector;
 	private String parallelokAddr = "";
 
-	public PerfomanceDTTest() throws Exception {
+	public PerformanceDTTest() throws Exception {
 		initialize(groupId);
 	}
 
@@ -64,11 +64,11 @@ public class PerfomanceDTTest {
 		this.credentials = credentials;
 	}
 
-	public PerfomanceDTCollector getCollector() {
+	public PerformanceDTCollector getCollector() {
 		return collector;
 	}
 
-	public void setCollector(PerfomanceDTCollector collector) {
+	public void setCollector(PerformanceDTCollector collector) {
 		this.collector = collector;
 	}
 
@@ -178,7 +178,7 @@ public class PerfomanceDTTest {
 							dtu.setUser(user);
 							dtu.setAmount(amount);
 
-							PerfomanceDTCallback callback = new PerfomanceDTCallback();
+							PerformanceDTCallback callback = new PerformanceDTCallback();
 							callback.setCollector(collector);
 							callback.setDagTransferUser(dtu);
 							callback.setDagUserMgr(getDagUserMgr());
@@ -214,7 +214,99 @@ public class PerfomanceDTTest {
 			e.printStackTrace();
 			System.exit(0);
 		}
+	}
 
+	public void userTransferRevertTest(BigInteger count, BigInteger qps, BigInteger deci) {
+
+		try {
+
+			ThreadPoolTaskExecutor threadPool = new ThreadPoolTaskExecutor();
+			threadPool.setCorePoolSize(200);
+			threadPool.setMaxPoolSize(500);
+			threadPool.setQueueCapacity(count.intValue());
+
+			threadPool.initialize();
+
+			RateLimiter limiter = RateLimiter.create(qps.intValue());
+			Integer area = count.intValue() / 10;
+
+			parallelokAddr = dagUserMgr.getContractAddr();
+			parallelok = ParallelOk.load(parallelokAddr, web3, credentials,
+					new StaticGasProvider(new BigInteger("30000000"), new BigInteger("30000000")));
+
+			System.out.println("ParallelOk address: " + parallelokAddr);
+
+			// query all account balance info
+			List<DagTransferUser> allUser = dagUserMgr.getUserList();
+			for (int i = 0; i < allUser.size(); ++i) {
+				BigInteger result = parallelok.balanceOf(allUser.get(i).getUser()).send();
+
+				allUser.get(i).setAmount(result);
+
+				logger.debug(" query user " + allUser.get(i).getUser() + " amount " + result);
+			}
+
+			System.out.println("Start UserTransferRevert test...");
+			System.out.println("===================================================================");
+
+			this.collector.setStartTimestamp(System.currentTimeMillis());
+
+			for (Integer i = 0; i < 2 * count.intValue(); i += 2) {
+				final int index = i;
+				threadPool.execute(new Runnable() {
+					@Override
+					public void run() {
+						boolean success = false;
+						while (!success) {
+							limiter.acquire();
+							DagTransferUser from = dagUserMgr.getFrom(index);
+							DagTransferUser to = dagUserMgr.getNext(index);
+
+							Random random = new Random();
+							int value = random.nextInt(101);
+							int prob = random.nextInt(10);
+							if (prob < deci.intValue()) {
+								value += 101;
+							}
+							BigInteger amount = BigInteger.valueOf(value);
+
+							PerformanceDTCallback callback = new PerformanceDTCallback();
+							callback.setCallBackType("transferRevert");
+							callback.setCollector(collector);
+							callback.setDagUserMgr(getDagUserMgr());
+							callback.setFromUser(from);
+							callback.setToUser(to);
+							callback.setAmount(amount);
+
+							String info = "[RevertTest-SendTx]" + "\t[From]=" + from.getUser() + "\t[FromBalance]="
+									+ from.getAmount() + "\t[To]=" + to.getUser() + "\t[ToBalance]=" + to.getAmount()
+									+ "\t[Amount]=" + amount;
+							System.out.println(info);
+
+							try {
+								parallelok.transferWithRevert(from.getUser(), to.getUser(), amount, callback);
+								success = true;
+							} catch (Exception e) {
+								success = false;
+								continue;
+							}
+						}
+					}
+				});
+			}
+
+			// end or not
+			while (!collector.isEnd()) {
+				Thread.sleep(3000);
+			}
+
+			veryTransferData();
+			System.exit(0);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(0);
+		}
 	}
 
 	public void userTransferTest(BigInteger count, BigInteger qps, BigInteger deci) {
@@ -262,6 +354,7 @@ public class PerfomanceDTTest {
 							limiter.acquire();
 							DagTransferUser from = dagUserMgr.getFrom(index);
 							DagTransferUser to = dagUserMgr.getTo(index);
+
 							if ((deci.intValue() > 0) && (deci.intValue() >= (index % 10 + 1))) {
 								to = dagUserMgr.getNext(index);
 							}
@@ -270,7 +363,7 @@ public class PerfomanceDTTest {
 							int r = random.nextInt(100);
 							BigInteger amount = BigInteger.valueOf(r);
 
-							PerfomanceDTCallback callback = new PerfomanceDTCallback();
+							PerformanceDTCallback callback = new PerformanceDTCallback();
 							callback.setCallBackType("transfer");
 							callback.setCollector(collector);
 							callback.setDagUserMgr(getDagUserMgr());
@@ -292,7 +385,6 @@ public class PerfomanceDTTest {
 						if (current >= area && ((current % area) == 0)) {
 							System.out.println("Already sended: " + current + "/" + count + " transactions");
 						}
-
 					}
 				});
 			}
