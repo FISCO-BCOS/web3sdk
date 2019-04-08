@@ -7,24 +7,23 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PerfomanceOkCallback extends TransactionSucCallback {
+public class PerformanceOkCallback extends TransactionSucCallback {
   private static ObjectMapper objectMapper = new ObjectMapper();
   private Long startTime = System.currentTimeMillis();
 
-  private PerfomanceCollector collector;
+  private PerformanceCollector collector;
 
-  public PerfomanceCollector getCollector() {
-    return collector;
-  }
+  public PerformanceCollector getCollector() { return collector; }
 
-  public void setCollector(PerfomanceCollector collector) {
+  public void setCollector(PerformanceCollector collector) {
     this.collector = collector;
   }
 
-  static Logger logger = LoggerFactory.getLogger(PerfomanceOkCallback.class);
+  static Logger logger = LoggerFactory.getLogger(PerformanceOkCallback.class);
 
-  PerfomanceOkCallback() {
-    objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+  PerformanceOkCallback() {
+    objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
+                           false);
   }
 
   @Override
