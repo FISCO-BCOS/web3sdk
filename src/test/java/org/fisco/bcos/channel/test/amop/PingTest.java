@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+
 import org.fisco.bcos.channel.client.ChannelPushCallback;
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.channel.dto.ChannelPush;
@@ -59,7 +60,7 @@ public class PingTest {
       topics.add(nodeSplit[0]);
 
       service.setTopics(topics);
-      service.setOrgID("PingTest");
+      service.setAgencyName("PingTest");
 
       service.setPushCallback(
           new ChannelPushCallback() {
