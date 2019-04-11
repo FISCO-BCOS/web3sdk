@@ -105,8 +105,6 @@ public class PermissionServiceTest extends TestBase {
   	
   	String revokeSysConfigManagerResult = permissionService.revokeSysConfigManager(Common.TX_ORIGIN);
   	assertEquals(revokeSysConfigManagerResult, Common.SUSSCESS);
-  	
-  	List<PermissionInfo> listSysConfigManagerResult2 = permissionService.listSysConfigManager();
-  	assertEquals(listSysConfigManagerResult2.size(), 0);
+
   }
 }
