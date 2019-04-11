@@ -1,4 +1,4 @@
-package org.fisco.bcos.channel.test.parallel.precompile;
+package org.fisco.bcos.channel.test.parallel.parallelok;
 
 import java.math.BigInteger;
 
@@ -10,11 +10,11 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class PerfomanceDTCallback extends TransactionSucCallback {
+public class PerformanceDTCallback extends TransactionSucCallback {
 	static private ObjectMapper objectMapper = new ObjectMapper();
 	private Long startTime = System.currentTimeMillis();
 
-	private PerfomanceDTCollector collector = null;
+	private PerformanceDTCollector collector = null;
 	private DagUserMgr dagUserMgr = null;
 
 	private DagTransferUser user = null;
@@ -48,17 +48,17 @@ public class PerfomanceDTCallback extends TransactionSucCallback {
 		this.user = dagTransferUser;
 	}
 
-	public PerfomanceDTCollector getCollector() {
+	public PerformanceDTCollector getCollector() {
 		return collector;
 	}
 
-	public void setCollector(PerfomanceDTCollector collector) {
+	public void setCollector(PerformanceDTCollector collector) {
 		this.collector = collector;
 	}
 
-	static Logger logger = LoggerFactory.getLogger(PerfomanceDTCallback.class);
+	static Logger logger = LoggerFactory.getLogger(PerformanceDTCallback.class);
 
-	public PerfomanceDTCallback() {
+	public PerformanceDTCallback() {
 		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 	}
 
@@ -68,24 +68,25 @@ public class PerfomanceDTCallback extends TransactionSucCallback {
 
 		try {
 			if (receipt.isStatusOK()) {
-				String output = receipt.getOutput();
-				if (!output.isEmpty()) {
-					int code = new BigInteger(output.substring(2, output.length()), 16).intValue();
-					logger.debug(" output is {}, code is {} ", output, code);
-					if (0 == code) {
-						if (callBackType.compareTo("add") == 0) { // add test
-							dagUserMgr.addUser(user);
-						} else if (callBackType.compareTo("transfer") == 0) { // transfer test
-							fromUser.decrease(amount);
-							toUser.increase(amount);
-						}
-					} else {
-						logger.error(" invalid return: code is " + code);
-					}
-				} else {
-					logger.error(" empty return ");
+
+				if (callBackType.compareTo("set") == 0) { // add test
+					dagUserMgr.addUser(user);
+				} else if (callBackType.compareTo("transfer") == 0) { // transfer test
+					fromUser.decrease(amount);
+					toUser.increase(amount);
+				} else if (callBackType.compareTo("transferRevert") == 0) { // tranfer revert test
+					fromUser.decrease(amount);
+					toUser.increase(amount);
 				}
 			}
+
+			if (callBackType.compareTo("transferRevert") == 0) {
+				String info = "[RevertTest-TxSent]" + "\t[TxHash]=" + receipt.getTransactionHash() + "\t[From]="
+						+ fromUser.getUser() + "\t[FromBalance]=" + fromUser.getAmount() + "\t[To]=" + toUser.getUser()
+						+ "\t[ToBalance]=" + toUser.getAmount() + "\t[Status]=" + receipt.getStatus();
+				System.out.println(info);
+			}
+
 			collector.onMessage(receipt, cost);
 		} catch (Exception e) {
 			logger.error("onMessage error: ", e);
