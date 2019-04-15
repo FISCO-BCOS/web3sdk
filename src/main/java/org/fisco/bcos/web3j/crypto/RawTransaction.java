@@ -1,5 +1,6 @@
 package org.fisco.bcos.web3j.crypto;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 import org.fisco.bcos.web3j.tx.TransactionConstant;
 import org.fisco.bcos.web3j.utils.Numeric;
@@ -9,8 +10,9 @@ import org.fisco.bcos.web3j.utils.Numeric;
  * For the specification, refer to p4 of the <a href="http://gavwood.com/paper.pdf">yellow
  * paper</a>.
  */
-public class RawTransaction {
+public class RawTransaction implements Serializable {
 
+  private static final long serialVersionUID = -5580814755985097996L;
   private BigInteger randomid;
   private BigInteger gasPrice;
   private BigInteger gasLimit;
