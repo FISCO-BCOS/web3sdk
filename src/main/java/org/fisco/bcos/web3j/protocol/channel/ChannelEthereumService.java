@@ -8,6 +8,7 @@ import org.fisco.bcos.channel.dto.FiscoResponse;
 import org.fisco.bcos.web3j.protocol.core.Request;
 import org.fisco.bcos.web3j.protocol.core.Response;
 import org.fisco.bcos.web3j.protocol.exceptions.MessageDecodingException;
+import org.fisco.bcos.web3j.tx.exceptions.ContractCallException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,6 +69,10 @@ public class ChannelEthereumService extends org.fisco.bcos.web3j.protocol.Servic
         T t = objectMapper.readValue(response.getContent(), responseType);
         if (t.getError() != null) {
           throw new IOException(t.getError().getMessage());
+        }
+        if(response.getContent().contains("\"status\":\"0x1a\""))
+        {
+        	throw new ContractCallException("The contract address is incorrect.");
         }
         return t;
       } catch (Exception e) {
