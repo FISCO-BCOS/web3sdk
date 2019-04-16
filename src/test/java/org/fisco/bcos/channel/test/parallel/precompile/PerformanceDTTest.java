@@ -256,7 +256,7 @@ public class PerformanceDTTest {
             }
 
             Random random = new Random();
-            int r = random.nextInt(100);
+            int r = random.nextInt(100) + 1;
             BigInteger amount = BigInteger.valueOf(r);
 
             PerformanceDTCallback callback = new PerformanceDTCallback();
