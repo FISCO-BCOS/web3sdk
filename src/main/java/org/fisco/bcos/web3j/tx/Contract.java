@@ -39,8 +39,8 @@ import org.fisco.bcos.web3j.utils.Numeric;
 public abstract class Contract extends ManagedTransaction {
 
   /**
-   * @deprecated ...
    * @see DefaultGasProvider
+   * @deprecated ...
    */
   public static final BigInteger GAS_LIMIT = BigInteger.valueOf(4_300_000);
 
@@ -55,31 +55,33 @@ public abstract class Contract extends ManagedTransaction {
   protected DefaultBlockParameter defaultBlockParameter = DefaultBlockParameterName.LATEST;
 
   protected Contract(
-      String contractBinary,
-      String contractAddress,
-      Web3j web3j,
-      TransactionManager transactionManager,
-      ContractGasProvider gasProvider) {
+          String contractBinary,
+          String contractAddress,
+          Web3j web3j,
+          TransactionManager transactionManager,
+          ContractGasProvider gasProvider) {
     super(web3j, transactionManager);
     this.contractAddress = cnsService.getAddressByContractNameAndVersion(contractAddress);
     this.contractBinary = contractBinary;
     this.gasProvider = gasProvider;
   }
 
+  //************
   protected Contract(
-      String contractBinary,
-      String contractAddress,
-      Web3j web3j,
-      Credentials credentials,
-      ContractGasProvider gasProvider) {
+          String contractBinary,
+          String contractAddress,
+          Web3j web3j,
+          Credentials credentials,
+          ContractGasProvider gasProvider) {
 
-    this(
-        contractBinary,
-        contractAddress,
-        web3j,
-        new RawTransactionManager(web3j, credentials),
-        gasProvider);
-  }
+      this(
+              contractBinary,
+              contractAddress,
+              web3j,
+              new RawTransactionManager(web3j, credentials),
+              gasProvider);
+    }
+
 
   @Deprecated
   protected Contract(
