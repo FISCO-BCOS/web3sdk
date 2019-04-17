@@ -15,7 +15,7 @@ public abstract class ManagedTransaction {
 
   protected Web3j web3j;
 
-  protected TransactionManager transactionManager;
+  protected TransactionManager transactionManager ;
 
   protected CnsService cnsService;
 

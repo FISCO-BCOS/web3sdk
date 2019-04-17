@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.concurrent.ScheduledExecutorService;
+
+import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.Web3jService;
 import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
@@ -12,6 +14,8 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.*;
 import org.fisco.bcos.web3j.protocol.rx.JsonRpc2_0Rx;
 import org.fisco.bcos.web3j.protocol.websocket.events.LogNotification;
 import org.fisco.bcos.web3j.protocol.websocket.events.NewHeadsNotification;
+import org.fisco.bcos.web3j.tx.Contract;
+import org.fisco.bcos.web3j.tx.ExtendedRawTransactionManager;
 import org.fisco.bcos.web3j.utils.Async;
 import org.fisco.bcos.web3j.utils.BlockLimit;
 import org.fisco.bcos.web3j.utils.Numeric;
@@ -86,6 +90,15 @@ public class JsonRpc2_0Web3j implements Web3j {
       } catch (Exception e) {
         logger.error("Exception: " + e);
       }
+    }
+    if(Service.clientVersion==null) {
+      try {
+        if(getNodeVersion().sendForReturnString().contains("2.0.0-rc1")){
+          Service.clientVersion = "2.0.0-rc1";
+        }
+      } catch (IOException e) {
+        logger.error("Exception: " + e);
+      };
     }
     return getLocalBlockNumber().add(new BigInteger(BlockLimit.blockLimit.toString()));
   }
