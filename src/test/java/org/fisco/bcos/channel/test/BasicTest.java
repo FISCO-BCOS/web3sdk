@@ -11,6 +11,7 @@ import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
 import org.fisco.bcos.web3j.protocol.core.methods.response.*;
+import org.fisco.bcos.web3j.tx.Contract;
 import org.fisco.bcos.web3j.tx.ExtendedRawTransactionManager;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -92,10 +93,11 @@ public class BasicTest extends TestBase {
     }
   }
 
-  @Ignore
   @Test
   public void basicExtendedTransactionTest() throws Exception {
+    // ExtendedRawTransactionManager extendedRawTransactionManager = new ExtendedRawTransactionManager(web3j,credentials,new BigInteger("1"), new BigInteger("1"));
     try {
+   //   Contract.extendedTransactionManager = extendedRawTransactionManager;
       testExtendedTransactionDeployContract(web3j, credentials);
     } catch (Exception e) {
       e.printStackTrace();
@@ -144,8 +146,10 @@ public class BasicTest extends TestBase {
   }
 
   private void testExtendedTransactionDeployContract(Web3j web3j, Credentials credentials) throws Exception {
-    ExtendedRawTransactionManager extendedRawTransactionManager = new ExtendedRawTransactionManager(web3j,credentials,new BigInteger("1"), new BigInteger("1"));
-    Ok okDemo = Ok.deploy(web3j, extendedRawTransactionManager, gasPrice, gasLimit).send();
+
+    Ok okDemo = Ok.deploy(web3j, credentials, gasPrice, gasLimit).send();
+
+
     if (okDemo != null) {
       System.out.println(
           "####get nonce from Block: "
@@ -165,7 +169,9 @@ public class BasicTest extends TestBase {
       System.out.println("####contract address is: " + okDemo.getContractAddress());
       // TransactionReceipt receipt = okDemo.trans(new
       // BigInteger("4")).sendAsync().get(60000, TimeUnit.MILLISECONDS);
+      Ok okDemo1=  Ok.load(okDemo.getContractAddress(),web3j,credentials,gasPrice,gasLimit);
       TransactionReceipt receipt = okDemo.trans(new BigInteger("4")).send();
+      okDemo1.trans(new BigInteger("4")).send();
       List<Ok.TransEventEventResponse> events = okDemo.getTransEventEvents(receipt);
       events.stream().forEach(System.out::println);
 
