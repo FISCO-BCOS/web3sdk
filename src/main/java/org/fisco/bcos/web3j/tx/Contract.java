@@ -6,6 +6,8 @@ import java.math.BigInteger;
 import java.util.*;
 import java.util.concurrent.Semaphore;
 import java.util.stream.Collectors;
+
+import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.channel.client.TransactionSucCallback;
 import org.fisco.bcos.web3j.abi.EventEncoder;
 import org.fisco.bcos.web3j.abi.EventValues;
@@ -53,6 +55,7 @@ public abstract class Contract extends ManagedTransaction {
   protected TransactionReceipt transactionReceipt;
   protected Map<String, String> deployedAddresses;
   protected DefaultBlockParameter defaultBlockParameter = DefaultBlockParameterName.LATEST;
+  public static TransactionManager extendedTransactionManager ;
 
   protected Contract(
           String contractBinary,
@@ -73,14 +76,16 @@ public abstract class Contract extends ManagedTransaction {
           Web3j web3j,
           Credentials credentials,
           ContractGasProvider gasProvider) {
-
-      this(
-              contractBinary,
-              contractAddress,
-              web3j,
-              new RawTransactionManager(web3j, credentials),
-              gasProvider);
-    }
+    this(
+            contractBinary,
+            contractAddress,
+            web3j,
+            "2.0.0-rc1".equals(Service.clientVersion)? new RawTransactionManager(web3j, credentials): new ExtendedRawTransactionManager(web3j,credentials,new BigInteger("1"),new BigInteger("1")),
+            gasProvider);
+//    if (!Service.clientVersion.equals("2.0.0-rc1")) {
+//      this.extendedTransactionManager = new ExtendedRawTransactionManager(web3j, credentials, new BigInteger("1"), Service.chainId);
+//    }
+  }
 
 
   @Deprecated
@@ -111,7 +116,7 @@ public abstract class Contract extends ManagedTransaction {
         contractBinary,
         contractAddress,
         web3j,
-        new RawTransactionManager(web3j, credentials),
+       extendedTransactionManager,
         gasPrice,
         gasLimit);
   }
@@ -756,4 +761,13 @@ public abstract class Contract extends ManagedTransaction {
     }
     return out;
   }
+
+  public TransactionManager getTransactionManager() {
+    return transactionManager;
+  }
+
+  public void setTransactionManager(TransactionManager transactionManager) {
+    this.transactionManager = transactionManager;
+  }
+
 }
