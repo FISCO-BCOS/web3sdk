@@ -96,22 +96,25 @@ public abstract class Contract extends ManagedTransaction {
   private static TransactionManager getTheTransactionManager( Web3j web3j, Credentials credentials)  {
     JsonRpc2_0Web3j jsonRpc2_0Web3j = (JsonRpc2_0Web3j) web3j;
     int groupId = jsonRpc2_0Web3j.getGroupId();
-    String clientVersion = "";
+    String clientVersion =null;
     String chainId= "1";
     String versionContent;
     if (clientVersion == null) {
       try {
         versionContent= web3j.getNodeVersion().sendForReturnString();
+        System.out.println("&&&&&&&&&&&" + versionContent);
         logger.info("***version***");
         if (versionContent.contains("2.0.0-rc1")) {
           clientVersion = "2.0.0-rc1";
         }
         JSONObject jsonObject = JSONObject.parseObject(versionContent);
-         chainId = (String)jsonObject.get("ChainID");
+         chainId = (String)jsonObject.get("Chain Id");
       } catch (IOException e) {
+
         logger.info("can not get node version ");
       }
     }  ;
+
       return "2.0.0-rc1".equals(clientVersion) ? new RawTransactionManager(web3j, credentials) : new ExtendedRawTransactionManager(web3j, credentials, BigInteger.valueOf(groupId), new BigInteger(chainId));
 
   }
