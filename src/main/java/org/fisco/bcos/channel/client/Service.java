@@ -29,7 +29,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 public class Service {
-  public static BigInteger chainId = new BigInteger("1");
   private static Logger logger = LoggerFactory.getLogger(Service.class);
   private Integer connectSeconds = 30;
   private Integer connectSleepPerMillis = 1;
@@ -40,7 +39,6 @@ public class Service {
   private  int groupId;
   private static ObjectMapper objectMapper = new ObjectMapper();
   private BigInteger number = BigInteger.valueOf(0);
-  public static String clientVersion;
 
   /** add transaction seq callback */
   private Map<String, Object> seq2TransactionCallback = new ConcurrentHashMap<String, Object>();
