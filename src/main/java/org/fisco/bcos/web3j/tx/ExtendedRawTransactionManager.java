@@ -1,22 +1,18 @@
 package org.fisco.bcos.web3j.tx;
 
-import java.io.IOException;
-import java.math.BigInteger;
-import java.security.SecureRandom;
-import java.util.Random;
 import org.fisco.bcos.channel.client.TransactionSucCallback;
-import org.fisco.bcos.web3j.crypto.Credentials;
-import org.fisco.bcos.web3j.crypto.Hash;
-import org.fisco.bcos.web3j.crypto.RawTransaction;
-import org.fisco.bcos.web3j.crypto.TransactionEncoder;
+import org.fisco.bcos.web3j.crypto.*;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.Request;
 import org.fisco.bcos.web3j.protocol.core.methods.response.SendTransaction;
 import org.fisco.bcos.web3j.tx.exceptions.TxHashMismatchException;
 import org.fisco.bcos.web3j.utils.Numeric;
 import org.fisco.bcos.web3j.utils.TxHashVerifier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.math.BigInteger;
+import java.security.SecureRandom;
+import java.util.Random;
 
 /**
  * TransactionManager implementation using Ethereum wallet file to create and sign transactions
@@ -25,38 +21,43 @@ import org.slf4j.LoggerFactory;
  * <p>This transaction manager provides support for specifying the chain id for transactions as per
  * <a href="https://github.com/ethereum/EIPs/issues/155">EIP155</a>.
  */
-public class RawTransactionManager extends TransactionManager {
+public class ExtendedRawTransactionManager extends TransactionManager {
   private final Web3j web3j;
   final Credentials credentials;
 
   private final byte chainId;
 
+  private final BigInteger groupId;
+  private final BigInteger fiscoChainId;
+
   protected TxHashVerifier txHashVerifier = new TxHashVerifier();
 
-  public RawTransactionManager(Web3j web3j, Credentials credentials, byte chainId) {
+
+  public ExtendedRawTransactionManager(Web3j web3j, Credentials credentials, byte chainId, BigInteger groupId, BigInteger fiscoChainId) {
     super(web3j, credentials);
     this.web3j = web3j;
     this.credentials = credentials;
-
     this.chainId = chainId;
+    this.groupId = groupId;
+    this.fiscoChainId = fiscoChainId;
   }
 
-  public RawTransactionManager(
-      Web3j web3j, Credentials credentials, byte chainId, int attempts, int sleepDuration) {
+  public ExtendedRawTransactionManager(Web3j web3j, Credentials credentials, byte chainId, int attempts, int sleepDuration,BigInteger groupId, BigInteger fiscoChainId) {
     super(web3j, attempts, sleepDuration, credentials);
     this.web3j = web3j;
     this.credentials = credentials;
-
     this.chainId = chainId;
+    this.groupId = groupId;
+    this.fiscoChainId = fiscoChainId;
   }
 
-  public RawTransactionManager(Web3j web3j, Credentials credentials) {
-    this(web3j, credentials, ChainId.NONE);
+  public ExtendedRawTransactionManager(Web3j web3j, Credentials credentials,BigInteger groupId, BigInteger fiscoChainId) {
+    this(web3j, credentials, ChainId.NONE, groupId , fiscoChainId);
   }
 
-  public RawTransactionManager(
-      Web3j web3j, Credentials credentials, int attempts, int sleepDuration) {
-    this(web3j, credentials, ChainId.NONE, attempts, sleepDuration);
+  public ExtendedRawTransactionManager(
+      Web3j web3j, Credentials credentials, int attempts, int sleepDuration ,BigInteger groupId, BigInteger fiscoChainId) {
+    this(web3j, credentials, ChainId.NONE, attempts, sleepDuration, groupId, fiscoChainId);
   }
 
   BigInteger getBlockLimit() throws IOException {
@@ -79,8 +80,8 @@ public class RawTransactionManager extends TransactionManager {
     Random r = new SecureRandom();
     BigInteger randomid = new BigInteger(250, r);
     BigInteger blockLimit = getBlockLimit();
-    RawTransaction rawTransaction =
-        RawTransaction.createTransaction(randomid, gasPrice, gasLimit, blockLimit, to, value, data);
+    ExtendedRawTransaction rawTransaction =
+        ExtendedRawTransaction.createTransaction(randomid, gasPrice, gasLimit, blockLimit, to, value, data, fiscoChainId, groupId,  extraData);
 
     return signAndSend(rawTransaction);
   }
@@ -98,20 +99,20 @@ public class RawTransactionManager extends TransactionManager {
     Random r = new SecureRandom();
     BigInteger randomid = new BigInteger(250, r);
     BigInteger blockLimit = getBlockLimit();
-    RawTransaction rawTransaction =
-        RawTransaction.createTransaction(randomid, gasPrice, gasLimit, blockLimit, to, value, data);
+    ExtendedRawTransaction extendedRawTransaction =
+            ExtendedRawTransaction.createTransaction(randomid, gasPrice, gasLimit, blockLimit, to, value, data, fiscoChainId, groupId,  extraData);
 
-    return signAndSend(rawTransaction, callback);
+    return signAndSend(extendedRawTransaction, callback);
   }
 
-  public SendTransaction signAndSend(RawTransaction rawTransaction) throws IOException {
+  public SendTransaction signAndSend(ExtendedRawTransaction rawTransaction) throws IOException {
 
     byte[] signedMessage;
 
     if (chainId > ChainId.NONE) {
-      signedMessage = TransactionEncoder.signMessage(rawTransaction, chainId, credentials);
+      signedMessage = ExtendedTransactionEncoder.signMessage(rawTransaction, chainId, credentials);
     } else {
-      signedMessage = TransactionEncoder.signMessage(rawTransaction, credentials);
+      signedMessage = ExtendedTransactionEncoder.signMessage(rawTransaction, credentials);
     }
 
     String hexValue = Numeric.toHexString(signedMessage);
@@ -126,15 +127,15 @@ public class RawTransactionManager extends TransactionManager {
     return sendTransaction;
   }
 
-  public SendTransaction signAndSend(RawTransaction rawTransaction, TransactionSucCallback callback)
+  public SendTransaction signAndSend(ExtendedRawTransaction rawTransaction, TransactionSucCallback callback)
       throws IOException {
 
     byte[] signedMessage;
 
     if (chainId > ChainId.NONE) {
-      signedMessage = TransactionEncoder.signMessage(rawTransaction, chainId, credentials);
+      signedMessage = ExtendedTransactionEncoder.signMessage(rawTransaction, chainId, credentials);
     } else {
-      signedMessage = TransactionEncoder.signMessage(rawTransaction, credentials);
+      signedMessage = ExtendedTransactionEncoder.signMessage(rawTransaction, credentials);
     }
 
     String hexValue = Numeric.toHexString(signedMessage);

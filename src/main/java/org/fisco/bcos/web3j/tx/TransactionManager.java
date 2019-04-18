@@ -44,15 +44,15 @@ public abstract class TransactionManager {
   }
 
   protected TransactionReceipt executeTransaction(
-      BigInteger gasPrice, BigInteger gasLimit, String to, String data, BigInteger value)
+      BigInteger gasPrice, BigInteger gasLimit, String to, String data, BigInteger value, String extraData)
       throws IOException, TransactionException {
 
-    SendTransaction sendTransaction = sendTransaction(gasPrice, gasLimit, to, data, value);
+    SendTransaction sendTransaction = sendTransaction(gasPrice, gasLimit, to, data, value, extraData);
     return processResponse(sendTransaction);
   }
 
   public abstract SendTransaction sendTransaction(
-      BigInteger gasPrice, BigInteger gasLimit, String to, String data, BigInteger value)
+      BigInteger gasPrice, BigInteger gasLimit, String to, String data, BigInteger value, String extraData)
       throws IOException;
 
   public SendTransaction sendTransaction(
@@ -61,6 +61,7 @@ public abstract class TransactionManager {
       String to,
       String data,
       BigInteger value,
+      String extraData,
       TransactionSucCallback callback)
       throws IOException {
     return null;
