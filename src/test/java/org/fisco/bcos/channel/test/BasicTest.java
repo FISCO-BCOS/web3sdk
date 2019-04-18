@@ -95,9 +95,7 @@ public class BasicTest extends TestBase {
 
   @Test
   public void basicExtendedTransactionTest() throws Exception {
-    // ExtendedRawTransactionManager extendedRawTransactionManager = new ExtendedRawTransactionManager(web3j,credentials,new BigInteger("1"), new BigInteger("1"));
     try {
-   //   Contract.extendedTransactionManager = extendedRawTransactionManager;
       testExtendedTransactionDeployContract(web3j, credentials);
     } catch (Exception e) {
       e.printStackTrace();
@@ -126,6 +124,8 @@ public class BasicTest extends TestBase {
       System.out.println("####contract address is: " + okDemo.getContractAddress());
       // TransactionReceipt receipt = okDemo.trans(new
       // BigInteger("4")).sendAsync().get(60000, TimeUnit.MILLISECONDS);
+      Ok okDemo1=  Ok.load(okDemo.getContractAddress(),web3j,credentials,gasPrice,gasLimit);
+      okDemo1.trans(new BigInteger("4")).send();
       TransactionReceipt receipt = okDemo.trans(new BigInteger("4")).send();
       List<Ok.TransEventEventResponse> events = okDemo.getTransEventEvents(receipt);
       events.stream().forEach(System.out::println);

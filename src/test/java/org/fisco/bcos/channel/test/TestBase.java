@@ -23,7 +23,7 @@ public class TestBase {
     //   ((ClassPathXmlApplicationContext) context).start();
 
     Service service = context.getBean(Service.class);
-    service.run();
+   service.run();
 
     System.out.println("start...");
     System.out.println("===================================================================");
