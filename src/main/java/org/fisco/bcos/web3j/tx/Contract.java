@@ -7,6 +7,8 @@ import java.util.*;
 import java.util.concurrent.Semaphore;
 import java.util.stream.Collectors;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.channel.client.TransactionSucCallback;
 import org.fisco.bcos.web3j.abi.EventEncoder;
@@ -22,6 +24,7 @@ import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameterName;
+import org.fisco.bcos.web3j.protocol.core.JsonRpc2_0Web3j;
 import org.fisco.bcos.web3j.protocol.core.RemoteCall;
 import org.fisco.bcos.web3j.protocol.core.methods.request.Transaction;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Call;
@@ -34,6 +37,8 @@ import org.fisco.bcos.web3j.tx.gas.ContractGasProvider;
 import org.fisco.bcos.web3j.tx.gas.DefaultGasProvider;
 import org.fisco.bcos.web3j.tx.gas.StaticGasProvider;
 import org.fisco.bcos.web3j.utils.Numeric;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Solidity contract type abstraction for interacting with smart contracts via native Java types.
@@ -44,6 +49,7 @@ public abstract class Contract extends ManagedTransaction {
    * @see DefaultGasProvider
    * @deprecated ...
    */
+  static Logger logger = LoggerFactory.getLogger(Contract.class);
   public static final BigInteger GAS_LIMIT = BigInteger.valueOf(4_300_000);
 
   public static final String BIN_NOT_PROVIDED = "Bin file was not provided";
@@ -80,11 +86,34 @@ public abstract class Contract extends ManagedTransaction {
             contractBinary,
             contractAddress,
             web3j,
-            "2.0.0-rc1".equals(Service.clientVersion)? new RawTransactionManager(web3j, credentials): new ExtendedRawTransactionManager(web3j,credentials,new BigInteger("1"),new BigInteger("1")),
+           getTheTransactionManager(web3j, credentials),
             gasProvider);
 //    if (!Service.clientVersion.equals("2.0.0-rc1")) {
 //      this.extendedTransactionManager = new ExtendedRawTransactionManager(web3j, credentials, new BigInteger("1"), Service.chainId);
 //    }
+  }
+
+  private static TransactionManager getTheTransactionManager( Web3j web3j, Credentials credentials)  {
+    JsonRpc2_0Web3j jsonRpc2_0Web3j = (JsonRpc2_0Web3j) web3j;
+    int groupId = jsonRpc2_0Web3j.getGroupId();
+    String clientVersion = "";
+    String chainId= "1";
+    String versionContent;
+    if (clientVersion == null) {
+      try {
+        versionContent= web3j.getNodeVersion().sendForReturnString();
+        logger.info("***version***");
+        if (versionContent.contains("2.0.0-rc1")) {
+          clientVersion = "2.0.0-rc1";
+        }
+        JSONObject jsonObject = JSONObject.parseObject(versionContent);
+         chainId = (String)jsonObject.get("ChainID");
+      } catch (IOException e) {
+        logger.info("can not get node version ");
+      }
+    }  ;
+      return "2.0.0-rc1".equals(clientVersion) ? new RawTransactionManager(web3j, credentials) : new ExtendedRawTransactionManager(web3j, credentials, BigInteger.valueOf(groupId), new BigInteger(chainId));
+
   }
 
 
@@ -116,7 +145,7 @@ public abstract class Contract extends ManagedTransaction {
         contractBinary,
         contractAddress,
         web3j,
-       extendedTransactionManager,
+       getTheTransactionManager(web3j,credentials),
         gasPrice,
         gasLimit);
   }
@@ -142,7 +171,7 @@ public abstract class Contract extends ManagedTransaction {
         "",
         contractAddress,
         web3j,
-        new RawTransactionManager(web3j, credentials),
+         getTheTransactionManager(web3j,credentials),
         gasPrice,
         gasLimit);
   }
