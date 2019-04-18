@@ -48,7 +48,7 @@ public class Service {
   private GroupChannelConnectionsConfig allChannelConnections;
   private ChannelPushCallback pushCallback;
   private Map<String, Object> seq2Callback = new ConcurrentHashMap<String, Object>();
-  private static int groupId;
+  private  int groupId;
   private static ObjectMapper objectMapper = new ObjectMapper();
   private BigInteger number = BigInteger.valueOf(0);
 
