@@ -102,7 +102,6 @@ public abstract class Contract extends ManagedTransaction {
     if (clientVersion == null) {
       try {
         versionContent= web3j.getNodeVersion().sendForReturnString();
-        System.out.println("&&&&&&&&&&&" + versionContent);
         logger.info("***version***");
         if (versionContent.contains("2.0.0-rc1")) {
           clientVersion = "2.0.0-rc1";
