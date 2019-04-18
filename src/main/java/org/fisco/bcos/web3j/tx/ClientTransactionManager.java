@@ -48,7 +48,7 @@ public class ClientTransactionManager extends TransactionManager {
 
   @Override
   public SendTransaction sendTransaction(
-      BigInteger gasPrice, BigInteger gasLimit, String to, String data, BigInteger value)
+      BigInteger gasPrice, BigInteger gasLimit, String to, String data, BigInteger value, String extraData)
       throws IOException {
 
     Random r = new SecureRandom();
