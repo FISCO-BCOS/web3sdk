@@ -61,7 +61,6 @@ public abstract class Contract extends ManagedTransaction {
   protected TransactionReceipt transactionReceipt;
   protected Map<String, String> deployedAddresses;
   protected DefaultBlockParameter defaultBlockParameter = DefaultBlockParameterName.LATEST;
-  public static TransactionManager extendedTransactionManager ;
 
   protected Contract(
           String contractBinary,
@@ -93,7 +92,7 @@ public abstract class Contract extends ManagedTransaction {
 //    }
   }
 
-  private static TransactionManager getTheTransactionManager( Web3j web3j, Credentials credentials)  {
+  public static TransactionManager getTheTransactionManager( Web3j web3j, Credentials credentials)  {
     JsonRpc2_0Web3j jsonRpc2_0Web3j = (JsonRpc2_0Web3j) web3j;
     int groupId = jsonRpc2_0Web3j.getGroupId();
     String clientVersion =null;
