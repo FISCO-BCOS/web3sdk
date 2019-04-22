@@ -115,8 +115,11 @@ public class PerfomanceTableQuery {
                 try {
                 	
                 	Long time_before = System.currentTimeMillis();
-                	long _id = getNextID();  	
-                	Tuple3<List<byte[]>, List<BigInteger>, List<byte[]>> lists = tabletest.select("fruit"+_id%50).send();
+                	long _id = getNextID();
+                	Random r=new Random();
+                	long l1=r.nextLong();
+                	Tuple3<List<byte[]>, List<BigInteger>, List<byte[]>> lists = 
+                				tabletest.select("fruit"+l1%TableTestClient.modevalue).send();
                 	Long time_after = System.currentTimeMillis();
                 	
                 	TransactionReceipt receipt = new TransactionReceipt();

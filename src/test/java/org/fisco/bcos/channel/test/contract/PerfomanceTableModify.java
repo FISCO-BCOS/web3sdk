@@ -112,7 +112,9 @@ public class PerfomanceTableModify {
                 callback.setCollector(collector);
                 try {
                 	long _id = getNextID();
-                	tabletest.update("fruit"+_id%50, 
+                	Random r=new Random();
+                	long l1=r.nextLong();
+                	tabletest.update("fruit"+l1%TableTestClient.modevalue, 
                 			BigInteger.valueOf(_id), 
                 			"apple"+getId(),
                 			callback);
