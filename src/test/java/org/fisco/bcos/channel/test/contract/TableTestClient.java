@@ -32,7 +32,6 @@ public class TableTestClient {
   public static int modevalue = 100;
   static Logger logger = LoggerFactory.getLogger(TableTestClient.class);
   public static Web3j web3j;
-  // 閸掓繂顫愰崠鏍︽唉閺勬挸寮弫锟�
   public static java.math.BigInteger gasPrice = new BigInteger("1");
   public static java.math.BigInteger gasLimit = new BigInteger("30000000");
   public static ECKeyPair keyPair;
