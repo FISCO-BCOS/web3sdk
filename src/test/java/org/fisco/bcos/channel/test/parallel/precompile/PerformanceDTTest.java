@@ -36,7 +36,8 @@ public class PerformanceDTTest {
   private DagUserMgr dagUserMgr;
   private PerformanceDTCollector collector;
 
-  public PerformanceDTTest() throws Exception {
+  public PerformanceDTTest(String groupID) throws Exception {
+    groupId = groupID;
     initialize(groupId);
   }
 
