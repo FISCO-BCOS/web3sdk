@@ -14,26 +14,27 @@ public class PerformanceDT {
   public static void Usage() {
     System.out.println(" Usage:");
     System.out.println(
-        " \t java -cp conf/:lib/*:apps/* org.fisco.bcos.channel.test.parallel.precompile.PerformanceDT add count tps file.");
+        " \t java -cp conf/:lib/*:apps/* org.fisco.bcos.channel.test.parallel.precompile.PerformanceDT groupID add count tps file.");
     System.out.println(
-        " \t java -cp conf/:lib/*:apps/* org.fisco.bcos.channel.test.parallel.precompile.PerformanceDT transfer count tps file strategy.");
+        " \t java -cp conf/:lib/*:apps/* org.fisco.bcos.channel.test.parallel.precompile.PerformanceDT groupID transfer count tps file strategy.");
     System.exit(0);
   }
 
   public static void main(String[] args) throws Exception {
-    if (args.length < 3) {
+    if (args.length < 4) {
       Usage();
     }
 
-    String command = args[0];
-    BigInteger count = new BigInteger(args[1]);
-    BigInteger tps = new BigInteger(args[2]);
+    String groupID = args[0];
+    String command = args[1];
+    BigInteger count = new BigInteger(args[2]);
+    BigInteger tps = new BigInteger(args[3]);
     String file = null;
     BigInteger deci = new BigInteger("0");
-    if (args.length > 3) {
-      file = args[3];
-      if (args.length > 4) {
-        deci = new BigInteger(args[4]);
+    if (args.length > 4) {
+      file = args[4];
+      if (args.length > 5) {
+        deci = new BigInteger(args[5]);
       }
     }
 
@@ -52,7 +53,7 @@ public class PerformanceDT {
     collector.setTotal(count.intValue());
     collector.setDagUserMrg(d);
 
-    PerformanceDTTest PerformanceDTTest = new PerformanceDTTest();
+    PerformanceDTTest PerformanceDTTest = new PerformanceDTTest(groupID);
     PerformanceDTTest.setCollector(collector);
     PerformanceDTTest.setDagUserMgr(d);
     collector.setPerformanceDTTest(PerformanceDTTest);
