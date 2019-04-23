@@ -1,6 +1,7 @@
 # safelist
 branches:
   only: 
+    - master
     - /release-2.*/
 tags:
   only: 
