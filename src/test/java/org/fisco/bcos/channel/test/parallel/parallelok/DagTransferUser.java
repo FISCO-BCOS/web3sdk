@@ -20,7 +20,7 @@ public class DagTransferUser {
 	public void setUser(String user) {
 		this.user = user;
 	}
-	public BigInteger getAmount() {
+	synchronized public BigInteger getAmount() {
 		return amount;
 	}  
 	synchronized public void setAmount(BigInteger amount) {
