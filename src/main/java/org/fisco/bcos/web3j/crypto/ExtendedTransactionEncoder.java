@@ -1,7 +1,5 @@
 package org.fisco.bcos.web3j.crypto;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.fisco.bcos.web3j.rlp.RlpEncoder;
 import org.fisco.bcos.web3j.rlp.RlpList;
 import org.fisco.bcos.web3j.rlp.RlpString;
@@ -9,13 +7,16 @@ import org.fisco.bcos.web3j.rlp.RlpType;
 import org.fisco.bcos.web3j.utils.Bytes;
 import org.fisco.bcos.web3j.utils.Numeric;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Create RLP encoded transaction, implementation as per p4 of the <a
  * href="http://gavwood.com/paper.pdf">yellow paper</a>.
  */
-public class TransactionEncoder {
+public class ExtendedTransactionEncoder {
 
-  public static byte[] signMessage(RawTransaction rawTransaction, Credentials credentials) {
+  public static byte[] signMessage(ExtendedRawTransaction rawTransaction, Credentials credentials) {
     byte[] encodedTransaction = encode(rawTransaction);
     Sign.SignatureData signatureData =
         Sign.getSignInterface().signMessage(encodedTransaction, credentials.getEcKeyPair());
@@ -24,7 +25,7 @@ public class TransactionEncoder {
   }
 
   public static byte[] signMessage(
-      RawTransaction rawTransaction, byte chainId, Credentials credentials) {
+          ExtendedRawTransaction rawTransaction, byte chainId, Credentials credentials) {
     byte[] encodedTransaction = encode(rawTransaction, chainId);
     Sign.SignatureData signatureData =
         Sign.getSignInterface().signMessage(encodedTransaction, credentials.getEcKeyPair());
@@ -40,24 +41,24 @@ public class TransactionEncoder {
     return new Sign.SignatureData(v, signatureData.getR(), signatureData.getS());
   }
 
-  public static byte[] encode(RawTransaction rawTransaction) {
+  public static byte[] encode(ExtendedRawTransaction rawTransaction) {
     return encode(rawTransaction, null);
   }
 
-  public static byte[] encode(RawTransaction rawTransaction, byte chainId) {
+  public static byte[] encode(ExtendedRawTransaction rawTransaction, byte chainId) {
     Sign.SignatureData signatureData =
         new Sign.SignatureData(chainId, new byte[] {}, new byte[] {});
     return encode(rawTransaction, signatureData);
   }
 
-  public static byte[] encode(RawTransaction rawTransaction, Sign.SignatureData signatureData) {
+  public static byte[] encode(ExtendedRawTransaction rawTransaction, Sign.SignatureData signatureData) {
     List<RlpType> values = asRlpValues(rawTransaction, signatureData);
     RlpList rlpList = new RlpList(values);
     return RlpEncoder.encode(rlpList);
   }
 
   static List<RlpType> asRlpValues(
-      RawTransaction rawTransaction, Sign.SignatureData signatureData) {
+          ExtendedRawTransaction rawTransaction, Sign.SignatureData signatureData) {
     List<RlpType> result = new ArrayList<>();
     result.add(RlpString.create(rawTransaction.getRandomid()));
     result.add(RlpString.create(rawTransaction.getGasPrice()));
@@ -79,6 +80,15 @@ public class TransactionEncoder {
     byte[] data = Numeric.hexStringToByteArray(rawTransaction.getData());
     result.add(RlpString.create(data));
 
+     // add extra data!!!
+
+    result.add(RlpString.create(rawTransaction.getFiscoChainId()));
+    result.add(RlpString.create(rawTransaction.getGroupId()));
+    if(rawTransaction.getExtraData()==null){
+      result.add(RlpString.create(""));
+    } else {
+      result.add(RlpString.create(Numeric.hexStringToByteArray(rawTransaction.getExtraData())));
+    }
     if (signatureData != null) {
       if (EncryptType.encryptType == 1) {
         result.add(RlpString.create(Bytes.trimLeadingZeroes(signatureData.getPub())));
