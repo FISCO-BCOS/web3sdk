@@ -36,7 +36,8 @@ public class PerformanceDTTest {
 	private PerformanceDTCollector collector;
 	private String parallelokAddr = "";
 
-	public PerformanceDTTest() throws Exception {
+	public PerformanceDTTest(String groupID) throws Exception {
+		groupId = groupID;
 		initialize(groupId);
 	}
 
