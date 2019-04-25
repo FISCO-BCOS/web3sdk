@@ -35,7 +35,3 @@ script: |
   cp nodes/127.0.0.1/sdk/* src/integration-test/resources/
   mv src/integration-test/resources/applicationContext-sample.xml src/integration-test/resources/applicationContext.xml
   ./gradlew build
-  ./gradlew jacocoTestReport
-  
-after_success:
-  - bash <(curl -s https://codecov.io/bash)
