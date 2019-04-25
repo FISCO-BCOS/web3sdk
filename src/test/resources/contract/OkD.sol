@@ -34,6 +34,9 @@ contract OkD{
     }
     function trans(string from_accout, int num){
 
+        if (from.balance < num || to.balance + num < to.balance)
+            return; // Deny overflow
+
     	from.balance = from.balance - num;
     	to.balance += num;
 

@@ -227,7 +227,7 @@ public class ChannelConnections {
                   ch.pipeline()
                       .addLast(
                           sslCtx.newHandler(ch.alloc()),
-                          new LengthFieldBasedFrameDecoder(1024 * 1024 * 4, 0, 4, -4, 0),
+                          new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4, -4, 0),
                           new IdleStateHandler(
                               idleTimeout, idleTimeout, idleTimeout, TimeUnit.MILLISECONDS),
                           handler);
@@ -298,7 +298,7 @@ public class ChannelConnections {
             ch.pipeline()
                 .addLast(
                     sslCtx.newHandler(ch.alloc()),
-                    new LengthFieldBasedFrameDecoder(1024 * 1024 * 4, 0, 4, -4, 0),
+                    new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4, -4, 0),
                     new IdleStateHandler(
                         idleTimeout, idleTimeout, idleTimeout, TimeUnit.MILLISECONDS),
                     handler);
