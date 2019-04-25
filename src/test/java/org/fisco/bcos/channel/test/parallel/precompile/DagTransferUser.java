@@ -23,7 +23,7 @@ public class DagTransferUser {
 		this.user = user;
 	}
 
-	public BigInteger getAmount() {
+	synchronized public BigInteger getAmount() {
 		return amount;
 	}
 

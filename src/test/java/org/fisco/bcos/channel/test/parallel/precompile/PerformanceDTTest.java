@@ -36,7 +36,8 @@ public class PerformanceDTTest {
   private DagUserMgr dagUserMgr;
   private PerformanceDTCollector collector;
 
-  public PerformanceDTTest() throws Exception {
+  public PerformanceDTTest(String groupID) throws Exception {
+    groupId = groupID;
     initialize(groupId);
   }
 
@@ -256,7 +257,7 @@ public class PerformanceDTTest {
             }
 
             Random random = new Random();
-            int r = random.nextInt(100);
+            int r = random.nextInt(100) + 1;
             BigInteger amount = BigInteger.valueOf(r);
 
             PerformanceDTCallback callback = new PerformanceDTCallback();
