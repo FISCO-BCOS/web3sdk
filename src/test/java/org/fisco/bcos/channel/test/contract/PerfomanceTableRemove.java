@@ -112,7 +112,9 @@ public class PerfomanceTableRemove {
                 callback.setCollector(collector);
                 try {
                 	long _id = getNextID();
-				tabletest.remove("fruit"+_id%50,
+                	Random r=new Random();
+                	long l1=r.nextLong();
+                	tabletest.remove("fruit"+l1%TableTestClient.modevalue,
                                         BigInteger.valueOf(_id), callback);
 	
 			} catch (Exception e) {

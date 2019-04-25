@@ -11,6 +11,7 @@ import org.fisco.bcos.channel.test.contract.TableTest.UpdateResultEventResponse;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.crypto.ECKeyPair;
 import org.fisco.bcos.web3j.crypto.Keys;
+import org.fisco.bcos.web3j.precompile.common.PrecompiledCommon;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
 import org.fisco.bcos.web3j.protocol.core.RemoteCall;
@@ -27,9 +28,10 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 public class TableTestClient {
+	
+  public static int modevalue = 100;
   static Logger logger = LoggerFactory.getLogger(TableTestClient.class);
   public static Web3j web3j;
-  // 鍒濆鍖栦氦鏄撳弬鏁�
   public static java.math.BigInteger gasPrice = new BigInteger("1");
   public static java.math.BigInteger gasLimit = new BigInteger("30000000");
   public static ECKeyPair keyPair;
@@ -88,14 +90,15 @@ public class TableTestClient {
       }
       CreateResultEventResponse createResultEventResponse = createResultEvents.get(0);
       int createCount = createResultEventResponse.count.intValue();
-      switch (createCount) {
-        case 255:
+      System.out.println("create table count:"+createCount);
+	switch (createCount) {
+        case PrecompiledCommon.PermissionDenied:
           System.out.println("non-authorized to create t_test table.");
           break;
-        case 0:
+        case 50001:
           System.out.println("t_test table already exist.");
           break;
-        case 1:
+        case PrecompiledCommon.Success:
           System.out.println("create t_test table completed.");
           break;
       }
