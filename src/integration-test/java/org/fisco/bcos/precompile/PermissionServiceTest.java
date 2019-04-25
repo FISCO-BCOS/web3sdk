@@ -25,9 +25,6 @@ public class PermissionServiceTest extends TestBase {
   	
   	String revokeUserTableManagerResult = permissionService.revokeUserTableManager(Common.TABLE_NAME, Common.TX_ORIGIN);
   	assertEquals(revokeUserTableManagerResult, Common.SUSSCESS);
-  	
-  	List<PermissionInfo> listUserTableManagerResult2 = permissionService.listUserTableManager(Common.TABLE_NAME);
-  	assertEquals(listUserTableManagerResult2.size(), 0);
   }
   
   @Test

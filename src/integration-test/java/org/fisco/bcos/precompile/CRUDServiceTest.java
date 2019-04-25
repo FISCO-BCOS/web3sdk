@@ -78,14 +78,6 @@ public class CRUDServiceTest extends TestBase {
 		removeCondition.EQ("item_id", "1");
 		int removeResult = crudSerivce.remove(table, removeCondition);
 		assertEquals(removeResult, num);
-		
-	  // select records
-		Condition condition3 = table.getCondition();
-		condition3.EQ("item_id", "1");
-		condition3.EQ("item_name", "orange");
-		List<Map<String, String>> selectResult3 = crudSerivce.select(table, condition3);
-		assertEquals(selectResult3.size(), 0);
-		
   }
   
 }
