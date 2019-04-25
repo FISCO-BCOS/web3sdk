@@ -20,8 +20,8 @@ public class Entry
 		fields.put(key, value);
 	}
 	
-	public void get(String key)
+	public String get(String key)
 	{
-		fields.get(key);
+		return fields.get(key);
 	}
 }

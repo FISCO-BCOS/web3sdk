@@ -1,3 +1,24 @@
+### v2.0.0-rc2
+
+(2019-04-25)
+
+* Add
+
+1. 可并行合约开发框架ParallelContract.sol
+2. 并行预编译转账合约DagTransferPrecompiled的压测程序
+3. 并行solidity转账合约parallelOk的压测程序
+4. CRUD合约的压测程序
+5. 回滚合约的压测程序
+
+* Update
+
+1. 在交易编码中加入chainID和groupID，以支持rc2节点的交易格式
+2. sol转java，在java文件中增加了abi字段。
+
+* Compatibility
+
+1. 兼容rc1，rc2的节点
+
 ### v2.0.0-rc1
 
 (2019-03-18)

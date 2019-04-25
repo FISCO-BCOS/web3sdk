@@ -132,9 +132,9 @@ public class PrecompiledCommon {
   
 	public static String handleTransactionReceipt(TransactionReceipt receipt)
 			throws TransactionException, JsonProcessingException {
-		if("Receipt timeout".equals(receipt.getStatus()))
+		if("Transaction receipt timeout.".equals(receipt.getStatus()))
     {
-    	throw new TransactionException("Transaction receipt timeout.");
+    	throw new TransactionException(receipt.getStatus());
     }
     else 
     {

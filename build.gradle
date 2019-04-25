@@ -4,7 +4,6 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'signing'
 apply plugin:'application'
-apply plugin: 'jacoco'
 
 
 sourceCompatibility = 1.8
@@ -15,7 +14,7 @@ targetCompatibility = 1.8
 // In this section you declare where to find the dependencies of your project
 repositories {
     maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
-	maven { url 'https://dl.bintray.com/ethereum/maven/' }
+	  maven { url 'https://dl.bintray.com/ethereum/maven/' }
     mavenCentral()
 }
 
@@ -102,15 +101,6 @@ sourceSets {
     }
 }
 
-jacocoTestReport {
-
-    afterEvaluate {
-        classDirectories = files(classDirectories.files.collect {
-            fileTree(dir: it,
-                    exclude: ['**/test/**','**/integration-test/**', '**/temp/**'])
-        })
-    }
-}
 task integrationTest(type: Test) {
     testClassesDirs = sourceSets.integrationTest.output.classesDirs
     classpath = sourceSets.integrationTest.runtimeClasspath
@@ -118,7 +108,6 @@ task integrationTest(type: Test) {
 }
 
 check.dependsOn integrationTest
-check.dependsOn jacocoTestReport
 integrationTest.mustRunAfter test
 
 //  1 dist jar
