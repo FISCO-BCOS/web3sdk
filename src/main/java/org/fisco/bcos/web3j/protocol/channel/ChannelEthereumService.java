@@ -7,6 +7,7 @@ import org.fisco.bcos.channel.dto.FiscoRequest;
 import org.fisco.bcos.channel.dto.FiscoResponse;
 import org.fisco.bcos.web3j.protocol.core.Request;
 import org.fisco.bcos.web3j.protocol.core.Response;
+import org.fisco.bcos.web3j.protocol.core.methods.response.Call.CallOutput;
 import org.fisco.bcos.web3j.protocol.exceptions.MessageDecodingException;
 import org.fisco.bcos.web3j.tx.exceptions.ContractCallException;
 import org.slf4j.Logger;
@@ -70,12 +71,23 @@ public class ChannelEthereumService extends org.fisco.bcos.web3j.protocol.Servic
         if (t.getError() != null) {
           throw new IOException(t.getError().getMessage());
         }
-        if(response.getContent().contains("\"status\":\"0x1a\""))
-        {
-        	throw new ContractCallException("The contract address is incorrect.");
-        }
+        if (t.getResult() instanceof CallOutput) {
+        	CallOutput callResult = (CallOutput) t.getResult();
+        	if(StatusCode.RevertInstruction.equals(callResult.getStatus()))
+        	{
+        		throw new ContractCallException("The execution of the contract rolled back.");
+        	}
+        	if(StatusCode.CallAddressError.equals(callResult.getStatus()))
+        	{
+        		throw new ContractCallException("The contract address is incorrect.");
+        	}
+				}
         return t;
-      } catch (Exception e) {
+      } 
+      catch (ContractCallException e) {
+      	throw e;
+      }
+      catch (Exception e) {
         throw new MessageDecodingException(response.getContent());
       }
     } else {
