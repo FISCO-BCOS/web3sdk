@@ -7,7 +7,7 @@ import org.fisco.bcos.web3j.utils.Numeric;
 /** getPbftView */
 public class PbftView extends Response<String> {
 
-  public BigInteger getPbftView() {
-    return Numeric.decodeQuantity(getResult());
-  }
+    public BigInteger getPbftView() {
+        return Numeric.decodeQuantity(getResult());
+    }
 }

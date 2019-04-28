@@ -4,7 +4,7 @@ import org.fisco.bcos.web3j.protocol.core.Response;
 
 /** getCode. */
 public class Code extends Response<String> {
-  public String getCode() {
-    return getResult();
-  }
+    public String getCode() {
+        return getResult();
+    }
 }
