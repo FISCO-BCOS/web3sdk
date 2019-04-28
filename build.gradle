@@ -1,3 +1,7 @@
+plugins {
+  id 'com.github.sherter.google-java-format' version '0.8'
+}
+
 apply plugin: 'maven'
 apply plugin: 'idea'
 apply plugin: 'java'
@@ -18,6 +22,20 @@ repositories {
     mavenCentral()
 }
 
+googleJavaFormat {
+  options style: 'AOSP'
+  source = sourceSets*.allJava
+  include '**/*.java'
+  exclude '**/temp/*.java'
+}
+
+verifyGoogleJavaFormat {
+  source = sourceSets*.allJava
+  include '**/*.java'
+  exclude '**/temp/*.java'
+}
+
+check.dependsOn -= tasks['verifyGoogleJavaFormat']
 
 def spring_version="4.3.18.RELEASE"
 

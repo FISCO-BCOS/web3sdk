@@ -12,13 +12,13 @@ import org.fisco.bcos.web3j.abi.datatypes.Uint;
  * href="https://github.com/web3j/web3j/tree/master/codegen">codegen module</a> to update.
  */
 public class Uint200 extends Uint {
-  public static final Uint200 DEFAULT = new Uint200(BigInteger.ZERO);
+    public static final Uint200 DEFAULT = new Uint200(BigInteger.ZERO);
 
-  public Uint200(BigInteger value) {
-    super(200, value);
-  }
+    public Uint200(BigInteger value) {
+        super(200, value);
+    }
 
-  public Uint200(long value) {
-    this(BigInteger.valueOf(value));
-  }
+    public Uint200(long value) {
+        this(BigInteger.valueOf(value));
+    }
 }
