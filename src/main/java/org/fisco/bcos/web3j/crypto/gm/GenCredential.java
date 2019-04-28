@@ -2,6 +2,7 @@ package org.fisco.bcos.web3j.crypto.gm;
 
 import java.math.BigInteger;
 import java.security.KeyPair;
+
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.crypto.ECKeyPair;
 import org.fisco.bcos.web3j.crypto.EncryptType;
@@ -17,11 +18,9 @@ public class GenCredential {
   private static Logger logger = LoggerFactory.getLogger(GenCredential.class);
 
   public static ECKeyPair createGuomiKeyPair() {
-    System.out.println("=====INIT GUOMI KEYPAIR ====");
     final SM2KeyGenerator generator = new SM2KeyGenerator();
     final KeyPair keyPairData = generator.generateKeyPair();
     if (keyPairData != null) return genEcPairFromKeyPair(keyPairData);
-    System.out.println("=====INIT GUOMI KEYPAIR FAILED ====");
     return null;
   }
 
