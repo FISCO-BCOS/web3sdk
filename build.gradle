@@ -27,7 +27,7 @@ def spring_version="4.3.18.RELEASE"
 
 List logger = [
 		'org.slf4j:slf4j-log4j12:1.7.25'
-		// 'org.slf4j:slf4j-api:1.7.25'
+		//'org.slf4j:slf4j-api:1.7.25'
 ]
 
 List spring =[ 
@@ -35,8 +35,6 @@ List spring =[
 	"org.springframework:spring-beans:$spring_version", 
 	"org.springframework:spring-context:$spring_version", 
 	"org.springframework:spring-tx:$spring_version", 
-//	"org.springframework:spring-jdbc:$spring_version", 
-//	"org.springframework:spring-test:$spring_version"
 ]
 
 List alibaba = [
@@ -56,7 +54,6 @@ dependencies {
 	compile 'io.netty:netty-tcnative:2.0.20.Final'
 	compile 'io.netty:netty-tcnative-boringssl-static:2.0.20.Final'
 	compile 'com.google.guava:guava:19.0'
-	compile 'org.jline:jline:3.9.0'
 	compile 'commons-configuration:commons-configuration:1.10'
 
    	// web3j
@@ -72,7 +69,6 @@ dependencies {
 	 		"org.apache.commons:commons-collections4:4.0",
 			"commons-io:commons-io:2.4",
 			'com.github.stefanbirkner:system-rules:1.18.0',
-			'io.bretty:console-table-builder:1.2',
 	  		'junit:junit:4.12',
 			'org.mockito:mockito-core:2.23.0'
 }
