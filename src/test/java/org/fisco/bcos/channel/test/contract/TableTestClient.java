@@ -225,6 +225,7 @@ public class TableTestClient {
     logger.info("-----> start test !");
     logger.info("init AOMP ChannelEthereumService");
     ChannelEthereumService channelEthereumService = new ChannelEthereumService();
+    channelEthereumService.setTimeout(5*1000);
     channelEthereumService.setChannelService(service);
     try {
       web3j = Web3j.build(channelEthereumService, Integer.parseInt(args[0]));
