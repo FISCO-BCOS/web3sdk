@@ -17,6 +17,9 @@ public class NodeVersion extends Response<NodeVersion.Version> {
         @JsonProperty("Build Type")
         private String buildType;
 
+        @JsonProperty("Chain Id")
+        private String chainID;
+
         @JsonProperty("FISCO-BCOS Version")
         private String version;
 
@@ -26,6 +29,9 @@ public class NodeVersion extends Response<NodeVersion.Version> {
         @JsonProperty("Git Commit Hash")
         private String gitCommit;
 
+        @JsonProperty("Supported Version")
+        private String supportedVersion;
+
         public Version() {
             super();
         }
@@ -33,15 +39,19 @@ public class NodeVersion extends Response<NodeVersion.Version> {
         public Version(
                 String buildTime,
                 String buildType,
+                String chainID,
                 String version,
                 String gitBranch,
-                String gitCommit) {
+                String gitCommit,
+                String supportedVersion) {
             super();
             this.buildTime = buildTime;
             this.buildType = buildType;
+            this.chainID = chainID;
             this.version = version;
             this.gitBranch = gitBranch;
             this.gitCommit = gitCommit;
+            this.supportedVersion = supportedVersion;
         }
 
         public String getBuildTime() {
@@ -50,6 +60,22 @@ public class NodeVersion extends Response<NodeVersion.Version> {
 
         public void setBuildTime(String buildTime) {
             this.buildTime = buildTime;
+        }
+
+        public String getChainID() {
+            return chainID;
+        }
+
+        public String getSupportedVersion() {
+            return supportedVersion;
+        }
+
+        public void setChainID(String chainID) {
+            this.chainID = chainID;
+        }
+
+        public void setSupportedVersion(String supportedVersion) {
+            this.supportedVersion = supportedVersion;
         }
 
         public String getBuildType() {

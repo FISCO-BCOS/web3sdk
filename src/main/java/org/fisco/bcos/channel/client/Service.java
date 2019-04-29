@@ -233,7 +233,7 @@ public class Service {
             public void onResponse(FiscoResponse response) {
                 ethereumResponse = response;
 
-                logger.info("response: {}", response.getContent());
+                logger.trace("response: {}", response.getContent());
 
                 semaphore.release();
             }
@@ -721,11 +721,9 @@ public class Service {
     public void onReceiveTransactionMessage(ChannelHandlerContext ctx, FiscoMessage message) {
         TransactionSucCallback callback =
                 (TransactionSucCallback) seq2TransactionCallback.get(message.getSeq());
-        logger.info("receive transaction success seq:{}", message.getSeq());
+        logger.debug("receive transaction success seq:{}", message.getSeq());
 
         if (callback != null) {
-            logger.info("found callback transaction callback");
-
             if (callback.getTimeout() != null) {
                 // 停止定时器，防止多响应一次
                 callback.getTimeout().cancel();
@@ -745,7 +743,7 @@ public class Service {
 
             seq2TransactionCallback.remove(message.getSeq());
         } else {
-            logger.info("callback is null");
+            logger.debug("callback is null");
         }
     }
 
