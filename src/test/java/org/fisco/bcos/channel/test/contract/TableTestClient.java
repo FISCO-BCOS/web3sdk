@@ -116,7 +116,7 @@ public class TableTestClient {
             RemoteCall<TransactionReceipt> insert =
                 tabletest.insert(name, BigInteger.valueOf(item_id), item_name);
             TransactionReceipt txReceipt = insert.send();
-            List<InsertResultEventResponse> insertResultEvents =
+	    List<InsertResultEventResponse> insertResultEvents =
                 tabletest.getInsertResultEvents(txReceipt);
             if (insertResultEvents.size() > 0) {
               for (int i = 0; i < insertResultEvents.size(); i++) {
@@ -132,8 +132,8 @@ public class TableTestClient {
         }
         catch(Exception e)
         {
-            System.out.println("insert exception:"+e.getMessage());
-        }
+		System.out.println("insert transaction is abnormal, please check the environment");
+	}
       } else {
         System.out.println("\nPlease enter as follow example:\n 1 1 insert fruit 1 apple");
       }
@@ -195,8 +195,8 @@ public class TableTestClient {
     	  }
     	  catch(Exception e)
     	  {
-    		  System.out.println("update exception:"+e.getMessage());
-    	  }
+    	  	System.out.println("update transaction is abnormal, please check the environment");
+	  }
       } else {
         System.out.println("\nPlease enter as follow example:\n 1 1 update fruit 1 orange");
       }
@@ -223,7 +223,7 @@ public class TableTestClient {
       }
       catch(Exception e)
       {
-    	  System.out.println("remove exception:"+e.getMessage());
+	  System.out.println("remove transaction is abnormal, please check the environment");
       }
       } else {
         System.out.println("\nPlease enter as follow example:\n 1 1 remove fruit 1");
