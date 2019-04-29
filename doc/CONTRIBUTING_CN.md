@@ -40,6 +40,19 @@
 7. 等待社区review这个PR
 8. PR合入，特性开发完成！
 
+## 代码格式化
+
+代码格式化gradle插件[google-java-format-gradle-plugin](https://github.com/sherter/google-java-format-gradle-plugin).
+
+执行任务 `googleJavaFormat`格式化java文件。
+```
+./gradlew goJF
+```
+执行任务 `verifyGoogleJavaFormat`验证java文件是否格式化完成
+```          
+./gradlew verGJF
+```
+
 ## 持续集成（CI）
 
 持续集成框架
