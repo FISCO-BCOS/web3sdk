@@ -1,10 +1,6 @@
 package org.fisco.bcos.web3j.protocol.core;
 
 import io.reactivex.Flowable;
-import java.io.IOException;
-import java.math.BigInteger;
-import java.util.*;
-import java.util.concurrent.ScheduledExecutorService;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.Web3jService;
 import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
@@ -18,6 +14,11 @@ import org.fisco.bcos.web3j.utils.Numeric;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.math.BigInteger;
+import java.util.*;
+import java.util.concurrent.ScheduledExecutorService;
+
 /** JSON-RPC 2.0 factory implementation. */
 public class JsonRpc2_0Web3j implements Web3j {
   static Logger logger = LoggerFactory.getLogger(JsonRpc2_0Web3j.class);
@@ -28,6 +29,8 @@ public class JsonRpc2_0Web3j implements Web3j {
   private final JsonRpc2_0Rx web3jRx;
   private final long blockTime;
   private final ScheduledExecutorService scheduledExecutorService;
+
+
   private int groupId = 1;
 
   public Web3jService web3jService() {
@@ -411,6 +414,14 @@ public class JsonRpc2_0Web3j implements Web3j {
   public Flowable<org.fisco.bcos.web3j.protocol.core.methods.response.Transaction>
       replayPastAndFutureTransactionsFlowable(DefaultBlockParameter startBlock) {
     return web3jRx.replayPastAndFutureTransactionsFlowable(startBlock, blockTime);
+  }
+
+  public int getGroupId() {
+    return groupId;
+  }
+
+  public void setGroupId(int groupId) {
+    this.groupId = groupId;
   }
 
   public void shutdown() {
