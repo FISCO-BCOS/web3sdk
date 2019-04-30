@@ -1,13 +1,5 @@
 package org.fisco.bcos.channel.client;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.socket.SocketChannel;
-import io.netty.util.HashedWheelTimer;
-import io.netty.util.Timeout;
-import io.netty.util.Timer;
-import io.netty.util.TimerTask;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -18,6 +10,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+
 import org.fisco.bcos.channel.dto.ChannelMessage;
 import org.fisco.bcos.channel.dto.ChannelMessage2;
 import org.fisco.bcos.channel.dto.ChannelPush;
@@ -35,6 +28,16 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.util.HashedWheelTimer;
+import io.netty.util.Timeout;
+import io.netty.util.Timer;
+import io.netty.util.TimerTask;
 
 public class Service {
     private static Logger logger = LoggerFactory.getLogger(Service.class);
@@ -56,6 +59,7 @@ public class Service {
     private ThreadPoolTaskExecutor threadPool;
 
     private Set<String> topics = new HashSet<String>();
+    private ConcurrentHashMap<String, Integer> nodeToBlockNumberMap = new ConcurrentHashMap<>();
 
     public void setTopics(Set<String> topics) {
         try {
@@ -326,21 +330,17 @@ public class Service {
         fiscoMessage.setResult(0);
         fiscoMessage.setType((short) 0x12);
         fiscoMessage.setData(request.getContent().getBytes());
-
-        // 选取发送节点
+        //select node
         try {
-
-            ChannelConnections fromChannelConnections =
-                    allChannelConnections
+            ChannelConnections channelConnections =
+                    		allChannelConnections
                             .getAllChannelConnections()
                             .stream()
                             .filter(x -> x.getGroupId() == groupId)
                             .findFirst()
                             .get();
 
-            if (fromChannelConnections == null) {
-                // 没有找到对应的链
-                // 返回错误
+            if (channelConnections == null) {
                 if (orgID != null) {
                     logger.error("not found:{}", orgID);
                     throw new Exception("not found orgID");
@@ -349,8 +349,8 @@ public class Service {
                     throw new Exception("not found agencyName");
                 }
             }
-
-            ChannelHandlerContext ctx = fromChannelConnections.randomNetworkConnection();
+            channelConnections.setNodeToBlockNumberMap(nodeToBlockNumberMap);
+            ChannelHandlerContext ctx = channelConnections.randomNetworkConnection();
 
             ByteBuf out = ctx.alloc().buffer();
             fiscoMessage.writeHeader(out);
@@ -377,14 +377,15 @@ public class Service {
 
             ctx.writeAndFlush(out);
 
-            logger.debug(
+            SocketChannel socketChannel = (SocketChannel) ctx.channel();
+						logger.debug(
                     "send fisco message to "
-                            + ((SocketChannel) ctx.channel())
+                            + socketChannel
                                     .remoteAddress()
                                     .getAddress()
                                     .getHostAddress()
                             + ":"
-                            + ((SocketChannel) ctx.channel()).remoteAddress().getPort()
+                            + socketChannel.remoteAddress().getPort()
                             + " success");
 
             sended = true;
@@ -699,7 +700,6 @@ public class Service {
                 logger.error("Block notify format error: {}", data);
                 return;
             }
-
             Integer groupID = Integer.parseInt(split[0]);
 
             if (!groupID.equals(getGroupId())) {
@@ -707,9 +707,13 @@ public class Service {
 
                 return;
             }
-
+            SocketChannel socketChannel = (SocketChannel) ctx.channel();
+            String hostAddress = socketChannel.remoteAddress().getAddress().getHostAddress();
+            int port = socketChannel.remoteAddress().getPort();
             Integer number = Integer.parseInt(split[1]);
-
+            System.out.println(hostAddress + ":" + port + " blockNumber:" + number);
+            nodeToBlockNumberMap.put(hostAddress + port, number);
+            
             if (number.compareTo(getNumber().intValue()) > 0) {
                 setNumber(BigInteger.valueOf((long) number));
             }
