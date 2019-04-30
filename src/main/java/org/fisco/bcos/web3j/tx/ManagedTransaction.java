@@ -15,7 +15,7 @@ public abstract class ManagedTransaction {
 
   protected Web3j web3j;
 
-  protected TransactionManager transactionManager;
+  protected TransactionManager transactionManager ;
 
   protected CnsService cnsService;
 
@@ -37,7 +37,7 @@ public abstract class ManagedTransaction {
       String to, String data, BigInteger value, BigInteger gasPrice, BigInteger gasLimit)
       throws IOException, TransactionException {
 
-    return transactionManager.executeTransaction(gasPrice, gasLimit, to, data, value);
+    return transactionManager.executeTransaction(gasPrice, gasLimit, to, data, value,null);
   }
 
   protected void sendOnly(
@@ -48,6 +48,6 @@ public abstract class ManagedTransaction {
       BigInteger gasLimit,
       TransactionSucCallback callback)
       throws IOException, TransactionException {
-    transactionManager.sendTransaction(gasPrice, gasLimit, to, data, value, callback);
+    transactionManager.sendTransaction(gasPrice, gasLimit, to, data, value, null, callback);
   }
 }

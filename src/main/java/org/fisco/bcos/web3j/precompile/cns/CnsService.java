@@ -12,6 +12,7 @@ import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameterName;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock;
 import org.fisco.bcos.web3j.protocol.core.methods.response.SyncStatus;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.fisco.bcos.web3j.tx.Contract;
 import org.fisco.bcos.web3j.tx.RawTransactionManager;
 import org.fisco.bcos.web3j.tx.TransactionManager;
 import org.fisco.bcos.web3j.tx.gas.DefaultGasProvider;
@@ -36,7 +37,7 @@ public class CnsService {
 
   public CnsService(Web3j web3j, long syncThreshold, Credentials credentials) {
     this.web3j = web3j;
-    transactionManager = new RawTransactionManager(web3j, credentials);
+    transactionManager = Contract.getTheTransactionManager(web3j,credentials);
     this.syncThreshold = syncThreshold;
   }
 
