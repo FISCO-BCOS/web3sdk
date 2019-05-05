@@ -134,10 +134,7 @@ public class ChannelHandler extends SimpleChannelInboundHandler<ByteBuf> {
 
         final ChannelHandlerContext ctxF = ctx;
         final ByteBuf in = (ByteBuf) msg;
-
         logger.trace("receive，from" + host + ":" + port + " in:" + in.readableBytes());
-        logger.trace("threadPool:{}", threadPool == null);
-
         try {
             if (threadPool == null) {
                 connections.onReceiveMessage(ctx, in);

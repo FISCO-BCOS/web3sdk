@@ -1,18 +1,21 @@
 package org.fisco.bcos.channel.handler;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.util.Set;
 import java.util.UUID;
+
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.channel.dto.ChannelMessage;
 import org.fisco.bcos.channel.dto.ChannelMessage2;
 import org.fisco.bcos.channel.dto.FiscoMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
 
 public class ConnectionCallback implements ChannelConnections.Callback {
     private static Logger logger = LoggerFactory.getLogger(ConnectionCallback.class);
@@ -78,25 +81,22 @@ public class ConnectionCallback implements ChannelConnections.Callback {
             Message msg = new Message();
             msg.readHeader(message);
 
-            logger.trace("receive Message type: {}", msg.getType());
-
             if (msg.getType() == 0x20 || msg.getType() == 0x21) {
-                logger.debug("channel message");
+                logger.info("receive Message type: {}, channel message", msg.getType());
 
                 ChannelMessage channelMessage = new ChannelMessage(msg);
                 channelMessage.readExtra(message);
 
                 channelService.onReceiveChannelMessage(ctx, channelMessage);
             } else if (msg.getType() == 0x30 || msg.getType() == 0x31) {
-                logger.debug("channel2 message");
+                logger.info("receive Message type: {}, channel2 message", msg.getType());
 
                 ChannelMessage2 channelMessage = new ChannelMessage2(msg);
                 channelMessage.readExtra(message);
 
                 channelService.onReceiveChannelMessage2(ctx, channelMessage);
             } else if (msg.getType() == 0x12) {
-                logger.debug("fisco message");
-
+            	logger.info("receive Message type: {}, bcos message, seq: {}", msg.getType(), msg.getSeq());
                 FiscoMessage fiscoMessage = new FiscoMessage(msg);
                 fiscoMessage.readExtra(message);
 
@@ -113,7 +113,7 @@ public class ConnectionCallback implements ChannelConnections.Callback {
                     logger.error("heartbeat packet Exception");
                 }
 
-                if (content.equals("0")) {
+                if ("0".equals(content)) {
                     logger.trace("heartbeat packet，send heartbeat packet back");
                     Message response = new Message();
 
@@ -127,12 +127,12 @@ public class ConnectionCallback implements ChannelConnections.Callback {
                     response.writeExtra(out);
 
                     ctx.writeAndFlush(out);
-                } else if (content.equals("1")) {
+                } else if ("1".equals(content)) {
                     logger.trace("heartbeat response");
                 }
             } else if (msg.getType() == 0x1000) {
                 FiscoMessage fiscoMessage = new FiscoMessage(msg);
-                logger.trace("TransactionReceipt notify: {}", fiscoMessage.getSeq());
+                logger.info("receive Message type: {}, transactionReceipt notify, seq: {}", msg.getType(), fiscoMessage.getSeq());
 
                 fiscoMessage.readExtra(message);
                 channelService.onReceiveTransactionMessage(ctx, fiscoMessage);
@@ -141,7 +141,7 @@ public class ConnectionCallback implements ChannelConnections.Callback {
                 ChannelMessage2 channelMessage = new ChannelMessage2(msg);
                 channelMessage.readExtra(message);
 
-                logger.trace("New block notify");
+                logger.info("receive Message type: {}, new block notify", msg.getType());
                 channelService.onReceiveBlockNotify(ctx, channelMessage);
             } else {
                 logger.error("unknown message type:{}", msg.getType());
