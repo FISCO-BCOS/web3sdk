@@ -194,7 +194,7 @@ public class ChannelConnections {
         if (!maxBlockNumberConnections.isEmpty()) {
         	selectNodeIndex = random.nextInt(maxBlockNumberConnections.size());
         	selectedNodeChannelHandlerContext = maxBlockNumberConnections.get(selectNodeIndex);
-        	System.out.println(maxBlockNumberConnections);
+//        	System.out.println(maxBlockNumberConnections);
         }
         else {
         	selectNodeIndex = random.nextInt(activeConnections.size());
@@ -203,7 +203,7 @@ public class ChannelConnections {
         SocketChannel socketChannel = (SocketChannel) selectedNodeChannelHandlerContext.channel();
         InetSocketAddress socketAddress = socketChannel.remoteAddress();
         logger.debug("selected node {}:{}", socketAddress.getAddress().getHostAddress(), socketAddress.getPort());
-		System.out.println(socketAddress.getAddress().getHostAddress() + ":" +socketAddress.getPort());
+//		System.out.println(socketAddress.getAddress().getHostAddress() + ":" +socketAddress.getPort());
         return selectedNodeChannelHandlerContext;
     }
 

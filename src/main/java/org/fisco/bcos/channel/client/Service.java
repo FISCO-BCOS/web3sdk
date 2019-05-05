@@ -378,7 +378,7 @@ public class Service {
             ctx.writeAndFlush(out);
 
             SocketChannel socketChannel = (SocketChannel) ctx.channel();
-						logger.debug(
+            logger.trace(
                     "send fisco message to "
                             + socketChannel
                                     .remoteAddress()
@@ -606,10 +606,9 @@ public class Service {
 
     public void onReceiveEthereumMessage(ChannelHandlerContext ctx, FiscoMessage message) {
         FiscoResponseCallback callback = (FiscoResponseCallback) seq2Callback.get(message.getSeq());
-        logger.debug("FiscoResponse seq:{}", message.getSeq());
+        logger.trace("FiscoResponse seq:{}", message.getSeq());
 
         if (callback != null) {
-            logger.debug("found callback FiscoResponse");
 
             if (callback.getTimeout() != null) {
                 callback.getTimeout().cancel();
@@ -694,7 +693,7 @@ public class Service {
     public void onReceiveBlockNotify(ChannelHandlerContext ctx, ChannelMessage2 message) {
         try {
             String data = new String(message.getData());
-            logger.debug("Receive block notify: {}", data);
+            logger.info("Receive block notify: {}", data);
             String[] split = data.split(",");
             if (split.length != 2) {
                 logger.error("Block notify format error: {}", data);
@@ -711,7 +710,7 @@ public class Service {
             String hostAddress = socketChannel.remoteAddress().getAddress().getHostAddress();
             int port = socketChannel.remoteAddress().getPort();
             Integer number = Integer.parseInt(split[1]);
-            System.out.println(hostAddress + ":" + port + " blockNumber:" + number);
+//            System.out.println(hostAddress + ":" + port + " blockNumber:" + number);
             nodeToBlockNumberMap.put(hostAddress + port, number);
             
             if (number.compareTo(getNumber().intValue()) > 0) {
@@ -725,7 +724,7 @@ public class Service {
     public void onReceiveTransactionMessage(ChannelHandlerContext ctx, FiscoMessage message) {
         TransactionSucCallback callback =
                 (TransactionSucCallback) seq2TransactionCallback.get(message.getSeq());
-        logger.debug("receive transaction success seq:{}", message.getSeq());
+        logger.trace("receive transaction success seq:{}", message.getSeq());
 
         if (callback != null) {
             if (callback.getTimeout() != null) {
@@ -747,7 +746,7 @@ public class Service {
 
             seq2TransactionCallback.remove(message.getSeq());
         } else {
-            logger.debug("callback is null");
+            logger.trace("callback is null");
         }
     }
 
