@@ -37,9 +37,9 @@ public class CRUDServiceTest extends TestBase {
     for(int i = 1; i <= num; i++)
     {
 	    Entry insertEntry = table.getEntry();
-	    insertEntry.put(key, "fruit");
 	    insertEntry.put("item_id", "1");
     	insertEntry.put("item_name", "apple"+i);
+    	table.setKey("fruit");
     	insertResult += crudSerivce.insert(table, insertEntry);
     }
     assertEquals(insertResult, num);
@@ -55,14 +55,13 @@ public class CRUDServiceTest extends TestBase {
 		assertEquals(resultSelect1.get(0).get("item_name"), "apple1");
   	
 	  // update records
-	  Entry updateEntry = table.getEntry();
-	  updateEntry.put(key, "fruit");
-	  updateEntry.put("item_id", "1");
-	  updateEntry.put("item_name", "orange");
-		Condition updateCondition = table.getCondition();
-		updateCondition.EQ("item_id", "1");
-		int updateResult = crudSerivce.update(table, updateEntry, updateCondition);
-		assertEquals(updateResult, num);
+		Entry updateEntry = table.getEntry();
+	  	updateEntry.put("item_id", "1");
+	  	updateEntry.put("item_name", "orange");
+	  	Condition updateCondition = table.getCondition();
+	  	updateCondition.EQ("item_id", "1");
+	  	int updateResult = crudSerivce.update(table, updateEntry, updateCondition);
+	  	assertEquals(updateResult, num);
 		
 	  // select records
 		Condition condition2 = table.getCondition();
