@@ -12,7 +12,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.Semaphore;
 import java.util.stream.Collectors;
-
 import org.fisco.bcos.channel.client.TransactionSucCallback;
 import org.fisco.bcos.web3j.abi.EventEncoder;
 import org.fisco.bcos.web3j.abi.EventValues;
@@ -105,7 +104,8 @@ public abstract class Contract extends ManagedTransaction {
                 logger.info("fisco-bcos version:{}", version);
             } else {
                 chainId = nodeVersion.getChainID();
-                logger.info("fisco-bcos version:{}, supported version:{}", version, supportedVersion);
+                logger.info(
+                        "fisco-bcos version:{}, supported version:{}", version, supportedVersion);
             }
         } catch (IOException e) {
             logger.error("Query fisco-bcos version failed", e);
