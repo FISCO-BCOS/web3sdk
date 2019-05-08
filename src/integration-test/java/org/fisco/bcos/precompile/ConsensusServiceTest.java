@@ -6,14 +6,14 @@ import java.util.List;
 
 import org.fisco.bcos.TestBase;
 import org.fisco.bcos.web3j.precompile.consensus.ConsensusService;
-import org.junit.Test;
+import org.junit.Ignore;
 
 public class ConsensusServiceTest extends TestBase {
 
 
 	private ConsensusService consensusService = new ConsensusService(web3j, credentials);
 
-  @Test
+  @Ignore
   public void addSealerAndObserverTest() throws Exception {
 
   	List<String> sealerList1 = web3j.getSealerList().send().getSealerList();
