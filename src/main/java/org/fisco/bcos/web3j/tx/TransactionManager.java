@@ -18,68 +18,80 @@ import org.fisco.bcos.web3j.utils.AttemptsConf;
  */
 public abstract class TransactionManager {
 
-  // configurable
-  public static final int DEFAULT_POLLING_ATTEMPTS_PER_TX_HASH = AttemptsConf.sleepDuration;
-  public static final int DEFAULT_POLLING_FREQUENCY = AttemptsConf.attempts; // 15 * 100
+    // configurable
+    public static final int DEFAULT_POLLING_ATTEMPTS_PER_TX_HASH = AttemptsConf.sleepDuration;
+    public static final int DEFAULT_POLLING_FREQUENCY = AttemptsConf.attempts; // 15 * 100
 
-  private final TransactionReceiptProcessor transactionReceiptProcessor;
-  final Credentials credentials;
+    private final TransactionReceiptProcessor transactionReceiptProcessor;
+    final Credentials credentials;
 
-  protected TransactionManager(
-      TransactionReceiptProcessor transactionReceiptProcessor, Credentials credentials) {
-    this.transactionReceiptProcessor = transactionReceiptProcessor;
-    this.credentials = credentials;
-  }
-
-  protected TransactionManager(Web3j web3j, Credentials credentials) {
-    this(
-        new PollingTransactionReceiptProcessor(
-            web3j, DEFAULT_POLLING_ATTEMPTS_PER_TX_HASH ,DEFAULT_POLLING_FREQUENCY),
-        credentials);
-  }
-
-  protected TransactionManager(
-      Web3j web3j, int attempts, long sleepDuration, Credentials credentials) {
-    this(new PollingTransactionReceiptProcessor(web3j, sleepDuration, attempts), credentials);
-  }
-
-  protected TransactionReceipt executeTransaction(
-      BigInteger gasPrice, BigInteger gasLimit, String to, String data, BigInteger value, String extraData)
-      throws IOException, TransactionException {
-
-    SendTransaction sendTransaction = sendTransaction(gasPrice, gasLimit, to, data, value, extraData);
-    return processResponse(sendTransaction);
-  }
-
-  public abstract SendTransaction sendTransaction(
-      BigInteger gasPrice, BigInteger gasLimit, String to, String data, BigInteger value, String extraData)
-      throws IOException;
-
-  public SendTransaction sendTransaction(
-      BigInteger gasPrice,
-      BigInteger gasLimit,
-      String to,
-      String data,
-      BigInteger value,
-      String extraData,
-      TransactionSucCallback callback)
-      throws IOException {
-    return null;
-  };
-
-  public String getFromAddress() {
-    return credentials.getAddress();
-  }
-
-  private TransactionReceipt processResponse(SendTransaction transactionResponse)
-      throws IOException, TransactionException {
-    if (transactionResponse.hasError()) {
-      throw new RuntimeException(
-          "Error processing transaction request: " + transactionResponse.getError().getMessage());
+    protected TransactionManager(
+            TransactionReceiptProcessor transactionReceiptProcessor, Credentials credentials) {
+        this.transactionReceiptProcessor = transactionReceiptProcessor;
+        this.credentials = credentials;
     }
 
-    String transactionHash = transactionResponse.getTransactionHash();
+    protected TransactionManager(Web3j web3j, Credentials credentials) {
+        this(
+                new PollingTransactionReceiptProcessor(
+                        web3j, DEFAULT_POLLING_ATTEMPTS_PER_TX_HASH, DEFAULT_POLLING_FREQUENCY),
+                credentials);
+    }
 
-    return transactionReceiptProcessor.waitForTransactionReceipt(transactionHash);
-  }
+    protected TransactionManager(
+            Web3j web3j, int attempts, long sleepDuration, Credentials credentials) {
+        this(new PollingTransactionReceiptProcessor(web3j, sleepDuration, attempts), credentials);
+    }
+
+    protected TransactionReceipt executeTransaction(
+            BigInteger gasPrice,
+            BigInteger gasLimit,
+            String to,
+            String data,
+            BigInteger value,
+            String extraData)
+            throws IOException, TransactionException {
+
+        SendTransaction sendTransaction =
+                sendTransaction(gasPrice, gasLimit, to, data, value, extraData);
+        return processResponse(sendTransaction);
+    }
+
+    public abstract SendTransaction sendTransaction(
+            BigInteger gasPrice,
+            BigInteger gasLimit,
+            String to,
+            String data,
+            BigInteger value,
+            String extraData)
+            throws IOException;
+
+    public SendTransaction sendTransaction(
+            BigInteger gasPrice,
+            BigInteger gasLimit,
+            String to,
+            String data,
+            BigInteger value,
+            String extraData,
+            TransactionSucCallback callback)
+            throws IOException {
+        return null;
+    };
+
+    public String getFromAddress() {
+        return credentials.getAddress();
+    }
+
+    private TransactionReceipt processResponse(SendTransaction transactionResponse)
+            throws IOException, TransactionException {
+        if (transactionResponse.hasError()) {
+            throw new RuntimeException(
+                    "Error processing transaction request: "
+                            + transactionResponse.getError().getMessage());
+        }
+
+        String transactionHash = transactionResponse.getTransactionHash();
+
+        return transactionReceiptProcessor.waitForTransactionReceipt(transactionHash);
+    }
 }
