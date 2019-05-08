@@ -10,18 +10,18 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class ProxyServer {
 
-  @Ignore
-  @Test
-  public void testProxyServer() throws Exception {
+    @Ignore
+    @Test
+    public void testProxyServer() throws Exception {
 
-    ApplicationContext context =
-        new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
-    Server server = context.getBean(Server.class);
-    System.out.println("start testing");
-    System.out.println("===================================================================");
+        ApplicationContext context =
+                new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
+        Server server = context.getBean(Server.class);
+        System.out.println("start testing");
+        System.out.println("===================================================================");
 
-    server.run();
-    Thread.sleep(5000);
-    exit(1);
-  }
+        server.run();
+        Thread.sleep(5000);
+        exit(1);
+    }
 }
