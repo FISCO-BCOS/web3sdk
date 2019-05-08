@@ -1,5 +1,13 @@
 package org.fisco.bcos.channel.client;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.util.HashedWheelTimer;
+import io.netty.util.Timeout;
+import io.netty.util.Timer;
+import io.netty.util.TimerTask;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -10,7 +18,6 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
-
 import org.fisco.bcos.channel.dto.ChannelMessage;
 import org.fisco.bcos.channel.dto.ChannelMessage2;
 import org.fisco.bcos.channel.dto.ChannelPush;
@@ -28,16 +35,6 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.socket.SocketChannel;
-import io.netty.util.HashedWheelTimer;
-import io.netty.util.Timeout;
-import io.netty.util.Timer;
-import io.netty.util.TimerTask;
 
 public class Service {
     private static Logger logger = LoggerFactory.getLogger(Service.class);
@@ -330,10 +327,10 @@ public class Service {
         fiscoMessage.setResult(0);
         fiscoMessage.setType((short) 0x12);
         fiscoMessage.setData(request.getContent().getBytes());
-        //select node
+        // select node
         try {
             ChannelConnections channelConnections =
-                    		allChannelConnections
+                    allChannelConnections
                             .getAllChannelConnections()
                             .stream()
                             .filter(x -> x.getGroupId() == groupId)
@@ -380,10 +377,7 @@ public class Service {
             SocketChannel socketChannel = (SocketChannel) ctx.channel();
             logger.trace(
                     "send fisco message to "
-                            + socketChannel
-                                    .remoteAddress()
-                                    .getAddress()
-                                    .getHostAddress()
+                            + socketChannel.remoteAddress().getAddress().getHostAddress()
                             + ":"
                             + socketChannel.remoteAddress().getPort()
                             + " success");
@@ -710,9 +704,9 @@ public class Service {
             String hostAddress = socketChannel.remoteAddress().getAddress().getHostAddress();
             int port = socketChannel.remoteAddress().getPort();
             Integer number = Integer.parseInt(split[1]);
-//            System.out.println(hostAddress + ":" + port + " blockNumber:" + number);
+            //            System.out.println(hostAddress + ":" + port + " blockNumber:" + number);
             nodeToBlockNumberMap.put(hostAddress + port, number);
-            
+
             if (number.compareTo(getNumber().intValue()) > 0) {
                 setNumber(BigInteger.valueOf((long) number));
             }

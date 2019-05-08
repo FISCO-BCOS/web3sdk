@@ -1,7 +1,6 @@
 package org.fisco.bcos.web3j.protocol.channel;
 
 import java.io.IOException;
-
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.channel.dto.FiscoRequest;
 import org.fisco.bcos.channel.dto.FiscoResponse;
@@ -22,7 +21,7 @@ public class ChannelEthereumService extends org.fisco.bcos.web3j.protocol.Servic
     public ChannelEthereumService(boolean includeRawResponses) {
         super(includeRawResponses);
     }
-   
+
     public ChannelEthereumService() {
         super(false);
     }

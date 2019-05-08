@@ -1,28 +1,5 @@
 package org.fisco.bcos.channel.handler;
 
-import java.io.InputStream;
-import java.net.InetSocketAddress;
-import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Random;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
-
-import javax.net.ssl.SSLException;
-
-import org.fisco.bcos.channel.dto.FiscoMessage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.core.io.support.ResourcePatternResolver;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
@@ -42,6 +19,26 @@ import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.SslProvider;
 import io.netty.handler.timeout.IdleStateHandler;
+import java.io.InputStream;
+import java.net.InetSocketAddress;
+import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Random;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+import javax.net.ssl.SSLException;
+import org.fisco.bcos.channel.dto.FiscoMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 public class ChannelConnections {
     private static Logger logger = LoggerFactory.getLogger(ChannelConnections.class);
@@ -86,14 +83,15 @@ public class ChannelConnections {
     public void setNodeKeyPath(String nodeKeyPath) {
         this.nodeKeyPath = nodeKeyPath;
     }
-    
-	public ConcurrentHashMap<String, Integer> getNodeToBlockNumberMap() {
-		return nodeToBlockNumberMap;
-	}
-	public void setNodeToBlockNumberMap(ConcurrentHashMap<String, Integer> nodeToBlockNumberMap) {
-		this.nodeToBlockNumberMap = nodeToBlockNumberMap;
-	}
-	
+
+    public ConcurrentHashMap<String, Integer> getNodeToBlockNumberMap() {
+        return nodeToBlockNumberMap;
+    }
+
+    public void setNodeToBlockNumberMap(ConcurrentHashMap<String, Integer> nodeToBlockNumberMap) {
+        this.nodeToBlockNumberMap = nodeToBlockNumberMap;
+    }
+
     public interface Callback {
         void onConnect(ChannelHandlerContext ctx);
 
@@ -173,37 +171,53 @@ public class ChannelConnections {
             throw new Exception("activeConnections isEmpty");
         }
         // select maxBlockNumber node
-        List<ChannelHandlerContext> maxBlockNumberConnections = new ArrayList<ChannelHandlerContext>();
+        List<ChannelHandlerContext> maxBlockNumberConnections =
+                new ArrayList<ChannelHandlerContext>();
         long maxBlockNumber = 0;
         for (String key : nodeToBlockNumberMap.keySet()) {
-        	int blockNumber = nodeToBlockNumberMap.get(key);
-        	if(blockNumber >= maxBlockNumber)
-        	{
-        		if (blockNumber > maxBlockNumber) {
-        			maxBlockNumberConnections.clear();
-				}
-        		ChannelHandlerContext channelHandlerContext = activeConnections.stream().filter(x -> key.equals(((SocketChannel) x.channel()).remoteAddress().getAddress().getHostAddress() 
-        				+ ((SocketChannel) x.channel()).remoteAddress().getPort())).findFirst().get();
-        		maxBlockNumberConnections.add(channelHandlerContext);
-        		maxBlockNumber = blockNumber;
-        	}
-		}
+            int blockNumber = nodeToBlockNumberMap.get(key);
+            if (blockNumber >= maxBlockNumber) {
+                if (blockNumber > maxBlockNumber) {
+                    maxBlockNumberConnections.clear();
+                }
+                ChannelHandlerContext channelHandlerContext =
+                        activeConnections
+                                .stream()
+                                .filter(
+                                        x ->
+                                                key.equals(
+                                                        ((SocketChannel) x.channel())
+                                                                        .remoteAddress()
+                                                                        .getAddress()
+                                                                        .getHostAddress()
+                                                                + ((SocketChannel) x.channel())
+                                                                        .remoteAddress()
+                                                                        .getPort()))
+                                .findFirst()
+                                .get();
+                maxBlockNumberConnections.add(channelHandlerContext);
+                maxBlockNumber = blockNumber;
+            }
+        }
         Random random = new SecureRandom();
         int selectNodeIndex = 0;
         ChannelHandlerContext selectedNodeChannelHandlerContext = null;
         if (!maxBlockNumberConnections.isEmpty()) {
-        	selectNodeIndex = random.nextInt(maxBlockNumberConnections.size());
-        	selectedNodeChannelHandlerContext = maxBlockNumberConnections.get(selectNodeIndex);
-//        	System.out.println(maxBlockNumberConnections);
-        }
-        else {
-        	selectNodeIndex = random.nextInt(activeConnections.size());
-        	selectedNodeChannelHandlerContext = activeConnections.get(selectNodeIndex);
+            selectNodeIndex = random.nextInt(maxBlockNumberConnections.size());
+            selectedNodeChannelHandlerContext = maxBlockNumberConnections.get(selectNodeIndex);
+            //        	System.out.println(maxBlockNumberConnections);
+        } else {
+            selectNodeIndex = random.nextInt(activeConnections.size());
+            selectedNodeChannelHandlerContext = activeConnections.get(selectNodeIndex);
         }
         SocketChannel socketChannel = (SocketChannel) selectedNodeChannelHandlerContext.channel();
         InetSocketAddress socketAddress = socketChannel.remoteAddress();
-        logger.debug("selected node {}:{}", socketAddress.getAddress().getHostAddress(), socketAddress.getPort());
-//		System.out.println(socketAddress.getAddress().getHostAddress() + ":" +socketAddress.getPort());
+        logger.debug(
+                "selected node {}:{}",
+                socketAddress.getAddress().getHostAddress(),
+                socketAddress.getPort());
+        //		System.out.println(socketAddress.getAddress().getHostAddress() + ":"
+        // +socketAddress.getPort());
         return selectedNodeChannelHandlerContext;
     }
 
