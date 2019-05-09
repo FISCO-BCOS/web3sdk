@@ -842,7 +842,7 @@ public class SolidityFunctionWrapper extends Generator {
                     functionDefinition, methodBuilder, outputParameterTypes, inputParams);
         } else {
             // functionDefinition.getInputs().add(new NamedType("callback",
-            // "org.fisco.bcos.channel.dto.FiscoResponse.TransactionSucCallback"));
+            // "org.fisco.bcos.channel.dto.BcosResponse.TransactionSucCallback"));
             String inputParams = addParameters(methodBuilder, functionDefinition.getInputs());
             methodBuilder.addParameter(
                     ParameterSpec.builder(buildTypeName("TransactionSucCallback"), "callback")
