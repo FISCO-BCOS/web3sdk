@@ -1,22 +1,20 @@
 package org.fisco.bcos.web3j.precompile.common;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.math.BigInteger;
-
 import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.methods.response.NodeVersion.Version;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.protocol.exceptions.TransactionException;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 public class PrecompiledCommon {
-	
+
     public static final String BCOS_RC1 = "2.0.0-rc1";
     public static final String BCOS_RC2 = "2.0.0-rc2";
     public static final String BCOS_RC3 = "2.0.0-rc3";
-    
+
     // system table for authority control
     public static final String SYSTABLE = "_sys_tables_";
     public static final String SYSTABLEACCESS = "_sys_table_access_";
@@ -45,118 +43,70 @@ public class PrecompiledCommon {
     public static final int ObserverList = -51105;
     public static final int ContractNameAndVersionExist = -51200;
     public static final int VersionExceeds = -51201;
-    public static final int InvalidKey_RC1 = -157;
+    public static final int InvalidKey_RC1 = 157;
     public static final int InvalidKey = 51300;
     public static final int InvalidKey_RC3 = -51300;
-    
+
     private static String BCOS_VERSION = "";
 
     public static String transferToJson(int code) throws IOException {
         // adapt fisco-bcos rc1 || rc2 || rc3
         String msg = "";
-        if(BCOS_VERSION == null || BCOS_RC1.equals(BCOS_VERSION))
-        {
-            if(code == PermissionDenied_RC1)
-            {
-            	msg = "permission denied";
+        if (BCOS_VERSION == null || BCOS_RC1.equals(BCOS_VERSION)) {
+            if (code == PermissionDenied_RC1) {
+                msg = "permission denied";
+            } else if (code == TableNameAndAddressExist_RC1) {
+                msg = "table name and address already exist";
+            } else if (code == TableNameAndAddressNotExist_RC1) {
+                msg = "table name and address does not exist";
+            } else if (code == LastSealer_RC1) {
+                msg = "the last sealer cannot be removed";
+            } else if (code == InvalidKey_RC1) {
+                msg = "invalid configuration entry";
             }
-            else if(code == TableNameAndAddressExist_RC1)
-            {
-            	msg = "table name and address already exist";
+        } else if (BCOS_RC2.equals(BCOS_VERSION)) {
+            if (code == PermissionDenied) {
+                msg = "permission denied";
+            } else if (code == TableNameAndAddressExist) {
+                msg = "table name and address already exist";
+            } else if (code == TableNameAndAddressNotExist) {
+                msg = "table name and address does not exist";
+            } else if (code == LastSealer) {
+                msg = "the last sealer cannot be removed";
+            } else if (code == InvalidKey) {
+                msg = "invalid configuration entry";
             }
-            else if(code == TableNameAndAddressNotExist_RC1)
-            {
-            	msg = "table name and address does not exist";
-            }
-            else if(code == LastSealer_RC1)
-            {
-            	msg = "invalid node ID";
-            }
-            else if(code == InvalidKey_RC1)
-            {
-            	msg = "invalid configuration entry";
-            }
-        }
-        else if (BCOS_RC2.equals(BCOS_VERSION))
-        {
-            if(code == PermissionDenied)
-            {
-            	msg = "permission denied";
-            }
-            else if(code == TableNameAndAddressExist)
-            {
-            	msg = "table name and address already exist";
-            }
-            else if(code == TableNameAndAddressNotExist)
-            {
-            	msg = "table name and address does not exist";
-            }
-            else if(code == LastSealer)
-            {
-            	msg = "invalid node ID";
-            }
-            else if(code == InvalidKey)
-            {
-            	msg = "invalid configuration entry";
+        } else {
+            if (code == PermissionDenied_RC3) {
+                msg = "permission denied";
+            } else if (code == TableNameAndAddressExist_RC3) {
+                msg = "table name and address already exist";
+            } else if (code == TableNameAndAddressNotExist_RC3) {
+                msg = "table name and address does not exist";
+            } else if (code == LastSealer_RC3) {
+                msg = "the last sealer cannot be removed";
+            } else if (code == InvalidKey_RC3) {
+                msg = "invalid configuration entry";
             }
         }
-        else{
-        	if(code == PermissionDenied_RC3)
-        	{
-        		msg = "permission denied";
-        	}
-        	else if(code == TableNameAndAddressExist_RC3)
-        	{
-        		msg = "table name and address already exist";
-        	}
-        	else if(code == TableNameAndAddressNotExist_RC3)
-        	{
-        		msg = "table name and address does not exist";
-        	}
-        	else if(code == LastSealer_RC3)
-        	{
-        		msg = "invalid node ID";
-        	}
-        	else if(code == InvalidKey_RC3)
-        	{
-        		msg = "invalid configuration entry";
-        	}
-        }
-        if(code == Success)
-        {
-        	msg = "success";
-        }
-        else if(code == InvalidNodeId)
-        {
-        	msg = "invalid node ID";
-        }
-        else if(code == P2pNetwork)
-        {
-        	msg = "the node is not reachable";
-        }
-        else if(code == GroupPeers)
-        {
-        	msg = "the node is not a group peer";
-        }
-        else if(code == SealerList)
-        {
-        	msg = "the node is already in the sealer list";
-        }
-        else if(code == ObserverList)
-        {
-        	msg = "the node is already in the observer list";
-        }
-        else if(code == ContractNameAndVersionExist)
-        {
-        	msg = "contract name and version already exist";
-        }
-        else if(code == TableExist)
-        {
-        	msg = "table already exist";
-        }
-        else if(code == VersionExceeds)
-        {
-        	msg = "version string length exceeds the maximum limit";
+        if (code == Success) {
+            msg = "success";
+        } else if (code == InvalidNodeId) {
+            msg = "invalid node ID";
+        } else if (code == P2pNetwork) {
+            msg = "the node is not reachable";
+        } else if (code == GroupPeers) {
+            msg = "the node is not a group peer";
+        } else if (code == SealerList) {
+            msg = "the node is already in the sealer list";
+        } else if (code == ObserverList) {
+            msg = "the node is already in the observer list";
+        } else if (code == ContractNameAndVersionExist) {
+            msg = "contract name and version already exist";
+        } else if (code == TableExist) {
+            msg = "table already exist";
+        } else if (code == VersionExceeds) {
+            msg = "version string length exceeds the maximum limit";
         }
         ObjectMapper mapper = ObjectMapperFactory.getObjectMapper();
         return mapper.writeValueAsString(new PrecompiledResponse(code, msg));
@@ -164,13 +114,13 @@ public class PrecompiledCommon {
 
     public static String getJsonStr(String output, Web3j web3j) throws IOException {
         try {
-        	Version nodeVersion = web3j.getNodeVersion().send().getNodeVersion();
-        	BCOS_VERSION = nodeVersion.getSupportedVersion();
-	        int code = 0;
-	        code = new BigInteger(output.substring(2, output.length()), 16).intValue();
-	        if (code == 1) {
-	        	code = Success;
-	        }
+            Version nodeVersion = web3j.getNodeVersion().send().getNodeVersion();
+            BCOS_VERSION = nodeVersion.getSupportedVersion();
+            int code = 0;
+            code = new BigInteger(output.substring(2, output.length()), 16).intValue();
+            if (code == 1) {
+                code = Success;
+            }
             return transferToJson(code);
         } catch (NumberFormatException e) {
             return "The call function does not exist.";

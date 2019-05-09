@@ -3,12 +3,12 @@ package org.fisco.bcos.channel.dto;
 import io.netty.buffer.ByteBuf;
 import org.fisco.bcos.channel.handler.Message;
 
-public class FiscoMessage extends Message {
+public class BcosMessage extends Message {
     private static final long serialVersionUID = 3763237749437810546L;
 
-    public FiscoMessage() {}
+    public BcosMessage() {}
 
-    public FiscoMessage(Message msg) {
+    public BcosMessage(Message msg) {
         length = msg.getLength();
         type = msg.getType();
         seq = msg.getSeq();

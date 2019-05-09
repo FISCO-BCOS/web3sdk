@@ -1,8 +1,8 @@
 package org.fisco.bcos.web3j.precompile.cns;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.List;
-
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.crypto.WalletUtils;
 import org.fisco.bcos.web3j.precompile.common.PrecompiledCommon;
@@ -18,8 +18,6 @@ import org.fisco.bcos.web3j.tx.gas.DefaultGasProvider;
 import org.fisco.bcos.web3j.tx.gas.StaticGasProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /** Resolution logic for contract addresses. */
 public class CnsService {
