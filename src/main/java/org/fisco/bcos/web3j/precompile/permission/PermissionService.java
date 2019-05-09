@@ -1,8 +1,8 @@
 package org.fisco.bcos.web3j.precompile.permission;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigInteger;
 import java.util.List;
+
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.precompile.common.PrecompiledCommon;
 import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
@@ -11,18 +11,22 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.tx.gas.ContractGasProvider;
 import org.fisco.bcos.web3j.tx.gas.StaticGasProvider;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class PermissionService {
     private static BigInteger gasPrice = new BigInteger("300000000");
     private static BigInteger gasLimit = new BigInteger("300000000");
     private static String PermissionPrecompileAddress =
             "0x0000000000000000000000000000000000001005";
     private Permission permission;
-
+    private Web3j web3j;
+    
     public PermissionService(Web3j web3j, Credentials credentials) {
         ContractGasProvider contractGasProvider = new StaticGasProvider(gasPrice, gasLimit);
         permission =
                 Permission.load(
                         PermissionPrecompileAddress, web3j, credentials, contractGasProvider);
+        this.web3j = web3j;
     }
 
     public String grantUserTableManager(String tableName, String grantress) throws Exception {
@@ -99,12 +103,12 @@ public class PermissionService {
 
     private String grant(String tableName, String grantress) throws Exception {
         TransactionReceipt receipt = permission.insert(tableName, grantress).send();
-        return PrecompiledCommon.handleTransactionReceipt(receipt);
+        return PrecompiledCommon.handleTransactionReceipt(receipt, web3j);
     }
 
     private String revoke(String tableName, String address) throws Exception {
         TransactionReceipt receipt = permission.remove(tableName, address).send();
-        return PrecompiledCommon.handleTransactionReceipt(receipt);
+        return PrecompiledCommon.handleTransactionReceipt(receipt, web3j);
     }
 
     private List<PermissionInfo> list(String tableName) throws Exception {

@@ -1,15 +1,17 @@
 package org.fisco.bcos.web3j.precompile.consensus;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.List;
+
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.precompile.common.PrecompiledCommon;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.tx.gas.ContractGasProvider;
 import org.fisco.bcos.web3j.tx.gas.StaticGasProvider;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 public class ConsensusService {
     private static BigInteger gasPrice = new BigInteger("300000000");
@@ -34,7 +36,7 @@ public class ConsensusService {
             return PrecompiledCommon.transferToJson(PrecompiledCommon.SealerList);
         }
         TransactionReceipt receipt = consensus.addSealer(nodeID).send();
-        return PrecompiledCommon.handleTransactionReceipt(receipt);
+        return PrecompiledCommon.handleTransactionReceipt(receipt, web3j);
     }
 
     public String addObserver(String nodeID) throws Exception {
@@ -46,7 +48,7 @@ public class ConsensusService {
             return PrecompiledCommon.transferToJson(PrecompiledCommon.ObserverList);
         }
         TransactionReceipt receipt = consensus.addObserver(nodeID).send();
-        return PrecompiledCommon.handleTransactionReceipt(receipt);
+        return PrecompiledCommon.handleTransactionReceipt(receipt, web3j);
     }
 
     public String removeNode(String nodeId) throws Exception {
@@ -67,7 +69,7 @@ public class ConsensusService {
                 throw e;
             }
         }
-        return PrecompiledCommon.handleTransactionReceipt(receipt);
+        return PrecompiledCommon.handleTransactionReceipt(receipt, web3j);
     }
 
     private boolean isValidNodeID(String _nodeID) throws IOException, JsonProcessingException {
