@@ -1,9 +1,10 @@
 package org.fisco.bcos.web3j.protocol.channel;
 
 import java.io.IOException;
+
 import org.fisco.bcos.channel.client.Service;
-import org.fisco.bcos.channel.dto.FiscoRequest;
-import org.fisco.bcos.channel.dto.FiscoResponse;
+import org.fisco.bcos.channel.dto.BcosRequest;
+import org.fisco.bcos.channel.dto.BcosResponse;
 import org.fisco.bcos.web3j.protocol.core.Request;
 import org.fisco.bcos.web3j.protocol.core.Response;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Call.CallOutput;
@@ -32,36 +33,42 @@ public class ChannelEthereumService extends org.fisco.bcos.web3j.protocol.Servic
     public <T extends Response> T send(Request request, Class<T> responseType) throws IOException {
         byte[] payload = objectMapper.writeValueAsBytes(request);
 
-        FiscoRequest fiscoRequest = new FiscoRequest();
+        BcosRequest bcosRequest = new BcosRequest();
         if (channelService.getOrgID() != null) {
-            fiscoRequest.setKeyID(channelService.getOrgID());
+            bcosRequest.setKeyID(channelService.getOrgID());
         } else {
-            fiscoRequest.setKeyID(channelService.getAgencyName());
+            bcosRequest.setKeyID(channelService.getAgencyName());
         }
-        fiscoRequest.setBankNO("");
-        fiscoRequest.setContent(new String(payload));
-        fiscoRequest.setMessageID(channelService.newSeq());
+        bcosRequest.setBankNO("");
+        bcosRequest.setContent(new String(payload));
+        bcosRequest.setMessageID(channelService.newSeq());
 
         if (timeout != 0) {
-            fiscoRequest.setTimeout(timeout);
+            bcosRequest.setTimeout(timeout);
         }
 
-        FiscoResponse response;
+        BcosResponse response;
         if (!request.isNeedTransCallback()) {
-            response = channelService.sendEthereumMessage(fiscoRequest);
+            response = channelService.sendEthereumMessage(bcosRequest);
         } else {
             response =
                     channelService.sendEthereumMessage(
-                            fiscoRequest, request.getTransactionSucCallback());
+                            bcosRequest, request.getTransactionSucCallback());
         }
-
+        logger.info("bcos request, seq:{}, method:{}",
+                bcosRequest.getMessageID(),
+                request.getMethod());
+        logger.debug(
+        		"bcos request:{} {}",
+        		bcosRequest.getMessageID(),
+        		objectMapper.writeValueAsString(request));
         logger.trace(
-                "fisco Request:{} {}",
-                fiscoRequest.getMessageID(),
+                "bcos request:{} {}",
+                bcosRequest.getMessageID(),
                 objectMapper.writeValueAsString(request));
         logger.trace(
-                "fisco Response:{} {} {}",
-                fiscoRequest.getMessageID(),
+                "bcos response:{} {} {}",
+                bcosRequest.getMessageID(),
                 response.getErrorCode(),
                 response.getContent());
         if (response.getErrorCode() == 0) {
@@ -94,36 +101,35 @@ public class ChannelEthereumService extends org.fisco.bcos.web3j.protocol.Servic
     public String sendSpecial(Request request) throws IOException {
         byte[] payload = objectMapper.writeValueAsBytes(request);
 
-        FiscoRequest fiscoRequest = new FiscoRequest();
+        BcosRequest bcosRequest = new BcosRequest();
         if (channelService.getOrgID() != null) {
-            fiscoRequest.setKeyID(channelService.getOrgID());
+            bcosRequest.setKeyID(channelService.getOrgID());
         } else {
-            fiscoRequest.setKeyID(channelService.getAgencyName());
+            bcosRequest.setKeyID(channelService.getAgencyName());
         }
-        fiscoRequest.setBankNO("");
-        fiscoRequest.setContent(new String(payload));
-        fiscoRequest.setMessageID(channelService.newSeq());
+        bcosRequest.setBankNO("");
+        bcosRequest.setContent(new String(payload));
+        bcosRequest.setMessageID(channelService.newSeq());
 
         if (timeout != 0) {
-            fiscoRequest.setTimeout(timeout);
+            bcosRequest.setTimeout(timeout);
         }
 
-        FiscoResponse response;
+        BcosResponse response;
         if (!request.isNeedTransCallback()) {
-            response = channelService.sendEthereumMessage(fiscoRequest);
+            response = channelService.sendEthereumMessage(bcosRequest);
         } else {
             response =
                     channelService.sendEthereumMessage(
-                            fiscoRequest, request.getTransactionSucCallback());
+                            bcosRequest, request.getTransactionSucCallback());
         }
-
         logger.trace(
-                "fisco Request:{} {}",
-                fiscoRequest.getMessageID(),
+                "bcos request:{} {}",
+                bcosRequest.getMessageID(),
                 objectMapper.writeValueAsString(request));
         logger.trace(
-                "fisco Response:{} {} {}",
-                fiscoRequest.getMessageID(),
+                "bcos response:{} {} {}",
+                bcosRequest.getMessageID(),
                 response.getErrorCode(),
                 response.getContent());
         if (response.getErrorCode() == 0) {

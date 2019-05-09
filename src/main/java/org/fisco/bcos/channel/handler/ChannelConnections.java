@@ -1,5 +1,27 @@
 package org.fisco.bcos.channel.handler;
 
+import java.io.InputStream;
+import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Random;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+
+import javax.net.ssl.SSLException;
+
+import org.fisco.bcos.channel.dto.BcosMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
@@ -19,26 +41,6 @@ import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.SslProvider;
 import io.netty.handler.timeout.IdleStateHandler;
-import java.io.InputStream;
-import java.net.InetSocketAddress;
-import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Random;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
-import javax.net.ssl.SSLException;
-import org.fisco.bcos.channel.dto.FiscoMessage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.core.io.support.ResourcePatternResolver;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 public class ChannelConnections {
     private static Logger logger = LoggerFactory.getLogger(ChannelConnections.class);
@@ -210,13 +212,7 @@ public class ChannelConnections {
             selectNodeIndex = random.nextInt(activeConnections.size());
             selectedNodeChannelHandlerContext = activeConnections.get(selectNodeIndex);
         }
-        SocketChannel socketChannel = (SocketChannel) selectedNodeChannelHandlerContext.channel();
-        InetSocketAddress socketAddress = socketChannel.remoteAddress();
-        logger.debug(
-                "selected node {}:{}",
-                socketAddress.getAddress().getHostAddress(),
-                socketAddress.getPort());
-        //		System.out.println(socketAddress.getAddress().getHostAddress() + ":"
+        // System.out.println(socketAddress.getAddress().getHostAddress() + ":"
         // +socketAddress.getPort());
         return selectedNodeChannelHandlerContext;
     }
@@ -464,7 +460,7 @@ public class ChannelConnections {
             } else {
                 logger.trace("send heart beat to {}", ctx.getKey());
                 // 连接还在，发送心跳
-                FiscoMessage fiscoMessage = new FiscoMessage();
+                BcosMessage fiscoMessage = new BcosMessage();
 
                 fiscoMessage.setSeq(UUID.randomUUID().toString().replaceAll("-", ""));
                 fiscoMessage.setResult(0);

@@ -1,6 +1,6 @@
 package org.fisco.bcos.channel.dto;
 
-public class FiscoRequest {
+public class BcosRequest {
     private String keyID; // chain ID
     private String orgApp; // org identification
     private String version;
