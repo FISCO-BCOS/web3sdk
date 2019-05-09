@@ -9,6 +9,7 @@ import io.netty.util.Timeout;
 import io.netty.util.Timer;
 import io.netty.util.TimerTask;
 import java.math.BigInteger;
+import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -18,15 +19,15 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+import org.fisco.bcos.channel.dto.BcosMessage;
+import org.fisco.bcos.channel.dto.BcosRequest;
+import org.fisco.bcos.channel.dto.BcosResponse;
 import org.fisco.bcos.channel.dto.ChannelMessage;
 import org.fisco.bcos.channel.dto.ChannelMessage2;
 import org.fisco.bcos.channel.dto.ChannelPush;
 import org.fisco.bcos.channel.dto.ChannelPush2;
 import org.fisco.bcos.channel.dto.ChannelRequest;
 import org.fisco.bcos.channel.dto.ChannelResponse;
-import org.fisco.bcos.channel.dto.FiscoMessage;
-import org.fisco.bcos.channel.dto.FiscoRequest;
-import org.fisco.bcos.channel.dto.FiscoResponse;
 import org.fisco.bcos.channel.handler.ChannelConnections;
 import org.fisco.bcos.channel.handler.ConnectionCallback;
 import org.fisco.bcos.channel.handler.ConnectionInfo;
@@ -173,8 +174,8 @@ public class Service {
         }
     }
 
-    public FiscoResponse sendEthereumMessage(FiscoRequest request) {
-        class Callback extends FiscoResponseCallback {
+    public BcosResponse sendEthereumMessage(BcosRequest request) {
+        class Callback extends BcosResponseCallback {
             Callback() {
                 try {
                     semaphore.acquire(1);
@@ -186,7 +187,7 @@ public class Service {
             }
 
             @Override
-            public void onResponse(FiscoResponse response) {
+            public void onResponse(BcosResponse response) {
                 fiscoResponse = response;
 
                 if (fiscoResponse != null && fiscoResponse.getContent() != null) {
@@ -198,7 +199,7 @@ public class Service {
                 semaphore.release();
             }
 
-            public FiscoResponse fiscoResponse;
+            public BcosResponse fiscoResponse;
             public Semaphore semaphore = new Semaphore(1, true);
         };
 
@@ -215,10 +216,10 @@ public class Service {
         return callback.fiscoResponse;
     }
 
-    public FiscoResponse sendEthereumMessage(
-            FiscoRequest request, TransactionSucCallback transactionSucCallback) {
-        class Callback extends FiscoResponseCallback {
-            public FiscoResponse ethereumResponse;
+    public BcosResponse sendEthereumMessage(
+            BcosRequest request, TransactionSucCallback transactionSucCallback) {
+        class Callback extends BcosResponseCallback {
+            public BcosResponse ethereumResponse;
             public Semaphore semaphore = new Semaphore(1, true);
 
             Callback() {
@@ -231,11 +232,8 @@ public class Service {
             }
 
             @Override
-            public void onResponse(FiscoResponse response) {
+            public void onResponse(BcosResponse response) {
                 ethereumResponse = response;
-
-                logger.trace("response: {}", response.getContent());
-
                 semaphore.release();
             }
         }
@@ -253,8 +251,8 @@ public class Service {
     }
 
     public void asyncSendEthereumMessage(
-            FiscoRequest request,
-            FiscoResponseCallback fiscoResponseCallback,
+            BcosRequest request,
+            BcosResponseCallback fiscoResponseCallback,
             TransactionSucCallback transactionSucCallback) {
         this.asyncSendEthereumMessage(request, fiscoResponseCallback);
         if (request.getTimeout() > 0) {
@@ -316,17 +314,15 @@ public class Service {
         return callback.channelResponse;
     }
 
-    public void asyncSendEthereumMessage(FiscoRequest request, FiscoResponseCallback callback) {
-        logger.debug("fisco message: " + request.getMessageID());
-
+    public void asyncSendEthereumMessage(BcosRequest request, BcosResponseCallback callback) {
         Boolean sended = false;
 
-        FiscoMessage fiscoMessage = new FiscoMessage();
+        BcosMessage bcosMessage = new BcosMessage();
 
-        fiscoMessage.setSeq(request.getMessageID());
-        fiscoMessage.setResult(0);
-        fiscoMessage.setType((short) 0x12);
-        fiscoMessage.setData(request.getContent().getBytes());
+        bcosMessage.setSeq(request.getMessageID());
+        bcosMessage.setResult(0);
+        bcosMessage.setType((short) 0x12);
+        bcosMessage.setData(request.getContent().getBytes());
         // select node
         try {
             ChannelConnections channelConnections =
@@ -350,21 +346,21 @@ public class Service {
             ChannelHandlerContext ctx = channelConnections.randomNetworkConnection();
 
             ByteBuf out = ctx.alloc().buffer();
-            fiscoMessage.writeHeader(out);
-            fiscoMessage.writeExtra(out);
+            bcosMessage.writeHeader(out);
+            bcosMessage.writeExtra(out);
 
             seq2Callback.put(request.getMessageID(), callback);
 
             if (request.getTimeout() > 0) {
-                final FiscoResponseCallback callbackInner = callback; // ethereum名字可能会搞混，换成channel
+                final BcosResponseCallback callbackInner = callback;
                 callback.setTimeout(
                         timeoutHandler.newTimeout(
                                 new TimerTask() {
-                                    FiscoResponseCallback _callback = callbackInner;
+                                    BcosResponseCallback _callback = callbackInner;
 
                                     @Override
                                     public void run(Timeout timeout) throws Exception {
-                                        // 处理超时逻辑
+                                        // handle timer
                                         _callback.onTimeout();
                                     }
                                 },
@@ -373,20 +369,19 @@ public class Service {
             }
 
             ctx.writeAndFlush(out);
-
-            SocketChannel socketChannel = (SocketChannel) ctx.channel();
-            logger.trace(
-                    "send fisco message to "
-                            + socketChannel.remoteAddress().getAddress().getHostAddress()
-                            + ":"
-                            + socketChannel.remoteAddress().getPort()
-                            + " success");
-
             sended = true;
+            SocketChannel socketChannel = (SocketChannel) ctx.channel();
+            InetSocketAddress socketAddress = socketChannel.remoteAddress();
+            logger.debug(
+                    "selected node {}:{} bcos request, seq:{}",
+                    socketAddress.getAddress().getHostAddress(),
+                    socketAddress.getPort(),
+                    bcosMessage.getSeq());
+
         } catch (Exception e) {
             logger.error("system error: " + e.getMessage());
 
-            FiscoResponse response = new FiscoResponse();
+            BcosResponse response = new BcosResponse();
             response.setErrorCode(-1);
             response.setErrorMessage(
                     e.getMessage()
@@ -598,9 +593,8 @@ public class Service {
         }
     }
 
-    public void onReceiveEthereumMessage(ChannelHandlerContext ctx, FiscoMessage message) {
-        FiscoResponseCallback callback = (FiscoResponseCallback) seq2Callback.get(message.getSeq());
-        logger.trace("FiscoResponse seq:{}", message.getSeq());
+    public void onReceiveEthereumMessage(ChannelHandlerContext ctx, BcosMessage message) {
+        BcosResponseCallback callback = (BcosResponseCallback) seq2Callback.get(message.getSeq());
 
         if (callback != null) {
 
@@ -608,9 +602,9 @@ public class Service {
                 callback.getTimeout().cancel();
             }
 
-            FiscoResponse response = new FiscoResponse();
+            BcosResponse response = new BcosResponse();
             if (message.getResult() != 0) {
-                response.setErrorMessage("FiscoResponse error");
+                response.setErrorMessage("BcosResponse error");
             }
 
             response.setErrorCode(message.getResult());
@@ -715,14 +709,13 @@ public class Service {
         }
     }
 
-    public void onReceiveTransactionMessage(ChannelHandlerContext ctx, FiscoMessage message) {
+    public void onReceiveTransactionMessage(ChannelHandlerContext ctx, BcosMessage message) {
         TransactionSucCallback callback =
                 (TransactionSucCallback) seq2TransactionCallback.get(message.getSeq());
-        logger.trace("receive transaction success seq:{}", message.getSeq());
 
         if (callback != null) {
             if (callback.getTimeout() != null) {
-                // 停止定时器，防止多响应一次
+                // stop timer，avoid response more once
                 callback.getTimeout().cancel();
             }
 
