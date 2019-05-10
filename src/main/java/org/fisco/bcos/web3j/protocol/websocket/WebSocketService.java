@@ -129,6 +129,11 @@ public class WebSocketService implements Web3jService {
       throw new RuntimeException("Unexpected exception", e.getCause());
     }
   }
+  
+  @Override
+	public void sendOnly(Request request) throws IOException {
+	  
+  }
 
   @Override
   public <T extends Response> CompletableFuture<T> sendAsync(

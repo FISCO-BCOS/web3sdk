@@ -10,6 +10,8 @@ import org.fisco.bcos.web3j.protocol.websocket.events.Notification;
 /** Services API. */
 public interface Web3jService {
   <T extends Response> T send(Request request, Class<T> responseType) throws IOException;
+  
+  void sendOnly(Request request) throws IOException;
 
   <T extends Response> CompletableFuture<T> sendAsync(Request request, Class<T> responseType);
 
