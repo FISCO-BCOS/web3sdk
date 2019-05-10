@@ -64,6 +64,11 @@ public class HttpService extends Service {
       httpClient.close();
     }
   }
+  
+  @Override
+	public void sendOnly(Request request) throws IOException {
+	  
+  }
 
   private Header[] buildHeaders() {
     List<Header> headers = new ArrayList<>();

@@ -89,6 +89,10 @@ public class Request<S, T extends Response> {
   public T send() throws IOException {
     return web3jService.send(this, responseType);
   }
+  
+  public void sendOnly() throws IOException {
+    web3jService.sendOnly(this);
+  }
 
   public String sendForReturnString() throws IOException {
     ChannelEthereumService channelEthereumService = (ChannelEthereumService) web3jService;
