@@ -1,6 +1,8 @@
 package org.fisco.bcos.web3j.protocol.channel;
 
 import java.io.IOException;
+
+import org.fisco.bcos.channel.client.FiscoResponseCallback;
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.channel.dto.FiscoRequest;
 import org.fisco.bcos.channel.dto.FiscoResponse;
@@ -9,6 +11,8 @@ import org.fisco.bcos.web3j.protocol.core.Response;
 import org.fisco.bcos.web3j.protocol.exceptions.MessageDecodingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 /** Channel implementation of our services API. */
 public class ChannelEthereumService extends org.fisco.bcos.web3j.protocol.Service {
@@ -69,6 +73,62 @@ public class ChannelEthereumService extends org.fisco.bcos.web3j.protocol.Servic
       throw new IOException(response.getErrorMessage());
     }
   }
+  
+	@Override
+	public void sendOnly(Request request) throws IOException {
+		byte[] payload = objectMapper.writeValueAsBytes(request);
+
+		FiscoRequest fiscoRequest = new FiscoRequest();
+		fiscoRequest.setKeyID(channelService.getOrgID());
+		fiscoRequest.setBankNO("");
+		fiscoRequest.setContent(new String(payload));
+		fiscoRequest.setMessageID(channelService.newSeq());
+
+		if (timeout != 0) {
+			fiscoRequest.setTimeout(timeout);
+		}
+
+		FiscoResponse response;
+		if (!request.isNeedTransCallback()) {
+			channelService.asyncSendEthereumMessage(fiscoRequest, new FiscoResponseCallback() {
+				@Override
+				public void onResponse(FiscoResponse response) {
+					try {
+						logger.debug("fisco Request:{} {}", fiscoRequest.getMessageID(), objectMapper.writeValueAsString(request));
+						logger.debug("fisco Response:{} {} {}", fiscoRequest.getMessageID(), response.getErrorCode(),
+								response.getContent());
+						
+						if (response.getErrorCode() != 0) {
+							logger.error("Error: " + response.getErrorCode());
+						}	
+					}
+					catch(Exception e) {
+						logger.error("Error: ", e);
+					}
+				}
+				
+			});
+		} else {
+			channelService.asyncSendEthereumMessage(fiscoRequest, new FiscoResponseCallback() {
+				@Override
+				public void onResponse(FiscoResponse response) {
+					try {
+						logger.debug("fisco Request:{} {}", fiscoRequest.getMessageID(), objectMapper.writeValueAsString(request));
+						logger.debug("fisco Response:{} {} {}", fiscoRequest.getMessageID(), response.getErrorCode(),
+								response.getContent());
+						
+						if (response.getErrorCode() != 0) {
+							logger.error("Error: " + response.getErrorCode());
+						}	
+					}
+					catch(Exception e) {
+						logger.error("Error: ", e);
+					}
+				}
+				
+			}, request.getTransactionSucCallback());
+		}
+	}
 
   public String sendSpecial(Request request) throws IOException {
     byte[] payload = objectMapper.writeValueAsBytes(request);
