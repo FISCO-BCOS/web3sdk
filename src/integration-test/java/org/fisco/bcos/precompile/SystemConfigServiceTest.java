@@ -16,7 +16,7 @@ public class SystemConfigServiceTest extends TestBase {
   public void setValueByKey() throws Exception {
 
   	String txCountLimit1 = "5000";
-		systemConfigSerivce.setValueByKey(EnumKey.tx_count_limit.toString(), txCountLimit1);
+	systemConfigSerivce.setValueByKey(EnumKey.tx_count_limit.toString(), txCountLimit1);
   	String txCountLimit2 = web3j.getSystemConfigByKey(EnumKey.tx_count_limit.toString()).send().getSystemConfigByKey();
   	assertEquals(txCountLimit1, txCountLimit2);
   	

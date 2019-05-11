@@ -45,7 +45,7 @@ public class PrecompiledCommon {
     public static final int ObserverList = -51105;
     public static final int ContractNameAndVersionExist = -51200;
     public static final int VersionExceeds = -51201;
-    public static final int InvalidKey_RC1 = -157;
+    public static final int InvalidKey_RC1 = 157;
     public static final int InvalidKey = 51300;
     public static final int InvalidKey_RC3 = -51300;
     
