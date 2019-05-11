@@ -1,23 +1,23 @@
 package org.fisco.bcos.channel.client;
 
 import io.netty.util.Timeout;
-import org.fisco.bcos.channel.dto.FiscoResponse;
+import org.fisco.bcos.channel.dto.BcosResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class FiscoResponseCallback {
-    private static Logger logger = LoggerFactory.getLogger(FiscoResponseCallback.class);
+public abstract class BcosResponseCallback {
+    private static Logger logger = LoggerFactory.getLogger(BcosResponseCallback.class);
 
     private Timeout timeout;
 
-    public abstract void onResponse(FiscoResponse response);
+    public abstract void onResponse(BcosResponse response);
 
     public void onTimeout() {
-        logger.error("Processing fisco message timeout:{}");
+        logger.error("Processing bcos message timeout:{}");
 
-        FiscoResponse response = new FiscoResponse();
+        BcosResponse response = new BcosResponse();
         response.setErrorCode(102);
-        response.setErrorMessage("Processing fisco message timeout");
+        response.setErrorMessage("Processing bcos message timeout");
 
         response.setContent("");
 

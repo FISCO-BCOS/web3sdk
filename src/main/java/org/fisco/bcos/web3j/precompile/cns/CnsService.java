@@ -98,7 +98,7 @@ public class CnsService {
             return PrecompiledCommon.transferToJson(PrecompiledCommon.VersionExceeds);
         }
         TransactionReceipt receipt = cns.insert(name, version, address, abi).send();
-        return PrecompiledCommon.handleTransactionReceipt(receipt);
+        return PrecompiledCommon.handleTransactionReceipt(receipt, web3j);
     }
 
     public List<CnsInfo> queryCnsByName(String name) throws Exception {
