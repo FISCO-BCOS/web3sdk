@@ -8,9 +8,9 @@ import java.math.BigInteger;
 import java.util.Set;
 import java.util.UUID;
 import org.fisco.bcos.channel.client.Service;
+import org.fisco.bcos.channel.dto.BcosMessage;
 import org.fisco.bcos.channel.dto.ChannelMessage;
 import org.fisco.bcos.channel.dto.ChannelMessage2;
-import org.fisco.bcos.channel.dto.FiscoMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,25 +79,17 @@ public class ConnectionCallback implements ChannelConnections.Callback {
             msg.readHeader(message);
 
             if (msg.getType() == 0x20 || msg.getType() == 0x21) {
-                logger.info("receive Message type: {}, channel message", msg.getType());
-
                 ChannelMessage channelMessage = new ChannelMessage(msg);
                 channelMessage.readExtra(message);
 
                 channelService.onReceiveChannelMessage(ctx, channelMessage);
             } else if (msg.getType() == 0x30 || msg.getType() == 0x31) {
-                logger.info("receive Message type: {}, channel2 message", msg.getType());
-
                 ChannelMessage2 channelMessage = new ChannelMessage2(msg);
                 channelMessage.readExtra(message);
 
                 channelService.onReceiveChannelMessage2(ctx, channelMessage);
             } else if (msg.getType() == 0x12) {
-                logger.info(
-                        "receive Message type: {}, bcos message, seq: {}",
-                        msg.getType(),
-                        msg.getSeq());
-                FiscoMessage fiscoMessage = new FiscoMessage(msg);
+                BcosMessage fiscoMessage = new BcosMessage(msg);
                 fiscoMessage.readExtra(message);
 
                 channelService.onReceiveEthereumMessage(ctx, fiscoMessage);
@@ -131,12 +123,7 @@ public class ConnectionCallback implements ChannelConnections.Callback {
                     logger.trace("heartbeat response");
                 }
             } else if (msg.getType() == 0x1000) {
-                FiscoMessage fiscoMessage = new FiscoMessage(msg);
-                logger.info(
-                        "receive Message type: {}, transactionReceipt notify, seq: {}",
-                        msg.getType(),
-                        fiscoMessage.getSeq());
-
+                BcosMessage fiscoMessage = new BcosMessage(msg);
                 fiscoMessage.readExtra(message);
                 channelService.onReceiveTransactionMessage(ctx, fiscoMessage);
             } else if (msg.getType() == 0x1001) {
@@ -144,7 +131,6 @@ public class ConnectionCallback implements ChannelConnections.Callback {
                 ChannelMessage2 channelMessage = new ChannelMessage2(msg);
                 channelMessage.readExtra(message);
 
-                logger.info("receive Message type: {}, new block notify", msg.getType());
                 channelService.onReceiveBlockNotify(ctx, channelMessage);
             } else {
                 logger.error("unknown message type:{}", msg.getType());

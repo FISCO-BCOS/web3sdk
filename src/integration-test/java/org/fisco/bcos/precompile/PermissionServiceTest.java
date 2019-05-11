@@ -33,16 +33,6 @@ public class PermissionServiceTest extends TestBase {
   }
   
   @Test
-  public void permissionManager() throws Exception {
-  	
-  	String grantPermissionManagerResult = permissionService.grantPermissionManager(Common.TX_ORIGIN);
-  	assertEquals(grantPermissionManagerResult, Common.SUSSCESS);
-  	
-  	String revokePermissionManagerResult = permissionService.revokePermissionManager(Common.TX_ORIGIN);
-  	assertEquals(revokePermissionManagerResult, Common.SUSSCESS);
-  }
-  
-  @Test
   public void nodeManager() throws Exception {
   	
   	String grantNodeManagerResult = permissionService.grantNodeManager(Common.TX_ORIGIN);

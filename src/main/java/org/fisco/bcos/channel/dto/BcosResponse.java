@@ -1,6 +1,6 @@
 package org.fisco.bcos.channel.dto;
 
-public class FiscoResponse {
+public class BcosResponse {
 
     private Integer errorCode;
     private String errorMessage;

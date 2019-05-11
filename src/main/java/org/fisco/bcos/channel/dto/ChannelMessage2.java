@@ -21,7 +21,6 @@ public class ChannelMessage2 extends Message {
 
     @Override
     public void readExtra(ByteBuf in) {
-        logger.debug("readExtra channel2 package: {}", result);
         if (result == 0) {
             Short topicLength = in.readUnsignedByte();
 
@@ -31,13 +30,12 @@ public class ChannelMessage2 extends Message {
 
             data = new byte[length - Message.HEADER_LENGTH - topicLength];
             in.readBytes(data, 0, length - Message.HEADER_LENGTH - topicLength);
-            logger.debug("data: {} {}", data.length, data);
         }
     }
 
     @Override
     public void writeHeader(ByteBuf out) {
-        // 先计算总长度
+        // total length
         length = Message.HEADER_LENGTH + 1 + topic.length() + data.length;
 
         super.writeHeader(out);
