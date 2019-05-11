@@ -112,7 +112,7 @@ public class PerfomanceTableInsert {
                 callback.setCollector(collector);
                 try {
                 	long _id = getNextID();
-                	tabletest.insert("fruit"+_id%50, 
+                	tabletest.insert("fruit"+_id%TableTestClient.modevalue, 
                 			BigInteger.valueOf(_id), 
                 			"apple"+getId(),callback);
                 } catch (Exception e) {
