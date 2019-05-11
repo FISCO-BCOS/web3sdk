@@ -70,7 +70,7 @@ public class PrecompiledCommon {
             }
             else if(code == LastSealer_RC1)
             {
-            	msg = "invalid node ID";
+            	msg = "the last sealer cannot be removed";
             }
             else if(code == InvalidKey_RC1)
             {
@@ -93,7 +93,7 @@ public class PrecompiledCommon {
             }
             else if(code == LastSealer)
             {
-            	msg = "invalid node ID";
+            	msg = "the last sealer cannot be removed";
             }
             else if(code == InvalidKey)
             {
@@ -115,7 +115,7 @@ public class PrecompiledCommon {
         	}
         	else if(code == LastSealer_RC3)
         	{
-        		msg = "invalid node ID";
+        		msg = "the last sealer cannot be removed";
         	}
         	else if(code == InvalidKey_RC3)
         	{
