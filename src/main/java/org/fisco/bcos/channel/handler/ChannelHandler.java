@@ -42,7 +42,7 @@ public class ChannelHandler extends SimpleChannelInboundHandler<ByteBuf> {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         try {
-            // 已连上，获取ip信息
+            // connected，get ip info
             String host =
                     ((SocketChannel) ctx.channel()).remoteAddress().getAddress().getHostAddress();
             Integer port = ((SocketChannel) ctx.channel()).remoteAddress().getPort();
@@ -57,7 +57,7 @@ public class ChannelHandler extends SimpleChannelInboundHandler<ByteBuf> {
 
             if (isServer) {
                 logger.debug("server accept new connect: {}:{}", host, port);
-                // 将此新连接增加到connections
+                // add the connection to the connections
                 ConnectionInfo info = new ConnectionInfo();
                 info.setHost(host);
                 info.setPort(port);
@@ -89,7 +89,7 @@ public class ChannelHandler extends SimpleChannelInboundHandler<ByteBuf> {
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         try {
             logger.debug("disconnect");
-            // 已断连，获取ip信息
+            // lost the connection, get ip info
             String host =
                     ((SocketChannel) ctx.channel()).remoteAddress().getAddress().getHostAddress();
             Integer port = ((SocketChannel) ctx.channel()).remoteAddress().getPort();
@@ -103,7 +103,7 @@ public class ChannelHandler extends SimpleChannelInboundHandler<ByteBuf> {
                             + String.valueOf(ctx.channel().isActive()));
 
             if (isServer) {
-                // server模式下，移除该connectionInfo
+                // server mode，remove the connection
                 for (Integer i = 0; i < connections.getConnections().size(); ++i) {
                     ConnectionInfo info = connections.getConnections().get(i);
 
@@ -112,10 +112,10 @@ public class ChannelHandler extends SimpleChannelInboundHandler<ByteBuf> {
                     }
                 }
 
-                // 移除该networkConnection
+                // remove the networkConnection
                 connections.removeNetworkConnectionByHost(host, port);
             } else {
-                // 无需将连接置为null
+                // set the connection disabled
                 // connections.setNetworkConnection(host, port, null);
             }
 
@@ -132,7 +132,6 @@ public class ChannelHandler extends SimpleChannelInboundHandler<ByteBuf> {
 
         final ChannelHandlerContext ctxF = ctx;
         final ByteBuf in = (ByteBuf) msg;
-        logger.trace("receive，from" + host + ":" + port + " in:" + in.readableBytes());
         try {
             if (threadPool == null) {
                 connections.onReceiveMessage(ctx, in);
@@ -146,14 +145,14 @@ public class ChannelHandler extends SimpleChannelInboundHandler<ByteBuf> {
                         });
             }
         } catch (RejectedExecutionException e) {
-            logger.error("threadPool is full,reject to request", e);
+            logger.error("threadPool is full, reject to request", e);
         }
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         logger.error("network error ", cause);
-        // 已断连，获取ip信息
+        // lost the connection，get ip info
         String host = ((SocketChannel) ctx.channel()).remoteAddress().getAddress().getHostAddress();
         Integer port = ((SocketChannel) ctx.channel()).remoteAddress().getPort();
 
@@ -166,10 +165,10 @@ public class ChannelHandler extends SimpleChannelInboundHandler<ByteBuf> {
                         + String.valueOf(ctx.channel().isActive()));
 
         if (isServer) {
-            // server模式下，移除该connection
+            // server mode，remove the connection
             connections.removeNetworkConnectionByHost(host, port);
         } else {
-            // 将该连接置为不可用
+            // set the connection disabled
             // connections.setNetworkConnection(host, port, null);
         }
 

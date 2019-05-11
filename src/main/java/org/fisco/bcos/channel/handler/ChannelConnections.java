@@ -20,7 +20,6 @@ import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.SslProvider;
 import io.netty.handler.timeout.IdleStateHandler;
 import java.io.InputStream;
-import java.net.InetSocketAddress;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,7 +31,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLException;
-import org.fisco.bcos.channel.dto.FiscoMessage;
+import org.fisco.bcos.channel.dto.BcosMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -210,13 +209,7 @@ public class ChannelConnections {
             selectNodeIndex = random.nextInt(activeConnections.size());
             selectedNodeChannelHandlerContext = activeConnections.get(selectNodeIndex);
         }
-        SocketChannel socketChannel = (SocketChannel) selectedNodeChannelHandlerContext.channel();
-        InetSocketAddress socketAddress = socketChannel.remoteAddress();
-        logger.debug(
-                "selected node {}:{}",
-                socketAddress.getAddress().getHostAddress(),
-                socketAddress.getPort());
-        //		System.out.println(socketAddress.getAddress().getHostAddress() + ":"
+        // System.out.println(socketAddress.getAddress().getHostAddress() + ":"
         // +socketAddress.getPort());
         return selectedNodeChannelHandlerContext;
     }
@@ -464,7 +457,7 @@ public class ChannelConnections {
             } else {
                 logger.trace("send heart beat to {}", ctx.getKey());
                 // 连接还在，发送心跳
-                FiscoMessage fiscoMessage = new FiscoMessage();
+                BcosMessage fiscoMessage = new BcosMessage();
 
                 fiscoMessage.setSeq(UUID.randomUUID().toString().replaceAll("-", ""));
                 fiscoMessage.setResult(0);

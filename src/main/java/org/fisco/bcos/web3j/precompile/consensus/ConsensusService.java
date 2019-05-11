@@ -34,7 +34,7 @@ public class ConsensusService {
             return PrecompiledCommon.transferToJson(PrecompiledCommon.SealerList);
         }
         TransactionReceipt receipt = consensus.addSealer(nodeID).send();
-        return PrecompiledCommon.handleTransactionReceipt(receipt);
+        return PrecompiledCommon.handleTransactionReceipt(receipt, web3j);
     }
 
     public String addObserver(String nodeID) throws Exception {
@@ -46,7 +46,7 @@ public class ConsensusService {
             return PrecompiledCommon.transferToJson(PrecompiledCommon.ObserverList);
         }
         TransactionReceipt receipt = consensus.addObserver(nodeID).send();
-        return PrecompiledCommon.handleTransactionReceipt(receipt);
+        return PrecompiledCommon.handleTransactionReceipt(receipt, web3j);
     }
 
     public String removeNode(String nodeId) throws Exception {
@@ -67,7 +67,7 @@ public class ConsensusService {
                 throw e;
             }
         }
-        return PrecompiledCommon.handleTransactionReceipt(receipt);
+        return PrecompiledCommon.handleTransactionReceipt(receipt, web3j);
     }
 
     private boolean isValidNodeID(String _nodeID) throws IOException, JsonProcessingException {
