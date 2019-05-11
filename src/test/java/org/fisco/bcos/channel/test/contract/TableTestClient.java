@@ -2,7 +2,6 @@ package org.fisco.bcos.channel.test.contract;
 
 import java.math.BigInteger;
 import java.util.List;
-
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.channel.test.contract.TableTest.CreateResultEventResponse;

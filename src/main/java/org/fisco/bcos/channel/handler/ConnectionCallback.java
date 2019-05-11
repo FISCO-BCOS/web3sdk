@@ -1,21 +1,18 @@
 package org.fisco.bcos.channel.handler;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.util.Set;
 import java.util.UUID;
-
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.channel.dto.BcosMessage;
 import org.fisco.bcos.channel.dto.ChannelMessage;
 import org.fisco.bcos.channel.dto.ChannelMessage2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
 
 public class ConnectionCallback implements ChannelConnections.Callback {
     private static Logger logger = LoggerFactory.getLogger(ConnectionCallback.class);

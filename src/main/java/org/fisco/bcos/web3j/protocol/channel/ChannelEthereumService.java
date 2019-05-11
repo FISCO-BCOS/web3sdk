@@ -1,7 +1,6 @@
 package org.fisco.bcos.web3j.protocol.channel;
 
 import java.io.IOException;
-
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.channel.dto.BcosRequest;
 import org.fisco.bcos.channel.dto.BcosResponse;
@@ -55,13 +54,12 @@ public class ChannelEthereumService extends org.fisco.bcos.web3j.protocol.Servic
                     channelService.sendEthereumMessage(
                             bcosRequest, request.getTransactionSucCallback());
         }
-        logger.info("bcos request, seq:{}, method:{}",
-                bcosRequest.getMessageID(),
-                request.getMethod());
+        logger.info(
+                "bcos request, seq:{}, method:{}", bcosRequest.getMessageID(), request.getMethod());
         logger.debug(
-        		"bcos request:{} {}",
-        		bcosRequest.getMessageID(),
-        		objectMapper.writeValueAsString(request));
+                "bcos request:{} {}",
+                bcosRequest.getMessageID(),
+                objectMapper.writeValueAsString(request));
         logger.trace(
                 "bcos request:{} {}",
                 bcosRequest.getMessageID(),

@@ -1,10 +1,9 @@
 package org.fisco.bcos.channel.dto;
 
+import io.netty.buffer.ByteBuf;
 import org.fisco.bcos.channel.handler.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import io.netty.buffer.ByteBuf;
 
 public class ChannelMessage2 extends Message {
     private static Logger logger = LoggerFactory.getLogger(ChannelMessage2.class);

@@ -1,17 +1,15 @@
 package org.fisco.bcos.web3j.precompile.consensus;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.List;
-
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.precompile.common.PrecompiledCommon;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.tx.gas.ContractGasProvider;
 import org.fisco.bcos.web3j.tx.gas.StaticGasProvider;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 public class ConsensusService {
     private static BigInteger gasPrice = new BigInteger("300000000");
