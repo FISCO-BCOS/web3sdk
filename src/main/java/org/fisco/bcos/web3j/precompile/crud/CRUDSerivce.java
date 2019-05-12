@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.precompile.common.PrecompiledCommon;
+import org.fisco.bcos.web3j.precompile.exception.PrecompileMessageException;
 import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
@@ -97,5 +98,21 @@ public class CRUDSerivce {
                                         .getTypeFactory()
                                         .constructCollectionType(List.class, Map.class));
         return result;
+    }
+
+    public Table desc(String tableName) throws Exception {
+        Table table = new Table();
+        table.setTableName(PrecompiledCommon.SYS_TABLE);
+        table.setKey(PrecompiledCommon.USER_TABLE_PREFIX + tableName);
+        Condition condition = table.getCondition();
+        List<Map<String, String>> userTable = select(table, condition);
+        Table tableInfo = new Table();
+        if (userTable.size() != 0) {
+            tableInfo.setKey(userTable.get(0).get("key_field"));
+            tableInfo.setValueFields(userTable.get(0).get("value_field"));
+        } else {
+            throw new PrecompileMessageException("The table '" + tableName + "' does not exist.");
+        }
+        return tableInfo;
     }
 }

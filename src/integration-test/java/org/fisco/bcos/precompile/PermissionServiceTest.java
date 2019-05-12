@@ -3,6 +3,7 @@ package org.fisco.bcos.precompile;
 import static org.junit.Assert.assertEquals;
 
 import org.fisco.bcos.TestBase;
+import org.fisco.bcos.web3j.precompile.exception.PrecompileMessageException;
 import org.fisco.bcos.web3j.precompile.permission.PermissionService;
 import org.junit.Test;
 
@@ -11,14 +12,11 @@ public class PermissionServiceTest extends TestBase {
 
 	PermissionService permissionService = new PermissionService(web3j, credentials);
 
-  @Test
+  @Test(expected= PrecompileMessageException.class) 
   public void userTableManager() throws Exception {
   	
-  	String grantUserTableManagerResult = permissionService.grantUserTableManager(Common.TABLE_NAME, Common.TX_ORIGIN);
-  	assertEquals(grantUserTableManagerResult, Common.SUSSCESS);
-  	
-  	String revokeUserTableManagerResult = permissionService.revokeUserTableManager(Common.TABLE_NAME, Common.TX_ORIGIN);
-  	assertEquals(revokeUserTableManagerResult, Common.SUSSCESS);
+	  String grantUserTableManagerResult = permissionService.grantUserTableManager("tt", Common.TX_ORIGIN);
+  
   }
   
   @Test
