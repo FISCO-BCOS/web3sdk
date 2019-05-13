@@ -732,8 +732,6 @@ public class Service {
             }
 
             seq2TransactionCallback.remove(message.getSeq());
-        } else {
-            logger.trace("callback is null");
         }
     }
 
