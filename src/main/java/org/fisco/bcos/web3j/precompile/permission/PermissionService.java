@@ -5,6 +5,7 @@ import java.math.BigInteger;
 import java.util.List;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.precompile.common.PrecompiledCommon;
+import org.fisco.bcos.web3j.precompile.crud.CRUDSerivce;
 import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
@@ -18,6 +19,7 @@ public class PermissionService {
             "0x0000000000000000000000000000000000001005";
     private Permission permission;
     private Web3j web3j;
+    private Credentials credentials;
 
     public PermissionService(Web3j web3j, Credentials credentials) {
         ContractGasProvider contractGasProvider = new StaticGasProvider(gasPrice, gasLimit);
@@ -25,9 +27,12 @@ public class PermissionService {
                 Permission.load(
                         PermissionPrecompileAddress, web3j, credentials, contractGasProvider);
         this.web3j = web3j;
+        this.credentials = credentials;
     }
 
     public String grantUserTableManager(String tableName, String grantress) throws Exception {
+        CRUDSerivce crudSerivce = new CRUDSerivce(web3j, credentials);
+        crudSerivce.desc(tableName);
         return grant(tableName, grantress);
     }
 
@@ -40,63 +45,63 @@ public class PermissionService {
     }
 
     public String grantDeployAndCreateManager(String grantress) throws Exception {
-        return grant(PrecompiledCommon.SYSTABLE, grantress);
+        return grant(PrecompiledCommon.SYS_TABLE, grantress);
     }
 
     public String revokeDeployAndCreateManager(String grantress) throws Exception {
-        return revoke(PrecompiledCommon.SYSTABLE, grantress);
+        return revoke(PrecompiledCommon.SYS_TABLE, grantress);
     }
 
     public List<PermissionInfo> listDeployAndCreateManager() throws Exception {
-        return list(PrecompiledCommon.SYSTABLE);
+        return list(PrecompiledCommon.SYS_TABLE);
     }
 
     public String grantPermissionManager(String grantress) throws Exception {
-        return grant(PrecompiledCommon.SYSTABLEACCESS, grantress);
+        return grant(PrecompiledCommon.SYS_TABLE_ACCESS, grantress);
     }
 
     public String revokePermissionManager(String grantress) throws Exception {
-        return revoke(PrecompiledCommon.SYSTABLEACCESS, grantress);
+        return revoke(PrecompiledCommon.SYS_TABLE_ACCESS, grantress);
     }
 
     public List<PermissionInfo> listPermissionManager() throws Exception {
-        return list(PrecompiledCommon.SYSTABLEACCESS);
+        return list(PrecompiledCommon.SYS_TABLE_ACCESS);
     }
 
     public String grantNodeManager(String grantress) throws Exception {
-        return grant(PrecompiledCommon.SYSCONSENSUS, grantress);
+        return grant(PrecompiledCommon.SYS_CONSENSUS, grantress);
     }
 
     public String revokeNodeManager(String grantress) throws Exception {
-        return revoke(PrecompiledCommon.SYSCONSENSUS, grantress);
+        return revoke(PrecompiledCommon.SYS_CONSENSUS, grantress);
     }
 
     public List<PermissionInfo> listNodeManager() throws Exception {
-        return list(PrecompiledCommon.SYSCONSENSUS);
+        return list(PrecompiledCommon.SYS_CONSENSUS);
     }
 
     public String grantCNSManager(String grantress) throws Exception {
-        return grant(PrecompiledCommon.SYSCNS, grantress);
+        return grant(PrecompiledCommon.SYS_CNS, grantress);
     }
 
     public String revokeCNSManager(String grantress) throws Exception {
-        return revoke(PrecompiledCommon.SYSCNS, grantress);
+        return revoke(PrecompiledCommon.SYS_CNS, grantress);
     }
 
     public List<PermissionInfo> listCNSManager() throws Exception {
-        return list(PrecompiledCommon.SYSCNS);
+        return list(PrecompiledCommon.SYS_CNS);
     }
 
     public String grantSysConfigManager(String grantress) throws Exception {
-        return grant(PrecompiledCommon.SYSCONFIG, grantress);
+        return grant(PrecompiledCommon.SYS_CONFIG, grantress);
     }
 
     public String revokeSysConfigManager(String grantress) throws Exception {
-        return revoke(PrecompiledCommon.SYSCONFIG, grantress);
+        return revoke(PrecompiledCommon.SYS_CONFIG, grantress);
     }
 
     public List<PermissionInfo> listSysConfigManager() throws Exception {
-        return list(PrecompiledCommon.SYSCONFIG);
+        return list(PrecompiledCommon.SYS_CONFIG);
     }
 
     private String grant(String tableName, String grantress) throws Exception {
