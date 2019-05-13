@@ -16,11 +16,12 @@ public class PrecompiledCommon {
     public static final String BCOS_RC3 = "2.0.0-rc3";
 
     // system table for authority control
-    public static final String SYSTABLE = "_sys_tables_";
-    public static final String SYSTABLEACCESS = "_sys_table_access_";
-    public static final String SYSCONSENSUS = "_sys_consensus_";
-    public static final String SYSCNS = "_sys_cns_";
-    public static final String SYSCONFIG = "_sys_config_";
+    public static final String USER_TABLE_PREFIX = "_user_";
+    public static final String SYS_TABLE = "_sys_tables_";
+    public static final String SYS_TABLE_ACCESS = "_sys_table_access_";
+    public static final String SYS_CONSENSUS = "_sys_consensus_";
+    public static final String SYS_CNS = "_sys_cns_";
+    public static final String SYS_CONFIG = "_sys_config_";
 
     public static final int Success = 0;
     public static final int PermissionDenied_RC1 = 80;
@@ -129,18 +130,23 @@ public class PrecompiledCommon {
 
     public static int handleTransactionReceiptForCRUD(TransactionReceipt receipt)
             throws TransactionException {
+        String status = receipt.getStatus();
+        if (!"0x0".equals(receipt.getStatus())) {
+            throw new TransactionException(status);
+        }
         String output = receipt.getOutput();
         if (!"0x".equals(output)) {
             return new BigInteger(output.substring(2, output.length()), 16).intValue();
         } else {
-            throw new TransactionException("CRUD call failed!");
+            throw new TransactionException("Transaction is handled failure.");
         }
     }
 
     public static String handleTransactionReceipt(TransactionReceipt receipt, Web3j web3j)
             throws TransactionException, IOException {
-        if ("Transaction receipt timeout.".equals(receipt.getStatus())) {
-            throw new TransactionException(receipt.getStatus());
+        String status = receipt.getStatus();
+        if (!"0x0".equals(status)) {
+            throw new TransactionException(status);
         } else {
             if (receipt.getOutput() != null) {
                 return PrecompiledCommon.getJsonStr(receipt.getOutput(), web3j);
