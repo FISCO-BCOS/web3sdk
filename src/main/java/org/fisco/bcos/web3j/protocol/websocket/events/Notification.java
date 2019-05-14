@@ -9,19 +9,19 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Notification<T> {
-  private String jsonrpc;
-  private String method;
-  private NotificationParams<T> params;
+    private String jsonrpc;
+    private String method;
+    private NotificationParams<T> params;
 
-  public String getJsonrpc() {
-    return jsonrpc;
-  }
+    public String getJsonrpc() {
+        return jsonrpc;
+    }
 
-  public String getMethod() {
-    return method;
-  }
+    public String getMethod() {
+        return method;
+    }
 
-  public NotificationParams<T> getParams() {
-    return params;
-  }
+    public NotificationParams<T> getParams() {
+        return params;
+    }
 }

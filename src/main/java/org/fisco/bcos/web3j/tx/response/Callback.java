@@ -4,7 +4,7 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 
 /** Transaction receipt processor callback. */
 public interface Callback {
-  void accept(TransactionReceipt transactionReceipt);
+    void accept(TransactionReceipt transactionReceipt);
 
-  void exception(Exception exception);
+    void exception(Exception exception);
 }
