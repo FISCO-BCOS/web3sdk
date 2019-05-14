@@ -4,7 +4,7 @@ import org.fisco.bcos.web3j.protocol.core.Response;
 
 /** getUninstallFilter */
 public class UninstallFilter extends Response<Boolean> {
-  public boolean isUninstalled() {
-    return getResult();
-  }
+    public boolean isUninstalled() {
+        return getResult();
+    }
 }
