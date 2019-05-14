@@ -40,16 +40,28 @@
 7. 等待社区review这个PR
 8. PR合入，特性开发完成！
 
+## 代码格式化
+
+代码格式化gradle插件[google-java-format-gradle-plugin](https://github.com/sherter/google-java-format-gradle-plugin).
+
+执行任务 `googleJavaFormat`格式化java文件。
+```
+./gradlew goJF
+```
+执行任务 `verifyGoogleJavaFormat`验证java文件是否格式化完成
+```          
+./gradlew verGJF
+```
+
 ## 持续集成（CI）
 
 持续集成框架
 
 * travis-ci: [![Build Status](https://travis-ci.org/FISCO-BCOS/web3sdk.svg?branch=master)](https://travis-ci.org/FISCO-BCOS/web3sdk)
-* circleci: [![CircleCI](https://circleci.com/gh/FISCO-BCOS/web3sdk/tree/master.svg?style=shield)](https://circleci.com/gh/FISCO-BCOS/web3sdk/tree/master)
 
 代码质量
 
 * CodeFactor: [![CodeFactor](https://www.codefactor.io/repository/github/fisco-bcos/web3sdk/badge)](https://www.codefactor.io/repository/github/fisco-bcos/web3sdk)
 
-
+* Codacy: [![Codacy Badge](https://api.codacy.com/project/badge/Grade/a2a6c2eb499e42739d066ff775d1b288)](https://www.codacy.com/app/fisco/console?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=FISCO-BCOS/console&amp;utm_campaign=Badge_Grade)
 
