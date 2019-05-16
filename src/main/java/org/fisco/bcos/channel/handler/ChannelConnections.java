@@ -432,7 +432,7 @@ public class ChannelConnections {
                     SslContextBuilder.forServer(
                                     keystorecaResource.getInputStream(),
                                     keystorekeyResource.getInputStream())
-                            .trustManager(caInputStream)
+                            .trustManager(caInputStream).sslProvider(SslProvider.JDK)
                             .build();
         } catch (Exception e) {
             logger.debug("SSLCONTEXT ***********" + e.getMessage());
