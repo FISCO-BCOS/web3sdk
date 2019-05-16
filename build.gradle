@@ -35,8 +35,6 @@ verifyGoogleJavaFormat {
   exclude '**/temp/*.java'
 }
 
-check.dependsOn -= tasks['verifyGoogleJavaFormat']
-
 def spring_version="4.3.18.RELEASE"
 
 List logger = [
@@ -124,6 +122,10 @@ task integrationTest(type: Test) {
 
 check.dependsOn integrationTest
 integrationTest.mustRunAfter test
+
+check.dependsOn.remove(test)
+check.dependsOn.remove(integrationTest)
+check.dependsOn.remove(verifyGoogleJavaFormat)
 
 //  1 dist jar
 jar {

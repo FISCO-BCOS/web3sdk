@@ -156,9 +156,9 @@ public class Service {
                     if (!running) {
                         logger.error("connectSeconds = " + connectSeconds);
                         logger.error(
-                                "cannot not connect to node success, please checkout the node and the sdk config!");
+                                "can not connect to nodes success, please checkout the node status and the sdk config!");
                         throw new Exception(
-                                "Init ChannelService fail!Please Refer To Link Below:https://github.com/FISCO-BCOS/web3sdk/wiki/web3sdk-debug");
+                                "Can not connect to nodes success, please checkout the node status and the sdk config!");
                     }
                 } catch (InterruptedException e) {
                     logger.error("system error ", e);
@@ -385,7 +385,7 @@ public class Service {
             response.setErrorCode(-1);
             response.setErrorMessage(
                     e.getMessage()
-                            + "   requset send failed! Please Refer To Link Below:https://github.com/FISCO-BCOS/web3sdk/wiki/web3sdk-debug");
+                            + "Requset send failed! Can not connect to nodes success, please checkout the node status and the sdk config!");
             response.setContent("");
             response.setMessageID(request.getMessageID());
 
