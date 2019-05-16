@@ -10,6 +10,10 @@ public class Entry {
         return fields;
     }
 
+    public void setFields(Map<String, String> fields) {
+        this.fields = fields;
+    }
+
     public Entry() {
         fields = new HashMap<>();
     }
