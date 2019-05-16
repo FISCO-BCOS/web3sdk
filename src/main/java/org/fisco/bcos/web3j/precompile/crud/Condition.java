@@ -66,4 +66,8 @@ public class Condition {
     public Map<String, Map<EnumOP, String>> getConditions() {
         return conditions;
     }
+
+    public void setConditions(Map<String, Map<EnumOP, String>> conditions) {
+        this.conditions = conditions;
+    }
 }
