@@ -6,6 +6,7 @@ import java.util.List;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.crypto.WalletUtils;
 import org.fisco.bcos.web3j.precompile.common.PrecompiledCommon;
+import org.fisco.bcos.web3j.precompile.exception.PrecompileMessageException;
 import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameterName;
@@ -65,16 +66,21 @@ public class CnsService {
             if (contractNameAndVersion.contains(":")) {
                 String contractName = contractNameAndVersion.split(":")[0];
                 String contractVersion = contractNameAndVersion.split(":")[1];
-
                 contractAddressInfo =
                         cns.selectByNameAndVersion(contractName, contractVersion).send();
-                logger.debug("get contractName ", contractAddressInfo);
+                if ("[\n]".equals(contractAddressInfo)) {
+                    throw new PrecompileMessageException("The contract version does not exist.");
+                }
+                logger.debug("query contractName {}", contractAddressInfo);
                 List<CnsInfo> cNSInfos = jsonToCNSInfos(contractAddressInfo);
                 address = cNSInfos.get(0).getAddress();
             } else {
                 // only contract name
                 contractAddressInfo = cns.selectByName(contractNameAndVersion).send();
-                logger.debug("get contractName ", contractAddressInfo);
+                if ("[\n]".equals(contractAddressInfo)) {
+                    throw new PrecompileMessageException("The contract version does not exist.");
+                }
+                logger.debug("query contractName {} ", contractAddressInfo);
                 List<CnsInfo> CNSInfos = jsonToCNSInfos(contractAddressInfo);
                 CnsInfo c = CNSInfos.get(CNSInfos.size() - 1);
                 address = c.getAddress();
