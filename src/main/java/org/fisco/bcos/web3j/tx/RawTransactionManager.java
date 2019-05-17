@@ -17,12 +17,10 @@ import org.fisco.bcos.web3j.utils.Numeric;
 import org.fisco.bcos.web3j.utils.TxHashVerifier;
 
 /**
- * TransactionManager implementation using Ethereum wallet file to create and
- * sign transactions locally.
+ * TransactionManager implementation using Ethereum wallet file to create and sign transactions
+ * locally.
  *
- * <p>
- * This transaction manager provides support for specifying the chain id for
- * transactions as per
+ * <p>This transaction manager provides support for specifying the chain id for transactions as per
  * <a href="https://github.com/ethereum/EIPs/issues/155">EIP155</a>.
  */
 public class RawTransactionManager extends TransactionManager {
@@ -34,105 +32,122 @@ public class RawTransactionManager extends TransactionManager {
     protected TxHashVerifier txHashVerifier = new TxHashVerifier();
 
     public RawTransactionManager(Web3j web3j, Credentials credentials, byte chainId) {
-	super(web3j, credentials);
-	this.web3j = web3j;
-	this.credentials = credentials;
+        super(web3j, credentials);
+        this.web3j = web3j;
+        this.credentials = credentials;
 
-	this.chainId = chainId;
+        this.chainId = chainId;
     }
 
-    public RawTransactionManager(Web3j web3j, Credentials credentials, byte chainId, int attempts, int sleepDuration) {
-	super(web3j, attempts, sleepDuration, credentials);
-	this.web3j = web3j;
-	this.credentials = credentials;
+    public RawTransactionManager(
+            Web3j web3j, Credentials credentials, byte chainId, int attempts, int sleepDuration) {
+        super(web3j, attempts, sleepDuration, credentials);
+        this.web3j = web3j;
+        this.credentials = credentials;
 
-	this.chainId = chainId;
+        this.chainId = chainId;
     }
 
     public RawTransactionManager(Web3j web3j, Credentials credentials) {
-	this(web3j, credentials, ChainId.NONE);
+        this(web3j, credentials, ChainId.NONE);
     }
 
-    public RawTransactionManager(Web3j web3j, Credentials credentials, int attempts, int sleepDuration) {
-	this(web3j, credentials, ChainId.NONE, attempts, sleepDuration);
+    public RawTransactionManager(
+            Web3j web3j, Credentials credentials, int attempts, int sleepDuration) {
+        this(web3j, credentials, ChainId.NONE, attempts, sleepDuration);
     }
 
     BigInteger getBlockLimit() throws IOException {
-	return web3j.getBlockNumberCache();
+        return web3j.getBlockNumberCache();
     }
 
     public TxHashVerifier getTxHashVerifier() {
-	return txHashVerifier;
+        return txHashVerifier;
     }
 
     public void setTxHashVerifier(TxHashVerifier txHashVerifier) {
-	this.txHashVerifier = txHashVerifier;
+        this.txHashVerifier = txHashVerifier;
     }
 
     @Override
-    public SendTransaction sendTransaction(BigInteger gasPrice, BigInteger gasLimit, String to, String data,
-	    BigInteger value, String extraData) throws IOException {
+    public SendTransaction sendTransaction(
+            BigInteger gasPrice,
+            BigInteger gasLimit,
+            String to,
+            String data,
+            BigInteger value,
+            String extraData)
+            throws IOException {
 
-	Random r = new SecureRandom();
-	BigInteger randomid = new BigInteger(250, r);
-	BigInteger blockLimit = getBlockLimit();
-	RawTransaction rawTransaction = RawTransaction.createTransaction(randomid, gasPrice, gasLimit, blockLimit, to,
-		value, data);
+        Random r = new SecureRandom();
+        BigInteger randomid = new BigInteger(250, r);
+        BigInteger blockLimit = getBlockLimit();
+        RawTransaction rawTransaction =
+                RawTransaction.createTransaction(
+                        randomid, gasPrice, gasLimit, blockLimit, to, value, data);
 
-	return signAndSend(rawTransaction);
+        return signAndSend(rawTransaction);
     }
 
     @Override
-    public SendTransaction sendTransaction(BigInteger gasPrice, BigInteger gasLimit, String to, String data,
-	    BigInteger value, String extraData, TransactionSucCallback callback) throws IOException {
-	Random r = new SecureRandom();
-	BigInteger randomid = new BigInteger(250, r);
-	BigInteger blockLimit = getBlockLimit();
-	RawTransaction rawTransaction = RawTransaction.createTransaction(randomid, gasPrice, gasLimit, blockLimit, to,
-		value, data);
+    public SendTransaction sendTransaction(
+            BigInteger gasPrice,
+            BigInteger gasLimit,
+            String to,
+            String data,
+            BigInteger value,
+            String extraData,
+            TransactionSucCallback callback)
+            throws IOException {
+        Random r = new SecureRandom();
+        BigInteger randomid = new BigInteger(250, r);
+        BigInteger blockLimit = getBlockLimit();
+        RawTransaction rawTransaction =
+                RawTransaction.createTransaction(
+                        randomid, gasPrice, gasLimit, blockLimit, to, value, data);
 
-	return signAndSend(rawTransaction, callback);
+        return signAndSend(rawTransaction, callback);
     }
 
     public SendTransaction signAndSend(RawTransaction rawTransaction) throws IOException {
 
-	byte[] signedMessage;
+        byte[] signedMessage;
 
-	if (chainId > ChainId.NONE) {
-	    signedMessage = TransactionEncoder.signMessage(rawTransaction, chainId, credentials);
-	} else {
-	    signedMessage = TransactionEncoder.signMessage(rawTransaction, credentials);
-	}
+        if (chainId > ChainId.NONE) {
+            signedMessage = TransactionEncoder.signMessage(rawTransaction, chainId, credentials);
+        } else {
+            signedMessage = TransactionEncoder.signMessage(rawTransaction, credentials);
+        }
 
-	String hexValue = Numeric.toHexString(signedMessage);
-	SendTransaction sendTransaction = web3j.sendRawTransaction(hexValue).send();
-	if (sendTransaction != null && !sendTransaction.hasError()) {
-	    String txHashLocal = Hash.sha3(hexValue);
-	    String txHashRemote = sendTransaction.getTransactionHash();
-	    if (!txHashVerifier.verify(txHashLocal, txHashRemote)) {
-		throw new TxHashMismatchException(txHashLocal, txHashRemote);
-	    }
-	}
-	return sendTransaction;
+        String hexValue = Numeric.toHexString(signedMessage);
+        SendTransaction sendTransaction = web3j.sendRawTransaction(hexValue).send();
+        if (sendTransaction != null && !sendTransaction.hasError()) {
+            String txHashLocal = Hash.sha3(hexValue);
+            String txHashRemote = sendTransaction.getTransactionHash();
+            if (!txHashVerifier.verify(txHashLocal, txHashRemote)) {
+                throw new TxHashMismatchException(txHashLocal, txHashRemote);
+            }
+        }
+        return sendTransaction;
     }
 
-    public SendTransaction signAndSend(RawTransaction rawTransaction, TransactionSucCallback callback)
-	    throws IOException {
+    public SendTransaction signAndSend(
+            RawTransaction rawTransaction, TransactionSucCallback callback) throws IOException {
 
-	byte[] signedMessage;
+        byte[] signedMessage;
 
-	if (chainId > ChainId.NONE) {
-	    signedMessage = TransactionEncoder.signMessage(rawTransaction, chainId, credentials);
-	} else {
-	    signedMessage = TransactionEncoder.signMessage(rawTransaction, credentials);
-	}
+        if (chainId > ChainId.NONE) {
+            signedMessage = TransactionEncoder.signMessage(rawTransaction, chainId, credentials);
+        } else {
+            signedMessage = TransactionEncoder.signMessage(rawTransaction, credentials);
+        }
 
-	String hexValue = Numeric.toHexString(signedMessage);
-	Request<?, SendTransaction> request = web3j.sendRawTransaction(hexValue);
-	request.setNeedTransCallback(true);
-	request.setTransactionSucCallback(callback);
-	request.sendOnly();
+        String hexValue = Numeric.toHexString(signedMessage);
+        Request<?, SendTransaction> request = web3j.sendRawTransaction(hexValue);
+        request.setNeedTransCallback(true);
+        request.setTransactionSucCallback(callback);
+        request.sendOnly();
 
-	return null;
+        return null;
     }
 }
