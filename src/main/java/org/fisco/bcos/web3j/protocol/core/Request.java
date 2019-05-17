@@ -25,89 +25,96 @@ public class Request<S, T extends Response> {
     private Class<T> responseType;
 
     // 添加属性支持交易回调
-    @JsonIgnore private boolean needTransCallback;
-    @JsonIgnore private TransactionSucCallback transactionSucCallback;
+    @JsonIgnore
+    private boolean needTransCallback;
+    @JsonIgnore
+    private TransactionSucCallback transactionSucCallback;
 
     public boolean isNeedTransCallback() {
-        return needTransCallback;
+	return needTransCallback;
     }
 
     public void setNeedTransCallback(boolean needTransCallback) {
-        this.needTransCallback = needTransCallback;
+	this.needTransCallback = needTransCallback;
     }
 
     public void setTransactionSucCallback(TransactionSucCallback transactionSucCallback) {
-        this.transactionSucCallback = transactionSucCallback;
+	this.transactionSucCallback = transactionSucCallback;
     }
 
     public TransactionSucCallback getTransactionSucCallback() {
-        return transactionSucCallback;
+	return transactionSucCallback;
     }
 
-    public Request() {}
+    public Request() {
+    }
 
     public Request(String method, List<S> params, Web3jService web3jService, Class<T> type) {
-        this.method = method;
-        this.params = params;
-        this.id = nextId.getAndIncrement();
-        this.web3jService = web3jService;
-        this.responseType = type;
+	this.method = method;
+	this.params = params;
+	this.id = nextId.getAndIncrement();
+	this.web3jService = web3jService;
+	this.responseType = type;
     }
 
     public String getJsonrpc() {
-        return jsonrpc;
+	return jsonrpc;
     }
 
     public void setJsonrpc(String jsonrpc) {
-        this.jsonrpc = jsonrpc;
+	this.jsonrpc = jsonrpc;
     }
 
     public String getMethod() {
-        return method;
+	return method;
     }
 
     public void setMethod(String method) {
-        this.method = method;
+	this.method = method;
     }
 
     public List<S> getParams() {
-        return params;
+	return params;
     }
 
     public void setParams(List<S> params) {
-        this.params = params;
+	this.params = params;
     }
 
     public long getId() {
-        return id;
+	return id;
     }
 
     public void setId(long id) {
-        this.id = id;
+	this.id = id;
     }
 
     public T send() throws IOException {
-        return web3jService.send(this, responseType);
+	return web3jService.send(this, responseType);
+    }
+
+    public void sendOnly() throws IOException {
+	web3jService.sendOnly(this);
     }
 
     public String sendForReturnString() throws IOException {
-        ChannelEthereumService channelEthereumService = (ChannelEthereumService) web3jService;
-        return channelEthereumService.sendSpecial(this);
+	ChannelEthereumService channelEthereumService = (ChannelEthereumService) web3jService;
+	return channelEthereumService.sendSpecial(this);
     }
 
     public CompletableFuture<T> sendAsync() {
-        return web3jService.sendAsync(this, responseType);
+	return web3jService.sendAsync(this, responseType);
     }
 
     public Flowable<T> flowable() {
-        return new RemoteCall<>(this::send).flowable();
+	return new RemoteCall<>(this::send).flowable();
     }
 
     public TransactionSucCallback getCallback() {
-        return callback;
+	return callback;
     }
 
     public void setCallback(TransactionSucCallback callback) {
-        this.callback = callback;
+	this.callback = callback;
     }
 }
