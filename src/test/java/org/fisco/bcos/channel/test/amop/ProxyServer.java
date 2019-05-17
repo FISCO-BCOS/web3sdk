@@ -10,9 +10,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class ProxyServer {
 
-    @Ignore
-    @Test
-    public void testProxyServer() throws Exception {
+    public static void main(String[] args) throws Exception {
 
         ApplicationContext context =
                 new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
@@ -21,7 +19,7 @@ public class ProxyServer {
         System.out.println("===================================================================");
 
         server.run();
-        Thread.sleep(5000);
+        Thread.sleep(500000);
         exit(1);
     }
 }
