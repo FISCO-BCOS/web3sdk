@@ -56,7 +56,8 @@ public class ChannelConnections {
             new HashMap<String, ChannelHandlerContext>();
     private int groupId;
     private Bootstrap bootstrap = new Bootstrap();
-    private ConcurrentHashMap<String, Integer> nodeToBlockNumberMap;
+    public static ConcurrentHashMap<String, Integer> nodeToBlockNumberMap =
+            new ConcurrentHashMap<>();
     ServerBootstrap serverBootstrap = new ServerBootstrap();
 
     public int getGroupId() {
@@ -81,14 +82,6 @@ public class ChannelConnections {
 
     public void setNodeKeyPath(String nodeKeyPath) {
         this.nodeKeyPath = nodeKeyPath;
-    }
-
-    public ConcurrentHashMap<String, Integer> getNodeToBlockNumberMap() {
-        return nodeToBlockNumberMap;
-    }
-
-    public void setNodeToBlockNumberMap(ConcurrentHashMap<String, Integer> nodeToBlockNumberMap) {
-        this.nodeToBlockNumberMap = nodeToBlockNumberMap;
     }
 
     public interface Callback {
@@ -204,13 +197,10 @@ public class ChannelConnections {
         if (!maxBlockNumberConnections.isEmpty()) {
             selectNodeIndex = random.nextInt(maxBlockNumberConnections.size());
             selectedNodeChannelHandlerContext = maxBlockNumberConnections.get(selectNodeIndex);
-            //        	System.out.println(maxBlockNumberConnections);
         } else {
             selectNodeIndex = random.nextInt(activeConnections.size());
             selectedNodeChannelHandlerContext = activeConnections.get(selectNodeIndex);
         }
-        // System.out.println(socketAddress.getAddress().getHostAddress() + ":"
-        // +socketAddress.getPort());
         return selectedNodeChannelHandlerContext;
     }
 
