@@ -34,7 +34,7 @@ public class KeyStoreManager {
 	private KeyStore keyStore;
 	PKCS12KeyStoreSpi p12KeyStore;
 	
-	KeyStoreManager() {
+	public KeyStoreManager() {
 		Security.setProperty("crypto.policy", "unlimited");
 		Security.addProvider(new BouncyCastleProvider());
 	}
