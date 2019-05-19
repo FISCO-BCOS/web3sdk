@@ -5,22 +5,24 @@ import java.io.InputStream;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 
+import org.bouncycastle.crypto.KeyParser;
+import org.bouncycastle.crypto.params.KeyParameter;
 import org.fisco.bcos.web3j.crypto.ECKeyPair;
-import org.fisco.bcos.web3j.crypto.Keys;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 
 public class KeyStoreManager {
-	public void load() throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
+	public void load() throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException, NoSuchProviderException {
 		ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-		keyStore = KeyStore.getInstance("PKCS12");
+		keyStore = KeyStore.getInstance("PKCS12", "BKS");
 		Resource keyStoreResource = resolver.getResource(keyStoreFile);
 
 		keyStore.load(keyStoreResource.getInputStream(), password.toCharArray());
@@ -45,8 +47,11 @@ public class KeyStoreManager {
 	
 	public ECKeyPair getECKeyPair(String name, String password) throws UnrecoverableKeyException, KeyStoreException, NoSuchAlgorithmException {
 		PrivateKey privateKey = getPrivateKey(name, password);
+		PublicKey publicKey = getPublicKey(name);
 		
-		return Keys.deserialize(privateKey.getEncoded());
+		//KeyPair keyPair = new KeyPair(publicKey, privateKey);
+		
+		//return ECKeyPair.create(keyPair);
 	}
 	
 	public String getPassword() {
