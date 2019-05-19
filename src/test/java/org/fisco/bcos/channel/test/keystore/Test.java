@@ -1,6 +1,7 @@
 package org.fisco.bcos.channel.test.keystore;
 
 import java.math.BigInteger;
+import java.security.KeyStore;
 import java.security.PublicKey;
 import java.security.Security;
 import java.util.Arrays;
@@ -15,6 +16,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
 
 public class Test {
 	private static Logger logger = LoggerFactory.getLogger(Test.class);
@@ -29,21 +33,15 @@ public class Test {
 			System.out.println("Testing keystore...");
 			KeyStoreManager ks = context.getBean(KeyStoreManager.class);
 			ECKeyPair ec = ks.getECKeyPair("alice", "123456");
-
+			
 			System.out.println("KeyStore PrivateKey: " + Numeric.toHexStringWithPrefixZeroPadded(ec.getPrivateKey(), (32 << 1)));
 			System.out.println("KeyStore PublicKey: " + Numeric.toHexStringWithPrefixZeroPadded(ec.getPublicKey(), (64 << 1)));
-
-			ECPublicKey publicKey = (ECPublicKey) ks.getPublicKey("alice", "123456");
-			byte[] publicKeyBytes = publicKey.getQ().getEncoded(false);
-			BigInteger publicKeyValue = new BigInteger(1, Arrays.copyOfRange(publicKeyBytes, 1, publicKeyBytes.length));
-			System.out.println(
-					"KeyStore PublicKey from privatekey: " + Numeric.toHexStringWithPrefixZeroPadded(publicKeyValue, (64 << 1)));
 
 			Credentials credentials = Credentials.create(ec);
 			System.out.println("KeyStore Address: " + credentials.getAddress());
 			
-			
 			logger.info("providers: {}", Security.getProviders());
+			
 			System.out.println("Testing pem...");
 			PEMLoader pem = context.getBean(PEMLoader.class);
 			ECKeyPair ecPEM = pem.getECKeyPair();
