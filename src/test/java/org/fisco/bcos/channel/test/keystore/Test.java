@@ -18,9 +18,9 @@ public class Test {
         KeyStoreManager ks = context.getBean(KeyStoreManager.class);
         
         try {
-			ECKeyPair ec = ks.getECKeyPair("demo", "123456");
+			ECKeyPair ec = ks.getECKeyPair("alice", "123456");
 			
-			//System.out.println(ec.getPublicKey());
+			System.out.println(ec.getPublicKey().toString());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
