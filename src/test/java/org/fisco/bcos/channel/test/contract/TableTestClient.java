@@ -60,11 +60,11 @@ public class TableTestClient {
             if ("0x19".equals(e.getStatus())) {
                 System.out.println("non-authorized to deploy contracts!");
             } else {
-                System.out.println(e.getMessage());
-            }
+		System.out.println("deploy transaction is abnormal, please check the environment msg:"+e.getMessage());
+		}
         } catch (Exception e) {
-            System.out.println("deploy failed! " + e.getMessage());
-        }
+        	System.out.println("deploy transaction is abnormal, please check the environment");
+	}
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -93,17 +93,23 @@ public class TableTestClient {
             }
             CreateResultEventResponse createResultEventResponse = createResultEvents.get(0);
             int createCount = createResultEventResponse.count.intValue();
-            switch (createCount) {
-                case PrecompiledCommon.PermissionDenied_RC3:
+            System.out.println("create table ret:"+createCount);
+	    switch (createCount) {
+		case PrecompiledCommon.PermissionDenied:
+		    System.out.println("non-authorized to create t_test table.");
+                    break;                
+		case PrecompiledCommon.PermissionDenied_RC3:
                     System.out.println("non-authorized to create t_test table.");
                     break;
-                case 50001:
+                case PrecompiledCommon.TableExist:
                     System.out.println("t_test table already exist.");
                     break;
                 case PrecompiledCommon.Success:
-                    System.out.println("create t_test table completed.");
+                    System.out.println("create t_test table success.");
                     break;
-            }
+		default:
+        	    System.out.println("unknown return value:"+createCount);    
+	}
 
         }
         // insert
