@@ -95,8 +95,10 @@ public class TableTestClient {
             int createCount = createResultEventResponse.count.intValue();
             System.out.println("create table ret:"+createCount);
 	    switch (createCount) {
-				case PrecompiledCommon.PermissionDenied:
-                case PrecompiledCommon.PermissionDenied_RC3:
+		case PrecompiledCommon.PermissionDenied:
+		    System.out.println("non-authorized to create t_test table.");
+                    break;                
+		case PrecompiledCommon.PermissionDenied_RC3:
                     System.out.println("non-authorized to create t_test table.");
                     break;
                 case PrecompiledCommon.TableExist:
