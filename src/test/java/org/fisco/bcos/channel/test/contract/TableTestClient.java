@@ -93,16 +93,20 @@ public class TableTestClient {
             }
             CreateResultEventResponse createResultEventResponse = createResultEvents.get(0);
             int createCount = createResultEventResponse.count.intValue();
-            switch (createCount) {
+            System.out.println("create table ret:"+createCount);
+	    switch (createCount) {
+				case PrecompiledCommon.PermissionDenied:
                 case PrecompiledCommon.PermissionDenied_RC3:
                     System.out.println("non-authorized to create t_test table.");
                     break;
-                case 50001:
+                case PrecompiledCommon.TableExist:
                     System.out.println("t_test table already exist.");
                     break;
                 case PrecompiledCommon.Success:
-                    System.out.println("create t_test table completed.");
+                    System.out.println("create t_test table success.");
                     break;
+		default:
+					System.out.println("unknown return value please check!");
             }
 
         }
