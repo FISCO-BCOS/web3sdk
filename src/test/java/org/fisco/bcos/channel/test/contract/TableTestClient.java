@@ -106,8 +106,8 @@ public class TableTestClient {
                     System.out.println("create t_test table success.");
                     break;
 		default:
-					System.out.println("unknown return value please check!");
-            }
+        	    System.out.println("unknown return value:"+createCount);    
+	}
 
         }
         // insert
