@@ -60,7 +60,7 @@ public class TableTestClient {
             if ("0x19".equals(e.getStatus())) {
                 System.out.println("non-authorized to deploy contracts!");
             } else {
-		System.out.println("deploy transaction is abnormal, please check the environment"+e.getStatus()+" msg:"+e.getMessage());
+		System.out.println("deploy transaction is abnormal, please check the environment msg:"+e.getMessage());
 		}
         } catch (Exception e) {
         	System.out.println("deploy transaction is abnormal, please check the environment");
