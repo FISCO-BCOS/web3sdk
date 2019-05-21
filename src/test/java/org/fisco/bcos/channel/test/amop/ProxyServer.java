@@ -14,11 +14,14 @@ public class ProxyServer {
 
         ApplicationContext context =
                 new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
-        Server server = context.getBean(Server.class);
+        Server server1 = (Server) context.getBean("proxyServer1");
+        Server server2 = (Server) context.getBean("proxyServer2");
         System.out.println("start testing");
         System.out.println("===================================================================");
 
-        server.run();
+        server1.run();
+        server2.run();
+
         Thread.sleep(500000);
         exit(1);
     }
