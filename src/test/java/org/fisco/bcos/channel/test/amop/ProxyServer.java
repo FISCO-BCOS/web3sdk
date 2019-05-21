@@ -3,8 +3,6 @@ package org.fisco.bcos.channel.test.amop;
 import static java.lang.System.exit;
 
 import org.fisco.bcos.channel.proxy.Server;
-import org.junit.Ignore;
-import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
