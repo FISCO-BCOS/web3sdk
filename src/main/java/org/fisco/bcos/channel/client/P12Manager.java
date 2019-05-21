@@ -27,14 +27,14 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 
-public class KeyStoreManager {
+public class P12Manager {
     private String keyStoreFile;
-    private String name;
+    private final String NAME = "key";
     private String password;
     private KeyStore keyStore;
     PKCS12KeyStoreSpi p12KeyStore;
 
-    KeyStoreManager() {
+    P12Manager() {
         Security.setProperty("crypto.policy", "unlimited");
         Security.addProvider(new BouncyCastleProvider());
     }
@@ -51,20 +51,18 @@ public class KeyStoreManager {
 
     public void load(InputStream in, String password)
             throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
-        // keyStore.load(in, password.toCharArray());
-
         p12KeyStore.engineLoad(in, password.toCharArray());
     }
 
-    public PrivateKey getPrivateKey(String name, String password)
+    public PrivateKey getPrivateKey(String password)
             throws UnrecoverableKeyException, KeyStoreException, NoSuchAlgorithmException {
-        return (PrivateKey) keyStore.getKey(name, password.toCharArray());
+        return (PrivateKey) keyStore.getKey(NAME, password.toCharArray());
     }
 
-    public PublicKey getPublicKey(String name, String password)
+    public PublicKey getPublicKey(String password)
             throws UnrecoverableKeyException, KeyStoreException, NoSuchAlgorithmException,
                     InvalidKeySpecException, NoSuchProviderException {
-        ECPrivateKey privateKey = (ECPrivateKey) getPrivateKey(name, password);
+        ECPrivateKey privateKey = (ECPrivateKey) getPrivateKey(password);
 
         ECParameterSpec params = privateKey.getParams();
 
@@ -106,20 +104,20 @@ public class KeyStoreManager {
         return params;
     }
 
-    public Certificate getCertificate(String name) throws KeyStoreException {
-        return keyStore.getCertificate(name);
+    public Certificate getCertificate() throws KeyStoreException {
+        return keyStore.getCertificate(NAME);
     }
 
-    public PublicKey getPublicKeyFromCertificate(String name) throws KeyStoreException {
-        Certificate certificate = getCertificate(name);
+    public PublicKey getPublicKeyFromCertificate() throws KeyStoreException {
+        Certificate certificate = getCertificate();
         return certificate.getPublicKey();
     }
 
-    public ECKeyPair getECKeyPair(String name, String password)
+    public ECKeyPair getECKeyPair(String password)
             throws UnrecoverableKeyException, KeyStoreException, NoSuchAlgorithmException,
                     InvalidKeySpecException, NoSuchProviderException {
-        PrivateKey privateKey = getPrivateKey(name, password);
-        PublicKey publicKey = getPublicKey(name, password);
+        PrivateKey privateKey = getPrivateKey(password);
+        PublicKey publicKey = getPublicKey(password);
 
         KeyPair keyPair = new KeyPair(publicKey, privateKey);
 
@@ -132,14 +130,6 @@ public class KeyStoreManager {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getKeyStoreFile() {
