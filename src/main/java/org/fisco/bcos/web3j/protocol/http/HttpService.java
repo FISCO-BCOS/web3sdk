@@ -65,6 +65,9 @@ public class HttpService extends Service {
         }
     }
 
+    @Override
+    public void sendOnly(Request request) throws IOException {}
+
     private Header[] buildHeaders() {
         List<Header> headers = new ArrayList<>();
         headers.add(new BasicHeader("Content-Type", "application/json; charset=UTF-8"));

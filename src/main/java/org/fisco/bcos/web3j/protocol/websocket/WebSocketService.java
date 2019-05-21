@@ -132,6 +132,9 @@ public class WebSocketService implements Web3jService {
     }
 
     @Override
+    public void sendOnly(Request request) throws IOException {}
+
+    @Override
     public <T extends Response> CompletableFuture<T> sendAsync(
             Request request, Class<T> responseType) {
 
@@ -188,7 +191,8 @@ public class WebSocketService implements Web3jService {
         WebSocketRequest request = getAndRemoveRequest(replyId);
         try {
             Object reply = objectMapper.convertValue(replyJson, request.getResponseType());
-            // Instead of sending a reply to a caller asynchronously we need to process it here
+            // Instead of sending a reply to a caller asynchronously we need to process it
+            // here
             // to avoid race conditions we need to modify state of this class.
             if (reply instanceof BcosSubscribe) {
                 processSubscriptionResponse(replyId, (BcosSubscribe) reply);
