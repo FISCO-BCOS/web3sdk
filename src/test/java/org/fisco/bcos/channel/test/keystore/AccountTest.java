@@ -4,8 +4,8 @@ import java.math.BigInteger;
 import java.security.Security;
 import java.util.Arrays;
 import org.bouncycastle.jce.interfaces.ECPublicKey;
-import org.fisco.bcos.channel.client.KeyStoreManager;
-import org.fisco.bcos.channel.client.PEMLoader;
+import org.fisco.bcos.channel.client.P12Manager;
+import org.fisco.bcos.channel.client.PEMManager;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.crypto.ECKeyPair;
 import org.fisco.bcos.web3j.utils.Numeric;
@@ -14,8 +14,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-public class Test {
-    private static Logger logger = LoggerFactory.getLogger(Test.class);
+public class AccountTest {
+    private static Logger logger = LoggerFactory.getLogger(AccountTest.class);
 
     // openssl pkcs12 -export -name client -in "$node_dir/data/node.crt" -inkey
     // "$node_dir/data/node.key" -out "$node_dir/keystore.p12"
@@ -26,8 +26,8 @@ public class Test {
 
         try {
             System.out.println("Testing keystore...");
-            KeyStoreManager ks = context.getBean(KeyStoreManager.class);
-            ECKeyPair ec = ks.getECKeyPair("alice", "123456");
+            P12Manager ks = context.getBean(P12Manager.class);
+            ECKeyPair ec = ks.getECKeyPair("123456");
 
             System.out.println(
                     "KeyStore PrivateKey: "
@@ -38,7 +38,7 @@ public class Test {
                             + Numeric.toHexStringWithPrefixZeroPadded(
                                     ec.getPublicKey(), (64 << 1)));
 
-            ECPublicKey publicKey = (ECPublicKey) ks.getPublicKey("alice", "123456");
+            ECPublicKey publicKey = (ECPublicKey) ks.getPublicKey("123456");
             byte[] publicKeyBytes = publicKey.getQ().getEncoded(false);
             BigInteger publicKeyValue =
                     new BigInteger(1, Arrays.copyOfRange(publicKeyBytes, 1, publicKeyBytes.length));
@@ -51,7 +51,7 @@ public class Test {
 
             logger.info("providers: {}", Security.getProviders());
             System.out.println("Testing pem...");
-            PEMLoader pem = context.getBean(PEMLoader.class);
+            PEMManager pem = context.getBean(PEMManager.class);
             ECKeyPair ecPEM = pem.getECKeyPair();
 
             System.out.println(

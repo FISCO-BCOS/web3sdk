@@ -28,11 +28,11 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 
-public class PEMLoader {
+public class PEMManager {
     private PemObject pem;
     private String pemFile;
 
-    PEMLoader() {
+    PEMManager() {
         Security.setProperty("crypto.policy", "unlimited");
         Security.addProvider(new BouncyCastleProvider());
     }
