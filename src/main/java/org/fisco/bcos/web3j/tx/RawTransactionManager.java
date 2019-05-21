@@ -146,16 +146,8 @@ public class RawTransactionManager extends TransactionManager {
         Request<?, SendTransaction> request = web3j.sendRawTransaction(hexValue);
         request.setNeedTransCallback(true);
         request.setTransactionSucCallback(callback);
-        SendTransaction ethSendTransaction = request.send();
+        request.sendOnly();
 
-        if (ethSendTransaction != null && !ethSendTransaction.hasError()) {
-            String txHashLocal = Hash.sha3(hexValue);
-            String txHashRemote = ethSendTransaction.getTransactionHash();
-            if (!txHashVerifier.verify(txHashLocal, txHashRemote)) {
-                throw new TxHashMismatchException(txHashLocal, txHashRemote);
-            }
-        }
-
-        return ethSendTransaction;
+        return null;
     }
 }

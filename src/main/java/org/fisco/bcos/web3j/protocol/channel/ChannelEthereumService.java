@@ -1,6 +1,7 @@
 package org.fisco.bcos.web3j.protocol.channel;
 
 import java.io.IOException;
+import org.fisco.bcos.channel.client.BcosResponseCallback;
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.channel.dto.BcosRequest;
 import org.fisco.bcos.channel.dto.BcosResponse;
@@ -93,6 +94,75 @@ public class ChannelEthereumService extends org.fisco.bcos.web3j.protocol.Servic
             }
         } else {
             throw new IOException(response.getErrorMessage());
+        }
+    }
+
+    @Override
+    public void sendOnly(Request request) throws IOException {
+        byte[] payload = objectMapper.writeValueAsBytes(request);
+
+        BcosRequest fiscoRequest = new BcosRequest();
+        fiscoRequest.setKeyID(channelService.getOrgID());
+        fiscoRequest.setBankNO("");
+        fiscoRequest.setContent(new String(payload));
+        fiscoRequest.setMessageID(channelService.newSeq());
+
+        if (timeout != 0) {
+            fiscoRequest.setTimeout(timeout);
+        }
+
+        BcosResponse response;
+        if (!request.isNeedTransCallback()) {
+            channelService.asyncSendEthereumMessage(
+                    fiscoRequest,
+                    new BcosResponseCallback() {
+                        @Override
+                        public void onResponse(BcosResponse response) {
+                            try {
+                                logger.debug(
+                                        "fisco Request:{} {}",
+                                        fiscoRequest.getMessageID(),
+                                        objectMapper.writeValueAsString(request));
+                                logger.debug(
+                                        "fisco Response:{} {} {}",
+                                        fiscoRequest.getMessageID(),
+                                        response.getErrorCode(),
+                                        response.getContent());
+
+                                if (response.getErrorCode() != 0) {
+                                    logger.error("Error: " + response.getErrorCode());
+                                }
+                            } catch (Exception e) {
+                                logger.error("Error: ", e);
+                            }
+                        }
+                    });
+        } else {
+            channelService.asyncSendEthereumMessage(
+                    fiscoRequest,
+                    new BcosResponseCallback() {
+                        @Override
+                        public void onResponse(BcosResponse response) {
+                            try {
+                                logger.debug(
+                                        "fisco Request:{} {}",
+                                        fiscoRequest.getMessageID(),
+                                        objectMapper.writeValueAsString(request));
+                                logger.debug(
+                                        "fisco Response:{} {} {}",
+                                        fiscoRequest.getMessageID(),
+                                        response.getErrorCode(),
+                                        response.getContent());
+
+                                if (response.getErrorCode() != 0) {
+                                    logger.error("Error: " + response.getErrorCode());
+                                }
+                            } catch (Exception e) {
+                                logger.error("Error: ", e);
+                            }
+                        }
+                    },
+                    request.getTransactionSucCallback());
         }
     }
 
