@@ -9,4 +9,14 @@ public class DynamicBytes extends BytesType {
   public DynamicBytes(byte[] value) {
     super(value, TYPE_NAME);
   }
+  
+  @Override
+  public boolean dynamicType() {
+  	return true;
+  }
+  
+  @Override
+  public int offset() {
+	  return 1;
+  }
 }

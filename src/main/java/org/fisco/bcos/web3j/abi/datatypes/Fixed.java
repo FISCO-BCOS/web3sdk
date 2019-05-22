@@ -23,4 +23,14 @@ public class Fixed extends FixedPointType {
   protected Fixed(int mBitSize, int nBitSize, BigInteger m, BigInteger n) {
     this(convert(mBitSize, nBitSize, m, n));
   }
+
+  @Override
+  public boolean dynamicType() {
+	  return false;
+  }
+  
+  @Override
+  public int offset() {
+	  return 1;
+  }
 }

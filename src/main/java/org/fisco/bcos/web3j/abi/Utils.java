@@ -24,7 +24,7 @@ public class Utils {
     try {
       java.lang.reflect.Type reflectedType = typeReference.getType();
 
-      Class<?> type;
+      Class<?> type = null;
       if (reflectedType instanceof ParameterizedType) {
         type = (Class<?>) ((ParameterizedType) reflectedType).getRawType();
         return getParameterizedTypeName(typeReference, type);
@@ -53,17 +53,61 @@ public class Utils {
       return simpleName;
     }
   }
+  
+	@SuppressWarnings("rawtypes")
+	static public <T extends Type> boolean dynamicType(java.lang.reflect.Type type) throws ClassNotFoundException {
+
+		Class<T> cls = Utils.getClassType(type);
+		// dynamic type
+		if (Utf8String.class.isAssignableFrom(cls) || DynamicBytes.class.isAssignableFrom(cls) || DynamicArray.class.isAssignableFrom(cls)) {
+			return true;
+		}
+
+		// not static type
+		if (!StaticArray.class.isAssignableFrom(cls)) {
+			return false;
+		}
+
+		// unpack static array for checking if dynamic type
+		java.lang.reflect.Type[] types = ((ParameterizedType) type).getActualTypeArguments();
+		return dynamicType(types[0]);
+	}
+
+	static public <T extends Type> int getOffset(java.lang.reflect.Type type) throws ClassNotFoundException {
+
+		if (Utils.dynamicType(type)) {
+			return 1;
+		}
+
+		Class<T> cls = Utils.getClassType(type);
+		if (StaticArray.class.isAssignableFrom(cls)) {
+			int length = Integer.parseInt(cls.getSimpleName().substring(StaticArray.class.getSimpleName().length()));
+			java.lang.reflect.Type[] types = ((ParameterizedType) type).getActualTypeArguments();
+			return getOffset(types[0]) * length;
+		} else {
+			return 1;
+		}
+	}
+  
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	static public <T extends Type> Class<T> getClassType(java.lang.reflect.Type type) throws ClassNotFoundException {
+		if (type instanceof ParameterizedType) {
+			return (Class<T>) ((ParameterizedType) type).getRawType();
+		} else {
+			return (Class<T>) Class.forName(type.getTypeName());
+		}
+	}
 
   static <T extends Type, U extends Type> String getParameterizedTypeName(
       TypeReference<T> typeReference, Class<?> type) {
 
     try {
       if (type.equals(DynamicArray.class)) {
-        Class<U> parameterizedType = getParameterizedTypeFromArray(typeReference);
+        Class<U> parameterizedType = getParameterizedTypeFromArray(typeReference.getType());
         String parameterizedTypeName = getSimpleTypeName(parameterizedType);
         return parameterizedTypeName + "[]";
       } else if (type.equals(StaticArray.class)) {
-        Class<U> parameterizedType = getParameterizedTypeFromArray(typeReference);
+        Class<U> parameterizedType = getParameterizedTypeFromArray(typeReference.getType());
         String parameterizedTypeName = getSimpleTypeName(parameterizedType);
         return parameterizedTypeName
             + "["
@@ -76,17 +120,15 @@ public class Utils {
       throw new UnsupportedOperationException("Invalid class reference provided", e);
     }
   }
+  
+	@SuppressWarnings("unchecked")
+	static <T extends Type> Class<T> getParameterizedTypeFromArray(java.lang.reflect.Type type)
+			throws ClassNotFoundException {
 
-  @SuppressWarnings("unchecked")
-  static <T extends Type> Class<T> getParameterizedTypeFromArray(TypeReference typeReference)
-      throws ClassNotFoundException {
-
-    java.lang.reflect.Type type = typeReference.getType();
-    java.lang.reflect.Type[] typeArguments = ((ParameterizedType) type).getActualTypeArguments();
-
-    String parameterizedTypeName = typeArguments[0].getTypeName();
-    return (Class<T>) Class.forName(parameterizedTypeName);
-  }
+		java.lang.reflect.Type[] types = ((ParameterizedType) type).getActualTypeArguments();
+		
+		return Utils.getClassType(types[0]);
+	}
 
   @SuppressWarnings("unchecked")
   public static List<TypeReference<Type>> convert(List<TypeReference<?>> input) {

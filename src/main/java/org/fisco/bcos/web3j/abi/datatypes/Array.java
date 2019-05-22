@@ -40,6 +40,9 @@ public abstract class Array<T extends Type> implements Type<List<T>> {
   public List<T> getValue() {
     return value;
   }
+  
+  @Override
+  abstract public boolean dynamicType();
 
   @Override
   public String getTypeAsString() {
