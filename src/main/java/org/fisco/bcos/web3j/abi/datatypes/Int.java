@@ -16,4 +16,14 @@ public class Int extends IntType {
   protected Int(int bitSize, BigInteger value) {
     super(TYPE_NAME, bitSize, value);
   }
+
+  @Override
+  public boolean dynamicType() {
+	  return false;
+  }
+
+  @Override
+  public int offset() {
+	  return 1;
+  }
 }

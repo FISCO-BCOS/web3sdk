@@ -41,7 +41,7 @@ public class FunctionEncoder {
     for (Type parameter : parameters) {
       String encodedValue = TypeEncoder.encode(parameter);
 
-      if (TypeEncoder.isDynamic(parameter)) {
+      if (parameter.dynamicType()) {
         String encodedDataOffset =
             TypeEncoder.encodeNumeric(new Uint(BigInteger.valueOf(dynamicDataOffset)));
         result.append(encodedDataOffset);
@@ -59,11 +59,7 @@ public class FunctionEncoder {
   private static int getLength(List<Type> parameters) {
     int count = 0;
     for (Type type : parameters) {
-      if (type instanceof StaticArray) {
-        count += ((StaticArray) type).getValue().size();
-      } else {
-        count++;
-      }
+    	count += type.offset();
     }
     return count;
   }

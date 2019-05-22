@@ -45,4 +45,14 @@ public class Utf8String implements Type<String> {
   public String toString() {
     return value;
   }
+
+  @Override
+  public boolean dynamicType() {
+	  return true;
+  }
+
+  @Override
+  public int offset() {
+	  return 1;
+  }
 }

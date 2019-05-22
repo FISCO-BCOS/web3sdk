@@ -35,11 +35,10 @@ public class TypeDecoder {
 
   static final int MAX_BYTE_LENGTH_FOR_HEX_STRING = Type.MAX_BYTE_LENGTH << 1;
 
-  static <T extends Type> int getSingleElementLength(String input, int offset, Class<T> type) {
+  static <T extends Type> int getSingleElementLength(String input, int offset, java.lang.reflect.Type type) throws ClassNotFoundException {
     if (input.length() == offset) {
       return 0;
-    } else if (DynamicBytes.class.isAssignableFrom(type)
-        || Utf8String.class.isAssignableFrom(type)) {
+    } else if (Utils.dynamicType(type)) {
       // length field + data value
       return (decodeUintAsInt(input, offset) / Type.MAX_BYTE_LENGTH) + 2;
     } else {
@@ -47,45 +46,54 @@ public class TypeDecoder {
     }
   }
 
-  @SuppressWarnings("unchecked")
-  static <T extends Type> T decode(String input, int offset, Class<T> type) {
-    if (NumericType.class.isAssignableFrom(type)) {
-      return (T) decodeNumeric(input.substring(offset), (Class<NumericType>) type);
-    } else if (Address.class.isAssignableFrom(type)) {
-      return (T) decodeAddress(input.substring(offset));
-    } else if (Bool.class.isAssignableFrom(type)) {
-      return (T) decodeBool(input, offset);
-    } else if (Bytes.class.isAssignableFrom(type)) {
-      return (T) decodeBytes(input, offset, (Class<Bytes>) type);
-    } else if (DynamicBytes.class.isAssignableFrom(type)) {
-      return (T) decodeDynamicBytes(input, offset);
-    } else if (Utf8String.class.isAssignableFrom(type)) {
-      return (T) decodeUtf8String(input, offset);
-    } else if (Array.class.isAssignableFrom(type)) {
-      throw new UnsupportedOperationException("Array types must be wrapped in a TypeReference");
-    } else {
-      throw new UnsupportedOperationException("Type cannot be encoded: " + type.getClass());
-    }
-  }
+	  @SuppressWarnings("unchecked")
+	  static <T extends Type> T decode(String input, int offset, Class<T> type) {
+	    if (NumericType.class.isAssignableFrom(type)) {
+	      return (T) decodeNumeric(input.substring(offset), (Class<NumericType>) type);
+	    } else if (Address.class.isAssignableFrom(type)) {
+	      return (T) decodeAddress(input.substring(offset));
+	    } else if (Bool.class.isAssignableFrom(type)) {
+	      return (T) decodeBool(input, offset);
+	    } else if (Bytes.class.isAssignableFrom(type)) {
+	      return (T) decodeBytes(input, offset, (Class<Bytes>) type);
+	    } else if (DynamicBytes.class.isAssignableFrom(type)) {
+	      return (T) decodeDynamicBytes(input, offset);
+	    } else if (Utf8String.class.isAssignableFrom(type)) {
+	      return (T) decodeUtf8String(input, offset);
+	    } else if (Array.class.isAssignableFrom(type)) {
+	      throw new UnsupportedOperationException("Array types must be wrapped in a TypeReference");
+	    } else {
+	      throw new UnsupportedOperationException("Type cannot be encoded: " + type.getClass());
+	    }
+	  }
 
-  public static <T extends Array> T decode(
-      String input, int offset, TypeReference<T> typeReference) {
-    Class cls = ((ParameterizedType) typeReference.getType()).getRawType().getClass();
-    if (StaticArray.class.isAssignableFrom(cls)) {
-      return decodeStaticArray(input, offset, typeReference, 1);
-    } else if (DynamicArray.class.isAssignableFrom(cls)) {
-      return decodeDynamicArray(input, offset, typeReference);
-    } else {
-      throw new UnsupportedOperationException(
-          "Unsupported TypeReference: "
-              + cls.getName()
-              + ", only Array types can be passed as TypeReferences");
-    }
-  }
+	@SuppressWarnings("unchecked")
+	public static <T extends Type> T decode(String input, int offset, java.lang.reflect.Type type)
+			throws ClassNotFoundException {
 
-  static <T extends Type> T decode(String input, Class<T> type) {
-    return decode(input, 0, type);
-  }
+		Class<T> cls = Utils.getClassType(type);
+		
+		if (NumericType.class.isAssignableFrom(cls)) {
+			return (T) decodeNumeric(input.substring(offset), (Class<NumericType>) cls);
+		} else if (Address.class.isAssignableFrom(cls)) {
+			return (T) decodeAddress(input.substring(offset));
+		} else if (Bool.class.isAssignableFrom(cls)) {
+			return (T) decodeBool(input, offset);
+		} else if (Bytes.class.isAssignableFrom(cls)) {
+			return (T) decodeBytes(input, offset, (Class<Bytes>) cls);
+		} else if (DynamicBytes.class.isAssignableFrom(cls)) {
+			return (T) decodeDynamicBytes(input, offset);
+		} else if (Utf8String.class.isAssignableFrom(cls)) {
+			return (T) decodeUtf8String(input, offset);
+		} else if (StaticArray.class.isAssignableFrom(cls)) {
+			return decodeStaticArray(input, offset, type, 1);
+		} else if (DynamicArray.class.isAssignableFrom(cls)) {
+			return decodeDynamicArray(input, offset, type);
+		} else {
+			throw new UnsupportedOperationException("Unsupported TypeReference: " + cls.getName()
+					+ ", only Array types can be passed as TypeReferences");
+		}
+	}
 
   static Address decodeAddress(String input) {
     return new Address(decodeNumeric(input, Uint160.class));
@@ -194,39 +202,40 @@ public class TypeDecoder {
 
     return new Utf8String(new String(bytes, StandardCharsets.UTF_8));
   }
-
+  
   /** Static array length cannot be passed as a type. */
   @SuppressWarnings("unchecked")
   static <T extends Type> T decodeStaticArray(
-      String input, int offset, TypeReference<T> typeReference, int length) {
+      String input, int offset, java.lang.reflect.Type type, int length) {
 
     BiFunction<List<T>, String, T> function =
         (elements, typeName) -> {
           if (elements.isEmpty()) {
             throw new UnsupportedOperationException("Zero length fixed array is invalid type");
           } else {
-            return instantiateStaticArray(typeReference, elements);
+            return instantiateStaticArray(type, elements);
           }
         };
 
-    return decodeArrayElements(input, offset, typeReference, length, function);
+    return decodeArrayElements(input, offset, type, length, function);
   }
 
-  @SuppressWarnings("unchecked")
-  private static <T extends Type> T instantiateStaticArray(
-      TypeReference<T> typeReference, List<T> elements) {
-    try {
-      Class<List> listClass = List.class;
-      return typeReference.getClassType().getConstructor(listClass).newInstance(elements);
-    } catch (ReflectiveOperationException e) {
-      //noinspection unchecked
-      return (T) new StaticArray<>(elements);
-    }
-  }
+	@SuppressWarnings("unchecked")
+	private static <T extends Type> T instantiateStaticArray(java.lang.reflect.Type type, List<T> elements) {
+		try {
+			
+			Class<T> cls = Utils.getClassType(type);
+			return cls.getConstructor(List.class).newInstance(elements);
+
+		} catch (ReflectiveOperationException e) {
+			// noinspection unchecked
+			return (T) new StaticArray<>(elements);
+		}
+	}
 
   @SuppressWarnings("unchecked")
   static <T extends Type> T decodeDynamicArray(
-      String input, int offset, TypeReference<T> typeReference) {
+      String input, int offset, java.lang.reflect.Type type) {
 
     int length = decodeUintAsInt(input, offset);
 
@@ -241,42 +250,36 @@ public class TypeDecoder {
 
     int valueOffset = offset + MAX_BYTE_LENGTH_FOR_HEX_STRING;
 
-    return decodeArrayElements(input, valueOffset, typeReference, length, function);
+    return decodeArrayElements(input, valueOffset, type, length, function);
   }
 
   private static <T extends Type> T decodeArrayElements(
       String input,
       int offset,
-      TypeReference<T> typeReference,
+      java.lang.reflect.Type type,
       int length,
       BiFunction<List<T>, String, T> consumer) {
 
     try {
-      Class<T> cls = Utils.getParameterizedTypeFromArray(typeReference);
-      if (Array.class.isAssignableFrom(cls)) {
-        throw new UnsupportedOperationException(
-            "Arrays of arrays are not currently supported for external functions, see"
-                + "http://solidity.readthedocs.io/en/develop/types.html#members");
-      } else {
+      Class<T> cls = Utils.getParameterizedTypeFromArray(type);
+      
         List<T> elements = new ArrayList<>(length);
+        
+        java.lang.reflect.Type[] types = ((ParameterizedType) type).getActualTypeArguments();
+        
 
-        for (int i = 0, currOffset = offset;
-            i < length;
-            i++,
-                currOffset +=
-                    getSingleElementLength(input, currOffset, cls)
-                        * MAX_BYTE_LENGTH_FOR_HEX_STRING) {
-          T value = decode(input, currOffset, cls);
-          elements.add(value);
-        }
-
+		//for (int i = 0; i < length; ++i) {
+		//	T t = decode(input, );
+		//}
+		
+		
         String typeName = Utils.getSimpleTypeName(cls);
 
         return consumer.apply(elements, typeName);
-      }
+      
     } catch (ClassNotFoundException e) {
       throw new UnsupportedOperationException(
-          "Unable to access parameterized type " + typeReference.getType().getTypeName(), e);
+          "Unable to access parameterized type " + type.getTypeName(), e);
     }
   }
 }

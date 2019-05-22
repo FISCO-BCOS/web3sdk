@@ -236,7 +236,7 @@ public class TypeDecoderTest {
                 "000000000000000000000000000000000000000000000000000000000000000a"
                 + "0000000000000000000000000000000000000000000000007fffffffffffffff",
                 0,
-                new TypeReference.StaticArrayTypeReference<StaticArray<Uint256>>(2) {},
+                new TypeReference.StaticArrayTypeReference<StaticArray<Uint256>>(2) {}.getType(),
                 2),
                 is(new StaticArray<Uint256>(
                         new Uint256(BigInteger.TEN),
@@ -248,7 +248,7 @@ public class TypeDecoderTest {
                         + "000000000000000000000000000000000000000000000000000000000000000d"
                         + "776f726c64212048656c6c6f2c00000000000000000000000000000000000000",
                 0,
-                new TypeReference.StaticArrayTypeReference<StaticArray<Utf8String>>(2){},
+                new TypeReference.StaticArrayTypeReference<StaticArray<Utf8String>>(2){}.getType(),
                 2
                 ),
                 equalTo(new StaticArray<Utf8String>(
@@ -261,7 +261,7 @@ public class TypeDecoderTest {
         assertThat(TypeDecoder.decodeStaticArray(
                 "0000000000000000000000000000000000000000000000000000000000000000",
                 0,
-                new TypeReference.StaticArrayTypeReference<StaticArray<Uint256>>(0) {},
+                new TypeReference.StaticArrayTypeReference<StaticArray<Uint256>>(0) {}.getType(),
                 0), is("invalid"));
     }
 
@@ -270,7 +270,7 @@ public class TypeDecoderTest {
         assertThat(TypeDecoder.decodeDynamicArray(
                 "0000000000000000000000000000000000000000000000000000000000000000",  // length
                 0,
-                new TypeReference<DynamicArray<Uint256>>() { }
+                new TypeReference<DynamicArray<Uint256>>() { }.getType()
                 ),
                 equalTo(DynamicArray.empty("uint256")));
 
@@ -279,7 +279,7 @@ public class TypeDecoderTest {
                         + "000000000000000000000000000000000000000000000000000000000000000a"
                         + "0000000000000000000000000000000000000000000000007fffffffffffffff",
                 0,
-                new TypeReference<DynamicArray<Uint256>>() { }
+                new TypeReference<DynamicArray<Uint256>>() { }.getType()
                 ),
                 equalTo(new DynamicArray<Uint256>(
                         new Uint256(BigInteger.TEN),
@@ -292,7 +292,7 @@ public class TypeDecoderTest {
                         + "000000000000000000000000000000000000000000000000000000000000000d"
                         + "776f726c64212048656c6c6f2c00000000000000000000000000000000000000",
                 0,
-                new TypeReference<DynamicArray<Utf8String>>() { }
+                new TypeReference<DynamicArray<Utf8String>>() { }.getType()
                 ),
                 equalTo(new DynamicArray<Utf8String>(
                         new Utf8String("Hello, world!"),
