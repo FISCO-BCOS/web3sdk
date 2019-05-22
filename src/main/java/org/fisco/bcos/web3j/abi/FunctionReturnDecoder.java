@@ -7,7 +7,6 @@ import org.fisco.bcos.web3j.abi.datatypes.Array;
 import org.fisco.bcos.web3j.abi.datatypes.Bytes;
 import org.fisco.bcos.web3j.abi.datatypes.BytesType;
 import org.fisco.bcos.web3j.abi.datatypes.DynamicArray;
-import org.fisco.bcos.web3j.abi.datatypes.DynamicBytes;
 import org.fisco.bcos.web3j.abi.datatypes.StaticArray;
 import org.fisco.bcos.web3j.abi.datatypes.Type;
 import org.fisco.bcos.web3j.abi.datatypes.Utf8String;
@@ -75,55 +74,51 @@ public class FunctionReturnDecoder {
           || Utf8String.class.isAssignableFrom(type)) {
         return TypeDecoder.decodeBytes(input, Bytes32.class);
       } else {
-        return TypeDecoder.decode(input, type);
+        return TypeDecoder.decode(input, 0, type);
       }
     } catch (ClassNotFoundException e) {
       throw new UnsupportedOperationException("Invalid class reference provided", e);
     }
   }
+  
+	private static List<Type> build(String input, List<TypeReference<Type>> outputParameters) {
+		List<Type> results = new ArrayList<>(outputParameters.size());
 
-  private static List<Type> build(String input, List<TypeReference<Type>> outputParameters) {
-    List<Type> results = new ArrayList<>(outputParameters.size());
+		int offset = 0;
+		for (TypeReference<?> typeReference : outputParameters) {
+			try {
+				@SuppressWarnings("unchecked")
+				Class<Type> cls = (Class<Type>) typeReference.getClassType();
 
-    int offset = 0;
-    for (TypeReference<?> typeReference : outputParameters) {
-      try {
-        @SuppressWarnings("unchecked")
-        Class<Type> type = (Class<Type>) typeReference.getClassType();
+				int hexStringDataOffset = getDataOffset(input, offset, typeReference.getType());
+				
+				Type result;
+				if (DynamicArray.class.isAssignableFrom(cls)) {
+					result = TypeDecoder.decodeDynamicArray(input, hexStringDataOffset, typeReference.getType());
+				} else if (typeReference instanceof TypeReference.StaticArrayTypeReference) {
+					int length = ((TypeReference.StaticArrayTypeReference) typeReference).getSize();
+					result = TypeDecoder.decodeStaticArray(input, hexStringDataOffset, typeReference.getType(), length);
+	
+				} else if (StaticArray.class.isAssignableFrom(cls)) {
+					int length = Integer
+							.parseInt(cls.getSimpleName().substring(StaticArray.class.getSimpleName().length()));
+					result = TypeDecoder.decodeStaticArray(input, hexStringDataOffset, typeReference.getType(), length);
+				} else {
+					result = TypeDecoder.decode(input, hexStringDataOffset, cls);
+				}
+				results.add(result);
+				
+				offset += Utils.getOffset(typeReference.getType()) * TypeDecoder.MAX_BYTE_LENGTH_FOR_HEX_STRING ;
 
-        int hexStringDataOffset = getDataOffset(input, offset, type);
+			} catch (ClassNotFoundException e) {
+				throw new UnsupportedOperationException("Invalid class reference provided", e);
+			}
+		}
+		return results;
+	}
 
-        Type result;
-        if (DynamicArray.class.isAssignableFrom(type)) {
-          result = TypeDecoder.decodeDynamicArray(input, hexStringDataOffset, typeReference);
-          offset += TypeDecoder.MAX_BYTE_LENGTH_FOR_HEX_STRING;
-        } else if (typeReference instanceof TypeReference.StaticArrayTypeReference) {
-          int length = ((TypeReference.StaticArrayTypeReference) typeReference).getSize();
-          result = TypeDecoder.decodeStaticArray(input, hexStringDataOffset, typeReference, length);
-          offset += length * TypeDecoder.MAX_BYTE_LENGTH_FOR_HEX_STRING;
-        } else if (StaticArray.class.isAssignableFrom(type)) {
-          int length =
-              Integer.parseInt(
-                  type.getSimpleName().substring(StaticArray.class.getSimpleName().length()));
-          result = TypeDecoder.decodeStaticArray(input, hexStringDataOffset, typeReference, length);
-          offset += length * TypeDecoder.MAX_BYTE_LENGTH_FOR_HEX_STRING;
-        } else {
-          result = TypeDecoder.decode(input, hexStringDataOffset, type);
-          offset += TypeDecoder.MAX_BYTE_LENGTH_FOR_HEX_STRING;
-        }
-        results.add(result);
-
-      } catch (ClassNotFoundException e) {
-        throw new UnsupportedOperationException("Invalid class reference provided", e);
-      }
-    }
-    return results;
-  }
-
-  private static <T extends Type> int getDataOffset(String input, int offset, Class<T> type) {
-    if (DynamicBytes.class.isAssignableFrom(type)
-        || Utf8String.class.isAssignableFrom(type)
-        || DynamicArray.class.isAssignableFrom(type)) {
+  private static <T extends Type> int getDataOffset(String input, int offset, java.lang.reflect.Type type) throws ClassNotFoundException {
+    if (Utils.dynamicType(type)) {
       return TypeDecoder.decodeUintAsInt(input, offset) << 1;
     } else {
       return offset;

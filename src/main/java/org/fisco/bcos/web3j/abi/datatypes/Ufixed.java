@@ -28,4 +28,14 @@ public class Ufixed extends FixedPointType {
   boolean valid(int mBitSize, int nBitSize, BigInteger value) {
     return super.valid(mBitSize, nBitSize, value) && value.signum() != -1;
   }
+
+  @Override
+  public boolean dynamicType() {
+	  return false;
+  }
+
+  @Override
+  public int offset() {
+	  return 1;
+  }
 }

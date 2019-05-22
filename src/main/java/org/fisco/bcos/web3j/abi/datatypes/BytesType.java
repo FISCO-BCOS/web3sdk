@@ -3,7 +3,7 @@ package org.fisco.bcos.web3j.abi.datatypes;
 import java.util.Arrays;
 
 /** Binary sequence of bytes. */
-public class BytesType implements Type<byte[]> {
+abstract public class BytesType implements Type<byte[]> {
 
   private byte[] value;
   private String type;
@@ -46,4 +46,8 @@ public class BytesType implements Type<byte[]> {
     result = 31 * result + type.hashCode();
     return result;
   }
+
+@Override
+abstract public boolean dynamicType();
+
 }

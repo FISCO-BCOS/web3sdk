@@ -44,4 +44,15 @@ public class Bool implements Type<Boolean> {
   public int hashCode() {
     return (value ? 1 : 0);
   }
+
+	@Override
+	public boolean dynamicType() {
+		return false;
+	}
+	
+	@Override
+	public int offset() {
+		return 1;
+	}
+
 }

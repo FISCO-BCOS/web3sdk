@@ -8,4 +8,8 @@ public interface Type<T> {
   T getValue();
 
   String getTypeAsString();
+  
+  boolean dynamicType();
+  
+  public int offset();
 }
