@@ -20,7 +20,6 @@ import java.security.spec.ECPoint;
 import java.security.spec.ECPublicKeySpec;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Collections;
-
 import org.bouncycastle.jcajce.provider.keystore.pkcs12.PKCS12KeyStoreSpi;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.fisco.bcos.web3j.crypto.ECKeyPair;
