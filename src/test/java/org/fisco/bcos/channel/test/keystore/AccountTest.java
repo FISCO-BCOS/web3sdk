@@ -25,7 +25,7 @@ public class AccountTest {
         try {
             System.out.println("Testing p12...");
             P12Manager p12 = context.getBean(P12Manager.class);
-            ECKeyPair p12KeyPair = p12.getECKeyPair("123456");
+            ECKeyPair p12KeyPair = p12.getECKeyPair(p12.getPassword());
 
             System.out.println("p12 privateKey: " + p12KeyPair.getPrivateKey().toString(16));
             System.out.println("p12 publicKey: " + p12KeyPair.getPublicKey().toString(16));
