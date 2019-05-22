@@ -1,14 +1,12 @@
 package org.fisco.bcos.channel.test.keystore;
 
 import java.math.BigInteger;
-import java.security.Security;
 import java.util.Arrays;
 import org.bouncycastle.jce.interfaces.ECPublicKey;
 import org.fisco.bcos.channel.client.P12Manager;
 import org.fisco.bcos.channel.client.PEMManager;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.crypto.ECKeyPair;
-import org.fisco.bcos.web3j.utils.Numeric;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -25,45 +23,30 @@ public class AccountTest {
                         "classpath:applicationContext-keystore-sample.xml");
 
         try {
-            System.out.println("Testing keystore...");
-            P12Manager ks = context.getBean(P12Manager.class);
-            ECKeyPair ec = ks.getECKeyPair("123456");
+            System.out.println("Testing p12...");
+            P12Manager p12 = context.getBean(P12Manager.class);
+            ECKeyPair p12KeyPair = p12.getECKeyPair("123456");
 
-            System.out.println(
-                    "KeyStore PrivateKey: "
-                            + Numeric.toHexStringWithPrefixZeroPadded(
-                                    ec.getPrivateKey(), (32 << 1)));
-            System.out.println(
-                    "KeyStore PublicKey: "
-                            + Numeric.toHexStringWithPrefixZeroPadded(
-                                    ec.getPublicKey(), (64 << 1)));
+            System.out.println("p12 privateKey: " + p12KeyPair.getPrivateKey().toString(16));
+            System.out.println("p12 publicKey: " + p12KeyPair.getPublicKey().toString(16));
 
-            ECPublicKey publicKey = (ECPublicKey) ks.getPublicKey("123456");
+            ECPublicKey publicKey = (ECPublicKey) p12.getPublicKey("123456");
             byte[] publicKeyBytes = publicKey.getQ().getEncoded(false);
             BigInteger publicKeyValue =
                     new BigInteger(1, Arrays.copyOfRange(publicKeyBytes, 1, publicKeyBytes.length));
-            System.out.println(
-                    "KeyStore PublicKey from privatekey: "
-                            + Numeric.toHexStringWithPrefixZeroPadded(publicKeyValue, (64 << 1)));
+            System.out.println("p12 publicKey from privateKey: " + publicKeyValue.toString(16));
 
-            Credentials credentials = Credentials.create(ec);
-            System.out.println("KeyStore Address: " + credentials.getAddress());
+            Credentials credentials = Credentials.create(p12KeyPair);
+            System.out.println("p12 Address: " + credentials.getAddress());
 
-            logger.info("providers: {}", Security.getProviders());
             System.out.println("Testing pem...");
             PEMManager pem = context.getBean(PEMManager.class);
-            ECKeyPair ecPEM = pem.getECKeyPair();
+            ECKeyPair pemKeyPair = pem.getECKeyPair();
 
-            System.out.println(
-                    "PEM PrivateKey: "
-                            + Numeric.toHexStringWithPrefixZeroPadded(
-                                    ecPEM.getPrivateKey(), (32 << 1)));
-            System.out.println(
-                    "PEM PublicKey: "
-                            + Numeric.toHexStringWithPrefixZeroPadded(
-                                    ecPEM.getPublicKey(), (64 << 1)));
+            System.out.println("PEM privateKey: " + pemKeyPair.getPrivateKey().toString(16));
+            System.out.println("PEM publicKey: " + pemKeyPair.getPublicKey().toString(16));
 
-            Credentials credentialsPEM = Credentials.create(ecPEM);
+            Credentials credentialsPEM = Credentials.create(pemKeyPair);
             System.out.println("PEM Address: " + credentialsPEM.getAddress());
         } catch (Exception e) {
             e.printStackTrace();
