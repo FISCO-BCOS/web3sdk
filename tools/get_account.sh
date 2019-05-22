@@ -94,8 +94,8 @@ main()
     openssl genpkey -paramfile /tmp/secp256k1.param -out ${output_path}/ecprivkey.pem
     calculate_address_pem ${output_path}/ecprivkey.pem
     if [ -z "$pkcs12_passwd" ];then
-        mv ${output_path}/ecprivkey.pem ${output_path}/${accountAddress}.private.pem
-        LOG_INFO "Private Key (pem) : ${output_path}/${accountAddress}.private.pem"
+        mv ${output_path}/ecprivkey.pem ${output_path}/${accountAddress}.pem
+        LOG_INFO "Private Key (pem) : ${output_path}/${accountAddress}.pem"
         # echo "0x${privKey}" > ${output_path}/${accountAddress}.private.hex
         # openssl ec -in ${output_path}/ecprivkey.pem -pubout -out ${output_path}/${accountAddress}.public.pem 2>/dev/null
         # LOG_INFO "Public  Key (pem) : ${output_path}/${accountAddress}.publick.pem"
