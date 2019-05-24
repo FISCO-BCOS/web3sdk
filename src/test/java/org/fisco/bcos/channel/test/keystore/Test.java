@@ -32,7 +32,7 @@ public class Test {
 		try {
 			System.out.println("Testing keystore...");
 			KeyStoreManager ks = context.getBean(KeyStoreManager.class);
-			ECKeyPair ec = ks.getECKeyPair("alice", "123456");
+			ECKeyPair ec = ks.getECKeyPair("alice", "");
 			
 			System.out.println("KeyStore PrivateKey: " + Numeric.toHexStringWithPrefixZeroPadded(ec.getPrivateKey(), (32 << 1)));
 			System.out.println("KeyStore PublicKey: " + Numeric.toHexStringWithPrefixZeroPadded(ec.getPublicKey(), (64 << 1)));
