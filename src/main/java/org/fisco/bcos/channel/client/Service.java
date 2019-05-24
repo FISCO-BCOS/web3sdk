@@ -741,7 +741,9 @@ public class Service {
     }
 
     public String newSeq() {
-        return UUID.randomUUID().toString().replaceAll("-", "");
+        String seq = UUID.randomUUID().toString().replaceAll("-", "");
+        logger.info("New Seq" + seq);
+        return seq;
     }
 
     public Map<String, Object> getSeq2Callback() {

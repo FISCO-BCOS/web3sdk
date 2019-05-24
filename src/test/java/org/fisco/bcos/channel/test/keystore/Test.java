@@ -48,8 +48,9 @@ public class Test {
 
             Credentials credentials = Credentials.create(ec);
             System.out.println("KeyStore Address: " + credentials.getAddress());
-
-            logger.info("providers: {}", Security.getProviders());
+        
+            String providers = String.join(Arrays.toString(Security.getProviders()));
+            logger.info("providers: {}", providers);
             System.out.println("Testing pem...");
             PEMLoader pem = context.getBean(PEMLoader.class);
             ECKeyPair ecPEM = pem.getECKeyPair();
