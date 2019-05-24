@@ -89,15 +89,14 @@ public class ExtendedRawTransactionManager extends TransactionManager {
     }
 
     @Override
-    public SendTransaction sendTransaction(
-            BigInteger gasPrice,
-            BigInteger gasLimit,
-            String to,
-            String data,
-            BigInteger value,
-            String extraData)
-            throws IOException {
-
+    public ExtendedRawTransaction createTransaction(
+        BigInteger gasPrice,
+        BigInteger gasLimit,
+        String to,
+        String data,
+        BigInteger value,
+        String extraData
+    ) throws IOException{
         Random r = new SecureRandom();
         BigInteger randomid = new BigInteger(250, r);
         BigInteger blockLimit = getBlockLimit();
@@ -113,6 +112,21 @@ public class ExtendedRawTransactionManager extends TransactionManager {
                         fiscoChainId,
                         groupId,
                         extraData);
+        return rawTransaction;
+    }
+
+    @Override
+    public SendTransaction sendTransaction(
+            BigInteger gasPrice,
+            BigInteger gasLimit,
+            String to,
+            String data,
+            BigInteger value,
+            String extraData)
+            throws IOException {
+
+                ExtendedRawTransaction rawTransaction = createTransaction(gasPrice, gasLimit, to, data, value, extraData);
+
 
         return signAndSend(rawTransaction);
     }
@@ -127,69 +141,36 @@ public class ExtendedRawTransactionManager extends TransactionManager {
             String extraData,
             TransactionSucCallback callback)
             throws IOException {
-        Random r = new SecureRandom();
-        BigInteger randomid = new BigInteger(250, r);
-        BigInteger blockLimit = getBlockLimit();
-        ExtendedRawTransaction extendedRawTransaction =
-                ExtendedRawTransaction.createTransaction(
-                        randomid,
-                        gasPrice,
-                        gasLimit,
-                        blockLimit,
-                        to,
-                        value,
-                        data,
-                        fiscoChainId,
-                        groupId,
-                        extraData);
 
-        return signAndSend(extendedRawTransaction, callback);
+                ExtendedRawTransaction rawTransaction = createTransaction(gasPrice, gasLimit, to, data, value, extraData);
+        return signAndSend(rawTransaction, callback);
     }
 
-    public SendTransaction signAndSend(ExtendedRawTransaction rawTransaction) throws IOException {
-
-        byte[] signedMessage;
-
-        if (chainId > ChainId.NONE) {
-            signedMessage =
-                    ExtendedTransactionEncoder.signMessage(rawTransaction, chainId, credentials);
-        } else {
-            signedMessage = ExtendedTransactionEncoder.signMessage(rawTransaction, credentials);
-        }
-
-        String hexValue = Numeric.toHexString(signedMessage);
-        SendTransaction sendTransaction = web3j.sendRawTransaction(hexValue).send();
+    @Override
+    public SendTransaction sendTransaction(String signedTransaction) throws IOException, TxHashMismatchException
+    {
+        SendTransaction sendTransaction = web3j.sendRawTransaction(signedTransaction).send();
         if (sendTransaction != null && !sendTransaction.hasError()) {
-            String txHashLocal = Hash.sha3(hexValue);
+            String txHashLocal = Hash.sha3(signedTransaction);
             String txHashRemote = sendTransaction.getTransactionHash();
             if (!txHashVerifier.verify(txHashLocal, txHashRemote)) {
                 throw new TxHashMismatchException(txHashLocal, txHashRemote);
             }
         }
+
         return sendTransaction;
     }
 
-    public SendTransaction signAndSend(
-            ExtendedRawTransaction rawTransaction, TransactionSucCallback callback)
-            throws IOException {
-
-        byte[] signedMessage;
-
-        if (chainId > ChainId.NONE) {
-            signedMessage =
-                    ExtendedTransactionEncoder.signMessage(rawTransaction, chainId, credentials);
-        } else {
-            signedMessage = ExtendedTransactionEncoder.signMessage(rawTransaction, credentials);
-        }
-
-        String hexValue = Numeric.toHexString(signedMessage);
-        Request<?, SendTransaction> request = web3j.sendRawTransaction(hexValue);
+    @Override
+    public SendTransaction sendTransaction(String signedTransaction, TransactionSucCallback callback) throws IOException, TxHashMismatchException
+    {
+        Request<?, SendTransaction> request = web3j.sendRawTransaction(signedTransaction);
         request.setNeedTransCallback(true);
         request.setTransactionSucCallback(callback);
         SendTransaction ethSendTransaction = request.send();
 
         if (ethSendTransaction != null && !ethSendTransaction.hasError()) {
-            String txHashLocal = Hash.sha3(hexValue);
+            String txHashLocal = Hash.sha3(signedTransaction);
             String txHashRemote = ethSendTransaction.getTransactionHash();
             if (!txHashVerifier.verify(txHashLocal, txHashRemote)) {
                 throw new TxHashMismatchException(txHashLocal, txHashRemote);
@@ -197,5 +178,36 @@ public class ExtendedRawTransactionManager extends TransactionManager {
         }
 
         return ethSendTransaction;
+    }
+
+    @Override
+    public String sign(ExtendedRawTransaction rawTransaction)
+    {
+        byte[] signedMessage;
+
+        if (chainId > ChainId.NONE) {
+            signedMessage =
+                    ExtendedTransactionEncoder.signMessage(rawTransaction, chainId, credentials);
+        } else {
+            signedMessage = ExtendedTransactionEncoder.signMessage(rawTransaction, credentials);
+        }
+
+        String signedData = Numeric.toHexString(signedMessage);
+
+        return signedData;
+    }
+
+    public SendTransaction signAndSend(ExtendedRawTransaction rawTransaction) throws IOException {
+        String signedTransaction = sign(rawTransaction);
+        SendTransaction result = sendTransaction(signedTransaction);
+        return result;
+    }
+
+    public SendTransaction signAndSend(
+            ExtendedRawTransaction rawTransaction, TransactionSucCallback callback)
+            throws IOException {
+        String signedTransaction = sign(rawTransaction);
+        SendTransaction result = sendTransaction(signedTransaction, callback);
+        return result;
     }
 }
