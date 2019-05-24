@@ -28,10 +28,7 @@ import org.fisco.bcos.channel.dto.ChannelPush;
 import org.fisco.bcos.channel.dto.ChannelPush2;
 import org.fisco.bcos.channel.dto.ChannelRequest;
 import org.fisco.bcos.channel.dto.ChannelResponse;
-import org.fisco.bcos.channel.handler.ChannelConnections;
-import org.fisco.bcos.channel.handler.ConnectionCallback;
-import org.fisco.bcos.channel.handler.ConnectionInfo;
-import org.fisco.bcos.channel.handler.GroupChannelConnectionsConfig;
+import org.fisco.bcos.channel.handler.*;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,6 +61,56 @@ public class Service {
         } catch (Exception e) {
             logger.error("system error", e);
         }
+    }
+
+    public boolean flushTopics(List<String> topics) {
+
+        try {
+            Message message = new Message();
+            message.setResult(0);
+            message.setType((short) 0x32); //topic设置topic消息0x32
+            message.setSeq(UUID.randomUUID().toString().replaceAll("-", ""));
+
+            message.setData(objectMapper.writeValueAsBytes(topics.toArray()));
+
+            ChannelConnections fromChannelConnections = allChannelConnections
+                    .getAllChannelConnections()
+                    .stream()
+                    .filter(x -> x.getGroupId() == groupId)
+                    .findFirst()
+                    .get();
+
+            if (fromChannelConnections == null) {
+                logger.error("not found and connections which orgId is:{}", orgID);
+                return false;
+            }
+
+            for(String key: fromChannelConnections.getNetworkConnections().keySet()) {
+                ChannelHandlerContext ctx = fromChannelConnections.getNetworkConnections().get(key);
+
+                if (ctx != null && ctx.channel().isActive()) {
+                    ByteBuf out = ctx.alloc().buffer();
+                    message.writeHeader(out);
+                    message.writeExtra(out);
+                    ctx.writeAndFlush(out);
+
+                    String host = ((SocketChannel)ctx.channel()).remoteAddress().getAddress().getHostAddress();
+                    Integer port = ((SocketChannel)ctx.channel()).remoteAddress().getPort();
+
+                    logger.info("try to flush seq:{} topics:{} to host:{} port :{}", message.getSeq(), topics, host, port);
+                }
+            }
+
+            return true;
+        } catch (Exception e) {
+            logger.error("flushTopics exception", e);
+        }
+
+        return false;
+    }
+
+    public Set<String> getTopics() {
+        return this.topics;
     }
 
     public Integer getConnectSeconds() {
