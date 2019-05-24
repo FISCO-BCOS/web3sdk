@@ -1,16 +1,26 @@
 package org.fisco.bcos.channel.handler;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.socket.SocketChannel;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.net.InetSocketAddress;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.UUID;
+import org.fisco.bcos.channel.client.BcosResponseCallback;
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.channel.dto.BcosMessage;
+import org.fisco.bcos.channel.dto.BcosResponse;
 import org.fisco.bcos.channel.dto.ChannelMessage;
 import org.fisco.bcos.channel.dto.ChannelMessage2;
+import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
+import org.fisco.bcos.web3j.protocol.core.Request;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BlockNumber;
+import org.fisco.bcos.web3j.protocol.exceptions.MessageDecodingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,9 +74,59 @@ public class ConnectionCallback implements ChannelConnections.Callback {
             message.writeExtra(out);
 
             ctx.writeAndFlush(out);
+
+            queryBlockNumberForSelectNodes(ctx);
+
         } catch (Exception e) {
             logger.error("error:", e);
         }
+    }
+
+    private void queryBlockNumberForSelectNodes(ChannelHandlerContext ctx)
+            throws JsonProcessingException {
+        BcosMessage bcosMessage = new BcosMessage();
+        bcosMessage.setType((short) 0x12);
+        String seq = UUID.randomUUID().toString().replaceAll("-", "");
+        bcosMessage.setSeq(seq);
+        ChannelEthereumService channelEthereumService = new ChannelEthereumService();
+        channelEthereumService.setChannelService(channelService);
+        Request<Integer, BlockNumber> request =
+                new Request<>(
+                        "getBlockNumber",
+                        Arrays.asList(channelService.getGroupId()),
+                        channelEthereumService,
+                        BlockNumber.class);
+        ObjectMapper objectMapper = new ObjectMapper();
+        bcosMessage.setData(objectMapper.writeValueAsBytes(request));
+        ByteBuf byteBuf = ctx.alloc().buffer();
+        bcosMessage.writeHeader(byteBuf);
+        bcosMessage.writeExtra(byteBuf);
+        ctx.writeAndFlush(byteBuf);
+
+        channelService
+                .getSeq2Callback()
+                .put(
+                        seq,
+                        new BcosResponseCallback() {
+
+                            @Override
+                            public void onResponse(BcosResponse response) {
+                                try {
+                                    ObjectMapper objectMapper = new ObjectMapper();
+                                    BlockNumber blockNumber =
+                                            objectMapper.readValue(
+                                                    response.getContent(), BlockNumber.class);
+                                    SocketChannel socketChannel = (SocketChannel) ctx.channel();
+                                    InetSocketAddress socketAddress = socketChannel.remoteAddress();
+                                    ChannelConnections.nodeToBlockNumberMap.put(
+                                            socketAddress.getAddress().getHostAddress()
+                                                    + socketAddress.getPort(),
+                                            blockNumber.getBlockNumber().intValue());
+                                } catch (Exception e) {
+                                    throw new MessageDecodingException(response.getContent());
+                                }
+                            }
+                        });
     }
 
     @Override
