@@ -91,46 +91,61 @@ public class PerformanceDTTest {
         this.collector = collector;
     }
 
-    public void veryTransferData() {
-        // System.out.println(" data validation => ");
+    public void veryTransferData(ThreadPoolTaskExecutor threadPool) {
         List<DagTransferUser> allUser = dagUserMgr.getUserList();
-        int total_user = allUser.size();
-
-        int verify_success = 0;
-
-        int verify_failed = 0;
+        Integer total_user = allUser.size();
+        
+        AtomicInteger verify_success = new AtomicInteger(0);
+        AtomicInteger verify_failed = new AtomicInteger(0);
 
         allUser = dagUserMgr.getUserList();
 
         try {
+        	final DagTransfer _dagTransfer = dagTransfer;
+        	final List<DagTransferUser> _allUser = allUser;
             for (int i = 0; i < allUser.size(); ++i) {
-                Tuple2<BigInteger, BigInteger> result =
-                        dagTransfer.userBalance(allUser.get(i).getUser()).send();
-
-                String user = allUser.get(i).getUser();
-                BigInteger local = allUser.get(i).getAmount();
-                BigInteger remote = result.getValue2();
-
-                if (result.getValue1().compareTo(new BigInteger("0")) != 0) {
-                    logger.error(" query failed, user " + user + " ret code " + result.getValue1());
-                    verify_failed++;
-                    continue;
-                }
-
-                logger.debug(
-                        " user  " + user + " local amount  " + local + " remote amount " + remote);
-                if (local.compareTo(remote) != 0) {
-                    verify_failed++;
-                    logger.error(
-                            " local amount is not same as remote, user "
-                                    + user
-                                    + " local "
-                                    + local
-                                    + " remote "
-                                    + remote);
-                } else {
-                    verify_success++;
-                }
+            	final Integer _i = i;
+            	threadPool.execute(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							Tuple2<BigInteger, BigInteger> result =
+									_dagTransfer.userBalance(_allUser.get(_i).getUser()).send();
+	
+			                String user = _allUser.get(_i).getUser();
+			                BigInteger local = _allUser.get(_i).getAmount();
+			                BigInteger remote = result.getValue2();
+	
+			                if (result.getValue1().compareTo(new BigInteger("0")) != 0) {
+			                    logger.error(" query failed, user " + user + " ret code " + result.getValue1());
+			                    verify_failed.incrementAndGet();
+			                    return;
+			                }
+	
+			                logger.debug(
+			                        " user  " + user + " local amount  " + local + " remote amount " + remote);
+			                if (local.compareTo(remote) != 0) {
+			                	verify_failed.incrementAndGet();
+			                    logger.error(
+			                            " local amount is not same as remote, user "
+			                                    + user
+			                                    + " local "
+			                                    + local
+			                                    + " remote "
+			                                    + remote);
+			                } else {
+			                	verify_success.incrementAndGet();
+			                }
+						}
+						catch(Exception e) {
+							logger.error("getAmount error: ", e);
+						}
+					}
+				});
+            }
+            
+            while(verify_success.get() + verify_failed.get() < total_user) {
+            	Thread.sleep(40);;
             }
 
             System.out.println("validation:");
@@ -187,7 +202,6 @@ public class PerformanceDTTest {
             threadPool.setCorePoolSize(200);
             threadPool.setMaxPoolSize(500);
             threadPool.setQueueCapacity(count.intValue());
-
             threadPool.initialize();
 
             System.out.println("Start UserAdd test, count " + count);
@@ -285,34 +299,54 @@ public class PerformanceDTTest {
         try {
             RateLimiter limiter = RateLimiter.create(qps.intValue());
 
-            String percent = 0 + "%";
-            System.out.print(dateFormat.format(new Date()) + " Querying account state..." + percent);
-            List<DagTransferUser> allUser = dagUserMgr.getUserList();
-            for (int i = 0; i < allUser.size(); ++i) {
-                Tuple2<BigInteger, BigInteger> result =
-                        dagTransfer.userBalance(allUser.get(i).getUser()).send();
-                
-                if (result.getValue1().compareTo(new BigInteger("0")) == 0) {
-                    allUser.get(i).setAmount(result.getValue2());
-                } else {
-                    System.out.println(" Query failed, user is " + allUser.get(i).getUser());
-                    System.exit(0);
-                }
-
-                for(int p = 0; p < percent.length(); ++p) {
-                    System.out.print('\b');
-                }
-                percent = ((i + 1) * 100) / allUser.size() + "%";
-                System.out.print(percent);
-            }
-            System.out.println("");
+            System.out.println(dateFormat.format(new Date()) + " Querying account state...");
 
             int coreNum = Runtime.getRuntime().availableProcessors();
             ThreadPoolTaskExecutor threadPool = new ThreadPoolTaskExecutor();
             threadPool.setCorePoolSize(coreNum);
-            threadPool.setMaxPoolSize(2 * coreNum);
+            threadPool.setMaxPoolSize(32 * coreNum);
             threadPool.setQueueCapacity(count.intValue());
             threadPool.initialize();
+            
+            List<DagTransferUser> allUser = dagUserMgr.getUserList();
+            
+            final DagTransfer _dagTransfer = dagTransfer;
+            AtomicInteger geted = new AtomicInteger(0);
+            for (int i = 0; i < allUser.size(); ++i) {
+            	final Integer _i = i;
+            	threadPool.execute(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							Tuple2<BigInteger, BigInteger> result =
+									_dagTransfer.userBalance(allUser.get(_i).getUser()).send();
+			                
+			                if (result.getValue1().compareTo(new BigInteger("0")) == 0) {
+			                    allUser.get(_i).setAmount(result.getValue2());
+			                } else {
+			                    System.out.println(" Query failed, user is " + allUser.get(_i).getUser());
+			                    System.exit(0);
+			                }
+			                geted.incrementAndGet();
+						}
+						catch(Exception e) {
+							System.out.println(" Query failed, user is " + allUser.get(_i).getUser());
+		                    System.exit(0);
+						}
+					}
+				});
+            }
+            
+            while(true) {
+            	if(geted.get() + 1 >= allUser.size()) {
+            		System.out.println(dateFormat.format(new Date()) + " Query account finished");
+            		break;
+            	}
+            	Thread.sleep(40);
+            }
+            
+            
+            System.out.println("");
 
             int segmentSize = 200000;
             int segmentCount = count.intValue() / segmentSize;
@@ -320,8 +354,6 @@ public class PerformanceDTTest {
                 segmentCount++;
             }
             
-            percent = 0 + "%";
-            System.out.print(dateFormat.format(new Date()) + " Creating signed transactions..." + percent);
             for(int i = 0; i < segmentCount; ++i) {
                 int start = i * segmentSize;
                 int end = start + segmentSize;
@@ -373,23 +405,21 @@ public class PerformanceDTTest {
                 }
 
                 long latchCount;
+                Boolean deleted = false;
                 while((latchCount = latch.getCount()) != 0) {
-
-                    for(int p = 0; p < percent.length(); ++p) {
-                        System.out.print('\b');
-                    }
-
-                    percent = (int)(((end - latchCount) / (double)count.intValue()) * 100) + "%";
-                    System.out.print(percent);
+            		int c = 1;
+            		if(deleted) {
+            			System.out.print(String.format("\033[%dA", c));
+            		}
+                    String percent = (int)((((end - latchCount) / (double)count.intValue()) * 100) + 1) + "%         ";
+                    System.out.println(dateFormat.format(new Date()) + " Prepare transactions..." + percent);
+                    
+                    deleted = true;
                     Thread.sleep(40);
                 }
 
                 writer.close();
-
-                for(int p = 0; p < percent.length(); ++p) {
-                    System.out.print('\b');
-                }
-                System.out.print("100%");
+                System.out.print(new Date() + " Prepare transactions finished");
             }
             System.out.println("");
 
@@ -397,7 +427,7 @@ public class PerformanceDTTest {
             File[] fileList = dir.listFiles();
 
             logger.info("Start to send");
-            System.out.println(dateFormat.format(new Date()) + " Sending signed transactions...");
+            System.out.println(dateFormat.format(dateFormat.format(new Date())) + " Sending signed transactions...");
 
             long startTime = System.currentTimeMillis();
             collector.setStartTimestamp(startTime);
@@ -429,16 +459,12 @@ public class PerformanceDTTest {
                     callbacks.add(callback);
                 }
 
-                threadPool = new ThreadPoolTaskExecutor();
-                threadPool.setCorePoolSize(coreNum * 16);
-                threadPool.setMaxPoolSize(coreNum * 32);
-                threadPool.setQueueCapacity(count.intValue());
-                threadPool.initialize();
-
                 latch = new CountDownLatch(signedTransactions.size());
 
                 for(int j = 0; j < signedTransactions.size(); ++j)
                 {
+                	limiter.acquire();
+                	
                     final int index = j;
                     threadPool.execute(
                         new Runnable() {
@@ -450,6 +476,7 @@ public class PerformanceDTTest {
                                         transactionManager.sendTransaction(signedTransactions.get(index), callbacks.get(index));
                                         break;
                                     } catch(Exception e) {
+                                    	logger.error("Send transaction error: ", e);
                                         continue;
                                     }
                                 }
@@ -480,7 +507,7 @@ public class PerformanceDTTest {
             logger.info("End to send");
 
             System.out.println(dateFormat.format(new Date()) + " Verifying result...");
-            veryTransferData();
+            veryTransferData(threadPool);
 
             System.exit(0);
 
