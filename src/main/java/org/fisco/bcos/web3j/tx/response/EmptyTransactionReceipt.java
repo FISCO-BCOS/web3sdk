@@ -72,21 +72,6 @@ public class EmptyTransactionReceipt extends TransactionReceipt {
     }
 
     @Override
-    public BigInteger getCumulativeGasUsed() {
-        throw unsupportedOperation();
-    }
-
-    @Override
-    public String getCumulativeGasUsedRaw() {
-        throw unsupportedOperation();
-    }
-
-    @Override
-    public void setCumulativeGasUsed(String cumulativeGasUsed) {
-        throw unsupportedOperation();
-    }
-
-    @Override
     public BigInteger getGasUsed() {
         throw unsupportedOperation();
     }
