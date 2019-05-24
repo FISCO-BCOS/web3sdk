@@ -43,8 +43,15 @@ public class CRUDSerivce {
 
     public int insert(Table table, Entry entry) throws Exception {
 
+        if (table.getKey().length() > PrecompiledCommon.TABLE_KEY_MAX_LENGTH) {
+            throw new PrecompileMessageException(
+                    "The value of the table key exceeds the maximum limit("
+                            + PrecompiledCommon.TABLE_KEY_MAX_LENGTH
+                            + ").");
+        }
         String entryJsonStr =
                 ObjectMapperFactory.getObjectMapper().writeValueAsString(entry.getFields());
+
         TransactionReceipt receipt =
                 crud.insert(table.getTableName(), table.getKey(), entryJsonStr, table.getOptional())
                         .send();
@@ -53,6 +60,12 @@ public class CRUDSerivce {
 
     public int update(Table table, Entry entry, Condition condition) throws Exception {
 
+        if (table.getKey().length() > PrecompiledCommon.TABLE_KEY_MAX_LENGTH) {
+            throw new PrecompileMessageException(
+                    "The value of the table key exceeds the maximum limit("
+                            + PrecompiledCommon.TABLE_KEY_MAX_LENGTH
+                            + ").");
+        }
         String entryJsonStr =
                 ObjectMapperFactory.getObjectMapper().writeValueAsString(entry.getFields());
         String conditionStr =
@@ -70,6 +83,12 @@ public class CRUDSerivce {
 
     public int remove(Table table, Condition condition) throws Exception {
 
+        if (table.getKey().length() > PrecompiledCommon.TABLE_KEY_MAX_LENGTH) {
+            throw new PrecompileMessageException(
+                    "The value of the table key exceeds the maximum limit("
+                            + PrecompiledCommon.TABLE_KEY_MAX_LENGTH
+                            + ").");
+        }
         String conditionStr =
                 ObjectMapperFactory.getObjectMapper().writeValueAsString(condition.getConditions());
         TransactionReceipt receipt =
@@ -81,6 +100,12 @@ public class CRUDSerivce {
     @SuppressWarnings("unchecked")
     public List<Map<String, String>> select(Table table, Condition condition) throws Exception {
 
+        if (table.getKey().length() > PrecompiledCommon.TABLE_KEY_MAX_LENGTH) {
+            throw new PrecompileMessageException(
+                    "The value of the table key exceeds the maximum limit("
+                            + PrecompiledCommon.TABLE_KEY_MAX_LENGTH
+                            + ").");
+        }
         ObjectMapper objectMapper = ObjectMapperFactory.getObjectMapper();
         String conditionJsonStr = objectMapper.writeValueAsString(condition.getConditions());
         String resultStr =
