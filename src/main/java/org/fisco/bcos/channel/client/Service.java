@@ -57,7 +57,6 @@ public class Service {
     private ThreadPoolTaskExecutor threadPool;
 
     private Set<String> topics = new HashSet<String>();
-    private ConcurrentHashMap<String, Integer> nodeToBlockNumberMap = new ConcurrentHashMap<>();
 
     public void setTopics(Set<String> topics) {
         try {
@@ -342,7 +341,6 @@ public class Service {
                     throw new Exception("not found agencyName");
                 }
             }
-            channelConnections.setNodeToBlockNumberMap(nodeToBlockNumberMap);
             ChannelHandlerContext ctx = channelConnections.randomNetworkConnection();
 
             ByteBuf out = ctx.alloc().buffer();
@@ -698,11 +696,18 @@ public class Service {
             String hostAddress = socketChannel.remoteAddress().getAddress().getHostAddress();
             int port = socketChannel.remoteAddress().getPort();
             Integer number = Integer.parseInt(split[1]);
-            //            System.out.println(hostAddress + ":" + port + " blockNumber:" + number);
-            nodeToBlockNumberMap.put(hostAddress + port, number);
 
-            if (number.compareTo(getNumber().intValue()) > 0) {
-                setNumber(BigInteger.valueOf((long) number));
+            ChannelConnections.nodeToBlockNumberMap.put(hostAddress + port, number);
+            // get max blockNumber to set blocklimit
+            Integer maxBlockNumber = number;
+            for (String key : ChannelConnections.nodeToBlockNumberMap.keySet()) {
+                int blockNumber = ChannelConnections.nodeToBlockNumberMap.get(key);
+                if (blockNumber >= maxBlockNumber) {
+                    maxBlockNumber = blockNumber;
+                }
+            }
+            if (maxBlockNumber > getNumber().intValue()) {
+                setNumber(BigInteger.valueOf((long) maxBlockNumber));
             }
         } catch (Exception e) {
             logger.error("Block notify error", e);
@@ -736,7 +741,9 @@ public class Service {
     }
 
     public String newSeq() {
-        return UUID.randomUUID().toString().replaceAll("-", "");
+        String seq = UUID.randomUUID().toString().replaceAll("-", "");
+        logger.info("New Seq" + seq);
+        return seq;
     }
 
     public Map<String, Object> getSeq2Callback() {

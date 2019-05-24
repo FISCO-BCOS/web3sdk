@@ -9,7 +9,7 @@ public class StaticArray<T extends Type> extends Array<T> {
      * Warning: increasing this constant will cause more generated StaticArrayN types, see:
      * AbiTypesGenerator#generateStaticArrayTypes
      */
-    public static int MAX_SIZE_OF_STATIC_ARRAY = 32;
+    public static int MAX_SIZE_OF_STATIC_ARRAY = 1024;
 
     private Integer expectedSize;
 
@@ -38,7 +38,7 @@ public class StaticArray<T extends Type> extends Array<T> {
     }
 
     private void isValid() {
-        MAX_SIZE_OF_STATIC_ARRAY = 32;
+      //  MAX_SIZE_OF_STATIC_ARRAY = 32;
         if (expectedSize == null && value.size() > MAX_SIZE_OF_STATIC_ARRAY) {
             throw new UnsupportedOperationException(
                     "Static arrays with a length greater than 32 are not supported.");
