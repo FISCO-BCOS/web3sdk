@@ -1,6 +1,6 @@
 contract TableFactory {
     function openTable(string) public constant returns (Table); //open table
-    function createTable(string,string,string) public constant returns(Table); //create table
+    function createTable(string,string,string) public constant returns(int); //create table
 }
 
 //select condition
@@ -24,12 +24,16 @@ contract Condition {
 //one record 
 contract Entry {
     function getInt(string) public constant returns(int);
+    function getUInt(string) public constant returns(uint);
     function getAddress(string) public constant returns(address);
     function getBytes64(string) public constant returns(byte[64]);
     function getBytes32(string) public constant returns(bytes32);
-    
+    function getString(string) public constant returns(string);
+
     function set(string, int) public;
+    function set(string, uint) public;
     function set(string, string) public;
+    function set(string, address) public;
 }
 
 //record sets

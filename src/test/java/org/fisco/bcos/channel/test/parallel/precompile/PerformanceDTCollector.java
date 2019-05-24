@@ -44,6 +44,7 @@ public class PerformanceDTCollector {
     }
 
     public void onMessage(TransactionReceipt receipt, Long cost) {
+
         try {
             if (receipt.isStatusOK()) {
                 String output = receipt.getOutput();
@@ -59,13 +60,13 @@ public class PerformanceDTCollector {
             } else {
                 error.addAndGet(1);
             }
+            
+            int count = received.incrementAndGet();
 
-            received.incrementAndGet();
-
-            if ((received.get() + 1) % (total / 10) == 0) {
+            if (count % (total / 10) == 0) {
                 System.out.println(
                         "                                                       |received:"
-                                + String.valueOf((received.get() + 1) * 100 / total)
+                                + String.valueOf(count * 100 / total)
                                 + "%");
             }
 
