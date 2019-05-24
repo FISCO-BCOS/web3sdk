@@ -11,6 +11,8 @@ import org.fisco.bcos.web3j.protocol.exceptions.TransactionException;
 import org.fisco.bcos.web3j.tx.response.PollingTransactionReceiptProcessor;
 import org.fisco.bcos.web3j.tx.response.TransactionReceiptProcessor;
 import org.fisco.bcos.web3j.utils.AttemptsConf;
+import org.fisco.bcos.web3j.crypto.ExtendedRawTransaction;
+import org.fisco.bcos.web3j.tx.exceptions.TxHashMismatchException;
 
 /**
  * Transaction manager abstraction for executing transactions with Ethereum client via various
@@ -77,6 +79,32 @@ public abstract class TransactionManager {
             throws IOException {
         return null;
     };
+
+    public SendTransaction sendTransaction(String signedTransaction) throws IOException, TxHashMismatchException
+    {
+        return null;
+    }
+
+    public SendTransaction sendTransaction(String signedTransaction, TransactionSucCallback callback) throws IOException, TxHashMismatchException
+    {
+        return null;
+    }
+
+    public ExtendedRawTransaction createTransaction(
+        BigInteger gasPrice,
+        BigInteger gasLimit,
+        String to,
+        String data,
+        BigInteger value,
+        String extraData
+    ) throws IOException{
+        return null;
+    }
+
+    public String sign(ExtendedRawTransaction transaction)
+    {
+        return null;
+    }
 
     public String getFromAddress() {
         return credentials.getAddress();

@@ -44,6 +44,7 @@ public class PerformanceDTCollector {
     }
 
     public void onMessage(TransactionReceipt receipt, Long cost) {
+
         try {
             if (receipt.isStatusOK()) {
                 String output = receipt.getOutput();
@@ -59,13 +60,13 @@ public class PerformanceDTCollector {
             } else {
                 error.addAndGet(1);
             }
+            
+            int count = received.incrementAndGet();
 
-            received.incrementAndGet();
-
-            if ((received.get() + 1) % (total / 10) == 0) {
+            if (count % (total / 10) == 0) {
                 System.out.println(
                         "                                                       |received:"
-                                + String.valueOf((received.get() + 1) * 100 / total)
+                                + String.valueOf(count * 100 / total)
                                 + "%");
             }
 
@@ -109,11 +110,11 @@ public class PerformanceDTCollector {
                         "Avg time cost: " + String.valueOf(totalCost.get() / total) + "ms");
                 System.out.println(
                         "Error rate: "
-                                + String.valueOf((error.get() / received.get()) * 100)
+                                + String.valueOf((error.get() / (double)received.get()) * 100)
                                 + "%");
                 System.out.println(
                         "Return Error rate: "
-                                + String.valueOf((ret_error.get() / received.get()) * 100)
+                                + String.valueOf((ret_error.get() / (double)received.get()) * 100)
                                 + "%");
 
                 System.out.println("Time area:");
