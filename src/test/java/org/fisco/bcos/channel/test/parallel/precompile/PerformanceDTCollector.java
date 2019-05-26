@@ -60,7 +60,7 @@ public class PerformanceDTCollector {
             } else {
                 error.addAndGet(1);
             }
-            
+
             int count = received.incrementAndGet();
 
             if (count % (total / 10) == 0) {
@@ -110,11 +110,11 @@ public class PerformanceDTCollector {
                         "Avg time cost: " + String.valueOf(totalCost.get() / total) + "ms");
                 System.out.println(
                         "Error rate: "
-                                + String.valueOf((error.get() / (double)received.get()) * 100)
+                                + String.valueOf((error.get() / (double) received.get()) * 100)
                                 + "%");
                 System.out.println(
                         "Return Error rate: "
-                                + String.valueOf((ret_error.get() / (double)received.get()) * 100)
+                                + String.valueOf((ret_error.get() / (double) received.get()) * 100)
                                 + "%");
 
                 System.out.println("Time area:");
