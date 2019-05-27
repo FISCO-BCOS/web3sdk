@@ -78,7 +78,7 @@ public class DagUserMgr {
 
         logger.info("file {}, load end, count is {}.", file, userList.size());
 
-        System.out.println(" Write DagTransferUser end, count is " + userList.size());
+        System.out.println("Write DagTransferUser end, count is " + userList.size());
     }
 
     public void loadDagTransferUser() throws IOException {
@@ -108,7 +108,7 @@ public class DagUserMgr {
 
         logger.info("file {}, load end, count is {}.", file, userList.size());
 
-        System.out.println(" Load DagTransferUser end, count is " + userList.size());
+        System.out.println("Load DagTransferUser end, count is " + userList.size());
     }
 
     public String getTestType() {
