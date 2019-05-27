@@ -140,6 +140,8 @@ public class PerformanceDTTest {
 
     public void initialize(String groupId) throws Exception {
 
+        System.out.println("Initializing...");
+
         ApplicationContext context =
                 new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
         Service service = context.getBean(Service.class);
@@ -185,6 +187,8 @@ public class PerformanceDTTest {
 
             threadPool.initialize();
 
+            System.out.println(
+                    "===================================================================");
             System.out.println("Start UserAdd test, count " + count);
             System.out.println(
                     "===================================================================");
