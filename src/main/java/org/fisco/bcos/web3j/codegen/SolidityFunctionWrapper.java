@@ -1067,41 +1067,41 @@ public class SolidityFunctionWrapper extends Generator {
     }
 
     private void buildTransactionFunctionSeq(
-        AbiDefinition functionDefinition, MethodSpec.Builder methodBuilder, String inputParams)
-        throws ClassNotFoundException {
+            AbiDefinition functionDefinition, MethodSpec.Builder methodBuilder, String inputParams)
+            throws ClassNotFoundException {
 
-    if (functionDefinition.hasOutputs()) {
-        // CHECKSTYLE:OFF
-        reporter.report(
-                String.format(
-                        "Definition of the function %s returns a value but is not defined as a view function. "
-                                + "Please ensure it contains the view modifier if you want to read the return value",
-                        functionDefinition.getName()));
-        // CHECKSTYLE:ON
-    }
+        if (functionDefinition.hasOutputs()) {
+            // CHECKSTYLE:OFF
+            reporter.report(
+                    String.format(
+                            "Definition of the function %s returns a value but is not defined as a view function. "
+                                    + "Please ensure it contains the view modifier if you want to read the return value",
+                            functionDefinition.getName()));
+            // CHECKSTYLE:ON
+        }
 
-    if (functionDefinition.isPayable()) {
-        methodBuilder.addParameter(BigInteger.class, WEI_VALUE);
-    }
+        if (functionDefinition.isPayable()) {
+            methodBuilder.addParameter(BigInteger.class, WEI_VALUE);
+        }
 
-    String functionName = functionDefinition.getName();
+        String functionName = functionDefinition.getName();
 
-    TypeName returnType= TypeName.get(String.class);
-    methodBuilder.returns(returnType);
+        TypeName returnType = TypeName.get(String.class);
+        methodBuilder.returns(returnType);
 
-    methodBuilder.addStatement(
-            "final $T function = new $T(\n$N, \n$T.<$T>asList($L), \n$T"
-                    + ".<$T<?>>emptyList())",
-            Function.class,
-            Function.class,
-            funcNameToConst(functionName),
-            Arrays.class,
-            Type.class,
-            inputParams,
-            Collections.class,
-            TypeReference.class);
+        methodBuilder.addStatement(
+                "final $T function = new $T(\n$N, \n$T.<$T>asList($L), \n$T"
+                        + ".<$T<?>>emptyList())",
+                Function.class,
+                Function.class,
+                funcNameToConst(functionName),
+                Arrays.class,
+                Type.class,
+                inputParams,
+                Collections.class,
+                TypeReference.class);
 
-    methodBuilder.addStatement("return createTransactionSeq(function)");
+        methodBuilder.addStatement("return createTransactionSeq(function)");
     }
 
     TypeSpec buildEventResponseObject(

@@ -41,12 +41,12 @@ public class StaticArrayTest {
     @Test
     public void throwsIfSizeIsAboveMaxOf32() {
         try {
-            new StaticArray<>(arrayOfUints(33));
+            new StaticArray<>(arrayOfUints(1025));
             fail();
         } catch (UnsupportedOperationException e) {
             assertThat(
                     e.getMessage(),
-                    equalTo("Static arrays with a length greater than 32 are not supported."));
+                    equalTo("Bitsize must be 8 bit aligned, and in range 0 < bitSize <= 256"));
         }
     }
 
