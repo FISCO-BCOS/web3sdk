@@ -415,19 +415,17 @@ public abstract class Contract extends ManagedTransaction {
         }
     }
 
-    protected String createTransactionSeq(Function function)
-    {
-        try
-        {    String signedTransaction = createSeq(
-            contractAddress,
-                    FunctionEncoder.encode(function),
-                    BigInteger.ZERO,
-                    gasProvider.getGasPrice(function.getName()),
-                    gasProvider.getGasLimit(function.getName()));
+    protected String createTransactionSeq(Function function) {
+        try {
+            String signedTransaction =
+                    createSeq(
+                            contractAddress,
+                            FunctionEncoder.encode(function),
+                            BigInteger.ZERO,
+                            gasProvider.getGasPrice(function.getName()),
+                            gasProvider.getGasLimit(function.getName()));
             return signedTransaction;
-        }
-        catch(IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
             return "";
         }
