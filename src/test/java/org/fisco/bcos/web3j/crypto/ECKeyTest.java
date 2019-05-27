@@ -1,13 +1,10 @@
 package org.fisco.bcos.web3j.crypto;
 
+import java.math.BigInteger;
 import org.bouncycastle.util.encoders.Hex;
 import org.junit.Test;
 
-import java.math.BigInteger;
-
-/**
- * Created by mingzhenliu on 2017/7/12.
- */
+/** Created by mingzhenliu on 2017/7/12. */
 public class ECKeyTest {
 
     @Test

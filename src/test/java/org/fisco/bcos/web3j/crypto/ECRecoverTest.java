@@ -1,15 +1,14 @@
 package org.fisco.bcos.web3j.crypto;
 
-import org.fisco.bcos.web3j.crypto.Sign.SignatureData;
-import org.fisco.bcos.web3j.utils.Numeric;
-import org.junit.Test;
-
-import java.math.BigInteger;
-import java.util.Arrays;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+
+import java.math.BigInteger;
+import java.util.Arrays;
+import org.fisco.bcos.web3j.crypto.Sign.SignatureData;
+import org.fisco.bcos.web3j.utils.Numeric;
+import org.junit.Test;
 
 public class ECRecoverTest {
 

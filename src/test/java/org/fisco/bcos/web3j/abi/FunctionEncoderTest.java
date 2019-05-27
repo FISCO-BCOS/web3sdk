@@ -1,16 +1,15 @@
 package org.fisco.bcos.web3j.abi;
 
-import org.fisco.bcos.web3j.abi.datatypes.*;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Bytes10;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Uint32;
-import org.junit.Test;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collections;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import org.fisco.bcos.web3j.abi.datatypes.*;
+import org.fisco.bcos.web3j.abi.datatypes.generated.Bytes10;
+import org.fisco.bcos.web3j.abi.datatypes.generated.Uint32;
+import org.junit.Test;
 
 public class FunctionEncoderTest {
 

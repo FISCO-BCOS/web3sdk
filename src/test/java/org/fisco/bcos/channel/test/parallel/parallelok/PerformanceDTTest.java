@@ -1,6 +1,16 @@
 package org.fisco.bcos.channel.test.parallel.parallelok;
 
 import com.google.common.util.concurrent.RateLimiter;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.protocol.Web3j;
@@ -14,17 +24,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class PerformanceDTTest {
     private static Logger logger = LoggerFactory.getLogger(PerformanceDTTest.class);
@@ -172,10 +171,10 @@ public class PerformanceDTTest {
                             "b83261efa42895c38c6c2364ca878f43e77f3cddbc922bf57d0d48070f79feb6");
             parallelok =
                     ParallelOk.deploy(
-                            web3,
-                            credentials,
-                            new BigInteger("30000000"),
-                            new BigInteger("30000000"))
+                                    web3,
+                                    credentials,
+                                    new BigInteger("30000000"),
+                                    new BigInteger("30000000"))
                             .send();
 
             // enable parallel transaction
@@ -432,8 +431,9 @@ public class PerformanceDTTest {
                                     callback.setAmount(amount);
 
                                     try {
-                                        String signedTransaction = parallelok.transferSeq(
-                                                from.getUser(), to.getUser(), amount);
+                                        String signedTransaction =
+                                                parallelok.transferSeq(
+                                                        from.getUser(), to.getUser(), amount);
                                         lock.lock();
                                         signedTransactions.add(signedTransaction);
                                         callbacks.add(callback);
@@ -475,7 +475,9 @@ public class PerformanceDTTest {
                             public void run() {
                                 while (true) {
                                     try {
-                                        transactionManager.sendTransaction(signedTransactions.get(index), callbacks.get(index));
+                                        transactionManager.sendTransaction(
+                                                signedTransactions.get(index),
+                                                callbacks.get(index));
                                         break;
                                     } catch (Exception e) {
                                         continue;

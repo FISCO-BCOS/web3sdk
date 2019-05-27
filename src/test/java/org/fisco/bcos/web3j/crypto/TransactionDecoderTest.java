@@ -1,12 +1,11 @@
 package org.fisco.bcos.web3j.crypto;
 
+import static org.junit.Assert.*;
+
+import java.math.BigInteger;
 import org.fisco.bcos.web3j.utils.Numeric;
 import org.junit.Ignore;
 import org.junit.Test;
-
-import java.math.BigInteger;
-
-import static org.junit.Assert.*;
 
 public class TransactionDecoderTest {
 

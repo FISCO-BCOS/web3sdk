@@ -1,13 +1,12 @@
 package org.fisco.bcos.channel.test.amop;
 
+import java.util.HashSet;
+import java.util.Set;
 import org.fisco.bcos.channel.client.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-
-import java.util.HashSet;
-import java.util.Set;
 
 public class Channel2Server {
     static Logger logger = LoggerFactory.getLogger(Channel2Server.class);
