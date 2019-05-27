@@ -1,15 +1,16 @@
 package org.fisco.bcos.web3j.crypto;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-import java.math.BigInteger;
-import java.util.List;
 import org.fisco.bcos.web3j.crypto.gm.GenCredential;
 import org.fisco.bcos.web3j.rlp.RlpType;
 import org.fisco.bcos.web3j.utils.Numeric;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import java.math.BigInteger;
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public class TransactionEncoderTest {
 

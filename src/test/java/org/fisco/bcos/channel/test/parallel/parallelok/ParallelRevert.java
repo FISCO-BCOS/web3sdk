@@ -1,8 +1,5 @@
 package org.fisco.bcos.channel.test.parallel.parallelok;
 
-import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.Collections;
 import org.fisco.bcos.channel.client.TransactionSucCallback;
 import org.fisco.bcos.web3j.abi.TypeReference;
 import org.fisco.bcos.web3j.abi.datatypes.Function;
@@ -15,6 +12,10 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.tx.Contract;
 import org.fisco.bcos.web3j.tx.TransactionManager;
 import org.fisco.bcos.web3j.tx.gas.ContractGasProvider;
+
+import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Auto generated code.
@@ -114,7 +115,8 @@ public class ParallelRevert extends Contract {
                         FUNC_BALANCEOF,
                         Arrays.<Type>asList(
                                 new org.fisco.bcos.web3j.abi.datatypes.Utf8String(name)),
-                        Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>() {}));
+                        Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>() {
+                        }));
         return executeRemoteCallSingleValueReturn(function, BigInteger.class);
     }
 

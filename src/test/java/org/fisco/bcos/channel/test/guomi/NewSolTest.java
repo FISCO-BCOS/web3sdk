@@ -1,11 +1,6 @@
 package org.fisco.bcos.channel.test.guomi;
 
 import io.reactivex.Flowable;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import org.fisco.bcos.web3j.abi.EventEncoder;
 import org.fisco.bcos.web3j.abi.TypeReference;
 import org.fisco.bcos.web3j.abi.datatypes.*;
@@ -21,6 +16,12 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.tx.Contract;
 import org.fisco.bcos.web3j.tx.TransactionManager;
 import org.fisco.bcos.web3j.tx.gas.ContractGasProvider;
+
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Auto generated code.
@@ -71,24 +72,35 @@ public class NewSolTest extends Contract {
             new Event(
                     "OwnershipTransferred",
                     Arrays.<TypeReference<?>>asList(
-                            new TypeReference<Address>(true) {},
-                            new TypeReference<Address>(true) {}));;
+                            new TypeReference<Address>(true) {
+                            },
+                            new TypeReference<Address>(true) {
+                            }));
+    ;
 
     public static final Event TRANSFER_EVENT =
             new Event(
                     "Transfer",
                     Arrays.<TypeReference<?>>asList(
-                            new TypeReference<Address>(true) {},
-                            new TypeReference<Address>(true) {},
-                            new TypeReference<Uint256>() {}));;
+                            new TypeReference<Address>(true) {
+                            },
+                            new TypeReference<Address>(true) {
+                            },
+                            new TypeReference<Uint256>() {
+                            }));
+    ;
 
     public static final Event APPROVAL_EVENT =
             new Event(
                     "Approval",
                     Arrays.<TypeReference<?>>asList(
-                            new TypeReference<Address>(true) {},
-                            new TypeReference<Address>(true) {},
-                            new TypeReference<Uint256>() {}));;
+                            new TypeReference<Address>(true) {
+                            },
+                            new TypeReference<Address>(true) {
+                            },
+                            new TypeReference<Uint256>() {
+                            }));
+    ;
 
     @Deprecated
     protected NewSolTest(
@@ -131,7 +143,8 @@ public class NewSolTest extends Contract {
                 new Function(
                         FUNC_NAME,
                         Arrays.<Type>asList(),
-                        Arrays.<TypeReference<?>>asList(new TypeReference<Utf8String>() {}));
+                        Arrays.<TypeReference<?>>asList(new TypeReference<Utf8String>() {
+                        }));
         return executeRemoteCallSingleValueReturn(function, String.class);
     }
 
@@ -149,7 +162,8 @@ public class NewSolTest extends Contract {
                 new Function(
                         FUNC_TOTALSUPPLY,
                         Arrays.<Type>asList(),
-                        Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>() {}));
+                        Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>() {
+                        }));
         return executeRemoteCallSingleValueReturn(function, BigInteger.class);
     }
 
@@ -168,7 +182,8 @@ public class NewSolTest extends Contract {
                 new Function(
                         FUNC_DECIMALS,
                         Arrays.<Type>asList(),
-                        Arrays.<TypeReference<?>>asList(new TypeReference<Uint8>() {}));
+                        Arrays.<TypeReference<?>>asList(new TypeReference<Uint8>() {
+                        }));
         return executeRemoteCallSingleValueReturn(function, BigInteger.class);
     }
 
@@ -177,7 +192,8 @@ public class NewSolTest extends Contract {
                 new Function(
                         FUNC__TOTALSUPPLY,
                         Arrays.<Type>asList(),
-                        Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>() {}));
+                        Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>() {
+                        }));
         return executeRemoteCallSingleValueReturn(function, BigInteger.class);
     }
 
@@ -186,7 +202,8 @@ public class NewSolTest extends Contract {
                 new Function(
                         FUNC_BALANCEOF,
                         Arrays.<Type>asList(new Address(tokenOwner)),
-                        Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>() {}));
+                        Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>() {
+                        }));
         return executeRemoteCallSingleValueReturn(function, BigInteger.class);
     }
 
@@ -204,7 +221,8 @@ public class NewSolTest extends Contract {
                 new Function(
                         FUNC_OWNER,
                         Arrays.<Type>asList(),
-                        Arrays.<TypeReference<?>>asList(new TypeReference<Address>() {}));
+                        Arrays.<TypeReference<?>>asList(new TypeReference<Address>() {
+                        }));
         return executeRemoteCallSingleValueReturn(function, String.class);
     }
 
@@ -213,7 +231,8 @@ public class NewSolTest extends Contract {
                 new Function(
                         FUNC_SYMBOL,
                         Arrays.<Type>asList(),
-                        Arrays.<TypeReference<?>>asList(new TypeReference<Utf8String>() {}));
+                        Arrays.<TypeReference<?>>asList(new TypeReference<Utf8String>() {
+                        }));
         return executeRemoteCallSingleValueReturn(function, String.class);
     }
 
@@ -231,7 +250,8 @@ public class NewSolTest extends Contract {
                 new Function(
                         FUNC_NEWOWNER,
                         Arrays.<Type>asList(),
-                        Arrays.<TypeReference<?>>asList(new TypeReference<Address>() {}));
+                        Arrays.<TypeReference<?>>asList(new TypeReference<Address>() {
+                        }));
         return executeRemoteCallSingleValueReturn(function, String.class);
     }
 
@@ -250,7 +270,8 @@ public class NewSolTest extends Contract {
                 new Function(
                         FUNC_ALLOWANCE,
                         Arrays.<Type>asList(new Address(tokenOwner), new Address(spender)),
-                        Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>() {}));
+                        Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>() {
+                        }));
         return executeRemoteCallSingleValueReturn(function, BigInteger.class);
     }
 

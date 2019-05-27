@@ -1,10 +1,5 @@
 package org.fisco.bcos.web3j.tx;
 
-import static org.hamcrest.CoreMatchers.sameInstance;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-
-import java.io.IOException;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.Request;
 import org.fisco.bcos.web3j.protocol.core.Response;
@@ -14,6 +9,12 @@ import org.fisco.bcos.web3j.protocol.exceptions.TransactionException;
 import org.fisco.bcos.web3j.tx.response.PollingTransactionReceiptProcessor;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.io.IOException;
+
+import static org.hamcrest.CoreMatchers.sameInstance;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 public class PollingTransactionReceiptProcessorTest {
     private static final String TRANSACTION_HASH = "0x00";

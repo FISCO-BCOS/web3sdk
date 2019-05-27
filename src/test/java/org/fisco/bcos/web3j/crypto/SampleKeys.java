@@ -1,9 +1,12 @@
 package org.fisco.bcos.web3j.crypto;
 
-import java.math.BigInteger;
 import org.fisco.bcos.web3j.utils.Numeric;
 
-/** Keys generated for unit testing purposes. */
+import java.math.BigInteger;
+
+/**
+ * Keys generated for unit testing purposes.
+ */
 public class SampleKeys {
 
     public static final String PRIVATE_KEY_STRING =
@@ -23,5 +26,6 @@ public class SampleKeys {
 
     public static final Credentials CREDENTIALS = Credentials.create(KEY_PAIR);
 
-    private SampleKeys() {}
+    private SampleKeys() {
+    }
 }

@@ -1,13 +1,6 @@
 package org.fisco.bcos.channel.test.contract;
 
 import com.google.common.util.concurrent.RateLimiter;
-import java.math.BigInteger;
-import java.util.Random;
-import java.util.UUID;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.protocol.Web3j;
@@ -18,6 +11,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+
+import java.math.BigInteger;
+import java.util.Random;
+import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class PerfomanceTableModify {
     private static Logger logger = LoggerFactory.getLogger(PerfomanceTableModify.class);

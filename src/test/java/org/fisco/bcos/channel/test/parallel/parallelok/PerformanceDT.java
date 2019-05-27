@@ -1,8 +1,9 @@
 package org.fisco.bcos.channel.test.parallel.parallelok;
 
-import java.math.BigInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.math.BigInteger;
 
 public class PerformanceDT {
     private static Logger logger = LoggerFactory.getLogger(PerformanceDT.class);

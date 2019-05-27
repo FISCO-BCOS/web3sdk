@@ -1,14 +1,5 @@
 package org.fisco.bcos.channel.test.amop;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import org.fisco.bcos.channel.client.ChannelPushCallback;
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.channel.dto.ChannelPush;
@@ -20,6 +11,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class PingTest {
     private static Logger logger = LoggerFactory.getLogger(PingTest.class);
@@ -171,8 +167,8 @@ public class PingTest {
                 System.out.println(
                         "Success rate: "
                                 + String.valueOf(
-                                        ((double) summary.totalSuccess / summary.totalRequest)
-                                                * 100)
+                                ((double) summary.totalSuccess / summary.totalRequest)
+                                        * 100)
                                 + "%");
             }
 
@@ -180,7 +176,7 @@ public class PingTest {
                 System.out.println(
                         "Avg time cost: "
                                 + String.valueOf(
-                                        ((double) summary.totalTime / summary.totalSuccess))
+                                ((double) summary.totalTime / summary.totalSuccess))
                                 + " ms");
             }
 
@@ -196,49 +192,49 @@ public class PingTest {
                                 + String.valueOf(summary.less50)
                                 + "  : "
                                 + String.valueOf(
-                                        (double) summary.less50 / summary.totalSuccess * 100)
+                                (double) summary.less50 / summary.totalSuccess * 100)
                                 + "%");
                 System.out.println(
                         "50   < time <  100ms  : "
                                 + String.valueOf(summary.less100)
                                 + "  : "
                                 + String.valueOf(
-                                        (double) summary.less100 / summary.totalSuccess * 100)
+                                (double) summary.less100 / summary.totalSuccess * 100)
                                 + "%");
                 System.out.println(
                         "100  < time <  200ms  : "
                                 + String.valueOf(summary.less200)
                                 + "  : "
                                 + String.valueOf(
-                                        (double) summary.less200 / summary.totalSuccess * 100)
+                                (double) summary.less200 / summary.totalSuccess * 100)
                                 + "%");
                 System.out.println(
                         "200  < time <  400ms  : "
                                 + String.valueOf(summary.less400)
                                 + "  : "
                                 + String.valueOf(
-                                        (double) summary.less400 / summary.totalSuccess * 100)
+                                (double) summary.less400 / summary.totalSuccess * 100)
                                 + "%");
                 System.out.println(
                         "400  < time <  1000ms : "
                                 + String.valueOf(summary.less1000)
                                 + "  : "
                                 + String.valueOf(
-                                        (double) summary.less1000 / summary.totalSuccess * 100)
+                                (double) summary.less1000 / summary.totalSuccess * 100)
                                 + "%");
                 System.out.println(
                         "1000 < time <  2000ms : "
                                 + String.valueOf(summary.less2000)
                                 + "  : "
                                 + String.valueOf(
-                                        (double) summary.less2000 / summary.totalSuccess * 100)
+                                (double) summary.less2000 / summary.totalSuccess * 100)
                                 + "%");
                 System.out.println(
                         "2000 < time           : "
                                 + String.valueOf(summary.timeout2000)
                                 + "  : "
                                 + String.valueOf(
-                                        (double) summary.timeout2000 / summary.totalSuccess * 100)
+                                (double) summary.timeout2000 / summary.totalSuccess * 100)
                                 + "%");
             }
 

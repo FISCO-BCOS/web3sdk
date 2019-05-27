@@ -2,11 +2,12 @@ package org.fisco.bcos.channel.test.parallel.parallelok;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.math.BigInteger;
 import org.fisco.bcos.channel.client.TransactionSucCallback;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.math.BigInteger;
 
 public class PerformanceDTCallback extends TransactionSucCallback {
     private static ObjectMapper objectMapper = new ObjectMapper();

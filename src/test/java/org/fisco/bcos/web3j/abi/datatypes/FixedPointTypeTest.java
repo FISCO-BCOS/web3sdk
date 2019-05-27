@@ -1,10 +1,11 @@
 package org.fisco.bcos.web3j.abi.datatypes;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import org.junit.Test;
 
 import java.math.BigInteger;
-import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public class FixedPointTypeTest {
 

@@ -1,10 +1,5 @@
 package org.fisco.bcos.channel.test.parallel.precompile;
 
-import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.Callable;
 import org.fisco.bcos.channel.client.TransactionSucCallback;
 import org.fisco.bcos.web3j.abi.TypeReference;
 import org.fisco.bcos.web3j.abi.datatypes.Function;
@@ -19,11 +14,17 @@ import org.fisco.bcos.web3j.tx.Contract;
 import org.fisco.bcos.web3j.tx.TransactionManager;
 import org.fisco.bcos.web3j.tx.gas.ContractGasProvider;
 
+import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.Callable;
+
 /**
  * <p>Auto generated code.
  * <p><strong>Do not modify!</strong>
  * <p>Please use the <a href="https://docs.web3j.io/command_line.html">web3j command line tools</a>,
- * or the org.fisco.bcos.web3j.codegen.SolidityFunctionWrapperGenerator in the 
+ * or the org.fisco.bcos.web3j.codegen.SolidityFunctionWrapperGenerator in the
  * <a href="https://github.com/web3j/web3j/tree/master/codegen">codegen module</a> to update.
  *
  * <p>Generated with web3j version none.
@@ -62,45 +63,47 @@ public class DagTransfer extends Contract {
 
     public RemoteCall<TransactionReceipt> userTransfer(String user_a, String user_b, BigInteger amount) {
         final Function function = new Function(
-                FUNC_USERTRANSFER, 
-                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(user_a), 
-                new org.fisco.bcos.web3j.abi.datatypes.Utf8String(user_b), 
-                new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(amount)), 
+                FUNC_USERTRANSFER,
+                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(user_a),
+                        new org.fisco.bcos.web3j.abi.datatypes.Utf8String(user_b),
+                        new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(amount)),
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
 
     public void userTransfer(String user_a, String user_b, BigInteger amount, TransactionSucCallback callback) {
         final Function function = new Function(
-                FUNC_USERTRANSFER, 
-                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(user_a), 
-                new org.fisco.bcos.web3j.abi.datatypes.Utf8String(user_b), 
-                new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(amount)), 
+                FUNC_USERTRANSFER,
+                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(user_a),
+                        new org.fisco.bcos.web3j.abi.datatypes.Utf8String(user_b),
+                        new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(amount)),
                 Collections.<TypeReference<?>>emptyList());
         asyncExecuteTransaction(function, callback);
     }
 
     public String userTransferSeq(String user_a, String user_b, BigInteger amount) {
         final Function function = new Function(
-                FUNC_USERTRANSFER, 
-                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(user_a), 
-                new org.fisco.bcos.web3j.abi.datatypes.Utf8String(user_b), 
-                new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(amount)), 
+                FUNC_USERTRANSFER,
+                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(user_a),
+                        new org.fisco.bcos.web3j.abi.datatypes.Utf8String(user_b),
+                        new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(amount)),
                 Collections.<TypeReference<?>>emptyList());
         return createTransactionSeq(function);
     }
 
     public RemoteCall<Tuple2<BigInteger, BigInteger>> userBalance(String user) {
-        final Function function = new Function(FUNC_USERBALANCE, 
-                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(user)), 
-                Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>() {}, new TypeReference<Uint256>() {}));
+        final Function function = new Function(FUNC_USERBALANCE,
+                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(user)),
+                Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>() {
+                }, new TypeReference<Uint256>() {
+                }));
         return new RemoteCall<Tuple2<BigInteger, BigInteger>>(
                 new Callable<Tuple2<BigInteger, BigInteger>>() {
                     @Override
                     public Tuple2<BigInteger, BigInteger> call() throws Exception {
                         List<Type> results = executeCallMultipleValueReturn(function);
                         return new Tuple2<BigInteger, BigInteger>(
-                                (BigInteger) results.get(0).getValue(), 
+                                (BigInteger) results.get(0).getValue(),
                                 (BigInteger) results.get(1).getValue());
                     }
                 });
@@ -108,81 +111,81 @@ public class DagTransfer extends Contract {
 
     public RemoteCall<TransactionReceipt> userAdd(String user, BigInteger balance) {
         final Function function = new Function(
-                FUNC_USERADD, 
-                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(user), 
-                new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(balance)), 
+                FUNC_USERADD,
+                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(user),
+                        new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(balance)),
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
 
     public void userAdd(String user, BigInteger balance, TransactionSucCallback callback) {
         final Function function = new Function(
-                FUNC_USERADD, 
-                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(user), 
-                new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(balance)), 
+                FUNC_USERADD,
+                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(user),
+                        new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(balance)),
                 Collections.<TypeReference<?>>emptyList());
         asyncExecuteTransaction(function, callback);
     }
 
     public String userAddSeq(String user, BigInteger balance) {
         final Function function = new Function(
-                FUNC_USERADD, 
-                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(user), 
-                new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(balance)), 
+                FUNC_USERADD,
+                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(user),
+                        new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(balance)),
                 Collections.<TypeReference<?>>emptyList());
         return createTransactionSeq(function);
     }
 
     public RemoteCall<TransactionReceipt> userSave(String user, BigInteger balance) {
         final Function function = new Function(
-                FUNC_USERSAVE, 
-                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(user), 
-                new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(balance)), 
+                FUNC_USERSAVE,
+                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(user),
+                        new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(balance)),
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
 
     public void userSave(String user, BigInteger balance, TransactionSucCallback callback) {
         final Function function = new Function(
-                FUNC_USERSAVE, 
-                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(user), 
-                new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(balance)), 
+                FUNC_USERSAVE,
+                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(user),
+                        new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(balance)),
                 Collections.<TypeReference<?>>emptyList());
         asyncExecuteTransaction(function, callback);
     }
 
     public String userSaveSeq(String user, BigInteger balance) {
         final Function function = new Function(
-                FUNC_USERSAVE, 
-                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(user), 
-                new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(balance)), 
+                FUNC_USERSAVE,
+                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(user),
+                        new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(balance)),
                 Collections.<TypeReference<?>>emptyList());
         return createTransactionSeq(function);
     }
 
     public RemoteCall<TransactionReceipt> userDraw(String user, BigInteger balance) {
         final Function function = new Function(
-                FUNC_USERDRAW, 
-                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(user), 
-                new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(balance)), 
+                FUNC_USERDRAW,
+                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(user),
+                        new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(balance)),
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
 
     public void userDraw(String user, BigInteger balance, TransactionSucCallback callback) {
         final Function function = new Function(
-                FUNC_USERDRAW, 
-                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(user), 
-                new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(balance)), 
+                FUNC_USERDRAW,
+                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(user),
+                        new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(balance)),
                 Collections.<TypeReference<?>>emptyList());
         asyncExecuteTransaction(function, callback);
     }
 
     public String userDrawSeq(String user, BigInteger balance) {
         final Function function = new Function(
-                FUNC_USERDRAW, 
-                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(user), 
-                new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(balance)), 
+                FUNC_USERDRAW,
+                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(user),
+                        new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(balance)),
                 Collections.<TypeReference<?>>emptyList());
         return createTransactionSeq(function);
     }
