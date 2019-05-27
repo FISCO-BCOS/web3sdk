@@ -3,11 +3,11 @@ package org.fisco.bcos.web3j.tx;
 import java.io.IOException;
 import java.math.BigInteger;
 import org.fisco.bcos.channel.client.TransactionSucCallback;
+import org.fisco.bcos.web3j.crypto.ExtendedRawTransaction;
 import org.fisco.bcos.web3j.precompile.cns.CnsService;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.protocol.exceptions.TransactionException;
-import org.fisco.bcos.web3j.crypto.ExtendedRawTransaction;
 
 /** Generic transaction manager. */
 public abstract class ManagedTransaction {
@@ -52,13 +52,11 @@ public abstract class ManagedTransaction {
         transactionManager.sendTransaction(gasPrice, gasLimit, to, data, value, null, callback);
     }
 
-    protected String createSeq(String to,
-    String data,
-    BigInteger value,
-    BigInteger gasPrice,
-    BigInteger gasLimit) throws IOException
-    {
-        ExtendedRawTransaction rawTransaction = transactionManager.createTransaction(gasPrice, gasLimit, to, data, value, null);
+    protected String createSeq(
+            String to, String data, BigInteger value, BigInteger gasPrice, BigInteger gasLimit)
+            throws IOException {
+        ExtendedRawTransaction rawTransaction =
+                transactionManager.createTransaction(gasPrice, gasLimit, to, data, value, null);
         return transactionManager.sign(rawTransaction);
     }
 }

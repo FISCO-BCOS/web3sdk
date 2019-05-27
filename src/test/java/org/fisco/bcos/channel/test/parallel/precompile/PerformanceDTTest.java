@@ -457,7 +457,6 @@ public class PerformanceDTTest {
                 }
 
                 latch.await();
-
             }
 
             while (!collector.isEnd()) {
