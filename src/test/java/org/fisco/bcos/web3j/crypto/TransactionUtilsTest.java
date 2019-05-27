@@ -1,11 +1,11 @@
 package org.fisco.bcos.web3j.crypto;
 
-import org.junit.Ignore;
-import org.junit.Test;
-
 import static org.fisco.bcos.web3j.crypto.TransactionUtils.generateTransactionHashHexEncoded;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+
+import org.junit.Ignore;
+import org.junit.Test;
 
 public class TransactionUtilsTest {
 

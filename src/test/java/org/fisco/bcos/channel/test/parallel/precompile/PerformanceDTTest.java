@@ -1,6 +1,19 @@
 package org.fisco.bcos.channel.test.parallel.precompile;
 
 import com.google.common.util.concurrent.RateLimiter;
+import java.io.*;
+import java.math.BigInteger;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.protocol.Web3j;
@@ -16,20 +29,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-
-import java.io.*;
-import java.math.BigInteger;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class PerformanceDTTest {
     private static Logger logger = LoggerFactory.getLogger(PerformanceDTTest.class);
@@ -281,7 +280,8 @@ public class PerformanceDTTest {
 
         try {
             String percent = "0.00%";
-            System.out.print(dateFormat.format(new Date()) + " Querying account state..." + percent);
+            System.out.print(
+                    dateFormat.format(new Date()) + " Querying account state..." + percent);
             List<DagTransferUser> allUser = dagUserMgr.getUserList();
             for (int i = 0; i < allUser.size(); ++i) {
                 Tuple2<BigInteger, BigInteger> result =
@@ -316,7 +316,8 @@ public class PerformanceDTTest {
             }
 
             percent = "0.00%";
-            System.out.print(dateFormat.format(new Date()) + " Creating signed transactions..." + percent);
+            System.out.print(
+                    dateFormat.format(new Date()) + " Creating signed transactions..." + percent);
             for (int i = 0; i < segmentCount; ++i) {
                 int start = i * segmentSize;
                 int end = start + segmentSize;
@@ -347,9 +348,12 @@ public class PerformanceDTTest {
                                     BigInteger amount = BigInteger.valueOf(r);
 
                                     try {
-                                        String signedTransaction = dagTransfer.userTransferSeq(
-                                                from.getUser(), to.getUser(), amount);
-                                        String content = String.format("%s %d %d%n", signedTransaction, index, r);
+                                        String signedTransaction =
+                                                dagTransfer.userTransferSeq(
+                                                        from.getUser(), to.getUser(), amount);
+                                        String content =
+                                                String.format(
+                                                        "%s %d %d%n", signedTransaction, index, r);
                                         lock.lock();
                                         writer.write(content);
                                     } catch (Exception e) {
@@ -369,7 +373,9 @@ public class PerformanceDTTest {
                         System.out.print('\b');
                     }
 
-                    percent = String.format("%.2f%%", (end - latchCount) / (double) count.intValue() * 100);
+                    percent =
+                            String.format(
+                                    "%.2f%%", (end - latchCount) / (double) count.intValue() * 100);
                     System.out.print(percent);
                     Thread.sleep(40);
                 }
@@ -436,7 +442,9 @@ public class PerformanceDTTest {
                                 public void run() {
                                     try {
                                         limiter.acquire();
-                                        transactionManager.sendTransaction(signedTransactions.get(index), callbacks.get(index));
+                                        transactionManager.sendTransaction(
+                                                signedTransactions.get(index),
+                                                callbacks.get(index));
                                     } catch (Exception e) {
                                         TransactionReceipt receipt = new TransactionReceipt();
                                         receipt.setStatus("-1");
@@ -448,8 +456,14 @@ public class PerformanceDTTest {
                                         long elapsedTime = System.currentTimeMillis() - startTime;
                                         double sendSpeed = current / ((double) elapsedTime / 1000);
                                         System.out.println(
-                                                "sent: " + (int) (current / (double) count.intValue() * 100) + "%"
-                                                        + ", QPS: " + String.format("%.2f", sendSpeed));
+                                                "sent: "
+                                                        + (int)
+                                                                (current
+                                                                        / (double) count.intValue()
+                                                                        * 100)
+                                                        + "%"
+                                                        + ", QPS: "
+                                                        + String.format("%.2f", sendSpeed));
                                     }
                                     latch.countDown();
                                 }

@@ -1,5 +1,11 @@
 package org.fisco.bcos.web3j.tx;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+import java.math.BigInteger;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.Request;
@@ -9,13 +15,6 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.SendTransaction;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.utils.TxHashVerifier;
 import org.junit.Before;
-
-import java.io.IOException;
-import java.math.BigInteger;
-
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public abstract class ManagedTransactionTester {
 
