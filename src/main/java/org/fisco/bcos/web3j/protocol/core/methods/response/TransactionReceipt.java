@@ -10,7 +10,6 @@ public class TransactionReceipt {
     private String transactionIndex;
     private String blockHash;
     private String blockNumber;
-    private String cumulativeGasUsed;
     private String gasUsed;
     private String contractAddress;
     private String root;
@@ -30,7 +29,6 @@ public class TransactionReceipt {
             String transactionIndex,
             String blockHash,
             String blockNumber,
-            String cumulativeGasUsed,
             String gasUsed,
             String contractAddress,
             String root,
@@ -44,7 +42,6 @@ public class TransactionReceipt {
         this.transactionIndex = transactionIndex;
         this.blockHash = blockHash;
         this.blockNumber = blockNumber;
-        this.cumulativeGasUsed = cumulativeGasUsed;
         this.gasUsed = gasUsed;
         this.contractAddress = contractAddress;
         this.root = root;
@@ -102,18 +99,6 @@ public class TransactionReceipt {
 
     public void setBlockNumber(String blockNumber) {
         this.blockNumber = blockNumber;
-    }
-
-    public BigInteger getCumulativeGasUsed() {
-        return Numeric.decodeQuantity(cumulativeGasUsed);
-    }
-
-    public String getCumulativeGasUsedRaw() {
-        return cumulativeGasUsed;
-    }
-
-    public void setCumulativeGasUsed(String cumulativeGasUsed) {
-        this.cumulativeGasUsed = cumulativeGasUsed;
     }
 
     public BigInteger getGasUsed() {
@@ -223,11 +208,6 @@ public class TransactionReceipt {
                 : that.blockNumber != null) {
             return false;
         }
-        if (cumulativeGasUsed != null
-                ? !cumulativeGasUsed.equals(that.cumulativeGasUsed)
-                : that.cumulativeGasUsed != null) {
-            return false;
-        }
         if (gasUsed != null ? !gasUsed.equals(that.gasUsed) : that.gasUsed != null) {
             return false;
         }
@@ -269,7 +249,6 @@ public class TransactionReceipt {
         result = 31 * result + (transactionIndex != null ? transactionIndex.hashCode() : 0);
         result = 31 * result + (getBlockHash() != null ? getBlockHash().hashCode() : 0);
         result = 31 * result + (blockNumber != null ? blockNumber.hashCode() : 0);
-        result = 31 * result + (cumulativeGasUsed != null ? cumulativeGasUsed.hashCode() : 0);
         result = 31 * result + (gasUsed != null ? gasUsed.hashCode() : 0);
         result = 31 * result + (getContractAddress() != null ? getContractAddress().hashCode() : 0);
         result = 31 * result + (getRoot() != null ? getRoot().hashCode() : 0);
@@ -296,9 +275,6 @@ public class TransactionReceipt {
                 + '\''
                 + ", blockNumber='"
                 + blockNumber
-                + '\''
-                + ", cumulativeGasUsed='"
-                + cumulativeGasUsed
                 + '\''
                 + ", gasUsed='"
                 + gasUsed
