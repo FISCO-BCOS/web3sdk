@@ -1,11 +1,13 @@
 package org.fisco.bcos.channel.test.parallel.precompile;
 
-import java.math.BigInteger;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.math.BigInteger;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import de.vandermeer.*;
 
 public class PerformanceDTCollector {
 
@@ -60,7 +62,7 @@ public class PerformanceDTCollector {
             } else {
                 error.addAndGet(1);
             }
-            
+
             int count = received.incrementAndGet();
 
             if (count % (total / 10) == 0) {
@@ -95,27 +97,22 @@ public class PerformanceDTCollector {
             totalCost.addAndGet(cost);
 
             if (isEnd()) {
-                System.out.println("total");
+                System.out.println("===================================================================");
+                System.out.println("Summary");
+                System.out.println("===================================================================");
 
-                //
                 Long totalTime = System.currentTimeMillis() - startTimestamp;
 
-                System.out.println(
-                        "===================================================================");
-
-                System.out.println("Total transactions:  " + String.valueOf(total));
+                System.out.println("Total transactions: " + total);
+                System.out.println("Total sent: " + (total - error.get()));
+                System.out.println("Total error: " + error.get());
+                System.out.println("Error rate: " + (error.get() / (double) received.get()) * 100 + "%");
+                System.out.println("Return error rate: " + (ret_error.get() / (double) received.get()) * 100 + "%");
                 System.out.println("Total time: " + String.valueOf(totalTime) + "ms");
-                System.out.println("TPS: " + String.valueOf(total / ((double) totalTime / 1000)));
+                System.out.println("TPS: " + String.format("%.2f", (total - error.get()) / ((double) totalTime / 1000)));
+
                 System.out.println(
                         "Avg time cost: " + String.valueOf(totalCost.get() / total) + "ms");
-                System.out.println(
-                        "Error rate: "
-                                + String.valueOf((error.get() / (double)received.get()) * 100)
-                                + "%");
-                System.out.println(
-                        "Return Error rate: "
-                                + String.valueOf((ret_error.get() / (double)received.get()) * 100)
-                                + "%");
 
                 System.out.println("Time area:");
                 System.out.println(

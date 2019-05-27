@@ -1,10 +1,11 @@
 package org.fisco.bcos.channel.test.contract;
 
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class PerfomanceCollector {
     static Logger logger = LoggerFactory.getLogger(PerfomanceCollector.class);

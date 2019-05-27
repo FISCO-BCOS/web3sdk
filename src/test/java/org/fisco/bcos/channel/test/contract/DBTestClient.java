@@ -1,7 +1,5 @@
 package org.fisco.bcos.channel.test.contract;
 
-import java.math.BigInteger;
-import java.util.List;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.channel.test.contract.DBTest.CreateResultEventResponse;
@@ -25,6 +23,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+
+import java.math.BigInteger;
+import java.util.List;
 
 public class DBTestClient {
     static Logger logger = LoggerFactory.getLogger(DBTestClient.class);

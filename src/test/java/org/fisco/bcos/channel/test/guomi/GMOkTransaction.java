@@ -1,6 +1,5 @@
 package org.fisco.bcos.channel.test.guomi;
 
-import java.math.BigInteger;
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.crypto.EncryptType;
@@ -12,6 +11,8 @@ import org.fisco.bcos.web3j.tx.gas.ContractGasProvider;
 import org.fisco.bcos.web3j.tx.gas.StaticGasProvider;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import java.math.BigInteger;
 
 public class GMOkTransaction {
     public static void main(String[] args) throws Exception {

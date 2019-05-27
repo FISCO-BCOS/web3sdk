@@ -1,8 +1,5 @@
 package org.fisco.bcos.channel.test.parallel.parallelok;
 
-import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.Collections;
 import org.fisco.bcos.channel.client.TransactionSucCallback;
 import org.fisco.bcos.web3j.abi.TypeReference;
 import org.fisco.bcos.web3j.abi.datatypes.Function;
@@ -16,11 +13,15 @@ import org.fisco.bcos.web3j.tx.Contract;
 import org.fisco.bcos.web3j.tx.TransactionManager;
 import org.fisco.bcos.web3j.tx.gas.ContractGasProvider;
 
+import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.Collections;
+
 /**
  * <p>Auto generated code.
  * <p><strong>Do not modify!</strong>
  * <p>Please use the <a href="https://docs.web3j.io/command_line.html">web3j command line tools</a>,
- * or the org.fisco.bcos.web3j.codegen.SolidityFunctionWrapperGenerator in the 
+ * or the org.fisco.bcos.web3j.codegen.SolidityFunctionWrapperGenerator in the
  * <a href="https://github.com/web3j/web3j/tree/master/codegen">codegen module</a> to update.
  *
  * <p>Generated with web3j version none.
@@ -65,193 +66,194 @@ public class ParallelOk extends Contract {
 
     public RemoteCall<TransactionReceipt> registerParallelFunction(String functionName, BigInteger criticalSize) {
         final Function function = new Function(
-                FUNC_REGISTERPARALLELFUNCTION, 
-                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(functionName), 
-                new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(criticalSize)), 
+                FUNC_REGISTERPARALLELFUNCTION,
+                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(functionName),
+                        new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(criticalSize)),
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
 
     public void registerParallelFunction(String functionName, BigInteger criticalSize, TransactionSucCallback callback) {
         final Function function = new Function(
-                FUNC_REGISTERPARALLELFUNCTION, 
-                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(functionName), 
-                new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(criticalSize)), 
+                FUNC_REGISTERPARALLELFUNCTION,
+                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(functionName),
+                        new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(criticalSize)),
                 Collections.<TypeReference<?>>emptyList());
         asyncExecuteTransaction(function, callback);
     }
 
     public String registerParallelFunctionSeq(String functionName, BigInteger criticalSize) {
         final Function function = new Function(
-                FUNC_REGISTERPARALLELFUNCTION, 
-                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(functionName), 
-                new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(criticalSize)), 
+                FUNC_REGISTERPARALLELFUNCTION,
+                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(functionName),
+                        new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(criticalSize)),
                 Collections.<TypeReference<?>>emptyList());
         return createTransactionSeq(function);
     }
 
     public RemoteCall<BigInteger> balanceOf(String name) {
-        final Function function = new Function(FUNC_BALANCEOF, 
-                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(name)), 
-                Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>() {}));
+        final Function function = new Function(FUNC_BALANCEOF,
+                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(name)),
+                Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>() {
+                }));
         return executeRemoteCallSingleValueReturn(function, BigInteger.class);
     }
 
     public RemoteCall<TransactionReceipt> unregisterParallelFunction(String functionName) {
         final Function function = new Function(
-                FUNC_UNREGISTERPARALLELFUNCTION, 
-                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(functionName)), 
+                FUNC_UNREGISTERPARALLELFUNCTION,
+                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(functionName)),
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
 
     public void unregisterParallelFunction(String functionName, TransactionSucCallback callback) {
         final Function function = new Function(
-                FUNC_UNREGISTERPARALLELFUNCTION, 
-                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(functionName)), 
+                FUNC_UNREGISTERPARALLELFUNCTION,
+                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(functionName)),
                 Collections.<TypeReference<?>>emptyList());
         asyncExecuteTransaction(function, callback);
     }
 
     public String unregisterParallelFunctionSeq(String functionName) {
         final Function function = new Function(
-                FUNC_UNREGISTERPARALLELFUNCTION, 
-                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(functionName)), 
+                FUNC_UNREGISTERPARALLELFUNCTION,
+                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(functionName)),
                 Collections.<TypeReference<?>>emptyList());
         return createTransactionSeq(function);
     }
 
     public RemoteCall<TransactionReceipt> set(String name, BigInteger num) {
         final Function function = new Function(
-                FUNC_SET, 
-                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(name), 
-                new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(num)), 
+                FUNC_SET,
+                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(name),
+                        new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(num)),
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
 
     public void set(String name, BigInteger num, TransactionSucCallback callback) {
         final Function function = new Function(
-                FUNC_SET, 
-                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(name), 
-                new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(num)), 
+                FUNC_SET,
+                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(name),
+                        new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(num)),
                 Collections.<TypeReference<?>>emptyList());
         asyncExecuteTransaction(function, callback);
     }
 
     public String setSeq(String name, BigInteger num) {
         final Function function = new Function(
-                FUNC_SET, 
-                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(name), 
-                new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(num)), 
+                FUNC_SET,
+                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(name),
+                        new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(num)),
                 Collections.<TypeReference<?>>emptyList());
         return createTransactionSeq(function);
     }
 
     public RemoteCall<TransactionReceipt> transfer(String from, String to, BigInteger num) {
         final Function function = new Function(
-                FUNC_TRANSFER, 
-                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(from), 
-                new org.fisco.bcos.web3j.abi.datatypes.Utf8String(to), 
-                new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(num)), 
+                FUNC_TRANSFER,
+                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(from),
+                        new org.fisco.bcos.web3j.abi.datatypes.Utf8String(to),
+                        new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(num)),
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
 
     public void transfer(String from, String to, BigInteger num, TransactionSucCallback callback) {
         final Function function = new Function(
-                FUNC_TRANSFER, 
-                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(from), 
-                new org.fisco.bcos.web3j.abi.datatypes.Utf8String(to), 
-                new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(num)), 
+                FUNC_TRANSFER,
+                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(from),
+                        new org.fisco.bcos.web3j.abi.datatypes.Utf8String(to),
+                        new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(num)),
                 Collections.<TypeReference<?>>emptyList());
         asyncExecuteTransaction(function, callback);
     }
 
     public String transferSeq(String from, String to, BigInteger num) {
         final Function function = new Function(
-                FUNC_TRANSFER, 
-                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(from), 
-                new org.fisco.bcos.web3j.abi.datatypes.Utf8String(to), 
-                new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(num)), 
+                FUNC_TRANSFER,
+                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(from),
+                        new org.fisco.bcos.web3j.abi.datatypes.Utf8String(to),
+                        new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(num)),
                 Collections.<TypeReference<?>>emptyList());
         return createTransactionSeq(function);
     }
 
     public RemoteCall<TransactionReceipt> enableParallel() {
         final Function function = new Function(
-                FUNC_ENABLEPARALLEL, 
-                Arrays.<Type>asList(), 
+                FUNC_ENABLEPARALLEL,
+                Arrays.<Type>asList(),
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
 
     public void enableParallel(TransactionSucCallback callback) {
         final Function function = new Function(
-                FUNC_ENABLEPARALLEL, 
-                Arrays.<Type>asList(), 
+                FUNC_ENABLEPARALLEL,
+                Arrays.<Type>asList(),
                 Collections.<TypeReference<?>>emptyList());
         asyncExecuteTransaction(function, callback);
     }
 
     public String enableParallelSeq() {
         final Function function = new Function(
-                FUNC_ENABLEPARALLEL, 
-                Arrays.<Type>asList(), 
+                FUNC_ENABLEPARALLEL,
+                Arrays.<Type>asList(),
                 Collections.<TypeReference<?>>emptyList());
         return createTransactionSeq(function);
     }
 
     public RemoteCall<TransactionReceipt> disableParallel() {
         final Function function = new Function(
-                FUNC_DISABLEPARALLEL, 
-                Arrays.<Type>asList(), 
+                FUNC_DISABLEPARALLEL,
+                Arrays.<Type>asList(),
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
 
     public void disableParallel(TransactionSucCallback callback) {
         final Function function = new Function(
-                FUNC_DISABLEPARALLEL, 
-                Arrays.<Type>asList(), 
+                FUNC_DISABLEPARALLEL,
+                Arrays.<Type>asList(),
                 Collections.<TypeReference<?>>emptyList());
         asyncExecuteTransaction(function, callback);
     }
 
     public String disableParallelSeq() {
         final Function function = new Function(
-                FUNC_DISABLEPARALLEL, 
-                Arrays.<Type>asList(), 
+                FUNC_DISABLEPARALLEL,
+                Arrays.<Type>asList(),
                 Collections.<TypeReference<?>>emptyList());
         return createTransactionSeq(function);
     }
 
     public RemoteCall<TransactionReceipt> transferWithRevert(String from, String to, BigInteger num) {
         final Function function = new Function(
-                FUNC_TRANSFERWITHREVERT, 
-                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(from), 
-                new org.fisco.bcos.web3j.abi.datatypes.Utf8String(to), 
-                new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(num)), 
+                FUNC_TRANSFERWITHREVERT,
+                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(from),
+                        new org.fisco.bcos.web3j.abi.datatypes.Utf8String(to),
+                        new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(num)),
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
 
     public void transferWithRevert(String from, String to, BigInteger num, TransactionSucCallback callback) {
         final Function function = new Function(
-                FUNC_TRANSFERWITHREVERT, 
-                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(from), 
-                new org.fisco.bcos.web3j.abi.datatypes.Utf8String(to), 
-                new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(num)), 
+                FUNC_TRANSFERWITHREVERT,
+                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(from),
+                        new org.fisco.bcos.web3j.abi.datatypes.Utf8String(to),
+                        new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(num)),
                 Collections.<TypeReference<?>>emptyList());
         asyncExecuteTransaction(function, callback);
     }
 
     public String transferWithRevertSeq(String from, String to, BigInteger num) {
         final Function function = new Function(
-                FUNC_TRANSFERWITHREVERT, 
-                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(from), 
-                new org.fisco.bcos.web3j.abi.datatypes.Utf8String(to), 
-                new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(num)), 
+                FUNC_TRANSFERWITHREVERT,
+                Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Utf8String(from),
+                        new org.fisco.bcos.web3j.abi.datatypes.Utf8String(to),
+                        new org.fisco.bcos.web3j.abi.datatypes.generated.Uint256(num)),
                 Collections.<TypeReference<?>>emptyList());
         return createTransactionSeq(function);
     }

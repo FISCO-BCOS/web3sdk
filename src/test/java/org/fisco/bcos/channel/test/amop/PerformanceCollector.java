@@ -1,10 +1,11 @@
 package org.fisco.bcos.channel.test.amop;
 
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 import org.fisco.bcos.channel.dto.ChannelResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class PerformanceCollector {
     static Logger logger = LoggerFactory.getLogger(PerformanceCollector.class);

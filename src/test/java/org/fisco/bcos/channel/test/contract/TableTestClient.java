@@ -1,7 +1,5 @@
 package org.fisco.bcos.channel.test.contract;
 
-import java.math.BigInteger;
-import java.util.List;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.channel.test.contract.TableTest.CreateResultEventResponse;
@@ -26,6 +24,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+
+import java.math.BigInteger;
+import java.util.List;
 
 public class TableTestClient {
 
@@ -60,11 +61,11 @@ public class TableTestClient {
             if ("0x19".equals(e.getStatus())) {
                 System.out.println("non-authorized to deploy contracts!");
             } else {
-		System.out.println("deploy transaction is abnormal, please check the environment msg:"+e.getMessage());
-		}
+                System.out.println("deploy transaction is abnormal, please check the environment msg:" + e.getMessage());
+            }
         } catch (Exception e) {
-        	System.out.println("deploy transaction is abnormal, please check the environment");
-	}
+            System.out.println("deploy transaction is abnormal, please check the environment");
+        }
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -93,12 +94,12 @@ public class TableTestClient {
             }
             CreateResultEventResponse createResultEventResponse = createResultEvents.get(0);
             int createCount = createResultEventResponse.count.intValue();
-            System.out.println("create table ret:"+createCount);
-	    switch (createCount) {
-		case PrecompiledCommon.PermissionDenied:
-		    System.out.println("non-authorized to create t_test table.");
-                    break;                
-		case PrecompiledCommon.PermissionDenied_RC3:
+            System.out.println("create table ret:" + createCount);
+            switch (createCount) {
+                case PrecompiledCommon.PermissionDenied:
+                    System.out.println("non-authorized to create t_test table.");
+                    break;
+                case PrecompiledCommon.PermissionDenied_RC3:
                     System.out.println("non-authorized to create t_test table.");
                     break;
                 case PrecompiledCommon.TableExist:
@@ -107,9 +108,9 @@ public class TableTestClient {
                 case PrecompiledCommon.Success:
                     System.out.println("create t_test table success.");
                     break;
-		default:
-        	    System.out.println("unknown return value:"+createCount);    
-	}
+                default:
+                    System.out.println("unknown return value:" + createCount);
+            }
 
         }
         // insert

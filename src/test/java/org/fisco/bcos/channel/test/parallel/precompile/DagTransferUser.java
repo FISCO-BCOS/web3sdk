@@ -1,8 +1,9 @@
 package org.fisco.bcos.channel.test.parallel.precompile;
 
-import java.math.BigInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.math.BigInteger;
 
 public class DagTransferUser {
     private static Logger logger = LoggerFactory.getLogger(DagTransferUser.class);

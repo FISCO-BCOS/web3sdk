@@ -1,7 +1,5 @@
 package org.fisco.bcos.channel.test.keystore;
 
-import java.math.BigInteger;
-import java.util.Arrays;
 import org.bouncycastle.jce.interfaces.ECPublicKey;
 import org.fisco.bcos.channel.client.P12Manager;
 import org.fisco.bcos.channel.client.PEMManager;
@@ -11,6 +9,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import java.math.BigInteger;
+import java.util.Arrays;
 
 public class AccountTest {
     private static Logger logger = LoggerFactory.getLogger(AccountTest.class);
