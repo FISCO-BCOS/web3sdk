@@ -409,10 +409,10 @@ public class PerformanceDTTest {
                 while((latchCount = latch.getCount()) != 0) {
             		int c = 1;
             		if(deleted) {
-            			System.out.print(String.format("\033[%dA", c));
+            			//System.out.print(String.format("\033[%dA", c));
             		}
-                    String percent = (int)((((end - latchCount) / (double)count.intValue()) * 100) + 1) + "%         ";
-                    System.out.println(dateFormat.format(new Date()) + " Prepare transactions..." + percent);
+                    //String percent = (int)((((end - latchCount) / (double)count.intValue()) * 100) + 1) + "%         ";
+                    //System.out.println(dateFormat.format(new Date()) + " Prepare transactions..." + percent);
                     
                     deleted = true;
                     Thread.sleep(40);
@@ -427,7 +427,7 @@ public class PerformanceDTTest {
             File[] fileList = dir.listFiles();
 
             logger.info("Start to send");
-            System.out.println(dateFormat.format(dateFormat.format(new Date())) + " Sending signed transactions...");
+            System.out.println(dateFormat.format(new Date()) + " Sending signed transactions...");
 
             long startTime = System.currentTimeMillis();
             collector.setStartTimestamp(startTime);
