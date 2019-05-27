@@ -90,13 +90,13 @@ public class ExtendedRawTransactionManager extends TransactionManager {
 
     @Override
     public ExtendedRawTransaction createTransaction(
-        BigInteger gasPrice,
-        BigInteger gasLimit,
-        String to,
-        String data,
-        BigInteger value,
-        String extraData
-    ) throws IOException{
+            BigInteger gasPrice,
+            BigInteger gasLimit,
+            String to,
+            String data,
+            BigInteger value,
+            String extraData)
+            throws IOException {
         Random r = new SecureRandom();
         BigInteger randomid = new BigInteger(250, r);
         BigInteger blockLimit = getBlockLimit();
@@ -125,8 +125,8 @@ public class ExtendedRawTransactionManager extends TransactionManager {
             String extraData)
             throws IOException {
 
-                ExtendedRawTransaction rawTransaction = createTransaction(gasPrice, gasLimit, to, data, value, extraData);
-
+        ExtendedRawTransaction rawTransaction =
+                createTransaction(gasPrice, gasLimit, to, data, value, extraData);
 
         return signAndSend(rawTransaction);
     }
@@ -142,13 +142,14 @@ public class ExtendedRawTransactionManager extends TransactionManager {
             TransactionSucCallback callback)
             throws IOException {
 
-                ExtendedRawTransaction rawTransaction = createTransaction(gasPrice, gasLimit, to, data, value, extraData);
+        ExtendedRawTransaction rawTransaction =
+                createTransaction(gasPrice, gasLimit, to, data, value, extraData);
         return signAndSend(rawTransaction, callback);
     }
 
     @Override
-    public SendTransaction sendTransaction(String signedTransaction) throws IOException, TxHashMismatchException
-    {
+    public SendTransaction sendTransaction(String signedTransaction)
+            throws IOException, TxHashMismatchException {
         SendTransaction sendTransaction = web3j.sendRawTransaction(signedTransaction).send();
         if (sendTransaction != null && !sendTransaction.hasError()) {
             String txHashLocal = Hash.sha3(signedTransaction);
@@ -162,8 +163,9 @@ public class ExtendedRawTransactionManager extends TransactionManager {
     }
 
     @Override
-    public SendTransaction sendTransaction(String signedTransaction, TransactionSucCallback callback) throws IOException, TxHashMismatchException
-    {
+    public SendTransaction sendTransaction(
+            String signedTransaction, TransactionSucCallback callback)
+            throws IOException, TxHashMismatchException {
         Request<?, SendTransaction> request = web3j.sendRawTransaction(signedTransaction);
         request.setNeedTransCallback(true);
         request.setTransactionSucCallback(callback);
@@ -181,8 +183,7 @@ public class ExtendedRawTransactionManager extends TransactionManager {
     }
 
     @Override
-    public String sign(ExtendedRawTransaction rawTransaction)
-    {
+    public String sign(ExtendedRawTransaction rawTransaction) {
         byte[] signedMessage;
 
         if (chainId > ChainId.NONE) {
