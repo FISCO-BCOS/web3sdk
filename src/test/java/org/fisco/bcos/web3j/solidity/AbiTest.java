@@ -17,12 +17,11 @@
  */
 package org.fisco.bcos.web3j.solidity;
 
-import org.junit.Test;
-
-import java.io.IOException;
-
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
+import org.junit.Test;
 
 public class AbiTest {
 

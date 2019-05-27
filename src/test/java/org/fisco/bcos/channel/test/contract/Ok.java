@@ -1,6 +1,11 @@
 package org.fisco.bcos.channel.test.contract;
 
 import io.reactivex.Flowable;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import org.fisco.bcos.channel.client.TransactionSucCallback;
 import org.fisco.bcos.web3j.abi.EventEncoder;
 import org.fisco.bcos.web3j.abi.TypeReference;
@@ -18,12 +23,6 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.tx.Contract;
 import org.fisco.bcos.web3j.tx.TransactionManager;
 import org.fisco.bcos.web3j.tx.gas.ContractGasProvider;
-
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Auto generated code.
@@ -47,9 +46,7 @@ public class Ok extends Contract {
     public static final Event TRANSEVENT_EVENT =
             new Event(
                     "TransEvent",
-                    Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>() {
-                    }));
-    ;
+                    Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>() {}));;
 
     @Deprecated
     protected Ok(
@@ -112,8 +109,7 @@ public class Ok extends Contract {
                 new Function(
                         FUNC_GET,
                         Arrays.<Type>asList(),
-                        Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>() {
-                        }));
+                        Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>() {}));
         return executeRemoteCallSingleValueReturn(function, BigInteger.class);
     }
 

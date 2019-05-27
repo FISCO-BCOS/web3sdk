@@ -1,5 +1,6 @@
 package org.fisco.bcos.channel.test.contract;
 
+import java.math.BigInteger;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.web3j.crypto.Credentials;
@@ -18,8 +19,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-
-import java.math.BigInteger;
 
 public class OkClient {
     static Logger logger = LoggerFactory.getLogger(OkClient.class);
