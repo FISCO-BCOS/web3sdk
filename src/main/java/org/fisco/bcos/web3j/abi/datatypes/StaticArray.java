@@ -4,7 +4,6 @@ import java.util.List;
 
 /** Static array type. */
 public class StaticArray<T extends Type> extends Array<T> {
-
     /**
      * Warning: increasing this constant will cause more generated StaticArrayN types, see:
      * AbiTypesGenerator#generateStaticArrayTypes
@@ -50,5 +49,42 @@ public class StaticArray<T extends Type> extends Array<T> {
                             + expectedSize
                             + "] elements.");
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public boolean dynamicType() {
+        Type obj = value.get(0);
+
+        if (obj instanceof StaticArray) {
+            return ((T) obj).dynamicType();
+        } else if ((obj instanceof NumericType)
+                || (obj instanceof Address)
+                || (obj instanceof Bool)
+                || (obj instanceof Bytes)) {
+            return false;
+        } else if ((obj instanceof DynamicBytes)
+                || (obj instanceof Utf8String)
+                || (obj instanceof DynamicArray)) {
+            return true;
+        } else {
+            throw new UnsupportedOperationException("Type cannot be encoded: " + obj.getClass());
+        }
+    }
+
+    @Override
+    public int offset() {
+
+        if (dynamicType()) {
+            return 1;
+        }
+
+        Object obj = value.get(0);
+
+        if (obj instanceof StaticArray) {
+            return ((Type) obj).offset() * getValue().size();
+        }
+
+        return getValue().size();
     }
 }
