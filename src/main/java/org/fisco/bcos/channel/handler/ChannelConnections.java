@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -172,7 +173,8 @@ public class ChannelConnections {
                 if (blockNumber > maxBlockNumber) {
                     maxBlockNumberConnections.clear();
                 }
-                ChannelHandlerContext channelHandlerContext =
+
+                Optional<ChannelHandlerContext> optionalCtx =
                         activeConnections
                                 .stream()
                                 .filter(
@@ -185,10 +187,12 @@ public class ChannelConnections {
                                                                 + ((SocketChannel) x.channel())
                                                                         .remoteAddress()
                                                                         .getPort()))
-                                .findFirst()
-                                .get();
-                maxBlockNumberConnections.add(channelHandlerContext);
-                maxBlockNumber = blockNumber;
+                                .findFirst();
+                if (optionalCtx.isPresent()) {
+                    ChannelHandlerContext channelHandlerContext = optionalCtx.get();
+                    maxBlockNumberConnections.add(channelHandlerContext);
+                    maxBlockNumber = blockNumber;
+                }
             }
         }
         Random random = new SecureRandom();
