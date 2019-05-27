@@ -1,11 +1,12 @@
 package org.fisco.bcos.web3j.crypto;
 
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertThat;
-
-import java.security.SignatureException;
 import org.bouncycastle.math.ec.ECPoint;
 import org.junit.Test;
+
+import java.security.SignatureException;
+
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertThat;
 
 public class SignTest {
 
@@ -44,7 +45,7 @@ public class SignTest {
     @Test(expected = RuntimeException.class)
     public void testInvalidSignature() throws SignatureException {
         Sign.signedMessageToKey(
-                TEST_MESSAGE, new Sign.SignatureData((byte) 27, new byte[] {1}, new byte[] {0}));
+                TEST_MESSAGE, new Sign.SignatureData((byte) 27, new byte[]{1}, new byte[]{0}));
     }
 
     @Test

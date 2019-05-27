@@ -1,14 +1,5 @@
 package org.fisco.bcos.web3j.abi;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertThat;
-
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import org.fisco.bcos.web3j.abi.datatypes.*;
 import org.fisco.bcos.web3j.abi.datatypes.generated.Bytes16;
 import org.fisco.bcos.web3j.abi.datatypes.generated.Bytes32;
@@ -16,6 +7,16 @@ import org.fisco.bcos.web3j.abi.datatypes.generated.Uint256;
 import org.fisco.bcos.web3j.crypto.Hash;
 import org.fisco.bcos.web3j.utils.Numeric;
 import org.junit.Test;
+
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertThat;
 
 public class FunctionReturnDecoderTest {
 
@@ -25,7 +26,8 @@ public class FunctionReturnDecoderTest {
                 new Function(
                         "test",
                         Collections.<Type>emptyList(),
-                        Collections.singletonList(new TypeReference<Uint>() {}));
+                        Collections.singletonList(new TypeReference<Uint>() {
+                        }));
 
         assertThat(
                 FunctionReturnDecoder.decode(
@@ -40,7 +42,8 @@ public class FunctionReturnDecoderTest {
                 new Function(
                         "simple",
                         Arrays.asList(),
-                        Collections.singletonList(new TypeReference<Utf8String>() {}));
+                        Collections.singletonList(new TypeReference<Utf8String>() {
+                        }));
 
         List<Type> utf8Strings =
                 FunctionReturnDecoder.decode(
@@ -58,7 +61,8 @@ public class FunctionReturnDecoderTest {
                 new Function(
                         "test",
                         Collections.emptyList(),
-                        Collections.singletonList(new TypeReference<Utf8String>() {}));
+                        Collections.singletonList(new TypeReference<Utf8String>() {
+                        }));
 
         List<Type> utf8Strings =
                 FunctionReturnDecoder.decode(
@@ -75,7 +79,9 @@ public class FunctionReturnDecoderTest {
                 new Function(
                         "test",
                         Collections.<Type>emptyList(),
-                        Arrays.asList(new TypeReference<Uint>() {}, new TypeReference<Uint>() {}));
+                        Arrays.asList(new TypeReference<Uint>() {
+                        }, new TypeReference<Uint>() {
+                        }));
 
         assertThat(
                 FunctionReturnDecoder.decode(
@@ -95,10 +101,14 @@ public class FunctionReturnDecoderTest {
                         "function",
                         Collections.<Type>emptyList(),
                         Arrays.asList(
-                                new TypeReference<Utf8String>() {},
-                                        new TypeReference<Utf8String>() {},
-                                new TypeReference<Utf8String>() {},
-                                        new TypeReference<Utf8String>() {}));
+                                new TypeReference<Utf8String>() {
+                                },
+                                new TypeReference<Utf8String>() {
+                                },
+                                new TypeReference<Utf8String>() {
+                                },
+                                new TypeReference<Utf8String>() {
+                                }));
 
         assertThat(
                 FunctionReturnDecoder.decode(
@@ -127,8 +137,10 @@ public class FunctionReturnDecoderTest {
         List<TypeReference<Type>> outputParameters = new ArrayList<>(1);
         outputParameters.add(
                 (TypeReference)
-                        new TypeReference.StaticArrayTypeReference<StaticArray<Uint256>>(2) {});
-        outputParameters.add((TypeReference) new TypeReference<Uint256>() {});
+                        new TypeReference.StaticArrayTypeReference<StaticArray<Uint256>>(2) {
+                        });
+        outputParameters.add((TypeReference) new TypeReference<Uint256>() {
+        });
 
         List<Type> decoded =
                 FunctionReturnDecoder.decode(
@@ -160,7 +172,8 @@ public class FunctionReturnDecoderTest {
                 new Function(
                         "test",
                         Collections.emptyList(),
-                        Collections.singletonList(new TypeReference<Uint>() {}));
+                        Collections.singletonList(new TypeReference<Uint>() {
+                        }));
 
         assertThat(
                 FunctionReturnDecoder.decode("0x", function.getOutputParameters()),
@@ -173,7 +186,8 @@ public class FunctionReturnDecoderTest {
         String encoded = TypeEncoder.encodeNumeric(value);
 
         assertThat(
-                FunctionReturnDecoder.decodeIndexedValue(encoded, new TypeReference<Uint256>() {}),
+                FunctionReturnDecoder.decodeIndexedValue(encoded, new TypeReference<Uint256>() {
+                }),
                 equalTo(value));
     }
 
@@ -184,7 +198,8 @@ public class FunctionReturnDecoderTest {
         String hash = Hash.sha3(encoded);
 
         assertThat(
-                FunctionReturnDecoder.decodeIndexedValue(hash, new TypeReference<Utf8String>() {}),
+                FunctionReturnDecoder.decodeIndexedValue(hash, new TypeReference<Utf8String>() {
+                }),
                 equalTo(new Bytes32(Numeric.hexStringToByteArray(hash))));
     }
 
@@ -194,7 +209,8 @@ public class FunctionReturnDecoderTest {
         byte[] rawInputBytes = Numeric.hexStringToByteArray(rawInput);
 
         assertThat(
-                FunctionReturnDecoder.decodeIndexedValue(rawInput, new TypeReference<Bytes32>() {}),
+                FunctionReturnDecoder.decodeIndexedValue(rawInput, new TypeReference<Bytes32>() {
+                }),
                 equalTo(new Bytes32(rawInputBytes)));
     }
 
@@ -204,19 +220,21 @@ public class FunctionReturnDecoderTest {
         byte[] rawInputBytes = Numeric.hexStringToByteArray(rawInput.substring(0, 34));
 
         assertThat(
-                FunctionReturnDecoder.decodeIndexedValue(rawInput, new TypeReference<Bytes16>() {}),
+                FunctionReturnDecoder.decodeIndexedValue(rawInput, new TypeReference<Bytes16>() {
+                }),
                 equalTo(new Bytes16(rawInputBytes)));
     }
 
     @Test
     public void testDecodeIndexedDynamicBytesValue() {
-        DynamicBytes bytes = new DynamicBytes(new byte[] {1, 2, 3, 4, 5});
+        DynamicBytes bytes = new DynamicBytes(new byte[]{1, 2, 3, 4, 5});
         String encoded = TypeEncoder.encodeDynamicBytes(bytes);
         String hash = Hash.sha3(encoded);
 
         assertThat(
                 FunctionReturnDecoder.decodeIndexedValue(
-                        hash, new TypeReference<DynamicBytes>() {}),
+                        hash, new TypeReference<DynamicBytes>() {
+                        }),
                 equalTo(new Bytes32(Numeric.hexStringToByteArray(hash))));
     }
 
@@ -228,7 +246,8 @@ public class FunctionReturnDecoderTest {
 
         assertThat(
                 FunctionReturnDecoder.decodeIndexedValue(
-                        hash, new TypeReference<DynamicArray>() {}),
+                        hash, new TypeReference<DynamicArray>() {
+                        }),
                 equalTo(new Bytes32(Numeric.hexStringToByteArray(hash))));
     }
 }

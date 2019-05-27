@@ -1,12 +1,13 @@
 package org.fisco.bcos.web3j.abi;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-import java.math.BigInteger;
 import org.fisco.bcos.web3j.abi.datatypes.*;
 import org.fisco.bcos.web3j.abi.datatypes.generated.*;
 import org.junit.Test;
+
+import java.math.BigInteger;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public class TypeEncoderTest {
 
@@ -130,12 +131,12 @@ public class TypeEncoderTest {
 
     @Test
     public void testStaticBytes() {
-        Bytes staticBytes = new Bytes6(new byte[] {0, 1, 2, 3, 4, 5});
+        Bytes staticBytes = new Bytes6(new byte[]{0, 1, 2, 3, 4, 5});
         assertThat(
                 TypeEncoder.encodeBytes(staticBytes),
                 is("0001020304050000000000000000000000000000000000000000000000000000"));
 
-        Bytes empty = new Bytes1(new byte[] {0});
+        Bytes empty = new Bytes1(new byte[]{0});
         assertThat(
                 TypeEncoder.encodeBytes(empty),
                 is("0000000000000000000000000000000000000000000000000000000000000000"));
@@ -148,14 +149,14 @@ public class TypeEncoderTest {
 
     @Test
     public void testDynamicBytes() {
-        DynamicBytes dynamicBytes = new DynamicBytes(new byte[] {0, 1, 2, 3, 4, 5});
+        DynamicBytes dynamicBytes = new DynamicBytes(new byte[]{0, 1, 2, 3, 4, 5});
         assertThat(
                 TypeEncoder.encodeDynamicBytes(dynamicBytes),
                 is(
                         "0000000000000000000000000000000000000000000000000000000000000006"
                                 + "0001020304050000000000000000000000000000000000000000000000000000"));
 
-        DynamicBytes empty = new DynamicBytes(new byte[] {0});
+        DynamicBytes empty = new DynamicBytes(new byte[]{0});
         assertThat(
                 TypeEncoder.encodeDynamicBytes(empty),
                 is(
@@ -172,12 +173,12 @@ public class TypeEncoderTest {
         DynamicBytes loremIpsum =
                 new DynamicBytes(
                         ("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod "
-                                        + "tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim "
-                                        + "veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex "
-                                        + "ea commodo consequat. Duis aute irure dolor in reprehenderit in "
-                                        + "voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur "
-                                        + "sint occaecat cupidatat non proident, sunt in culpa qui officia "
-                                        + "deserunt mollit anim id est laborum.")
+                                + "tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim "
+                                + "veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex "
+                                + "ea commodo consequat. Duis aute irure dolor in reprehenderit in "
+                                + "voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur "
+                                + "sint occaecat cupidatat non proident, sunt in culpa qui officia "
+                                + "deserunt mollit anim id est laborum.")
                                 .getBytes());
         assertThat(
                 TypeEncoder.encodeDynamicBytes(loremIpsum),

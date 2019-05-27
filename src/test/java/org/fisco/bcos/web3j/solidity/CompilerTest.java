@@ -17,16 +17,6 @@
  */
 package org.fisco.bcos.web3j.solidity;
 
-import static org.fisco.bcos.web3j.solidity.compiler.SolidityCompiler.Options.*;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.StringContains.containsString;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Collections;
 import org.apache.commons.io.FileUtils;
 import org.fisco.bcos.web3j.codegen.SolidityFunctionWrapperGenerator;
 import org.fisco.bcos.web3j.solidity.compiler.CompilationResult;
@@ -34,7 +24,20 @@ import org.fisco.bcos.web3j.solidity.compiler.SolidityCompiler;
 import org.junit.Assert;
 import org.junit.Test;
 
-/** Created by Anton Nashatyrev on 03.03.2016. */
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Collections;
+
+import static org.fisco.bcos.web3j.solidity.compiler.SolidityCompiler.Options.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.StringContains.containsString;
+
+/**
+ * Created by Anton Nashatyrev on 03.03.2016.
+ */
 public class CompilerTest {
 
     @Test
@@ -123,10 +126,10 @@ public class CompilerTest {
             binFile = "src/test/resources/solidity/" + filename + ".bin";
             SolidityFunctionWrapperGenerator.main(
                     Arrays.asList(
-                                    "-a", abiFile,
-                                    "-b", binFile,
-                                    "-p", packageName,
-                                    "-o", tempDirPath)
+                            "-a", abiFile,
+                            "-b", binFile,
+                            "-p", packageName,
+                            "-o", tempDirPath)
                             .toArray(new String[0]));
         }
         System.out.println("generate successfully");

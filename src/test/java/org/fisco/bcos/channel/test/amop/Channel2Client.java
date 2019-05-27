@@ -1,7 +1,5 @@
 package org.fisco.bcos.channel.test.amop;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.channel.dto.ChannelRequest;
 import org.fisco.bcos.channel.dto.ChannelResponse;
@@ -9,6 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Channel2Client {
     static Logger logger = LoggerFactory.getLogger(Channel2Client.class);

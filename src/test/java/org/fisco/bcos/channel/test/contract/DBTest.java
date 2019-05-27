@@ -1,12 +1,6 @@
 package org.fisco.bcos.channel.test.contract;
 
 import io.reactivex.Flowable;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.Callable;
 import org.fisco.bcos.web3j.abi.EventEncoder;
 import org.fisco.bcos.web3j.abi.TypeReference;
 import org.fisco.bcos.web3j.abi.datatypes.DynamicArray;
@@ -26,6 +20,13 @@ import org.fisco.bcos.web3j.tuples.generated.Tuple3;
 import org.fisco.bcos.web3j.tx.Contract;
 import org.fisco.bcos.web3j.tx.TransactionManager;
 import org.fisco.bcos.web3j.tx.gas.ContractGasProvider;
+
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.Callable;
 
 /**
  * Auto generated code.
@@ -55,30 +56,42 @@ public class DBTest extends Contract {
     public static final Event CREATERESULT_EVENT =
             new Event(
                     "createResult",
-                    Arrays.<TypeReference<?>>asList(new TypeReference<Int256>() {}));;
+                    Arrays.<TypeReference<?>>asList(new TypeReference<Int256>() {
+                    }));
+    ;
 
     public static final Event INSERTRESULT_EVENT =
             new Event(
                     "insertResult",
-                    Arrays.<TypeReference<?>>asList(new TypeReference<Int256>() {}));;
+                    Arrays.<TypeReference<?>>asList(new TypeReference<Int256>() {
+                    }));
+    ;
 
     public static final Event UPDATERESULT_EVENT =
             new Event(
                     "updateResult",
-                    Arrays.<TypeReference<?>>asList(new TypeReference<Int256>() {}));;
+                    Arrays.<TypeReference<?>>asList(new TypeReference<Int256>() {
+                    }));
+    ;
 
     public static final Event REMOVERESULT_EVENT =
             new Event(
                     "removeResult",
-                    Arrays.<TypeReference<?>>asList(new TypeReference<Int256>() {}));;
+                    Arrays.<TypeReference<?>>asList(new TypeReference<Int256>() {
+                    }));
+    ;
 
     public static final Event READRESULT_EVENT =
             new Event(
                     "readResult",
                     Arrays.<TypeReference<?>>asList(
-                            new TypeReference<Bytes32>() {},
-                            new TypeReference<Int256>() {},
-                            new TypeReference<Bytes32>() {}));;
+                            new TypeReference<Bytes32>() {
+                            },
+                            new TypeReference<Int256>() {
+                            },
+                            new TypeReference<Bytes32>() {
+                            }));
+    ;
 
     @Deprecated
     protected DBTest(
@@ -136,9 +149,12 @@ public class DBTest extends Contract {
                         Arrays.<Type>asList(
                                 new org.fisco.bcos.web3j.abi.datatypes.Utf8String(name)),
                         Arrays.<TypeReference<?>>asList(
-                                new TypeReference<DynamicArray<Bytes32>>() {},
-                                new TypeReference<DynamicArray<Int256>>() {},
-                                new TypeReference<DynamicArray<Bytes32>>() {}));
+                                new TypeReference<DynamicArray<Bytes32>>() {
+                                },
+                                new TypeReference<DynamicArray<Int256>>() {
+                                },
+                                new TypeReference<DynamicArray<Bytes32>>() {
+                                }));
         return new RemoteCall<Tuple3<List<byte[]>, List<BigInteger>, List<byte[]>>>(
                 new Callable<Tuple3<List<byte[]>, List<BigInteger>, List<byte[]>>>() {
                     @Override

@@ -1,18 +1,19 @@
 package org.fisco.bcos.web3j.crypto;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import org.fisco.bcos.web3j.utils.Numeric;
+import org.fisco.bcos.web3j.utils.Strings;
+import org.junit.Test;
 
 import java.math.BigInteger;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Arrays;
-import org.fisco.bcos.web3j.utils.Numeric;
-import org.fisco.bcos.web3j.utils.Strings;
-import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 public class KeysTest {
 

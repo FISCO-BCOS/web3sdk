@@ -1,13 +1,14 @@
 package org.fisco.bcos.web3j.abi.datatypes;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.fail;
-
-import java.util.stream.IntStream;
 import org.fisco.bcos.web3j.abi.datatypes.generated.StaticArray3;
 import org.fisco.bcos.web3j.abi.datatypes.generated.Uint8;
 import org.junit.Test;
+
+import java.util.stream.IntStream;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.fail;
 
 public class StaticArrayTest {
 
