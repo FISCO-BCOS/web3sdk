@@ -17,7 +17,10 @@
  */
 package org.fisco.bcos.web3j.solidity;
 
-import static org.fisco.bcos.web3j.solidity.compiler.SolidityCompiler.Options.*;
+import static org.fisco.bcos.web3j.solidity.compiler.SolidityCompiler.Options.ABI;
+import static org.fisco.bcos.web3j.solidity.compiler.SolidityCompiler.Options.BIN;
+import static org.fisco.bcos.web3j.solidity.compiler.SolidityCompiler.Options.INTERFACE;
+import static org.fisco.bcos.web3j.solidity.compiler.SolidityCompiler.Options.METADATA;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.StringContains.containsString;
 
@@ -31,6 +34,7 @@ import org.apache.commons.io.FileUtils;
 import org.fisco.bcos.web3j.codegen.SolidityFunctionWrapperGenerator;
 import org.fisco.bcos.web3j.solidity.compiler.CompilationResult;
 import org.fisco.bcos.web3j.solidity.compiler.SolidityCompiler;
+import org.fisco.bcos.web3j.solidity.compiler.SolidityCompiler.Options.AllowPaths;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -65,8 +69,6 @@ public class CompilerTest {
 
         SolidityCompiler.Result res =
                 SolidityCompiler.compile(contract.getBytes(), true, ABI, BIN, INTERFACE, METADATA);
-        System.out.println("Out: '" + res.output + "'");
-        System.out.println("Err: '" + res.errors + "'");
         CompilationResult result = CompilationResult.parse(res.output);
         if (result.getContract("a") != null) System.out.println(result.getContract("a").bin);
         else Assert.fail();
@@ -78,13 +80,9 @@ public class CompilerTest {
                 "pragma solidity ^0.4.7;\n" + "contract a {" + "        function() {throw;}" + "}";
 
         SolidityCompiler.Result res = SolidityCompiler.compile(contractSrc.getBytes(), true, BIN);
-        System.out.println("Out: '" + res.output + "'");
-        System.out.println("Err: '" + res.errors + "'");
         CompilationResult result = CompilationResult.parse(res.output);
 
         CompilationResult.ContractMetadata a = result.getContract("a");
-        //       CallTransaction.Contract contract = new CallTransaction.Contract(a.abi);
-        //        System.out.print(contract.functions[0].toString());
     }
 
     @Test
@@ -99,17 +97,12 @@ public class CompilerTest {
             }
             SolidityCompiler.Result res =
                     SolidityCompiler.compile(solFile, true, ABI, BIN, INTERFACE, METADATA);
-            System.out.println("Out: '" + res.output + "'");
-            System.out.println("Err: '" + res.errors + "'");
             CompilationResult result = CompilationResult.parse(res.output);
             System.out.println("contractname  " + solFile.getName());
             Path source = Paths.get(solFile.getPath());
-            // todo
             String contractname = solFile.getName().split("\\.")[0];
             CompilationResult.ContractMetadata a =
                     result.getContract(source, solFile.getName().split("\\.")[0]);
-            System.out.println("abi   " + a.abi);
-            System.out.println("bin   " + a.bin);
             FileUtils.writeStringToFile(
                     new File("src/test/resources/solidity/" + contractname + ".abi"), a.abi);
             FileUtils.writeStringToFile(
@@ -129,7 +122,6 @@ public class CompilerTest {
                                     "-o", tempDirPath)
                             .toArray(new String[0]));
         }
-        System.out.println("generate successfully");
     }
 
     @Test
@@ -139,8 +131,6 @@ public class CompilerTest {
 
         SolidityCompiler.Result res =
                 SolidityCompiler.compile(source.toFile(), true, ABI, BIN, INTERFACE, METADATA);
-        System.out.println("Out: '" + res.output + "'");
-        System.out.println("Err: '" + res.errors + "'");
         CompilationResult result = CompilationResult.parse(res.output);
 
         CompilationResult.ContractMetadata a = result.getContract(source, "test2");
@@ -156,8 +146,6 @@ public class CompilerTest {
         SolidityCompiler.Result res =
                 SolidityCompiler.compile(
                         source.toFile(), true, ABI, BIN, INTERFACE, METADATA, allowPathsOption);
-        System.out.println("Out: '" + res.output + "'");
-        System.out.println("Err: '" + res.errors + "'");
         CompilationResult result = CompilationResult.parse(res.output);
 
         Assert.assertEquals(2, result.getContractKeys().size());
@@ -165,8 +153,6 @@ public class CompilerTest {
         Assert.assertNotNull(result.getContract("test1"));
 
         CompilationResult.ContractMetadata a = result.getContract(source, "test3");
-        //        CallTransaction.Contract contract = new CallTransaction.Contract(a.abi);
-        //        System.out.print(contract.functions[0].toString());
     }
 
     @Test
@@ -181,8 +167,6 @@ public class CompilerTest {
         SolidityCompiler.Result res =
                 SolidityCompiler.compile(
                         source.toFile(), true, ABI, BIN, INTERFACE, METADATA, allowPathsOption);
-        System.out.println("Out: '" + res.output + "'");
-        System.out.println("Err: '" + res.errors + "'");
         CompilationResult result = CompilationResult.parse(res.output);
 
         CompilationResult.ContractMetadata a = result.getContract(source, "test3");
@@ -198,8 +182,6 @@ public class CompilerTest {
         SolidityCompiler.Result res =
                 SolidityCompiler.compile(
                         source.toFile(), true, ABI, BIN, INTERFACE, METADATA, allowPathsOption);
-        System.out.println("Out: '" + res.output + "'");
-        System.out.println("Err: '" + res.errors + "'");
         CompilationResult result = CompilationResult.parse(res.output);
 
         CompilationResult.ContractMetadata a = result.getContract("test3");
