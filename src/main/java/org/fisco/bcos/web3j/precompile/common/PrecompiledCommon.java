@@ -48,6 +48,8 @@ public class PrecompiledCommon {
     public static final int InvalidKey = 51300;
     public static final int InvalidKey_RC3 = -51300;
 
+    public static final int TABLE_KEY_MAX_LENGTH = 255;
+
     private static String BCOS_VERSION = "";
 
     public static String transferToJson(int code) throws IOException {

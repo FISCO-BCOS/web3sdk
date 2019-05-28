@@ -28,7 +28,7 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 
 public class P12Manager {
-    private String keyStoreFile;
+    private String p12File;
     private final String NAME = "key";
     private String password;
     private KeyStore keyStore;
@@ -44,7 +44,7 @@ public class P12Manager {
                     NoSuchProviderException {
         ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
         keyStore = KeyStore.getInstance("PKCS12", "BC");
-        Resource keyStoreResource = resolver.getResource(keyStoreFile);
+        Resource keyStoreResource = resolver.getResource(p12File);
 
         keyStore.load(keyStoreResource.getInputStream(), password.toCharArray());
     }
@@ -132,11 +132,11 @@ public class P12Manager {
         this.password = password;
     }
 
-    public String getKeyStoreFile() {
-        return keyStoreFile;
+    public String getP12File() {
+        return p12File;
     }
 
-    public void setKeyStoreFile(String keyStoreFile) {
-        this.keyStoreFile = keyStoreFile;
+    public void setP12File(String p12File) {
+        this.p12File = p12File;
     }
 }
