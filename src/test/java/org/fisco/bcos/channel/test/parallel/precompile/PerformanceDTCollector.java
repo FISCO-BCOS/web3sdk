@@ -180,7 +180,7 @@ public class PerformanceDTCollector {
                 at.setTextAlignment(TextAlignment.CENTER);
 
                 atRender = at.render();
-                System.out.println(atRender + "\n");
+                System.out.println(atRender);
             }
 
         } catch (Exception e) {
