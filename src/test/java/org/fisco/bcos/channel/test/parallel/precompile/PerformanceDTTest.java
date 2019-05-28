@@ -14,6 +14,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
+import de.vandermeer.asciitable.AsciiTable;
+import de.vandermeer.skb.interfaces.transformers.textformat.TextAlignment;
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.protocol.Web3j;
@@ -32,7 +35,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 public class PerformanceDTTest {
     private static Logger logger = LoggerFactory.getLogger(PerformanceDTTest.class);
-    private static AtomicInteger sended = new AtomicInteger(0);
     private static final String dagTransferAddr = "0x0000000000000000000000000000000000005002";
     private static String groupId = "1";
 
@@ -87,7 +89,15 @@ public class PerformanceDTTest {
     }
 
     public void veryTransferData() {
-        // System.out.println(" data validation => ");
+        System.out.println(
+                "===================================================================");
+        System.out.println("Verify");
+        System.out.println(
+                "===================================================================");
+
+        String percent = "0.00%";
+        System.out.print(dateFormat.format(new Date()) + " Verifying account state..." + percent);
+
         List<DagTransferUser> allUser = dagUserMgr.getUserList();
         int total_user = allUser.size();
 
@@ -126,12 +136,32 @@ public class PerformanceDTTest {
                 } else {
                     verify_success++;
                 }
-            }
 
-            System.out.println("validation:");
-            System.out.println(" \tuser count is " + total_user);
-            System.out.println(" \tverify_success count is " + verify_success);
-            System.out.println(" \tverify_failed count is " + verify_failed);
+                for (int p = 0; p < percent.length(); ++p) {
+                    System.out.print('\b');
+                }
+
+                percent = String.format("%.2f%%", (i + 1) * 100 / (double) allUser.size());
+                System.out.print(percent);
+            }
+            System.out.println("");
+
+            AsciiTable at = new AsciiTable();
+            at.addRule();
+            at.addRow(null, "Validation");
+            at.addRule();
+            at.addRow("User count", total_user);
+            at.addRule();
+            at.addRow("Verify success", verify_success);
+            at.addRule();
+            at.addRow("Verify failed", verify_failed);
+            at.addRule();
+
+            at.getContext().setWidth(40);
+            at.setTextAlignment(TextAlignment.CENTER);
+
+            String atRender = at.render();
+            System.out.println(atRender);
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(0);
@@ -200,6 +230,8 @@ public class PerformanceDTTest {
 
             this.collector.setStartTimestamp(System.currentTimeMillis());
 
+            sent = new AtomicInteger(0);
+
             for (int i = 0; i < count.intValue(); ++i) {
                 final int index = i;
                 threadPool.execute(
@@ -230,11 +262,11 @@ public class PerformanceDTTest {
                                     logger.info(e.getMessage());
                                 }
 
-                                int current = sended.incrementAndGet();
+                                int current = sent.incrementAndGet();
 
                                 if (current >= area && ((current % area) == 0)) {
                                     System.out.println(
-                                            "Already sended: "
+                                            "Already sent: "
                                                     + current
                                                     + "/"
                                                     + count
@@ -490,7 +522,7 @@ public class PerformanceDTTest {
                 }
             }
 
-            System.out.println(dateFormat.format(new Date()) + " Verifying account state...");
+
             veryTransferData();
             System.exit(0);
 
