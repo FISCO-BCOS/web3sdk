@@ -479,6 +479,8 @@ public class PerformanceDTTest {
                                                 signedTransactions.get(index),
                                                 callbacks.get(index));
                                     } catch (Exception e) {
+                                        logger.error(e.getMessage());
+
                                         TransactionReceipt receipt = new TransactionReceipt();
                                         receipt.setStatus("-1");
                                         callbacks.get(index).onResponse(receipt);
