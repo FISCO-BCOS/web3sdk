@@ -24,10 +24,7 @@ import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameterName;
 import org.fisco.bcos.web3j.protocol.core.JsonRpc2_0Web3j;
 import org.fisco.bcos.web3j.protocol.core.RemoteCall;
 import org.fisco.bcos.web3j.protocol.core.methods.request.Transaction;
-import org.fisco.bcos.web3j.protocol.core.methods.response.Call;
-import org.fisco.bcos.web3j.protocol.core.methods.response.Code;
-import org.fisco.bcos.web3j.protocol.core.methods.response.Log;
-import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.fisco.bcos.web3j.protocol.core.methods.response.*;
 import org.fisco.bcos.web3j.protocol.exceptions.TransactionException;
 import org.fisco.bcos.web3j.tx.exceptions.ContractCallException;
 import org.fisco.bcos.web3j.tx.gas.ContractGasProvider;
@@ -52,7 +49,7 @@ public abstract class Contract extends ManagedTransaction {
 
     public static final String BIN_NOT_PROVIDED = "Bin file was not provided";
     public static final String FUNC_DEPLOY = "deploy";
-
+    public static final String BCOS_RC1 = "2.0.0-rc1";
     protected final String contractBinary;
     protected String contractAddress;
     protected ContractGasProvider gasProvider;
@@ -85,41 +82,36 @@ public abstract class Contract extends ManagedTransaction {
                 web3j,
                 getTheTransactionManager(web3j, credentials),
                 gasProvider);
-        //    if (!Service.clientVersion.equals("2.0.0-rc1")) {
-        //      this.extendedTransactionManager = new ExtendedRawTransactionManager(web3j,
-        // credentials, new BigInteger("1"), Service.chainId);
-        //    }
     }
 
     public static TransactionManager getTheTransactionManager(
             Web3j web3j, Credentials credentials) {
         JsonRpc2_0Web3j jsonRpc2_0Web3j = (JsonRpc2_0Web3j) web3j;
         int groupId = jsonRpc2_0Web3j.getGroupId();
-        String clientVersion = null;
         String chainId = "1";
-        String versionContent;
-        if (clientVersion == null) {
-            try {
-                versionContent = web3j.getNodeVersion().sendForReturnString();
-                logger.info("***version***");
-                if (versionContent.contains("2.0.0-rc1")) {
-                    clientVersion = "2.0.0-rc1";
-                }
-                JSONObject jsonObject = JSONObject.parseObject(versionContent);
-                chainId = (String) jsonObject.get("Chain Id");
-            } catch (IOException e) {
-
-                logger.info("can not get node version ");
+        String version = "";
+        String supportedVersion = "";
+        try {
+            NodeVersion.Version nodeVersion = web3j.getNodeVersion().send().getNodeVersion();
+            version = nodeVersion.getVersion();
+            supportedVersion = nodeVersion.getSupportedVersion();
+            if (BCOS_RC1.equals(version) || BCOS_RC1.equals(supportedVersion)) {
+                version = BCOS_RC1;
+                logger.info("fisco-bcos version:{}", version);
+            } else {
+                chainId = nodeVersion.getChainID();
+                logger.info(
+                        "fisco-bcos version:{}, supported version:{}", version, supportedVersion);
             }
+        } catch (IOException e) {
+            logger.error("Query fisco-bcos version failed", e);
         }
-        ;
 
-        return "2.0.0-rc1".equals(clientVersion)
+        return BCOS_RC1.equals(version)
                 ? new RawTransactionManager(web3j, credentials)
                 : new ExtendedRawTransactionManager(
-                        web3j, credentials, BigInteger.valueOf(groupId), new BigInteger(chainId));
+                web3j, credentials, BigInteger.valueOf(groupId), new BigInteger(chainId));
     }
-
     @Deprecated
     protected Contract(
             String contractBinary,
