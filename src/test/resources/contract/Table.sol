@@ -1,39 +1,37 @@
+pragma solidity ^0.4.24;
+
 contract TableFactory {
     function openTable(string) public constant returns (Table); //open table
-    function createTable(string,string,string) public constant returns(int); //create table
+    function createTable(string,string,string) public returns(int); //create table
 }
 
 //select condition
 contract Condition {
-    function EQ(string, int);
-    function EQ(string, string);
+    function EQ(string, int) public;
+    function EQ(string, string) public;
     
-    function NE(string, int);
-    function NE(string, string);
+    function NE(string, int) public;
+    function NE(string, string)  public;
 
-    function GT(string, int);
-    function GE(string, int);
+    function GT(string, int) public;
+    function GE(string, int) public;
     
-    function LT(string, int);
-    function LE(string, int);
+    function LT(string, int) public;
+    function LE(string, int) public;
     
-    function limit(int);
-    function limit(int, int);
+    function limit(int) public;
+    function limit(int, int) public;
 }
 
 //one record 
 contract Entry {
     function getInt(string) public constant returns(int);
-    function getUInt(string) public constant returns(uint);
     function getAddress(string) public constant returns(address);
     function getBytes64(string) public constant returns(byte[64]);
     function getBytes32(string) public constant returns(bytes32);
-    function getString(string) public constant returns(string);
-
+    
     function set(string, int) public;
-    function set(string, uint) public;
     function set(string, string) public;
-    function set(string, address) public;
 }
 
 //record sets
