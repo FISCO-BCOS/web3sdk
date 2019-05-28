@@ -1,11 +1,9 @@
 package org.fisco.bcos.channel.test.parallel.precompile;
 
 import com.google.common.util.concurrent.RateLimiter;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
+import de.vandermeer.asciitable.AsciiTable;
+import de.vandermeer.skb.interfaces.transformers.textformat.TextAlignment;
+import java.io.*;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -16,7 +14,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.protocol.Web3j;
@@ -35,7 +34,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 public class PerformanceDTTest {
     private static Logger logger = LoggerFactory.getLogger(PerformanceDTTest.class);
-    private static AtomicInteger sended = new AtomicInteger(0);
     private static final String dagTransferAddr = "0x0000000000000000000000000000000000005002";
     private static String groupId = "1";
 
@@ -47,6 +45,7 @@ public class PerformanceDTTest {
     private PerformanceDTCollector collector;
 
     private static CountDownLatch latch;
+    private static AtomicInteger sent;
     private TransactionManager transactionManager;
 
     private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -89,7 +88,13 @@ public class PerformanceDTTest {
     }
 
     public void veryTransferData() {
-        // System.out.println(" data validation => ");
+        System.out.println("===================================================================");
+        System.out.println("Verify");
+        System.out.println("===================================================================");
+
+        String percent = "0.00%";
+        System.out.print(dateFormat.format(new Date()) + " Verifying account state..." + percent);
+
         List<DagTransferUser> allUser = dagUserMgr.getUserList();
         int total_user = allUser.size();
 
@@ -128,12 +133,32 @@ public class PerformanceDTTest {
                 } else {
                     verify_success++;
                 }
-            }
 
-            System.out.println("validation:");
-            System.out.println(" \tuser count is " + total_user);
-            System.out.println(" \tverify_success count is " + verify_success);
-            System.out.println(" \tverify_failed count is " + verify_failed);
+                for (int p = 0; p < percent.length(); ++p) {
+                    System.out.print('\b');
+                }
+
+                percent = String.format("%.2f%%", (i + 1) * 100 / (double) allUser.size());
+                System.out.print(percent);
+            }
+            System.out.println("");
+
+            AsciiTable at = new AsciiTable();
+            at.addRule();
+            at.addRow(null, "Validation");
+            at.addRule();
+            at.addRow("User count", total_user);
+            at.addRule();
+            at.addRow("Verify success", verify_success);
+            at.addRule();
+            at.addRow("Verify failed", verify_failed);
+            at.addRule();
+
+            at.getContext().setWidth(40);
+            at.setTextAlignment(TextAlignment.CENTER);
+
+            String atRender = at.render();
+            System.out.println(atRender);
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(0);
@@ -141,6 +166,8 @@ public class PerformanceDTTest {
     }
 
     public void initialize(String groupId) throws Exception {
+
+        System.out.println("Initializing...");
 
         ApplicationContext context =
                 new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
@@ -187,6 +214,8 @@ public class PerformanceDTTest {
 
             threadPool.initialize();
 
+            System.out.println(
+                    "===================================================================");
             System.out.println("Start UserAdd test, count " + count);
             System.out.println(
                     "===================================================================");
@@ -198,7 +227,9 @@ public class PerformanceDTTest {
 
             this.collector.setStartTimestamp(System.currentTimeMillis());
 
-            for (Integer i = 0; i < count.intValue(); ++i) {
+            sent = new AtomicInteger(0);
+
+            for (int i = 0; i < count.intValue(); ++i) {
                 final int index = i;
                 threadPool.execute(
                         new Runnable() {
@@ -228,11 +259,11 @@ public class PerformanceDTTest {
                                     logger.info(e.getMessage());
                                 }
 
-                                int current = sended.incrementAndGet();
+                                int current = sent.incrementAndGet();
 
                                 if (current >= area && ((current % area) == 0)) {
                                     System.out.println(
-                                            "Already sended: "
+                                            "Already sent: "
                                                     + current
                                                     + "/"
                                                     + count
@@ -257,6 +288,7 @@ public class PerformanceDTTest {
     }
 
     public void userTransferTest(BigInteger count, BigInteger qps, BigInteger deci) {
+        System.out.println("===================================================================");
         System.out.println("Start UserTransfer test...");
         System.out.println("===================================================================");
 
@@ -280,9 +312,7 @@ public class PerformanceDTTest {
         }
 
         try {
-            RateLimiter limiter = RateLimiter.create(qps.intValue());
-
-            String percent = 0 + "%";
+            String percent = "0.00%";
             System.out.print(
                     dateFormat.format(new Date()) + " Querying account state..." + percent);
             List<DagTransferUser> allUser = dagUserMgr.getUserList();
@@ -300,7 +330,7 @@ public class PerformanceDTTest {
                 for (int p = 0; p < percent.length(); ++p) {
                     System.out.print('\b');
                 }
-                percent = ((i + 1) * 100) / allUser.size() + "%";
+                percent = String.format("%.2f%%", (i + 1) * 100 / (double) allUser.size());
                 System.out.print(percent);
             }
             System.out.println("");
@@ -318,7 +348,7 @@ public class PerformanceDTTest {
                 segmentCount++;
             }
 
-            percent = 0 + "%";
+            percent = "0.00%";
             System.out.print(
                     dateFormat.format(new Date()) + " Creating signed transactions..." + percent);
             for (int i = 0; i < segmentCount; ++i) {
@@ -339,35 +369,30 @@ public class PerformanceDTTest {
                             new Runnable() {
                                 @Override
                                 public void run() {
-                                    while (true) {
-                                        DagTransferUser from = dagUserMgr.getFrom(index);
-                                        DagTransferUser to = dagUserMgr.getTo(index);
-                                        if ((deci.intValue() > 0)
-                                                && (deci.intValue() >= (index % 10 + 1))) {
-                                            to = dagUserMgr.getNext(index);
-                                        }
+                                    DagTransferUser from = dagUserMgr.getFrom(index);
+                                    DagTransferUser to = dagUserMgr.getTo(index);
+                                    if ((deci.intValue() > 0)
+                                            && (deci.intValue() >= (index % 10 + 1))) {
+                                        to = dagUserMgr.getNext(index);
+                                    }
 
-                                        Random random = new Random();
-                                        int r = random.nextInt(100) + 1;
-                                        BigInteger amount = BigInteger.valueOf(r);
+                                    Random random = new Random();
+                                    int r = random.nextInt(100) + 1;
+                                    BigInteger amount = BigInteger.valueOf(r);
 
-                                        try {
-                                            String signedTransaction =
-                                                    dagTransfer.userTransferSeq(
-                                                            from.getUser(), to.getUser(), amount);
-                                            String content =
-                                                    String.format(
-                                                            "%s %d %d%n",
-                                                            signedTransaction, index, r);
-                                            lock.lock();
-                                            writer.write(content);
-                                            break;
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
-                                            continue;
-                                        } finally {
-                                            lock.unlock();
-                                        }
+                                    try {
+                                        String signedTransaction =
+                                                dagTransfer.userTransferSeq(
+                                                        from.getUser(), to.getUser(), amount);
+                                        String content =
+                                                String.format(
+                                                        "%s %d %d%n", signedTransaction, index, r);
+                                        lock.lock();
+                                        writer.write(content);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    } finally {
+                                        lock.unlock();
                                     }
                                     latch.countDown();
                                 }
@@ -381,28 +406,29 @@ public class PerformanceDTTest {
                         System.out.print('\b');
                     }
 
-                    percent = (int) (((end - latchCount) / (double) count.intValue()) * 100) + "%";
+                    percent =
+                            String.format(
+                                    "%.2f%%", (end - latchCount) / (double) count.intValue() * 100);
                     System.out.print(percent);
                     Thread.sleep(40);
                 }
 
                 writer.close();
-
-                for (int p = 0; p < percent.length(); ++p) {
-                    System.out.print('\b');
-                }
-                System.out.print("100%");
             }
-            System.out.println("");
 
-            long sent = 0;
+            for (int p = 0; p < percent.length(); ++p) {
+                System.out.print('\b');
+            }
+            System.out.println("100.00%");
+
+            System.out.println(dateFormat.format(new Date()) + " Sending transactions...");
+
             File[] fileList = dir.listFiles();
-
-            logger.info("Start to send");
-            System.out.println(dateFormat.format(new Date()) + " Sending signed transactions...");
 
             long startTime = System.currentTimeMillis();
             collector.setStartTimestamp(startTime);
+
+            sent = new AtomicInteger(0);
 
             for (int i = 0; i < fileList.length; ++i) {
                 BufferedReader reader = new BufferedReader(new FileReader(fileList[i]));
@@ -421,6 +447,10 @@ public class PerformanceDTTest {
                     DagTransferUser from = dagUserMgr.getFrom(index);
                     DagTransferUser to = dagUserMgr.getTo(index);
 
+                    if ((deci.intValue() > 0) && (deci.intValue() >= (index % 10 + 1))) {
+                        to = dagUserMgr.getNext(index);
+                    }
+
                     PerformanceDTCallback callback = new PerformanceDTCallback();
                     callback.setCallBackType("transfer");
                     callback.setCollector(collector);
@@ -438,6 +468,8 @@ public class PerformanceDTTest {
                 threadPool.initialize();
 
                 latch = new CountDownLatch(signedTransactions.size());
+                int division = count.intValue() / 10;
+                RateLimiter limiter = RateLimiter.create(qps.intValue());
 
                 for (int j = 0; j < signedTransactions.size(); ++j) {
                     final int index = j;
@@ -445,45 +477,55 @@ public class PerformanceDTTest {
                             new Runnable() {
                                 @Override
                                 public void run() {
-                                    while (true) {
-                                        try {
-                                            transactionManager.sendTransaction(
-                                                    signedTransactions.get(index),
-                                                    callbacks.get(index));
-                                            break;
-                                        } catch (Exception e) {
-                                            continue;
-                                        }
+                                    try {
+                                        limiter.acquire();
+                                        transactionManager.sendTransaction(
+                                                signedTransactions.get(index),
+                                                callbacks.get(index));
+                                    } catch (Exception e) {
+                                        logger.error(e.getMessage());
+
+                                        TransactionReceipt receipt = new TransactionReceipt();
+                                        receipt.setStatus("-1");
+                                        callbacks.get(index).onResponse(receipt);
                                     }
 
+                                    int current = sent.addAndGet(1);
+                                    if (current >= division && (current % division) == 0) {
+                                        long elapsedTime = System.currentTimeMillis() - startTime;
+                                        double sendSpeed = current / ((double) elapsedTime / 1000);
+                                        System.out.println(
+                                                "sent: "
+                                                        + (int)
+                                                                (current
+                                                                        / (double) count.intValue()
+                                                                        * 100)
+                                                        + "%"
+                                                        + ", QPS: "
+                                                        + String.format("%.2f", sendSpeed));
+                                    }
                                     latch.countDown();
                                 }
                             });
                 }
 
                 latch.await();
-                long elapsed = System.currentTimeMillis() - startTime;
-                sent += signedTransactions.size();
-                double sendSpeed = sent / ((double) elapsed / 1000);
-                System.out.println(
-                        "Already sent: "
-                                + sent
-                                + "/"
-                                + count
-                                + " transactions"
-                                + ",QPS="
-                                + sendSpeed);
             }
 
             while (!collector.isEnd()) {
                 Thread.sleep(1000);
             }
 
-            logger.info("End to send");
+            if (dir.exists()) {
+                fileList = dir.listFiles();
+                for (File file : fileList) {
+                    if (!file.delete()) {
+                        System.out.printf("Can't clean %s%n", dirName);
+                    }
+                }
+            }
 
-            System.out.println(dateFormat.format(new Date()) + " Verifying result...");
             veryTransferData();
-
             System.exit(0);
 
         } catch (Exception e) {
