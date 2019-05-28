@@ -126,7 +126,6 @@ integrationTest.mustRunAfter test
 
 check.dependsOn.remove(test)
 check.dependsOn.remove(integrationTest)
-check.dependsOn.remove(verifyGoogleJavaFormat)
 
 //  1 dist jar
 jar {
