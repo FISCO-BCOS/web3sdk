@@ -8,7 +8,7 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.tx.gas.ContractGasProvider;
 import org.fisco.bcos.web3j.tx.gas.StaticGasProvider;
 
-public class SystemConfigSerivce {
+public class SystemConfigService {
     private static BigInteger gasPrice = new BigInteger("300000000");
     private static BigInteger gasLimit = new BigInteger("300000000");
     private static String systemConfigPrecompileAddress =
@@ -16,7 +16,7 @@ public class SystemConfigSerivce {
     private SystemConfig systemConfig;
     private Web3j web3j;
 
-    public SystemConfigSerivce(Web3j web3j, Credentials credentials) {
+    public SystemConfigService(Web3j web3j, Credentials credentials) {
         ContractGasProvider contractGasProvider = new StaticGasProvider(gasPrice, gasLimit);
         systemConfig =
                 SystemConfig.load(

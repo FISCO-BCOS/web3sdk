@@ -40,10 +40,7 @@ public class BcosBlock extends Response<BcosBlock.Block> {
         private String author;
         private String sealer;
         private String mixHash;
-        private String difficulty;
-        private String totalDifficulty;
         private List<String> extraData;
-        private String size;
         private String gasLimit;
         private String gasUsed;
         private String timestamp;
@@ -79,14 +76,8 @@ public class BcosBlock extends Response<BcosBlock.Block> {
                     + sealer
                     + ", mixHash="
                     + mixHash
-                    + ", difficulty="
-                    + difficulty
-                    + ", totalDifficulty="
-                    + totalDifficulty
                     + ", extraData="
                     + extraData
-                    + ", size="
-                    + size
                     + ", gasLimit="
                     + gasLimit
                     + ", gasUsed="
@@ -115,10 +106,7 @@ public class BcosBlock extends Response<BcosBlock.Block> {
                 String author,
                 String sealer,
                 String mixHash,
-                String difficulty,
-                String totalDifficulty,
                 List<String> extraData,
-                String size,
                 String gasLimit,
                 String gasUsed,
                 String timestamp,
@@ -137,10 +125,7 @@ public class BcosBlock extends Response<BcosBlock.Block> {
             this.author = author;
             this.sealer = sealer;
             this.mixHash = mixHash;
-            this.difficulty = difficulty;
-            this.totalDifficulty = totalDifficulty;
             this.extraData = extraData;
-            this.size = size;
             this.gasLimit = gasLimit;
             this.gasUsed = gasUsed;
             this.timestamp = timestamp;
@@ -254,48 +239,12 @@ public class BcosBlock extends Response<BcosBlock.Block> {
             this.mixHash = mixHash;
         }
 
-        public BigInteger getDifficulty() {
-            return Numeric.decodeQuantity(difficulty);
-        }
-
-        public String getDifficultyRaw() {
-            return difficulty;
-        }
-
-        public void setDifficulty(String difficulty) {
-            this.difficulty = difficulty;
-        }
-
-        public BigInteger getTotalDifficulty() {
-            return Numeric.decodeQuantity(totalDifficulty);
-        }
-
-        public String getTotalDifficultyRaw() {
-            return totalDifficulty;
-        }
-
-        public void setTotalDifficulty(String totalDifficulty) {
-            this.totalDifficulty = totalDifficulty;
-        }
-
         public List<String> getExtraData() {
             return extraData;
         }
 
         public void setExtraData(List<String> extraData) {
             this.extraData = extraData;
-        }
-
-        public BigInteger getSize() {
-            return Numeric.decodeQuantity(size);
-        }
-
-        public String getSizeRaw() {
-            return size;
-        }
-
-        public void setSize(String size) {
-            this.size = size;
         }
 
         public BigInteger getGasLimit() {
@@ -428,24 +377,9 @@ public class BcosBlock extends Response<BcosBlock.Block> {
                     : block.getMixHash() != null) {
                 return false;
             }
-            if (getDifficultyRaw() != null
-                    ? !getDifficultyRaw().equals(block.getDifficultyRaw())
-                    : block.getDifficultyRaw() != null) {
-                return false;
-            }
-            if (getTotalDifficultyRaw() != null
-                    ? !getTotalDifficultyRaw().equals(block.getTotalDifficultyRaw())
-                    : block.getTotalDifficultyRaw() != null) {
-                return false;
-            }
             if (getExtraData() != null
                     ? !getExtraData().equals(block.getExtraData())
                     : block.getExtraData() != null) {
-                return false;
-            }
-            if (getSizeRaw() != null
-                    ? !getSizeRaw().equals(block.getSizeRaw())
-                    : block.getSizeRaw() != null) {
                 return false;
             }
             if (getGasLimitRaw() != null
@@ -496,14 +430,7 @@ public class BcosBlock extends Response<BcosBlock.Block> {
             result = 31 * result + (getAuthor() != null ? getAuthor().hashCode() : 0);
             result = 31 * result + (getSealer() != null ? getSealer().hashCode() : 0);
             result = 31 * result + (getMixHash() != null ? getMixHash().hashCode() : 0);
-            result = 31 * result + (getDifficultyRaw() != null ? getDifficultyRaw().hashCode() : 0);
-            result =
-                    31 * result
-                            + (getTotalDifficultyRaw() != null
-                                    ? getTotalDifficultyRaw().hashCode()
-                                    : 0);
             result = 31 * result + (getExtraData() != null ? getExtraData().hashCode() : 0);
-            result = 31 * result + (getSizeRaw() != null ? getSizeRaw().hashCode() : 0);
             result = 31 * result + (getGasLimitRaw() != null ? getGasLimitRaw().hashCode() : 0);
             result = 31 * result + (getGasUsedRaw() != null ? getGasUsedRaw().hashCode() : 0);
             result = 31 * result + (getTimestampRaw() != null ? getTimestampRaw().hashCode() : 0);

@@ -1,11 +1,6 @@
 package org.fisco.bcos.channel.test.parallel.precompile;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
@@ -83,7 +78,7 @@ public class DagUserMgr {
 
         logger.info("file {}, load end, count is {}.", file, userList.size());
 
-        System.out.println(" # write DagTransferUser end, count is " + userList.size());
+        System.out.println("Write DagTransferUser end, count is " + userList.size());
     }
 
     public void loadDagTransferUser() throws IOException {
@@ -113,7 +108,7 @@ public class DagUserMgr {
 
         logger.info("file {}, load end, count is {}.", file, userList.size());
 
-        System.out.println(" # load DagTransferUser end, count is " + userList.size());
+        System.out.println("Load DagTransferUser end, count is " + userList.size());
     }
 
     public String getTestType() {

@@ -285,6 +285,9 @@ public class SolidityFunctionWrapper extends Generator {
                 if (!functionDefinition.isConstant()) {
                     MethodSpec msCallback = buildFunctionWithCallback(functionDefinition);
                     methodSpecs.add(msCallback);
+
+                    MethodSpec msSeq = buildFunctionSeq(functionDefinition);
+                    methodSpecs.add(msSeq);
                 }
             } else if (functionDefinition.getType().equals("event")) {
                 methodSpecs.addAll(buildEventFunctions(functionDefinition, classBuilder));
@@ -837,6 +840,24 @@ public class SolidityFunctionWrapper extends Generator {
         return methodBuilder.build();
     }
 
+    MethodSpec buildFunctionSeq(AbiDefinition functionDefinition) throws ClassNotFoundException {
+        String functionName = functionDefinition.getName();
+        functionName += "Seq";
+
+        if (!SourceVersion.isName(functionName)) {
+            functionName = "_" + functionName;
+        }
+
+        MethodSpec.Builder methodBuilder =
+                MethodSpec.methodBuilder(functionName).addModifiers(Modifier.PUBLIC);
+
+        String inputParams = addParameters(methodBuilder, functionDefinition.getInputs());
+
+        buildTransactionFunctionSeq(functionDefinition, methodBuilder, inputParams);
+
+        return methodBuilder.build();
+    }
+
     MethodSpec buildFunctionWithCallback(AbiDefinition functionDefinition)
             throws ClassNotFoundException {
         String functionName = functionDefinition.getName();
@@ -1053,6 +1074,44 @@ public class SolidityFunctionWrapper extends Generator {
                 Collections.class,
                 TypeReference.class);
         methodBuilder.addStatement("asyncExecuteTransaction(function, callback)");
+    }
+
+    private void buildTransactionFunctionSeq(
+            AbiDefinition functionDefinition, MethodSpec.Builder methodBuilder, String inputParams)
+            throws ClassNotFoundException {
+
+        if (functionDefinition.hasOutputs()) {
+            // CHECKSTYLE:OFF
+            reporter.report(
+                    String.format(
+                            "Definition of the function %s returns a value but is not defined as a view function. "
+                                    + "Please ensure it contains the view modifier if you want to read the return value",
+                            functionDefinition.getName()));
+            // CHECKSTYLE:ON
+        }
+
+        if (functionDefinition.isPayable()) {
+            methodBuilder.addParameter(BigInteger.class, WEI_VALUE);
+        }
+
+        String functionName = functionDefinition.getName();
+
+        TypeName returnType = TypeName.get(String.class);
+        methodBuilder.returns(returnType);
+
+        methodBuilder.addStatement(
+                "final $T function = new $T(\n$N, \n$T.<$T>asList($L), \n$T"
+                        + ".<$T<?>>emptyList())",
+                Function.class,
+                Function.class,
+                funcNameToConst(functionName),
+                Arrays.class,
+                Type.class,
+                inputParams,
+                Collections.class,
+                TypeReference.class);
+
+        methodBuilder.addStatement("return createTransactionSeq(function)");
     }
 
     TypeSpec buildEventResponseObject(
