@@ -447,6 +447,10 @@ public class PerformanceDTTest {
                     DagTransferUser from = dagUserMgr.getFrom(index);
                     DagTransferUser to = dagUserMgr.getTo(index);
 
+                    if ((deci.intValue() > 0) && (deci.intValue() >= (index % 10 + 1))) {
+                        to = dagUserMgr.getNext(index);
+                    }
+
                     PerformanceDTCallback callback = new PerformanceDTCallback();
                     callback.setCallBackType("transfer");
                     callback.setCollector(collector);
