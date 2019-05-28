@@ -38,7 +38,6 @@ public class StaticArray<T extends Type> extends Array<T> {
     }
 
     private void isValid() {
-        //  MAX_SIZE_OF_STATIC_ARRAY = 1024;
         if (expectedSize == null && value.size() > MAX_SIZE_OF_STATIC_ARRAY) {
             throw new UnsupportedOperationException(
                     "Static arrays with a length greater than 1024 are not supported.");
