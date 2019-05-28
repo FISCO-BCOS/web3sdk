@@ -1,6 +1,5 @@
 package org.fisco.bcos.web3j.tx;
 
-import com.alibaba.fastjson.JSONObject;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.math.BigInteger;
@@ -110,8 +109,9 @@ public abstract class Contract extends ManagedTransaction {
         return BCOS_RC1.equals(version)
                 ? new RawTransactionManager(web3j, credentials)
                 : new ExtendedRawTransactionManager(
-                web3j, credentials, BigInteger.valueOf(groupId), new BigInteger(chainId));
+                        web3j, credentials, BigInteger.valueOf(groupId), new BigInteger(chainId));
     }
+
     @Deprecated
     protected Contract(
             String contractBinary,
