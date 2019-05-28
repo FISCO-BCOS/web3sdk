@@ -447,6 +447,10 @@ public class PerformanceDTTest {
                     DagTransferUser from = dagUserMgr.getFrom(index);
                     DagTransferUser to = dagUserMgr.getTo(index);
 
+                    if ((deci.intValue() > 0) && (deci.intValue() >= (index % 10 + 1))) {
+                        to = dagUserMgr.getNext(index);
+                    }
+
                     PerformanceDTCallback callback = new PerformanceDTCallback();
                     callback.setCallBackType("transfer");
                     callback.setCollector(collector);
@@ -479,6 +483,8 @@ public class PerformanceDTTest {
                                                 signedTransactions.get(index),
                                                 callbacks.get(index));
                                     } catch (Exception e) {
+                                        logger.error(e.getMessage());
+
                                         TransactionReceipt receipt = new TransactionReceipt();
                                         receipt.setStatus("-1");
                                         callbacks.get(index).onResponse(receipt);

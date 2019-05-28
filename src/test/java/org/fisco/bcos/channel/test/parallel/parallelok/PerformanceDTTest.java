@@ -570,6 +570,10 @@ public class PerformanceDTTest {
                     DagTransferUser from = dagUserMgr.getFrom(index);
                     DagTransferUser to = dagUserMgr.getTo(index);
 
+                    if ((deci.intValue() > 0) && (deci.intValue() >= (index % 10 + 1))) {
+                        to = dagUserMgr.getNext(index);
+                    }
+
                     PerformanceDTCallback callback = new PerformanceDTCallback();
                     callback.setCallBackType("transfer");
                     callback.setCollector(collector);
@@ -602,6 +606,8 @@ public class PerformanceDTTest {
                                                 signedTransactions.get(index),
                                                 callbacks.get(index));
                                     } catch (Exception e) {
+                                        logger.error(e.getMessage());
+
                                         TransactionReceipt receipt = new TransactionReceipt();
                                         receipt.setStatus("-1");
                                         callbacks.get(index).onResponse(receipt);
@@ -641,7 +647,6 @@ public class PerformanceDTTest {
                 }
             }
 
-            System.out.println(dateFormat.format(new Date()) + " Verifying account state...");
             veryTransferData();
             System.exit(0);
         } catch (Exception e) {
@@ -649,263 +654,6 @@ public class PerformanceDTTest {
             System.exit(0);
         }
     }
-    /*
-    Lock lock = new ReentrantLock();
-    List<String> signedTransactions = new ArrayList<String>();
-    List<PerformanceDTCallback> callbacks = new ArrayList<PerformanceDTCallback>();
-
-    try {
-
-
-        System.out.println("Reading account state...");
-        List<DagTransferUser> allUser = dagUserMgr.getUserList();
-        for (int i = 0; i < allUser.size(); ++i) {
-            BigInteger result = parallelok.balanceOf(allUser.get(i).getUser()).send();
-            allUser.get(i).setAmount(result);
-        }
-
-        int coreNum = Runtime.getRuntime().availableProcessors();
-        ThreadPoolTaskExecutor threadPool = new ThreadPoolTaskExecutor();
-        threadPool.setCorePoolSize(coreNum);
-        threadPool.setMaxPoolSize(coreNum * 2);
-        threadPool.setQueueCapacity(count.intValue());
-        threadPool.initialize();
-
-        latch = new CountDownLatch(count.intValue());
-
-        // create signed transactions
-        System.out.println("Creating signed transactions...");
-        for (int i = 0; i < count.intValue(); ++i) {
-            final int index = i;
-            threadPool.execute(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            while (true) {
-                                DagTransferUser from = dagUserMgr.getFrom(index);
-                                DagTransferUser to = dagUserMgr.getTo(index);
-
-                                if ((deci.intValue() > 0)
-                                        && (deci.intValue() >= (index % 10 + 1))) {
-                                    to = dagUserMgr.getNext(index);
-                                }
-
-                                Random random = new Random();
-                                int r = random.nextInt(100);
-                                BigInteger amount = BigInteger.valueOf(r);
-
-                                PerformanceDTCallback callback = new PerformanceDTCallback();
-                                callback.setCallBackType("transfer");
-                                callback.setCollector(collector);
-                                callback.setDagUserMgr(getDagUserMgr());
-                                callback.setFromUser(from);
-                                callback.setToUser(to);
-                                callback.setAmount(amount);
-
-                                try {
-                                    String signedTransaction =
-                                            parallelok.transferSeq(
-                                                    from.getUser(), to.getUser(), amount);
-                                    lock.lock();
-                                    signedTransactions.add(signedTransaction);
-                                    callbacks.add(callback);
-                                    break;
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                    continue;
-                                } finally {
-                                    lock.unlock();
-                                }
-                            }
-                            latch.countDown();
-                        }
-                    });
-        }
-
-        latch.await();
-
-        // send signed transactions
-        threadPool = new ThreadPoolTaskExecutor();
-        threadPool.setCorePoolSize(coreNum * 16);
-        threadPool.setMaxPoolSize(coreNum * 32);
-        threadPool.setQueueCapacity(count.intValue());
-        threadPool.initialize();
-
-        latch = new CountDownLatch(count.intValue());
-
-        long startTime = System.currentTimeMillis();
-        collector.setStartTimestamp(startTime);
-        AtomicInteger sent = new AtomicInteger(0);
-        int division = count.intValue() / 10;
-
-        System.out.println("Sending signed transactions...");
-        for (int i = 0; i < count.intValue(); ++i) {
-            final int index = i;
-            threadPool.execute(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            while (true) {
-                                try {
-                                    transactionManager.sendTransaction(
-                                            signedTransactions.get(index),
-                                            callbacks.get(index));
-                                    break;
-                                } catch (Exception e) {
-                                    continue;
-                                }
-                            }
-
-                            int current = sent.incrementAndGet();
-
-                            if (current >= division && ((current % division) == 0)) {
-                                long elapsed = System.currentTimeMillis() - startTime;
-                                double sendSpeed = current / ((double) elapsed / 1000);
-                                System.out.println(
-                                        "Already sent: "
-                                                + current
-                                                + "/"
-                                                + count
-                                                + " transactions"
-                                                + ",QPS="
-                                                + sendSpeed);
-                            }
-
-                            latch.countDown();
-                        }
-                    });
-        }
-
-        latch.await();
-
-        while (!collector.isEnd()) {
-            Thread.sleep(3000);
-        }
-
-        veryTransferData();
-
-        System.exit(0);
-    } catch (Exception e) {
-        e.printStackTrace();
-        System.exit(0);
-    }
-    /*
-    try {
-
-        ThreadPoolTaskExecutor threadPool = new ThreadPoolTaskExecutor();
-        threadPool.setCorePoolSize(200);
-        threadPool.setMaxPoolSize(500);
-        threadPool.setQueueCapacity(count.intValue());
-
-        threadPool.initialize();
-
-        RateLimiter limiter = RateLimiter.create(qps.intValue());
-        Integer area = count.intValue() / 10;
-
-        parallelokAddr = dagUserMgr.getContractAddr();
-        parallelok =
-                ParallelOk.load(
-                        parallelokAddr,
-                        web3,
-                        credentials,
-                        new StaticGasProvider(
-                                new BigInteger("30000000"), new BigInteger("30000000")));
-
-        System.out.println("ParallelOk address: " + parallelokAddr);
-
-        // query all account balance info
-        List<DagTransferUser> allUser = dagUserMgr.getUserList();
-        for (int i = 0; i < allUser.size(); ++i) {
-            BigInteger result = parallelok.balanceOf(allUser.get(i).getUser()).send();
-
-            allUser.get(i).setAmount(result);
-
-            logger.debug(" query user " + allUser.get(i).getUser() + " amount " + result);
-        }
-
-        System.out.println("Start UserTransfer test...");
-        System.out.println(
-                "===================================================================");
-
-        long startTime = System.currentTimeMillis();
-        this.collector.setStartTimestamp(startTime);
-
-        for (Integer i = 0; i < count.intValue(); ++i) {
-            final int index = i;
-            threadPool.execute(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            boolean success = false;
-                            while (!success) {
-                                limiter.acquire();
-                                DagTransferUser from = dagUserMgr.getFrom(index);
-                                DagTransferUser to = dagUserMgr.getTo(index);
-
-                                if ((deci.intValue() > 0)
-                                        && (deci.intValue() >= (index % 10 + 1))) {
-                                    to = dagUserMgr.getNext(index);
-                                }
-
-                                Random random = new Random();
-                                int r = random.nextInt(100);
-                                BigInteger amount = BigInteger.valueOf(r);
-
-                                PerformanceDTCallback callback = new PerformanceDTCallback();
-                                callback.setCallBackType("transfer");
-                                callback.setCollector(collector);
-                                callback.setDagUserMgr(getDagUserMgr());
-                                callback.setFromUser(from);
-                                callback.setToUser(to);
-                                callback.setAmount(amount);
-
-                                try {
-                                    logger.debug(
-                                            " transfer from is "
-                                                    + from
-                                                    + " to is "
-                                                    + to
-                                                    + " amount is "
-                                                    + amount);
-                                    parallelok.transfer(
-                                            from.getUser(), to.getUser(), amount, callback);
-                                    success = true;
-                                } catch (Exception e) {
-                                    success = false;
-                                    continue;
-                                }
-                            }
-                            int current = sended.incrementAndGet();
-
-                            if (current >= area && ((current % area) == 0)) {
-                                long elapsed = System.currentTimeMillis() - startTime;
-                                double sendSpeed = current / ((double)elapsed / 1000);
-                                System.out.println(
-                                        "Already sended: "
-                                                + current
-                                                + "/"
-                                                + count
-                                                + " transactions"
-                                                + ",QPS="
-                                                + sendSpeed);
-                            }
-                        }
-                    });
-        }
-
-        // end or not
-        while (!collector.isEnd()) {
-            Thread.sleep(3000);
-        }
-
-        veryTransferData();
-        System.exit(0);
-
-    } catch (Exception e) {
-        e.printStackTrace();
-        System.exit(0);
-    }
-    */
 
     public ParallelOk getDagTransfer() {
         return parallelok;
