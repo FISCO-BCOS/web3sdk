@@ -2,12 +2,7 @@ package org.fisco.bcos.channel.test.amop;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import org.fisco.bcos.channel.client.ChannelPushCallback;
 import org.fisco.bcos.channel.client.Service;
