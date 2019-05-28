@@ -736,7 +736,7 @@ public class SolidityFunctionWrapper extends Generator {
 
         String simpleName = ((ClassName) typeName).simpleName();
 
-        if (simpleName.equals(Address.class.getSimpleName())) {
+        if (simpleName.startsWith(Address.class.getSimpleName())) {
             return TypeName.get(String.class);
         } else if (simpleName.startsWith("Uint")) {
             return TypeName.get(BigInteger.class);
