@@ -418,6 +418,22 @@ public abstract class Contract extends ManagedTransaction {
         }
     }
 
+    protected String createTransactionSeq(Function function) {
+        try {
+            String signedTransaction =
+                    createSeq(
+                            contractAddress,
+                            FunctionEncoder.encode(function),
+                            BigInteger.ZERO,
+                            gasProvider.getGasPrice(function.getName()),
+                            gasProvider.getGasLimit(function.getName()));
+            return signedTransaction;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
     protected <T extends Type> RemoteCall<T> executeRemoteCallSingleValueReturn(Function function) {
         return new RemoteCall<>(() -> executeCallSingleValueReturn(function));
     }

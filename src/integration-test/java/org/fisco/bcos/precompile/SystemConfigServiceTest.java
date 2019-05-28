@@ -4,13 +4,13 @@ import static org.junit.Assert.assertEquals;
 
 import org.fisco.bcos.TestBase;
 import org.fisco.bcos.web3j.precompile.config.EnumKey;
-import org.fisco.bcos.web3j.precompile.config.SystemConfigSerivce;
+import org.fisco.bcos.web3j.precompile.config.SystemConfigService;
 import org.junit.Test;
 
 public class SystemConfigServiceTest extends TestBase {
 
 
-	SystemConfigSerivce systemConfigSerivce = new SystemConfigSerivce(web3j, credentials);
+	SystemConfigService systemConfigSerivce = new SystemConfigService(web3j, credentials);
 
   @Test
   public void setValueByKey() throws Exception {

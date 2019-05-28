@@ -4,10 +4,12 @@ import java.io.IOException;
 import java.math.BigInteger;
 import org.fisco.bcos.channel.client.TransactionSucCallback;
 import org.fisco.bcos.web3j.crypto.Credentials;
+import org.fisco.bcos.web3j.crypto.ExtendedRawTransaction;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.methods.response.SendTransaction;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.protocol.exceptions.TransactionException;
+import org.fisco.bcos.web3j.tx.exceptions.TxHashMismatchException;
 import org.fisco.bcos.web3j.tx.response.PollingTransactionReceiptProcessor;
 import org.fisco.bcos.web3j.tx.response.TransactionReceiptProcessor;
 import org.fisco.bcos.web3j.utils.AttemptsConf;
@@ -77,6 +79,32 @@ public abstract class TransactionManager {
             throws IOException {
         return null;
     };
+
+    public SendTransaction sendTransaction(String signedTransaction)
+            throws IOException, TxHashMismatchException {
+        return null;
+    }
+
+    public SendTransaction sendTransaction(
+            String signedTransaction, TransactionSucCallback callback)
+            throws IOException, TxHashMismatchException {
+        return null;
+    }
+
+    public ExtendedRawTransaction createTransaction(
+            BigInteger gasPrice,
+            BigInteger gasLimit,
+            String to,
+            String data,
+            BigInteger value,
+            String extraData)
+            throws IOException {
+        return null;
+    }
+
+    public String sign(ExtendedRawTransaction transaction) {
+        return null;
+    }
 
     public String getFromAddress() {
         return credentials.getAddress();

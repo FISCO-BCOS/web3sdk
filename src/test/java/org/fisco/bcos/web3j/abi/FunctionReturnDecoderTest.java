@@ -96,9 +96,9 @@ public class FunctionReturnDecoderTest {
                         Collections.<Type>emptyList(),
                         Arrays.asList(
                                 new TypeReference<Utf8String>() {},
-                                        new TypeReference<Utf8String>() {},
                                 new TypeReference<Utf8String>() {},
-                                        new TypeReference<Utf8String>() {}));
+                                new TypeReference<Utf8String>() {},
+                                new TypeReference<Utf8String>() {}));
 
         assertThat(
                 FunctionReturnDecoder.decode(
