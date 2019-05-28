@@ -78,7 +78,7 @@ public class SolidityFunctionWrapper extends Generator {
     private static final String END_BLOCK = "endBlock";
     private static final String WEI_VALUE = "weiValue";
     private static final String FUNC_NAME_PREFIX = "FUNC_";
-
+    private String abiContent;
     private static final ClassName LOG = ClassName.get(Log.class);
     private static final Logger LOGGER = LoggerFactory.getLogger(SolidityFunctionWrapper.class);
 
@@ -92,7 +92,7 @@ public class SolidityFunctionWrapper extends Generator {
                     + " in the \n"
                     + "<a href=\"https://github.com/web3j/web3j/tree/master/codegen\">"
                     + "codegen module</a> to update.\n";
-
+    private static final String ABI = "ABI";
     private final boolean useNativeJavaTypes;
     private static final String regex = "(\\w+)(?:\\[(.*?)\\])(?:\\[(.*?)\\])?";
     private static final Pattern pattern = Pattern.compile(regex);
@@ -115,6 +115,7 @@ public class SolidityFunctionWrapper extends Generator {
             String destinationDir,
             String basePackageName)
             throws IOException, ClassNotFoundException {
+        abiContent = abi;
         generateJavaFiles(
                 contractName,
                 bin,
@@ -134,7 +135,7 @@ public class SolidityFunctionWrapper extends Generator {
             throws IOException, ClassNotFoundException {
         String className = Strings.capitaliseFirstLetter(contractName);
 
-        TypeSpec.Builder classBuilder = createClassBuilder(className, bin);
+        TypeSpec.Builder classBuilder = createClassBuilder(className, bin, abi);
 
         classBuilder.addMethod(buildConstructor(Credentials.class, CREDENTIALS, false));
         classBuilder.addMethod(buildConstructor(Credentials.class, CREDENTIALS, true));
@@ -211,7 +212,8 @@ public class SolidityFunctionWrapper extends Generator {
         }
     }
 
-    private TypeSpec.Builder createClassBuilder(String className, String binary) {
+    private TypeSpec.Builder createClassBuilder(
+            String className, String binary, List<AbiDefinition> abi) {
 
         String javadoc = CODEGEN_WARNING + getWeb3jVersion();
 
@@ -223,7 +225,8 @@ public class SolidityFunctionWrapper extends Generator {
                         AnnotationSpec.builder(SuppressWarnings.class)
                                 .addMember("value", "$S", "unchecked")
                                 .build())
-                .addField(createBinaryDefinition(binary));
+                .addField(createBinaryDefinition(binary))
+                .addField(createABIDefinition(abi));
     }
 
     private String getWeb3jVersion() {
@@ -243,6 +246,13 @@ public class SolidityFunctionWrapper extends Generator {
         return FieldSpec.builder(String.class, BINARY)
                 .addModifiers(Modifier.PRIVATE, Modifier.FINAL, Modifier.STATIC)
                 .initializer("$S", binary)
+                .build();
+    }
+
+    private FieldSpec createABIDefinition(List<AbiDefinition> abi) {
+        return FieldSpec.builder(String.class, "ABI")
+                .addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC)
+                .initializer("$S", abiContent)
                 .build();
     }
 
@@ -723,19 +733,19 @@ public class SolidityFunctionWrapper extends Generator {
 
         String simpleName = ((ClassName) typeName).simpleName();
 
-        if (simpleName.startsWith(Address.class.getSimpleName())) {
+        if (simpleName.equals(Address.class.getSimpleName())) {
             return TypeName.get(String.class);
         } else if (simpleName.startsWith("Uint")) {
             return TypeName.get(BigInteger.class);
         } else if (simpleName.startsWith("Int")) {
             return TypeName.get(BigInteger.class);
-        } else if (simpleName.startsWith(Utf8String.class.getSimpleName())) {
+        } else if (simpleName.equals(Utf8String.class.getSimpleName())) {
             return TypeName.get(String.class);
         } else if (simpleName.startsWith("Bytes")) {
             return TypeName.get(byte[].class);
-        } else if (simpleName.startsWith(DynamicBytes.class.getSimpleName())) {
+        } else if (simpleName.equals(DynamicBytes.class.getSimpleName())) {
             return TypeName.get(byte[].class);
-        } else if (simpleName.startsWith(Bool.class.getSimpleName())) {
+        } else if (simpleName.equals(Bool.class.getSimpleName())) {
             return TypeName.get(Boolean.class); // boolean cannot be a parameterized type
         } else {
             throw new UnsupportedOperationException(
@@ -842,7 +852,7 @@ public class SolidityFunctionWrapper extends Generator {
                     functionDefinition, methodBuilder, outputParameterTypes, inputParams);
         } else {
             // functionDefinition.getInputs().add(new NamedType("callback",
-            // "org.fisco.bcos.channel.dto.BcosResponse.TransactionSucCallback"));
+            // "org.fisco.bcos.channel.dto.FiscoResponse.TransactionSucCallback"));
             String inputParams = addParameters(methodBuilder, functionDefinition.getInputs());
             methodBuilder.addParameter(
                     ParameterSpec.builder(buildTypeName("TransactionSucCallback"), "callback")
