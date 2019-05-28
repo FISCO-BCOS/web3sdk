@@ -1,6 +1,8 @@
 package org.fisco.bcos.channel.test.parallel.precompile;
 
 import com.google.common.util.concurrent.RateLimiter;
+import de.vandermeer.asciitable.AsciiTable;
+import de.vandermeer.skb.interfaces.transformers.textformat.TextAlignment;
 import java.io.*;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
@@ -14,9 +16,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
-import de.vandermeer.asciitable.AsciiTable;
-import de.vandermeer.skb.interfaces.transformers.textformat.TextAlignment;
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.protocol.Web3j;
@@ -89,11 +88,9 @@ public class PerformanceDTTest {
     }
 
     public void veryTransferData() {
-        System.out.println(
-                "===================================================================");
+        System.out.println("===================================================================");
         System.out.println("Verify");
-        System.out.println(
-                "===================================================================");
+        System.out.println("===================================================================");
 
         String percent = "0.00%";
         System.out.print(dateFormat.format(new Date()) + " Verifying account state..." + percent);
@@ -521,7 +518,6 @@ public class PerformanceDTTest {
                     }
                 }
             }
-
 
             veryTransferData();
             System.exit(0);
