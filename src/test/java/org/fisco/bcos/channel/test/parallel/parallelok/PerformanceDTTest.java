@@ -641,7 +641,6 @@ public class PerformanceDTTest {
                 }
             }
 
-            System.out.println(dateFormat.format(new Date()) + " Verifying account state...");
             veryTransferData();
             System.exit(0);
         } catch (Exception e) {
