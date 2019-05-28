@@ -68,24 +68,25 @@ public class Service {
         try {
             Message message = new Message();
             message.setResult(0);
-            message.setType((short) 0x32); //topic设置topic消息0x32
+            message.setType((short) 0x32); // topic设置topic消息0x32
             message.setSeq(UUID.randomUUID().toString().replaceAll("-", ""));
 
             message.setData(objectMapper.writeValueAsBytes(topics.toArray()));
 
-            ChannelConnections fromChannelConnections = allChannelConnections
-                    .getAllChannelConnections()
-                    .stream()
-                    .filter(x -> x.getGroupId() == groupId)
-                    .findFirst()
-                    .get();
+            ChannelConnections fromChannelConnections =
+                    allChannelConnections
+                            .getAllChannelConnections()
+                            .stream()
+                            .filter(x -> x.getGroupId() == groupId)
+                            .findFirst()
+                            .get();
 
             if (fromChannelConnections == null) {
                 logger.error("not found and connections which orgId is:{}", orgID);
                 return false;
             }
 
-            for(String key: fromChannelConnections.getNetworkConnections().keySet()) {
+            for (String key : fromChannelConnections.getNetworkConnections().keySet()) {
                 ChannelHandlerContext ctx = fromChannelConnections.getNetworkConnections().get(key);
 
                 if (ctx != null && ctx.channel().isActive()) {
@@ -94,10 +95,19 @@ public class Service {
                     message.writeExtra(out);
                     ctx.writeAndFlush(out);
 
-                    String host = ((SocketChannel)ctx.channel()).remoteAddress().getAddress().getHostAddress();
-                    Integer port = ((SocketChannel)ctx.channel()).remoteAddress().getPort();
+                    String host =
+                            ((SocketChannel) ctx.channel())
+                                    .remoteAddress()
+                                    .getAddress()
+                                    .getHostAddress();
+                    Integer port = ((SocketChannel) ctx.channel()).remoteAddress().getPort();
 
-                    logger.info("try to flush seq:{} topics:{} to host:{} port :{}", message.getSeq(), topics, host, port);
+                    logger.info(
+                            "try to flush seq:{} topics:{} to host:{} port :{}",
+                            message.getSeq(),
+                            topics,
+                            host,
+                            port);
                 }
             }
 
