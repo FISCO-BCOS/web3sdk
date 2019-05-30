@@ -1,13 +1,14 @@
 package org.fisco.bcos.web3j.abi.datatypes;
 
+import org.junit.Test;
+import org.fisco.bcos.web3j.abi.datatypes.generated.StaticArray3;
+import org.fisco.bcos.web3j.abi.datatypes.generated.Uint8;
+
+import java.util.stream.IntStream;
+
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
-
-import java.util.stream.IntStream;
-import org.fisco.bcos.web3j.abi.datatypes.generated.StaticArray3;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Uint8;
-import org.junit.Test;
 
 public class StaticArrayTest {
 
@@ -31,20 +32,19 @@ public class StaticArrayTest {
             new StaticArray3<>(arrayOfUints(4));
             fail();
         } catch (UnsupportedOperationException e) {
-            assertThat(
-                    e.getMessage(),
-                    equalTo("Expected array of type [StaticArray3] to have [3] elements."));
+            assertThat(e.getMessage(), equalTo(
+                    "Expected array of type [StaticArray3] to have [3] elements."));
         }
     }
 
     @Test
     public void throwsIfSizeIsAboveMaxOf32() {
         try {
-            new StaticArray<>(arrayOfUints(1025));
+            new StaticArray<>(arrayOfUints(33));
+            fail();
         } catch (UnsupportedOperationException e) {
-            assertThat(
-                    e.getMessage(),
-                    equalTo("Bitsize must be 8 bit aligned, and in range 0 < bitSize <= 256"));
+            assertThat(e.getMessage(), equalTo(
+                    "Static arrays with a length greater than 32 are not supported."));
         }
     }
 
