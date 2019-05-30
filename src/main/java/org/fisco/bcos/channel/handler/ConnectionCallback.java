@@ -1,202 +1,152 @@
 package org.fisco.bcos.channel.handler;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.socket.SocketChannel;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
-import java.net.InetSocketAddress;
-import java.util.Arrays;
 import java.util.Set;
 import java.util.UUID;
-import org.fisco.bcos.channel.client.BcosResponseCallback;
 import org.fisco.bcos.channel.client.Service;
-import org.fisco.bcos.channel.dto.BcosMessage;
-import org.fisco.bcos.channel.dto.BcosResponse;
 import org.fisco.bcos.channel.dto.ChannelMessage;
 import org.fisco.bcos.channel.dto.ChannelMessage2;
-import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
-import org.fisco.bcos.web3j.protocol.core.Request;
-import org.fisco.bcos.web3j.protocol.core.methods.response.BlockNumber;
-import org.fisco.bcos.web3j.protocol.exceptions.MessageDecodingException;
+import org.fisco.bcos.channel.dto.FiscoMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ConnectionCallback implements ChannelConnections.Callback {
-    private static Logger logger = LoggerFactory.getLogger(ConnectionCallback.class);
+  private static Logger logger = LoggerFactory.getLogger(ConnectionCallback.class);
 
-    private ObjectMapper objectMapper = new ObjectMapper();
-    private Service channelService;
-    private Set<String> topics;
+  private ObjectMapper objectMapper = new ObjectMapper();
+  private Service channelService;
+  private Set<String> topics;
 
-    public Service getChannelService() {
-        return channelService;
+  public Service getChannelService() {
+    return channelService;
+  }
+
+  public void setChannelService(Service channelService) {
+    this.channelService = channelService;
+  }
+
+  public ConnectionCallback(Set<String> topics) {
+    this.topics = topics;
+  }
+
+  public void setTopics(Set<String> topics) {
+    try {
+      this.topics = topics;
+    } catch (Exception e) {
+      logger.error("system error", e);
     }
+  }
 
-    public void setChannelService(Service channelService) {
-        this.channelService = channelService;
+  @Override
+  public void onConnect(ChannelHandlerContext ctx) {
+    try {
+      channelService.setNumber(BigInteger.ONE);
+
+      Message message = new Message();
+      message.setResult(0);
+      message.setType((short) 0x32);
+      message.setSeq(UUID.randomUUID().toString().replaceAll("-", ""));
+
+      logger.debug("connection established，send topic to the connection:{}", message.getSeq());
+
+      topics.add("_block_notify_" + String.valueOf(channelService.getGroupId()));
+      message.setData(objectMapper.writeValueAsBytes(topics.toArray()));
+
+      logger.debug("topics: {}", new String(message.getData()));
+
+      ByteBuf out = ctx.alloc().buffer();
+      message.writeHeader(out);
+      message.writeExtra(out);
+
+      ctx.writeAndFlush(out);
+    } catch (Exception e) {
+      logger.error("error:", e);
     }
+  }
 
-    public ConnectionCallback(Set<String> topics) {
-        this.topics = topics;
-    }
+  @Override
+  public void onDisconnect(ChannelHandlerContext ctx) {}
 
-    public void setTopics(Set<String> topics) {
+  @Override
+  public void onMessage(ChannelHandlerContext ctx, ByteBuf message) {
+    try {
+      Message msg = new Message();
+      msg.readHeader(message);
+
+      logger.trace("receive Message type: {}", msg.getType());
+
+      if (msg.getType() == 0x20 || msg.getType() == 0x21) {
+        logger.debug("channel message");
+
+        ChannelMessage channelMessage = new ChannelMessage(msg);
+        channelMessage.readExtra(message);
+
+        channelService.onReceiveChannelMessage(ctx, channelMessage);
+      } else if (msg.getType() == 0x30 || msg.getType() == 0x31) {
+        logger.debug("channel2 message");
+
+        ChannelMessage2 channelMessage = new ChannelMessage2(msg);
+        channelMessage.readExtra(message);
+
+        channelService.onReceiveChannelMessage2(ctx, channelMessage);
+      } else if (msg.getType() == 0x12) {
+        logger.debug("fisco message");
+
+        FiscoMessage fiscoMessage = new FiscoMessage(msg);
+        fiscoMessage.readExtra(message);
+
+        channelService.onReceiveEthereumMessage(ctx, fiscoMessage);
+      } else if (msg.getType() == 0x13) {
+        msg.readExtra(message);
+
+        String content = "1";
         try {
-            this.topics = topics;
+          content = new String(msg.getData(), "utf-8");
+        } catch (UnsupportedEncodingException e) {
+          logger.error("heartbeat packet cannot be parsed");
         } catch (Exception e) {
-            logger.error("system error", e);
+          logger.error("heartbeat packet Exception");
         }
-    }
 
-    @Override
-    public void onConnect(ChannelHandlerContext ctx) {
-        try {
-            channelService.setNumber(BigInteger.ONE);
+        if (content.equals("0")) {
+          logger.trace("heartbeat packet，send heartbeat packet back");
+          Message response = new Message();
 
-            Message message = new Message();
-            message.setResult(0);
-            message.setType((short) 0x32);
-            message.setSeq(UUID.randomUUID().toString().replaceAll("-", ""));
+          response.setSeq(msg.getSeq());
+          response.setResult(0);
+          response.setType((short) 0x13);
+          response.setData("1".getBytes());
 
-            logger.debug(
-                    "connection established，send topic to the connection:{}", message.getSeq());
+          ByteBuf out = ctx.alloc().buffer();
+          response.writeHeader(out);
+          response.writeExtra(out);
 
-            topics.add("_block_notify_" + String.valueOf(channelService.getGroupId()));
-            message.setData(objectMapper.writeValueAsBytes(topics.toArray()));
-
-            logger.debug("topics: {}", new String(message.getData()));
-
-            ByteBuf out = ctx.alloc().buffer();
-            message.writeHeader(out);
-            message.writeExtra(out);
-
-            ctx.writeAndFlush(out);
-
-            queryBlockNumberForSelectNodes(ctx);
-
-        } catch (Exception e) {
-            logger.error("error:", e);
+          ctx.writeAndFlush(out);
+        } else if (content.equals("1")) {
+          logger.trace("heartbeat response");
         }
+      } else if (msg.getType() == 0x1000) {
+        FiscoMessage fiscoMessage = new FiscoMessage(msg);
+        logger.trace("TransactionReceipt notify: {}", fiscoMessage.getSeq());
+
+        fiscoMessage.readExtra(message);
+        channelService.onReceiveTransactionMessage(ctx, fiscoMessage);
+      } else if (msg.getType() == 0x1001) {
+        // new block notify
+        ChannelMessage2 channelMessage = new ChannelMessage2(msg);
+        channelMessage.readExtra(message);
+
+        logger.trace("New block notify");
+        channelService.onReceiveBlockNotify(ctx, channelMessage);
+      } else {
+        logger.error("unknown message type:{}", msg.getType());
+      }
+    } finally {
+      message.release();
     }
-
-    private void queryBlockNumberForSelectNodes(ChannelHandlerContext ctx)
-            throws JsonProcessingException {
-        BcosMessage bcosMessage = new BcosMessage();
-        bcosMessage.setType((short) 0x12);
-        String seq = UUID.randomUUID().toString().replaceAll("-", "");
-        bcosMessage.setSeq(seq);
-        ChannelEthereumService channelEthereumService = new ChannelEthereumService();
-        channelEthereumService.setChannelService(channelService);
-        Request<Integer, BlockNumber> request =
-                new Request<>(
-                        "getBlockNumber",
-                        Arrays.asList(channelService.getGroupId()),
-                        channelEthereumService,
-                        BlockNumber.class);
-        ObjectMapper objectMapper = new ObjectMapper();
-        bcosMessage.setData(objectMapper.writeValueAsBytes(request));
-        ByteBuf byteBuf = ctx.alloc().buffer();
-        bcosMessage.writeHeader(byteBuf);
-        bcosMessage.writeExtra(byteBuf);
-        ctx.writeAndFlush(byteBuf);
-
-        channelService
-                .getSeq2Callback()
-                .put(
-                        seq,
-                        new BcosResponseCallback() {
-
-                            @Override
-                            public void onResponse(BcosResponse response) {
-                                try {
-                                    ObjectMapper objectMapper = new ObjectMapper();
-                                    BlockNumber blockNumber =
-                                            objectMapper.readValue(
-                                                    response.getContent(), BlockNumber.class);
-                                    SocketChannel socketChannel = (SocketChannel) ctx.channel();
-                                    InetSocketAddress socketAddress = socketChannel.remoteAddress();
-                                    ChannelConnections.nodeToBlockNumberMap.put(
-                                            socketAddress.getAddress().getHostAddress()
-                                                    + socketAddress.getPort(),
-                                            blockNumber.getBlockNumber().intValue());
-                                } catch (Exception e) {
-                                    throw new MessageDecodingException(response.getContent());
-                                }
-                            }
-                        });
-    }
-
-    @Override
-    public void onDisconnect(ChannelHandlerContext ctx) {}
-
-    @Override
-    public void onMessage(ChannelHandlerContext ctx, ByteBuf message) {
-        try {
-            Message msg = new Message();
-            msg.readHeader(message);
-
-            if (msg.getType() == 0x20 || msg.getType() == 0x21) {
-                ChannelMessage channelMessage = new ChannelMessage(msg);
-                channelMessage.readExtra(message);
-
-                channelService.onReceiveChannelMessage(ctx, channelMessage);
-            } else if (msg.getType() == 0x30 || msg.getType() == 0x31) {
-                ChannelMessage2 channelMessage = new ChannelMessage2(msg);
-                channelMessage.readExtra(message);
-
-                channelService.onReceiveChannelMessage2(ctx, channelMessage);
-            } else if (msg.getType() == 0x12) {
-                BcosMessage fiscoMessage = new BcosMessage(msg);
-                fiscoMessage.readExtra(message);
-
-                channelService.onReceiveEthereumMessage(ctx, fiscoMessage);
-            } else if (msg.getType() == 0x13) {
-                msg.readExtra(message);
-
-                String content = "1";
-                try {
-                    content = new String(msg.getData(), "utf-8");
-                } catch (UnsupportedEncodingException e) {
-                    logger.error("heartbeat packet cannot be parsed");
-                } catch (Exception e) {
-                    logger.error("heartbeat packet Exception");
-                }
-
-                if ("0".equals(content)) {
-                    logger.trace("heartbeat packet，send heartbeat packet back");
-                    Message response = new Message();
-
-                    response.setSeq(msg.getSeq());
-                    response.setResult(0);
-                    response.setType((short) 0x13);
-                    response.setData("1".getBytes());
-
-                    ByteBuf out = ctx.alloc().buffer();
-                    response.writeHeader(out);
-                    response.writeExtra(out);
-
-                    ctx.writeAndFlush(out);
-                } else if ("1".equals(content)) {
-                    logger.trace("heartbeat response");
-                }
-            } else if (msg.getType() == 0x1000) {
-                BcosMessage fiscoMessage = new BcosMessage(msg);
-                fiscoMessage.readExtra(message);
-                channelService.onReceiveTransactionMessage(ctx, fiscoMessage);
-            } else if (msg.getType() == 0x1001) {
-                // new block notify
-                ChannelMessage2 channelMessage = new ChannelMessage2(msg);
-                channelMessage.readExtra(message);
-
-                channelService.onReceiveBlockNotify(ctx, channelMessage);
-            } else {
-                logger.error("unknown message type:{}", msg.getType());
-            }
-        } finally {
-            message.release();
-        }
-    }
+  }
 }
