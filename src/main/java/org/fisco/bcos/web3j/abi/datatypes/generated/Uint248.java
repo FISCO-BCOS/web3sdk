@@ -12,13 +12,13 @@ import org.fisco.bcos.web3j.abi.datatypes.Uint;
  * href="https://github.com/web3j/web3j/tree/master/codegen">codegen module</a> to update.
  */
 public class Uint248 extends Uint {
-    public static final Uint248 DEFAULT = new Uint248(BigInteger.ZERO);
+  public static final Uint248 DEFAULT = new Uint248(BigInteger.ZERO);
 
-    public Uint248(BigInteger value) {
-        super(248, value);
-    }
+  public Uint248(BigInteger value) {
+    super(248, value);
+  }
 
-    public Uint248(long value) {
-        this(BigInteger.valueOf(value));
-    }
+  public Uint248(long value) {
+    this(BigInteger.valueOf(value));
+  }
 }

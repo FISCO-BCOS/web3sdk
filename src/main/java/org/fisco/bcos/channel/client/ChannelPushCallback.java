@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class ChannelPushCallback {
-    public abstract void onPush(ChannelPush push);
+  public abstract void onPush(ChannelPush push);
 
-    static Logger logger = LoggerFactory.getLogger(ChannelPushCallback.class);
+  static Logger logger = LoggerFactory.getLogger(ChannelPushCallback.class);
 }

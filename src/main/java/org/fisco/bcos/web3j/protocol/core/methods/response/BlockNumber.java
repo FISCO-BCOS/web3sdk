@@ -6,7 +6,7 @@ import org.fisco.bcos.web3j.utils.Numeric;
 
 /** getblockNumber. */
 public class BlockNumber extends Response<String> {
-    public BigInteger getBlockNumber() {
-        return Numeric.decodeQuantity(getResult());
-    }
+  public BigInteger getBlockNumber() {
+    return Numeric.decodeQuantity(getResult());
+  }
 }

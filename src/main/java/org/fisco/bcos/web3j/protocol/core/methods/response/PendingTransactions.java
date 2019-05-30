@@ -5,7 +5,7 @@ import org.fisco.bcos.web3j.protocol.core.Response;
 
 /** getPendingTransactions */
 public class PendingTransactions extends Response<List<Transaction>> {
-    public List<Transaction> getPendingTransactions() {
-        return getResult();
-    }
+  public List<Transaction> getPendingTransactions() {
+    return getResult();
+  }
 }
