@@ -12,13 +12,13 @@ import org.fisco.bcos.web3j.abi.datatypes.Int;
  * href="https://github.com/web3j/web3j/tree/master/codegen">codegen module</a> to update.
  */
 public class Int176 extends Int {
-  public static final Int176 DEFAULT = new Int176(BigInteger.ZERO);
+    public static final Int176 DEFAULT = new Int176(BigInteger.ZERO);
 
-  public Int176(BigInteger value) {
-    super(176, value);
-  }
+    public Int176(BigInteger value) {
+        super(176, value);
+    }
 
-  public Int176(long value) {
-    this(BigInteger.valueOf(value));
-  }
+    public Int176(long value) {
+        this(BigInteger.valueOf(value));
+    }
 }
