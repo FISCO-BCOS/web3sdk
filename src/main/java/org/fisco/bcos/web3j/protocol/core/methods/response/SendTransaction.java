@@ -4,7 +4,7 @@ import org.fisco.bcos.web3j.protocol.core.Response;
 
 /** sendTransaction. */
 public class SendTransaction extends Response<String> {
-  public String getTransactionHash() {
-    return getResult();
-  }
+    public String getTransactionHash() {
+        return getResult();
+    }
 }

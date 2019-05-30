@@ -27,118 +27,120 @@ import org.fisco.bcos.web3j.protocol.core.Response;
  */
 public class BcosLog extends Response<List<BcosLog.LogResult>> {
 
-  @Override
-  @JsonDeserialize(using = LogResultDeserialiser.class)
-  public void setResult(List<LogResult> result) {
-    super.setResult(result);
-  }
-
-  public List<LogResult> getLogs() {
-    return getResult();
-  }
-
-  public interface LogResult<T> {
-    T get();
-  }
-
-  public static class LogObject extends Log implements LogResult<Log> {
-
-    public LogObject() {}
-
-    public LogObject(
-        boolean removed,
-        String logIndex,
-        String transactionIndex,
-        String transactionHash,
-        String blockHash,
-        String blockNumber,
-        String address,
-        String data,
-        String type,
-        List<String> topics) {
-      super(
-          removed,
-          logIndex,
-          transactionIndex,
-          transactionHash,
-          blockHash,
-          blockNumber,
-          address,
-          data,
-          type,
-          topics);
-    }
-
     @Override
-    public Log get() {
-      return this;
-    }
-  }
-
-  public static class Hash implements LogResult<String> {
-    private String value;
-
-    public Hash() {}
-
-    public Hash(String value) {
-      this.value = value;
+    @JsonDeserialize(using = LogResultDeserialiser.class)
+    public void setResult(List<LogResult> result) {
+        super.setResult(result);
     }
 
-    @Override
-    public String get() {
-      return value;
+    public List<LogResult> getLogs() {
+        return getResult();
     }
 
-    public void setValue(String value) {
-      this.value = value;
+    public interface LogResult<T> {
+        T get();
     }
 
-    @Override
-    public boolean equals(Object o) {
-      if (this == o) {
-        return true;
-      }
-      if (!(o instanceof Hash)) {
-        return false;
-      }
+    public static class LogObject extends Log implements LogResult<Log> {
 
-      Hash hash = (Hash) o;
+        public LogObject() {}
 
-      return value != null ? value.equals(hash.value) : hash.value == null;
-    }
-
-    @Override
-    public int hashCode() {
-      return value != null ? value.hashCode() : 0;
-    }
-  }
-
-  public static class LogResultDeserialiser extends JsonDeserializer<List<LogResult>> {
-
-    private ObjectReader objectReader = ObjectMapperFactory.getObjectReader();
-
-    @Override
-    public List<LogResult> deserialize(
-        JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
-
-      List<LogResult> logResults = new ArrayList<>();
-      JsonToken nextToken = jsonParser.nextToken();
-
-      if (nextToken == JsonToken.START_OBJECT) {
-        Iterator<LogObject> logObjectIterator =
-            objectReader.readValues(jsonParser, LogObject.class);
-        while (logObjectIterator.hasNext()) {
-          logResults.add(logObjectIterator.next());
+        public LogObject(
+                boolean removed,
+                String logIndex,
+                String transactionIndex,
+                String transactionHash,
+                String blockHash,
+                String blockNumber,
+                String address,
+                String data,
+                String type,
+                List<String> topics) {
+            super(
+                    removed,
+                    logIndex,
+                    transactionIndex,
+                    transactionHash,
+                    blockHash,
+                    blockNumber,
+                    address,
+                    data,
+                    type,
+                    topics);
         }
-      } else if (nextToken == JsonToken.VALUE_STRING) {
-        jsonParser.getValueAsString();
 
-        Iterator<Hash> transactionHashIterator = objectReader.readValues(jsonParser, Hash.class);
-        while (transactionHashIterator.hasNext()) {
-          logResults.add(transactionHashIterator.next());
+        @Override
+        public Log get() {
+            return this;
         }
-      }
-      return logResults;
     }
-  }
+
+    public static class Hash implements LogResult<String> {
+        private String value;
+
+        public Hash() {}
+
+        public Hash(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String get() {
+            return value;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (!(o instanceof Hash)) {
+                return false;
+            }
+
+            Hash hash = (Hash) o;
+
+            return value != null ? value.equals(hash.value) : hash.value == null;
+        }
+
+        @Override
+        public int hashCode() {
+            return value != null ? value.hashCode() : 0;
+        }
+    }
+
+    public static class LogResultDeserialiser extends JsonDeserializer<List<LogResult>> {
+
+        private ObjectReader objectReader = ObjectMapperFactory.getObjectReader();
+
+        @Override
+        public List<LogResult> deserialize(
+                JsonParser jsonParser, DeserializationContext deserializationContext)
+                throws IOException {
+
+            List<LogResult> logResults = new ArrayList<>();
+            JsonToken nextToken = jsonParser.nextToken();
+
+            if (nextToken == JsonToken.START_OBJECT) {
+                Iterator<LogObject> logObjectIterator =
+                        objectReader.readValues(jsonParser, LogObject.class);
+                while (logObjectIterator.hasNext()) {
+                    logResults.add(logObjectIterator.next());
+                }
+            } else if (nextToken == JsonToken.VALUE_STRING) {
+                jsonParser.getValueAsString();
+
+                Iterator<Hash> transactionHashIterator =
+                        objectReader.readValues(jsonParser, Hash.class);
+                while (transactionHashIterator.hasNext()) {
+                    logResults.add(transactionHashIterator.next());
+                }
+            }
+            return logResults;
+        }
+    }
 }
