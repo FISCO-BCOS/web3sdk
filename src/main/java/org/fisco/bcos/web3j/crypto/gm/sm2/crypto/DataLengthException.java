@@ -7,17 +7,17 @@ package org.fisco.bcos.web3j.crypto.gm.sm2.crypto;
  */
 public class DataLengthException extends RuntimeCryptoException {
 
-    private static final long serialVersionUID = -3632378156242665876L;
+  private static final long serialVersionUID = -3632378156242665876L;
 
-    /** base constructor. */
-    public DataLengthException() {}
+  /** base constructor. */
+  public DataLengthException() {}
 
-    /**
-     * create a DataLengthException with the given message.
-     *
-     * @param message the message to be carried with the exception.
-     */
-    public DataLengthException(String message) {
-        super(message);
-    }
+  /**
+   * create a DataLengthException with the given message.
+   *
+   * @param message the message to be carried with the exception.
+   */
+  public DataLengthException(String message) {
+    super(message);
+  }
 }

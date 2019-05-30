@@ -3,13 +3,13 @@ package org.fisco.bcos.web3j.tx.gas;
 import java.math.BigInteger;
 
 public interface ContractGasProvider {
-    BigInteger getGasPrice(String contractFunc);
+  BigInteger getGasPrice(String contractFunc);
 
-    @Deprecated
-    BigInteger getGasPrice();
+  @Deprecated
+  BigInteger getGasPrice();
 
-    BigInteger getGasLimit(String contractFunc);
+  BigInteger getGasLimit(String contractFunc);
 
-    @Deprecated
-    BigInteger getGasLimit();
+  @Deprecated
+  BigInteger getGasLimit();
 }

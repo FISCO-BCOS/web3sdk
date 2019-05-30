@@ -6,7 +6,7 @@ import org.fisco.bcos.web3j.utils.Numeric;
 
 /** getPendingTxSize */
 public class PendingTxSize extends Response<String> {
-    public BigInteger getPendingTxSize() {
-        return Numeric.decodeQuantity(getResult());
-    }
+  public BigInteger getPendingTxSize() {
+    return Numeric.decodeQuantity(getResult());
+  }
 }

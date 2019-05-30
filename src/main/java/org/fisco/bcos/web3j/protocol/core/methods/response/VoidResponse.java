@@ -11,7 +11,7 @@ import org.fisco.bcos.web3j.protocol.core.Response;
  * </ul>
  */
 public class VoidResponse extends Response<Void> {
-    public boolean isValid() {
-        return !hasError();
-    }
+  public boolean isValid() {
+    return !hasError();
+  }
 }
