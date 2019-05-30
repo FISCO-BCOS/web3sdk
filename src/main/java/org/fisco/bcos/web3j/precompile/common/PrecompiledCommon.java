@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 import org.fisco.bcos.web3j.protocol.Web3j;
+import org.fisco.bcos.web3j.protocol.channel.StatusCode;
 import org.fisco.bcos.web3j.protocol.core.methods.response.NodeVersion.Version;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.protocol.exceptions.TransactionException;
@@ -134,7 +135,7 @@ public class PrecompiledCommon {
             throws TransactionException {
         String status = receipt.getStatus();
         if (!"0x0".equals(receipt.getStatus())) {
-            throw new TransactionException(status);
+            throw new TransactionException(StatusCode.getStatusMessage(receipt.getStatus()));
         }
         String output = receipt.getOutput();
         if (!"0x".equals(output)) {
@@ -148,7 +149,7 @@ public class PrecompiledCommon {
             throws TransactionException, IOException {
         String status = receipt.getStatus();
         if (!"0x0".equals(status)) {
-            throw new TransactionException(status);
+            throw new TransactionException(StatusCode.getStatusMessage(receipt.getStatus()));
         } else {
             if (receipt.getOutput() != null) {
                 return PrecompiledCommon.getJsonStr(receipt.getOutput(), web3j);
