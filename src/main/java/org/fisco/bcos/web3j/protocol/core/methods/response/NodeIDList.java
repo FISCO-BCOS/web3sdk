@@ -5,7 +5,7 @@ import org.fisco.bcos.web3j.protocol.core.Response;
 
 /** getNodeIDList */
 public class NodeIDList extends Response<List<String>> {
-  public List<String> getNodeIDList() {
-    return getResult();
-  }
+    public List<String> getNodeIDList() {
+        return getResult();
+    }
 }
