@@ -4,7 +4,7 @@ import org.fisco.bcos.web3j.protocol.core.Response;
 
 /** getConsensusStatus */
 public class ConsensusStatus extends Response<String> {
-    public String getConsensusStatus() {
-        return getResult();
-    }
+  public String getConsensusStatus() {
+    return getResult();
+  }
 }

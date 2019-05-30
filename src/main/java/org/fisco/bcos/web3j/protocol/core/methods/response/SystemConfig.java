@@ -4,7 +4,7 @@ import org.fisco.bcos.web3j.protocol.core.Response;
 
 /** getSystemConfigByKey */
 public class SystemConfig extends Response<String> {
-    public String getSystemConfigByKey() {
-        return getResult();
-    }
+  public String getSystemConfigByKey() {
+    return getResult();
+  }
 }

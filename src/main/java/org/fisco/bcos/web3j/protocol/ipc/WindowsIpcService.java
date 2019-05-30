@@ -7,7 +7,7 @@ package org.fisco.bcos.web3j.protocol.ipc;
  */
 public class WindowsIpcService extends IpcService {
 
-    public WindowsIpcService(String ipcSocketPath) {
-        super(new WindowsNamedPipe(ipcSocketPath));
-    }
+  public WindowsIpcService(String ipcSocketPath) {
+    super(new WindowsNamedPipe(ipcSocketPath));
+  }
 }

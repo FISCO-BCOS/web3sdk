@@ -27,144 +27,140 @@ import org.fisco.bcos.web3j.tx.gas.ContractGasProvider;
  * <p>Generated with web3j version none.
  */
 public class CNS extends Contract {
-    private static final String BINARY = "";
+  private static final String BINARY = "";
 
-    public static final String FUNC_SELECTBYNAME = "selectByName";
+  public static final String FUNC_SELECTBYNAME = "selectByName";
 
-    public static final String FUNC_SELECTBYNAMEANDVERSION = "selectByNameAndVersion";
+  public static final String FUNC_SELECTBYNAMEANDVERSION = "selectByNameAndVersion";
 
-    public static final String FUNC_INSERT = "insert";
+  public static final String FUNC_INSERT = "insert";
 
-    @Deprecated
-    protected CNS(
-            String contractAddress,
-            Web3j web3j,
-            Credentials credentials,
-            BigInteger gasPrice,
-            BigInteger gasLimit) {
-        super(BINARY, contractAddress, web3j, credentials, gasPrice, gasLimit);
-    }
+  @Deprecated
+  protected CNS(
+      String contractAddress,
+      Web3j web3j,
+      Credentials credentials,
+      BigInteger gasPrice,
+      BigInteger gasLimit) {
+    super(BINARY, contractAddress, web3j, credentials, gasPrice, gasLimit);
+  }
 
-    protected CNS(
-            String contractAddress,
-            Web3j web3j,
-            Credentials credentials,
-            ContractGasProvider contractGasProvider) {
-        super(BINARY, contractAddress, web3j, credentials, contractGasProvider);
-    }
+  protected CNS(
+      String contractAddress,
+      Web3j web3j,
+      Credentials credentials,
+      ContractGasProvider contractGasProvider) {
+    super(BINARY, contractAddress, web3j, credentials, contractGasProvider);
+  }
 
-    @Deprecated
-    protected CNS(
-            String contractAddress,
-            Web3j web3j,
-            TransactionManager transactionManager,
-            BigInteger gasPrice,
-            BigInteger gasLimit) {
-        super(BINARY, contractAddress, web3j, transactionManager, gasPrice, gasLimit);
-    }
+  @Deprecated
+  protected CNS(
+      String contractAddress,
+      Web3j web3j,
+      TransactionManager transactionManager,
+      BigInteger gasPrice,
+      BigInteger gasLimit) {
+    super(BINARY, contractAddress, web3j, transactionManager, gasPrice, gasLimit);
+  }
 
-    protected CNS(
-            String contractAddress,
-            Web3j web3j,
-            TransactionManager transactionManager,
-            ContractGasProvider contractGasProvider) {
-        super(BINARY, contractAddress, web3j, transactionManager, contractGasProvider);
-    }
+  protected CNS(
+      String contractAddress,
+      Web3j web3j,
+      TransactionManager transactionManager,
+      ContractGasProvider contractGasProvider) {
+    super(BINARY, contractAddress, web3j, transactionManager, contractGasProvider);
+  }
 
-    public RemoteCall<String> selectByName(String name) {
-        final Function function =
-                new Function(
-                        FUNC_SELECTBYNAME,
-                        Arrays.<Type>asList(new Utf8String(name)),
-                        Arrays.<TypeReference<?>>asList(new TypeReference<Utf8String>() {}));
-        return executeRemoteCallSingleValueReturn(function, String.class);
-    }
+  public RemoteCall<String> selectByName(String name) {
+    final Function function =
+        new Function(
+            FUNC_SELECTBYNAME,
+            Arrays.<Type>asList(new Utf8String(name)),
+            Arrays.<TypeReference<?>>asList(new TypeReference<Utf8String>() {}));
+    return executeRemoteCallSingleValueReturn(function, String.class);
+  }
 
-    public RemoteCall<String> selectByNameAndVersion(String name, String version) {
-        final Function function =
-                new Function(
-                        FUNC_SELECTBYNAMEANDVERSION,
-                        Arrays.<Type>asList(new Utf8String(name), new Utf8String(version)),
-                        Arrays.<TypeReference<?>>asList(new TypeReference<Utf8String>() {}));
-        return executeRemoteCallSingleValueReturn(function, String.class);
-    }
+  public RemoteCall<String> selectByNameAndVersion(String name, String version) {
+    final Function function =
+        new Function(
+            FUNC_SELECTBYNAMEANDVERSION,
+            Arrays.<Type>asList(new Utf8String(name), new Utf8String(version)),
+            Arrays.<TypeReference<?>>asList(new TypeReference<Utf8String>() {}));
+    return executeRemoteCallSingleValueReturn(function, String.class);
+  }
 
-    public RemoteCall<TransactionReceipt> insert(
-            String name, String version, String addr, String abi) {
-        final Function function =
-                new Function(
-                        FUNC_INSERT,
-                        Arrays.<Type>asList(
-                                new Utf8String(name),
-                                new Utf8String(version),
-                                new Utf8String(addr),
-                                new Utf8String(abi)),
-                        Collections.<TypeReference<?>>emptyList());
-        return executeRemoteCallTransaction(function);
-    }
+  public RemoteCall<TransactionReceipt> insert(
+      String name, String version, String addr, String abi) {
+    final Function function =
+        new Function(
+            FUNC_INSERT,
+            Arrays.<Type>asList(
+                new Utf8String(name),
+                new Utf8String(version),
+                new Utf8String(addr),
+                new Utf8String(abi)),
+            Collections.<TypeReference<?>>emptyList());
+    return executeRemoteCallTransaction(function);
+  }
 
-    @Deprecated
-    public static CNS load(
-            String contractAddress,
-            Web3j web3j,
-            Credentials credentials,
-            BigInteger gasPrice,
-            BigInteger gasLimit) {
-        return new CNS(contractAddress, web3j, credentials, gasPrice, gasLimit);
-    }
+  @Deprecated
+  public static CNS load(
+      String contractAddress,
+      Web3j web3j,
+      Credentials credentials,
+      BigInteger gasPrice,
+      BigInteger gasLimit) {
+    return new CNS(contractAddress, web3j, credentials, gasPrice, gasLimit);
+  }
 
-    @Deprecated
-    public static CNS load(
-            String contractAddress,
-            Web3j web3j,
-            TransactionManager transactionManager,
-            BigInteger gasPrice,
-            BigInteger gasLimit) {
-        return new CNS(contractAddress, web3j, transactionManager, gasPrice, gasLimit);
-    }
+  @Deprecated
+  public static CNS load(
+      String contractAddress,
+      Web3j web3j,
+      TransactionManager transactionManager,
+      BigInteger gasPrice,
+      BigInteger gasLimit) {
+    return new CNS(contractAddress, web3j, transactionManager, gasPrice, gasLimit);
+  }
 
-    public static CNS load(
-            String contractAddress,
-            Web3j web3j,
-            Credentials credentials,
-            ContractGasProvider contractGasProvider) {
-        return new CNS(contractAddress, web3j, credentials, contractGasProvider);
-    }
+  public static CNS load(
+      String contractAddress,
+      Web3j web3j,
+      Credentials credentials,
+      ContractGasProvider contractGasProvider) {
+    return new CNS(contractAddress, web3j, credentials, contractGasProvider);
+  }
 
-    public static CNS load(
-            String contractAddress,
-            Web3j web3j,
-            TransactionManager transactionManager,
-            ContractGasProvider contractGasProvider) {
-        return new CNS(contractAddress, web3j, transactionManager, contractGasProvider);
-    }
+  public static CNS load(
+      String contractAddress,
+      Web3j web3j,
+      TransactionManager transactionManager,
+      ContractGasProvider contractGasProvider) {
+    return new CNS(contractAddress, web3j, transactionManager, contractGasProvider);
+  }
 
-    public static RemoteCall<CNS> deploy(
-            Web3j web3j, Credentials credentials, ContractGasProvider contractGasProvider) {
-        return deployRemoteCall(CNS.class, web3j, credentials, contractGasProvider, BINARY, "");
-    }
+  public static RemoteCall<CNS> deploy(
+      Web3j web3j, Credentials credentials, ContractGasProvider contractGasProvider) {
+    return deployRemoteCall(CNS.class, web3j, credentials, contractGasProvider, BINARY, "");
+  }
 
-    @Deprecated
-    public static RemoteCall<CNS> deploy(
-            Web3j web3j, Credentials credentials, BigInteger gasPrice, BigInteger gasLimit) {
-        return deployRemoteCall(CNS.class, web3j, credentials, gasPrice, gasLimit, BINARY, "");
-    }
+  @Deprecated
+  public static RemoteCall<CNS> deploy(
+      Web3j web3j, Credentials credentials, BigInteger gasPrice, BigInteger gasLimit) {
+    return deployRemoteCall(CNS.class, web3j, credentials, gasPrice, gasLimit, BINARY, "");
+  }
 
-    public static RemoteCall<CNS> deploy(
-            Web3j web3j,
-            TransactionManager transactionManager,
-            ContractGasProvider contractGasProvider) {
-        return deployRemoteCall(
-                CNS.class, web3j, transactionManager, contractGasProvider, BINARY, "");
-    }
+  public static RemoteCall<CNS> deploy(
+      Web3j web3j, TransactionManager transactionManager, ContractGasProvider contractGasProvider) {
+    return deployRemoteCall(CNS.class, web3j, transactionManager, contractGasProvider, BINARY, "");
+  }
 
-    @Deprecated
-    public static RemoteCall<CNS> deploy(
-            Web3j web3j,
-            TransactionManager transactionManager,
-            BigInteger gasPrice,
-            BigInteger gasLimit) {
-        return deployRemoteCall(
-                CNS.class, web3j, transactionManager, gasPrice, gasLimit, BINARY, "");
-    }
+  @Deprecated
+  public static RemoteCall<CNS> deploy(
+      Web3j web3j,
+      TransactionManager transactionManager,
+      BigInteger gasPrice,
+      BigInteger gasLimit) {
+    return deployRemoteCall(CNS.class, web3j, transactionManager, gasPrice, gasLimit, BINARY, "");
+  }
 }
