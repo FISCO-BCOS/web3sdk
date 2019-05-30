@@ -5,7 +5,7 @@ import org.fisco.bcos.web3j.protocol.core.Response;
 
 /** getGroupPeers */
 public class GroupPeers extends Response<List<String>> {
-    public List<String> getGroupPeers() {
-        return getResult();
-    }
+  public List<String> getGroupPeers() {
+    return getResult();
+  }
 }

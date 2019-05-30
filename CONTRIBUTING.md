@@ -40,18 +40,6 @@ Go to [issues page](https://github.com/FISCO-BCOS/web3sdk/issues)
 7. Wait the community to review the code
 8. Merged !!!!
 
-## Code formatting
-
-The code formatting tool are described by the [google-java-format-gradle-plugin](https://github.com/sherter/google-java-format-gradle-plugin).
-
-Execute the task `googleJavaFormat` to format all *.java files in the project
-```
-./gradlew goJF
-```
-Execute the task `verifyGoogleJavaFormat` to verify that all *.java files are formatted properly
-```          
-./gradlew verGJF
-```
 
 ## Continous integration
 

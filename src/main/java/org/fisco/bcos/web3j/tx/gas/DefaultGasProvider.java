@@ -5,10 +5,10 @@ import org.fisco.bcos.web3j.tx.Contract;
 import org.fisco.bcos.web3j.tx.ManagedTransaction;
 
 public class DefaultGasProvider extends StaticGasProvider {
-    public static final BigInteger GAS_LIMIT = Contract.GAS_LIMIT;
-    public static final BigInteger GAS_PRICE = ManagedTransaction.GAS_PRICE;
+  public static final BigInteger GAS_LIMIT = Contract.GAS_LIMIT;
+  public static final BigInteger GAS_PRICE = ManagedTransaction.GAS_PRICE;
 
-    public DefaultGasProvider() {
-        super(GAS_PRICE, GAS_LIMIT);
-    }
+  public DefaultGasProvider() {
+    super(GAS_PRICE, GAS_LIMIT);
+  }
 }

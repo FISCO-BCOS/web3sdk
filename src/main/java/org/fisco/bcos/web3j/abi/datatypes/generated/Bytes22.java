@@ -11,9 +11,9 @@ import org.fisco.bcos.web3j.abi.datatypes.Bytes;
  * href="https://github.com/web3j/web3j/tree/master/codegen">codegen module</a> to update.
  */
 public class Bytes22 extends Bytes {
-    public static final Bytes22 DEFAULT = new Bytes22(new byte[22]);
+  public static final Bytes22 DEFAULT = new Bytes22(new byte[22]);
 
-    public Bytes22(byte[] value) {
-        super(22, value);
-    }
+  public Bytes22(byte[] value) {
+    super(22, value);
+  }
 }

@@ -2,15 +2,15 @@ package org.fisco.bcos.web3j.crypto.gm.sm2.util.encoders;
 
 /** Exception thrown if an attempt is made to decode invalid data, or some other failure occurs. */
 public class DecoderException extends IllegalStateException {
-    private Throwable cause;
+  private Throwable cause;
 
-    DecoderException(String msg, Throwable cause) {
-        super(msg);
+  DecoderException(String msg, Throwable cause) {
+    super(msg);
 
-        this.cause = cause;
-    }
+    this.cause = cause;
+  }
 
-    public Throwable getCause() {
-        return cause;
-    }
+  public Throwable getCause() {
+    return cause;
+  }
 }
