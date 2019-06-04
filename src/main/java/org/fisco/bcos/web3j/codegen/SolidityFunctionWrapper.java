@@ -92,7 +92,6 @@ public class SolidityFunctionWrapper extends Generator {
                     + " in the \n"
                     + "<a href=\"https://github.com/web3j/web3j/tree/master/codegen\">"
                     + "codegen module</a> to update.\n";
-    private static final String ABI = "ABI";
     private final boolean useNativeJavaTypes;
     private static final String regex = "(\\w+)(?:\\[(.*?)\\])(?:\\[(.*?)\\])?";
     private static final Pattern pattern = Pattern.compile(regex);
@@ -637,7 +636,7 @@ public class SolidityFunctionWrapper extends Generator {
         return toReturn.build();
     }
 
-    String addParameters(
+    private String addParameters(
             MethodSpec.Builder methodBuilder, List<AbiDefinition.NamedType> namedTypes) {
 
         List<ParameterSpec> inputParameterTypes = buildParameterTypes(namedTypes);
@@ -817,7 +816,8 @@ public class SolidityFunctionWrapper extends Generator {
         return result;
     }
 
-    MethodSpec buildFunction(AbiDefinition functionDefinition) throws ClassNotFoundException {
+    private MethodSpec buildFunction(AbiDefinition functionDefinition)
+            throws ClassNotFoundException {
         String functionName = functionDefinition.getName();
 
         if (!SourceVersion.isName(functionName)) {
