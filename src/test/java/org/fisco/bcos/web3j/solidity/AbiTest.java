@@ -25,45 +25,45 @@ import org.junit.Test;
 
 public class AbiTest {
 
-    @Test
-    public void simpleTest() throws IOException {
-        String contractAbi =
-                "[{"
-                        + "\"name\":\"simpleFunction\","
-                        + "\"constant\":true,"
-                        + "\"payable\":true,"
-                        + "\"type\":\"function\","
-                        + "\"inputs\": [{\"name\":\"_in\", \"type\":\"bytes32\"}],"
-                        + "\"outputs\":[{\"name\":\"_out\",\"type\":\"bytes32\"}]}]";
+  @Test
+  public void simpleTest() throws IOException {
+    String contractAbi =
+        "[{"
+            + "\"name\":\"simpleFunction\","
+            + "\"constant\":true,"
+            + "\"payable\":true,"
+            + "\"type\":\"function\","
+            + "\"inputs\": [{\"name\":\"_in\", \"type\":\"bytes32\"}],"
+            + "\"outputs\":[{\"name\":\"_out\",\"type\":\"bytes32\"}]}]";
 
-        Abi abi = Abi.fromJson(contractAbi);
-        assertEquals(abi.size(), 1);
+    Abi abi = Abi.fromJson(contractAbi);
+    assertEquals(abi.size(), 1);
 
-        Abi.Entry onlyFunc = abi.get(0);
-        assertEquals(onlyFunc.type, Abi.Entry.Type.function);
-        assertEquals(onlyFunc.inputs.size(), 1);
-        assertEquals(onlyFunc.outputs.size(), 1);
-        assertTrue(onlyFunc.payable);
-        assertTrue(onlyFunc.constant);
-    }
+    Abi.Entry onlyFunc = abi.get(0);
+    assertEquals(onlyFunc.type, Abi.Entry.Type.function);
+    assertEquals(onlyFunc.inputs.size(), 1);
+    assertEquals(onlyFunc.outputs.size(), 1);
+    assertTrue(onlyFunc.payable);
+    assertTrue(onlyFunc.constant);
+  }
 
-    @Test
-    public void simpleLegacyTest() throws IOException {
-        String contractAbi =
-                "[{"
-                        + "\"name\":\"simpleFunction\","
-                        + "\"constant\":true,"
-                        + "\"type\":\"function\","
-                        + "\"inputs\": [{\"name\":\"_in\", \"type\":\"bytes32\"}],"
-                        + "\"outputs\":[{\"name\":\"_out\",\"type\":\"bytes32\"}]}]";
+  @Test
+  public void simpleLegacyTest() throws IOException {
+    String contractAbi =
+        "[{"
+            + "\"name\":\"simpleFunction\","
+            + "\"constant\":true,"
+            + "\"type\":\"function\","
+            + "\"inputs\": [{\"name\":\"_in\", \"type\":\"bytes32\"}],"
+            + "\"outputs\":[{\"name\":\"_out\",\"type\":\"bytes32\"}]}]";
 
-        Abi abi = Abi.fromJson(contractAbi);
-        assertEquals(abi.size(), 1);
+    Abi abi = Abi.fromJson(contractAbi);
+    assertEquals(abi.size(), 1);
 
-        Abi.Entry onlyFunc = abi.get(0);
-        assertEquals(onlyFunc.type, Abi.Entry.Type.function);
-        assertEquals(onlyFunc.inputs.size(), 1);
-        assertEquals(onlyFunc.outputs.size(), 1);
-        assertTrue(onlyFunc.constant);
-    }
+    Abi.Entry onlyFunc = abi.get(0);
+    assertEquals(onlyFunc.type, Abi.Entry.Type.function);
+    assertEquals(onlyFunc.inputs.size(), 1);
+    assertEquals(onlyFunc.outputs.size(), 1);
+    assertTrue(onlyFunc.constant);
+  }
 }

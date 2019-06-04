@@ -4,25 +4,25 @@ import org.fisco.bcos.web3j.crypto.gm.sm2.crypto.CipherParameters;
 
 public class ParametersWithIV implements CipherParameters {
 
-    private byte[] iv;
-    private CipherParameters parameters;
+  private byte[] iv;
+  private CipherParameters parameters;
 
-    public ParametersWithIV(CipherParameters parameters, byte[] iv) {
-        this(parameters, iv, 0, iv.length);
-    }
+  public ParametersWithIV(CipherParameters parameters, byte[] iv) {
+    this(parameters, iv, 0, iv.length);
+  }
 
-    public ParametersWithIV(CipherParameters parameters, byte[] iv, int ivOff, int ivLen) {
-        this.iv = new byte[ivLen];
-        this.parameters = parameters;
+  public ParametersWithIV(CipherParameters parameters, byte[] iv, int ivOff, int ivLen) {
+    this.iv = new byte[ivLen];
+    this.parameters = parameters;
 
-        System.arraycopy(iv, ivOff, this.iv, 0, ivLen);
-    }
+    System.arraycopy(iv, ivOff, this.iv, 0, ivLen);
+  }
 
-    public byte[] getIV() {
-        return iv;
-    }
+  public byte[] getIV() {
+    return iv;
+  }
 
-    public CipherParameters getParameters() {
-        return parameters;
-    }
+  public CipherParameters getParameters() {
+    return parameters;
+  }
 }

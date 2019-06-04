@@ -1,9 +1,10 @@
 package org.fisco.bcos.web3j.crypto;
 
-import java.io.Serializable;
-import java.math.BigInteger;
 import org.fisco.bcos.web3j.tx.TransactionConstant;
 import org.fisco.bcos.web3j.utils.Numeric;
+
+import java.io.Serializable;
+import java.math.BigInteger;
 
 /**
  * Transaction class used for signing transactions locally.<br>
@@ -63,30 +64,19 @@ public class ExtendedRawTransaction implements Serializable {
             BigInteger groupId,
             String extraData) {
 
-        return new ExtendedRawTransaction(
-                randomid,
-                gasPrice,
-                gasLimit,
-                blockLimit,
-                "",
-                value,
-                init,
-                chainId,
-                groupId,
-                extraData);
+        return new ExtendedRawTransaction(randomid, gasPrice, gasLimit, blockLimit, "", value, init,chainId,groupId,extraData);
     }
-    //
-    //
-    //    public static ExtendedRawTransaction createTransaction(
-    //            BigInteger randomid,
-    //            BigInteger gasPrice,
-    //            BigInteger gasLimit,
-    //            BigInteger blockLimit,
-    //            String to,
-    //            String data) {
-    //        return createTransaction(randomid, gasPrice, gasLimit, blockLimit, to,
-    // BigInteger.ZERO, data);
-    //    }
+//
+//
+//    public static ExtendedRawTransaction createTransaction(
+//            BigInteger randomid,
+//            BigInteger gasPrice,
+//            BigInteger gasLimit,
+//            BigInteger blockLimit,
+//            String to,
+//            String data) {
+//        return createTransaction(randomid, gasPrice, gasLimit, blockLimit, to, BigInteger.ZERO, data);
+//    }
 
     public static ExtendedRawTransaction createTransaction(
             BigInteger randomid,
@@ -100,17 +90,7 @@ public class ExtendedRawTransaction implements Serializable {
             BigInteger groupId,
             String extraData) {
 
-        return new ExtendedRawTransaction(
-                randomid,
-                gasPrice,
-                gasLimit,
-                blockLimit,
-                to,
-                value,
-                data,
-                chainId,
-                groupId,
-                extraData);
+        return new ExtendedRawTransaction(randomid, gasPrice, gasLimit, blockLimit, to, value, data,chainId, groupId, extraData);
     }
 
     public BigInteger getRandomid() {
@@ -144,7 +124,6 @@ public class ExtendedRawTransaction implements Serializable {
     public BigInteger getVersion() {
         return version;
     }
-
     public BigInteger getGroupId() {
         return groupId;
     }
@@ -152,6 +131,7 @@ public class ExtendedRawTransaction implements Serializable {
     public void setGroupId(BigInteger groupId) {
         this.groupId = groupId;
     }
+
 
     public String getExtraData() {
         return extraData;
@@ -168,4 +148,5 @@ public class ExtendedRawTransaction implements Serializable {
     public void setFiscoChainId(BigInteger fiscoChainId) {
         this.fiscoChainId = fiscoChainId;
     }
+
 }

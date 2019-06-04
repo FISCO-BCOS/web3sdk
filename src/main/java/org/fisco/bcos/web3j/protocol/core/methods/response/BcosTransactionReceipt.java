@@ -13,23 +13,22 @@ import org.fisco.bcos.web3j.protocol.core.Response;
 /** getTransactionReceipt. */
 public class BcosTransactionReceipt extends Response<TransactionReceipt> {
 
-    public Optional<TransactionReceipt> getTransactionReceipt() {
-        return Optional.ofNullable(getResult());
+  public Optional<TransactionReceipt> getTransactionReceipt() {
+    return Optional.ofNullable(getResult());
+  }
+
+  public static class ResponseDeserialiser extends JsonDeserializer<TransactionReceipt> {
+
+    private ObjectReader objectReader = ObjectMapperFactory.getObjectReader();
+
+    @Override
+    public TransactionReceipt deserialize(
+        JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
+      if (jsonParser.getCurrentToken() != JsonToken.VALUE_NULL) {
+        return objectReader.readValue(jsonParser, TransactionReceipt.class);
+      } else {
+        return null; // null is wrapped by Optional in above getter
+      }
     }
-
-    public static class ResponseDeserialiser extends JsonDeserializer<TransactionReceipt> {
-
-        private ObjectReader objectReader = ObjectMapperFactory.getObjectReader();
-
-        @Override
-        public TransactionReceipt deserialize(
-                JsonParser jsonParser, DeserializationContext deserializationContext)
-                throws IOException {
-            if (jsonParser.getCurrentToken() != JsonToken.VALUE_NULL) {
-                return objectReader.readValue(jsonParser, TransactionReceipt.class);
-            } else {
-                return null; // null is wrapped by Optional in above getter
-            }
-        }
-    }
+  }
 }

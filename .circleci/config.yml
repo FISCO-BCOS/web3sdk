@@ -1,0 +1,67 @@
+# Java Gradle CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-java/ for more details
+#
+version: 2
+jobs:            
+  build:
+    working_directory: ~/web3sdk
+    branches:
+      only: 
+        - master
+        - /release-2.*/
+    tags:
+      only: 
+        - /v2.*/
+    docker:
+      # specify the version you desire here
+      - image: circleci/openjdk:8-jdk
+        environment:
+          POSTGRES_USER: root
+    environment:
+      # Customize the JVM maximum heap limit
+      JVM_OPTS: -Xmx3200m
+      TERM: dumb
+
+    steps:
+
+      - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "build.gradle" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+      
+      # build blockchian by build_chain.sh
+      - run: 
+            name: fisco-bcos
+            command: |
+              sudo apt-get update 
+              sudo apt install -y openssl curl
+              curl -LO https://raw.githubusercontent.com/FISCO-BCOS/FISCO-BCOS/master/tools/build_chain.sh && chmod u+x build_chain.sh
+              bash <(curl -s https://raw.githubusercontent.com/FISCO-BCOS/FISCO-BCOS/master/tools/ci/download_bin.sh) -b master
+              ./bin/fisco-bcos -v
+              ./build_chain.sh -e bin/fisco-bcos -l "127.0.0.1:4" -p 30300,20200,8545
+              cd nodes/127.0.0.1
+              ./start_all.sh
+
+      - run: gradle dependencies
+
+      - save_cache:
+          paths:
+            - ~/web3sdk/.gradle
+          key: v1-dependencies-{{ checksum "build.gradle" }}
+      
+      # run integration test for sdk
+      - run:
+          name: sdk
+          command: |
+            cp nodes/127.0.0.1/sdk/* src/test/resources/
+            gradle test
+      - run:
+          name: Upload Coverage
+          command: |
+            gradle jacocoTestReport
+            bash <(curl -s https://codecov.io/bash)

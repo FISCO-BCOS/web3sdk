@@ -12,13 +12,13 @@ import org.fisco.bcos.web3j.abi.datatypes.Int;
  * href="https://github.com/web3j/web3j/tree/master/codegen">codegen module</a> to update.
  */
 public class Int32 extends Int {
-    public static final Int32 DEFAULT = new Int32(BigInteger.ZERO);
+  public static final Int32 DEFAULT = new Int32(BigInteger.ZERO);
 
-    public Int32(BigInteger value) {
-        super(32, value);
-    }
+  public Int32(BigInteger value) {
+    super(32, value);
+  }
 
-    public Int32(long value) {
-        this(BigInteger.valueOf(value));
-    }
+  public Int32(long value) {
+    this(BigInteger.valueOf(value));
+  }
 }
