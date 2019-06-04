@@ -134,8 +134,8 @@ public class PrecompiledCommon {
     public static int handleTransactionReceiptForCRUD(TransactionReceipt receipt)
             throws TransactionException {
         String status = receipt.getStatus();
-        if (!"0x0".equals(receipt.getStatus())) {
-            throw new TransactionException(StatusCode.getStatusMessage(receipt.getStatus()));
+        if (!"0x0".equals(status)) {
+            throw new TransactionException(StatusCode.getStatusMessage(status));
         }
         String output = receipt.getOutput();
         if (!"0x".equals(output)) {
