@@ -1,5 +1,7 @@
 package org.fisco.bcos.channel.test.parallel.precompile;
 
+import de.vandermeer.asciitable.*;
+import de.vandermeer.skb.interfaces.transformers.textformat.TextAlignment;
 import java.math.BigInteger;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -95,71 +97,90 @@ public class PerformanceDTCollector {
             totalCost.addAndGet(cost);
 
             if (isEnd()) {
-                System.out.println("total");
-
-                //
                 Long totalTime = System.currentTimeMillis() - startTimestamp;
 
                 System.out.println(
                         "===================================================================");
+                System.out.println("Summary");
+                System.out.println(
+                        "===================================================================");
 
-                System.out.println("Total transactions:  " + String.valueOf(total));
-                System.out.println("Total time: " + String.valueOf(totalTime) + "ms");
-                System.out.println("TPS: " + String.valueOf(total / ((double) totalTime / 1000)));
-                System.out.println(
-                        "Avg time cost: " + String.valueOf(totalCost.get() / total) + "ms");
-                System.out.println(
-                        "Error rate: "
-                                + String.valueOf((error.get() / (double) received.get()) * 100)
-                                + "%");
-                System.out.println(
-                        "Return Error rate: "
-                                + String.valueOf((ret_error.get() / (double) received.get()) * 100)
-                                + "%");
+                AsciiTable at = new AsciiTable();
+                at.addRule();
+                at.addRow(null, "Performance");
+                at.addRule();
+                at.addRow("Total transactions", total);
+                at.addRule();
+                at.addRow("Total sent", total - error.get());
+                at.addRule();
+                at.addRow("Total error", error.get());
+                at.addRule();
+                at.addRow("Error rate", (error.get() / (double) received.get()) * 100 + "%");
+                at.addRule();
+                at.addRow(
+                        "Return error rate",
+                        (ret_error.get() / (double) received.get()) * 100 + "%");
+                at.addRule();
+                at.addRow("Elapsed time", totalTime + " ms");
+                at.addRule();
+                at.addRow(
+                        "TPS",
+                        String.format("%.2f", (total - error.get()) / ((double) totalTime / 1000)));
+                at.addRule();
 
-                System.out.println("Time area:");
-                System.out.println(
-                        "0    < time <  50ms   : "
-                                + String.valueOf(less50)
-                                + "  : "
-                                + String.valueOf((double) less50.get() / total * 100)
-                                + "%");
-                System.out.println(
-                        "50   < time <  100ms  : "
-                                + String.valueOf(less100)
-                                + "  : "
-                                + String.valueOf((double) less100.get() / total * 100)
-                                + "%");
-                System.out.println(
-                        "100  < time <  200ms  : "
-                                + String.valueOf(less200)
-                                + "  : "
-                                + String.valueOf((double) less200.get() / total * 100)
-                                + "%");
-                System.out.println(
-                        "200  < time <  400ms  : "
-                                + String.valueOf(less400)
-                                + "  : "
-                                + String.valueOf((double) less400.get() / total * 100)
-                                + "%");
-                System.out.println(
-                        "400  < time <  1000ms : "
-                                + String.valueOf(less1000)
-                                + "  : "
-                                + String.valueOf((double) less1000.get() / total * 100)
-                                + "%");
-                System.out.println(
-                        "1000 < time <  2000ms : "
-                                + String.valueOf(less2000)
-                                + "  : "
-                                + String.valueOf((double) less2000.get() / total * 100)
-                                + "%");
-                System.out.println(
-                        "2000 < time           : "
-                                + String.valueOf(timeout2000)
-                                + "  : "
-                                + String.valueOf((double) timeout2000.get() / total * 100)
-                                + "%");
+                at.getContext().setWidth(40);
+                at.setTextAlignment(TextAlignment.CENTER);
+
+                String atRender = at.render();
+                System.out.println(atRender + "\n");
+
+                at = new AsciiTable();
+                at.addRule();
+                at.addRow(null, null, "Time Area");
+                at.addRule();
+                at.addRow(
+                        "0 < time < 50ms",
+                        less50,
+                        String.format("%.2f%%", (double) less50.get() / total * 100));
+                at.addRule();
+                at.addRow(
+                        "50 < time < 100ms",
+                        less100,
+                        String.format("%.2f%%", (double) less100.get() / total * 100));
+                at.addRule();
+                at.addRow(
+                        "100 < time < 200ms",
+                        less200,
+                        String.format("%.2f%%", (double) less200.get() / total * 100));
+                at.addRule();
+                at.addRow(
+                        "200 < time < 400ms",
+                        less400,
+                        String.format("%.2f%%", (double) less400.get() / total * 100));
+                at.addRule();
+                at.addRow(
+                        "400 < time < 1000ms",
+                        less1000,
+                        String.format("%.2f%%", (double) less1000.get() / total * 100));
+                at.addRule();
+                at.addRow(
+                        "1000 < time < 2000ms",
+                        less2000,
+                        String.format("%.2f%%", (double) less2000.get() / total * 100));
+                at.addRule();
+                at.addRow(
+                        "2000 < time",
+                        timeout2000,
+                        String.format("%.2f%%", (double) timeout2000.get() / total * 100));
+                at.addRule();
+                at.addRow("Average time cost", null, totalCost.get() / total + " ms");
+                at.addRule();
+
+                at.getContext().setWidth(80);
+                at.setTextAlignment(TextAlignment.CENTER);
+
+                atRender = at.render();
+                System.out.println(atRender);
             }
 
         } catch (Exception e) {

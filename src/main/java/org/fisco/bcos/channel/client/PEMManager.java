@@ -52,6 +52,9 @@ public class PEMManager {
         PemReader pemReader = new PemReader(new InputStreamReader(in));
 
         pem = pemReader.readPemObject();
+        if (pem == null) {
+            throw new IOException("The file does not represent a pem account.");
+        }
         pemReader.close();
     }
 
