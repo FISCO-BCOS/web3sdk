@@ -41,7 +41,6 @@ public class StaticArrayTest {
     public void throwsIfSizeIsAboveMaxOf32() {
         try {
             new StaticArray<>(arrayOfUints(1025));
-            fail();
         } catch (UnsupportedOperationException e) {
             assertThat(
                     e.getMessage(),

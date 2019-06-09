@@ -7,7 +7,7 @@ apply plugin: 'idea'
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'signing'
-apply plugin:'application'
+apply plugin: 'application'
 
 
 sourceCompatibility = 1.8
@@ -82,6 +82,7 @@ dependencies {
             'com.github.stefanbirkner:system-rules:1.18.0',
             'junit:junit:4.12',
             'org.mockito:mockito-core:2.23.0'
+	compile 'de.vandermeer:asciitable:0.3.2'
 }
 
 //archivesBaseName = 'web3sdk'
