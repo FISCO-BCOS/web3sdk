@@ -3,13 +3,7 @@ package org.fisco.bcos.web3j.tx;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.Semaphore;
 import java.util.stream.Collectors;
 import org.fisco.bcos.channel.client.TransactionSucCallback;
@@ -29,14 +23,11 @@ import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameterName;
 import org.fisco.bcos.web3j.protocol.core.JsonRpc2_0Web3j;
 import org.fisco.bcos.web3j.protocol.core.RemoteCall;
 import org.fisco.bcos.web3j.protocol.core.methods.request.Transaction;
-import org.fisco.bcos.web3j.protocol.core.methods.response.Call;
-import org.fisco.bcos.web3j.protocol.core.methods.response.Code;
-import org.fisco.bcos.web3j.protocol.core.methods.response.Log;
-import org.fisco.bcos.web3j.protocol.core.methods.response.NodeVersion.Version;
-import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.fisco.bcos.web3j.protocol.core.methods.response.*;
 import org.fisco.bcos.web3j.protocol.exceptions.TransactionException;
 import org.fisco.bcos.web3j.tx.exceptions.ContractCallException;
 import org.fisco.bcos.web3j.tx.gas.ContractGasProvider;
+import org.fisco.bcos.web3j.tx.gas.DefaultGasProvider;
 import org.fisco.bcos.web3j.tx.gas.StaticGasProvider;
 import org.fisco.bcos.web3j.utils.Numeric;
 import org.slf4j.Logger;
@@ -47,14 +38,17 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class Contract extends ManagedTransaction {
 
-    private static Logger logger = LoggerFactory.getLogger(Contract.class);
+    /**
+     * @see DefaultGasProvider
+     * @deprecated ...
+     */
+    static Logger logger = LoggerFactory.getLogger(Contract.class);
 
     public static final BigInteger GAS_LIMIT = BigInteger.valueOf(4_300_000);
 
     public static final String BIN_NOT_PROVIDED = "Bin file was not provided";
     public static final String FUNC_DEPLOY = "deploy";
     public static final String BCOS_RC1 = "2.0.0-rc1";
-
     protected final String contractBinary;
     protected String contractAddress;
     protected ContractGasProvider gasProvider;
@@ -74,6 +68,7 @@ public abstract class Contract extends ManagedTransaction {
         this.gasProvider = gasProvider;
     }
 
+    // ************
     protected Contract(
             String contractBinary,
             String contractAddress,
@@ -96,7 +91,7 @@ public abstract class Contract extends ManagedTransaction {
         String version = "";
         String supportedVersion = "";
         try {
-            Version nodeVersion = web3j.getNodeVersion().send().getNodeVersion();
+            NodeVersion.Version nodeVersion = web3j.getNodeVersion().send().getNodeVersion();
             version = nodeVersion.getVersion();
             supportedVersion = nodeVersion.getSupportedVersion();
             if (BCOS_RC1.equals(version) || BCOS_RC1.equals(supportedVersion)) {
@@ -415,19 +410,17 @@ public abstract class Contract extends ManagedTransaction {
         }
     }
 
-    protected String createTransactionSeq(Function function)
-    {
-        try
-        {    String signedTransaction = createSeq(
-            contractAddress,
-                    FunctionEncoder.encode(function),
-                    BigInteger.ZERO,
-                    gasProvider.getGasPrice(function.getName()),
-                    gasProvider.getGasLimit(function.getName()));
+    protected String createTransactionSeq(Function function) {
+        try {
+            String signedTransaction =
+                    createSeq(
+                            contractAddress,
+                            FunctionEncoder.encode(function),
+                            BigInteger.ZERO,
+                            gasProvider.getGasPrice(function.getName()),
+                            gasProvider.getGasLimit(function.getName()));
             return signedTransaction;
-        }
-        catch(IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
             return "";
         }

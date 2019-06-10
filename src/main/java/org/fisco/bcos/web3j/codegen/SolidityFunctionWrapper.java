@@ -78,7 +78,7 @@ public class SolidityFunctionWrapper extends Generator {
     private static final String END_BLOCK = "endBlock";
     private static final String WEI_VALUE = "weiValue";
     private static final String FUNC_NAME_PREFIX = "FUNC_";
-
+    private String abiContent;
     private static final ClassName LOG = ClassName.get(Log.class);
     private static final Logger LOGGER = LoggerFactory.getLogger(SolidityFunctionWrapper.class);
 
@@ -92,7 +92,7 @@ public class SolidityFunctionWrapper extends Generator {
                     + " in the \n"
                     + "<a href=\"https://github.com/web3j/web3j/tree/master/codegen\">"
                     + "codegen module</a> to update.\n";
-
+    private static final String ABI = "ABI";
     private final boolean useNativeJavaTypes;
     private static final String regex = "(\\w+)(?:\\[(.*?)\\])(?:\\[(.*?)\\])?";
     private static final Pattern pattern = Pattern.compile(regex);
@@ -115,6 +115,7 @@ public class SolidityFunctionWrapper extends Generator {
             String destinationDir,
             String basePackageName)
             throws IOException, ClassNotFoundException {
+        abiContent = abi;
         generateJavaFiles(
                 contractName,
                 bin,
@@ -134,7 +135,7 @@ public class SolidityFunctionWrapper extends Generator {
             throws IOException, ClassNotFoundException {
         String className = Strings.capitaliseFirstLetter(contractName);
 
-        TypeSpec.Builder classBuilder = createClassBuilder(className, bin);
+        TypeSpec.Builder classBuilder = createClassBuilder(className, bin, abi);
 
         classBuilder.addMethod(buildConstructor(Credentials.class, CREDENTIALS, false));
         classBuilder.addMethod(buildConstructor(Credentials.class, CREDENTIALS, true));
@@ -211,7 +212,8 @@ public class SolidityFunctionWrapper extends Generator {
         }
     }
 
-    private TypeSpec.Builder createClassBuilder(String className, String binary) {
+    private TypeSpec.Builder createClassBuilder(
+            String className, String binary, List<AbiDefinition> abi) {
 
         String javadoc = CODEGEN_WARNING + getWeb3jVersion();
 
@@ -223,7 +225,8 @@ public class SolidityFunctionWrapper extends Generator {
                         AnnotationSpec.builder(SuppressWarnings.class)
                                 .addMember("value", "$S", "unchecked")
                                 .build())
-                .addField(createBinaryDefinition(binary));
+                .addField(createBinaryDefinition(binary))
+                .addField(createABIDefinition(abi));
     }
 
     private String getWeb3jVersion() {
@@ -243,6 +246,13 @@ public class SolidityFunctionWrapper extends Generator {
         return FieldSpec.builder(String.class, BINARY)
                 .addModifiers(Modifier.PRIVATE, Modifier.FINAL, Modifier.STATIC)
                 .initializer("$S", binary)
+                .build();
+    }
+
+    private FieldSpec createABIDefinition(List<AbiDefinition> abi) {
+        return FieldSpec.builder(String.class, "ABI")
+                .addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC)
+                .initializer("$S", abiContent)
                 .build();
     }
 
@@ -863,7 +873,7 @@ public class SolidityFunctionWrapper extends Generator {
                     functionDefinition, methodBuilder, outputParameterTypes, inputParams);
         } else {
             // functionDefinition.getInputs().add(new NamedType("callback",
-            // "org.fisco.bcos.channel.dto.BcosResponse.TransactionSucCallback"));
+            // "org.fisco.bcos.channel.dto.FiscoResponse.TransactionSucCallback"));
             String inputParams = addParameters(methodBuilder, functionDefinition.getInputs());
             methodBuilder.addParameter(
                     ParameterSpec.builder(buildTypeName("TransactionSucCallback"), "callback")
@@ -1067,41 +1077,41 @@ public class SolidityFunctionWrapper extends Generator {
     }
 
     private void buildTransactionFunctionSeq(
-        AbiDefinition functionDefinition, MethodSpec.Builder methodBuilder, String inputParams)
-        throws ClassNotFoundException {
+            AbiDefinition functionDefinition, MethodSpec.Builder methodBuilder, String inputParams)
+            throws ClassNotFoundException {
 
-    if (functionDefinition.hasOutputs()) {
-        // CHECKSTYLE:OFF
-        reporter.report(
-                String.format(
-                        "Definition of the function %s returns a value but is not defined as a view function. "
-                                + "Please ensure it contains the view modifier if you want to read the return value",
-                        functionDefinition.getName()));
-        // CHECKSTYLE:ON
-    }
+        if (functionDefinition.hasOutputs()) {
+            // CHECKSTYLE:OFF
+            reporter.report(
+                    String.format(
+                            "Definition of the function %s returns a value but is not defined as a view function. "
+                                    + "Please ensure it contains the view modifier if you want to read the return value",
+                            functionDefinition.getName()));
+            // CHECKSTYLE:ON
+        }
 
-    if (functionDefinition.isPayable()) {
-        methodBuilder.addParameter(BigInteger.class, WEI_VALUE);
-    }
+        if (functionDefinition.isPayable()) {
+            methodBuilder.addParameter(BigInteger.class, WEI_VALUE);
+        }
 
-    String functionName = functionDefinition.getName();
+        String functionName = functionDefinition.getName();
 
-    TypeName returnType= TypeName.get(String.class);
-    methodBuilder.returns(returnType);
+        TypeName returnType = TypeName.get(String.class);
+        methodBuilder.returns(returnType);
 
-    methodBuilder.addStatement(
-            "final $T function = new $T(\n$N, \n$T.<$T>asList($L), \n$T"
-                    + ".<$T<?>>emptyList())",
-            Function.class,
-            Function.class,
-            funcNameToConst(functionName),
-            Arrays.class,
-            Type.class,
-            inputParams,
-            Collections.class,
-            TypeReference.class);
+        methodBuilder.addStatement(
+                "final $T function = new $T(\n$N, \n$T.<$T>asList($L), \n$T"
+                        + ".<$T<?>>emptyList())",
+                Function.class,
+                Function.class,
+                funcNameToConst(functionName),
+                Arrays.class,
+                Type.class,
+                inputParams,
+                Collections.class,
+                TypeReference.class);
 
-    methodBuilder.addStatement("return createTransactionSeq(function)");
+        methodBuilder.addStatement("return createTransactionSeq(function)");
     }
 
     TypeSpec buildEventResponseObject(
