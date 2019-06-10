@@ -92,7 +92,7 @@ public class TypeEncoder {
     static String encodeBytes(BytesType bytesType) {
         byte[] value = bytesType.getValue();
         int length = value.length;
-        int mod = length % Type.MAX_BYTE_LENGTH;
+        int mod = length % MAX_BYTE_LENGTH;
 
         byte[] dest;
         if (mod != 0) {
@@ -126,7 +126,7 @@ public class TypeEncoder {
         StringBuilder encodedOffset = new StringBuilder();
         StringBuilder encodedValue = new StringBuilder();
 
-        int offset = value.getValue().size() * Type.MAX_BYTE_LENGTH;
+        int offset = value.getValue().size() * MAX_BYTE_LENGTH;
 
         for (Type type : value.getValue()) {
             String r = encode(type);
@@ -152,7 +152,7 @@ public class TypeEncoder {
 
         encodedSize.append(encode(new Uint(BigInteger.valueOf(value.getValue().size()))));
 
-        int offset = value.getValue().size() * Type.MAX_BYTE_LENGTH;
+        int offset = value.getValue().size() * MAX_BYTE_LENGTH;
 
         for (Type type : value.getValue()) {
             String r = encode(type);
