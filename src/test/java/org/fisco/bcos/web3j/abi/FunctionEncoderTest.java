@@ -332,7 +332,7 @@ public class FunctionEncoderTest {
     }
 
     @Test
-    public void testEncode_Uint() {
+    public void testEncodeUint() {
         assertThat(
                 FunctionEncoder.encodeParameters(
                         Arrays.asList(new Uint256(0)), new StringBuilder()),
@@ -357,7 +357,7 @@ public class FunctionEncoderTest {
     }
 
     @Test
-    public void testEncode_Int() {
+    public void testEncodeInt() {
         assertThat(
                 FunctionEncoder.encodeParameters(Arrays.asList(new Int256(0)), new StringBuilder()),
                 is("0000000000000000000000000000000000000000000000000000000000000000"));
@@ -376,7 +376,7 @@ public class FunctionEncoderTest {
     }
 
     @Test
-    public void testEncode_Bool() {
+    public void testEncodeBool() {
         assertThat(
                 FunctionEncoder.encodeParameters(
                         Arrays.asList(new Bool(true)), new StringBuilder()),
@@ -388,7 +388,7 @@ public class FunctionEncoderTest {
     }
 
     @Test
-    public void testEncodel_Address() {
+    public void testEncodelAddress() {
         assertThat(
                 FunctionEncoder.encodeParameters(
                         Arrays.asList(new Address("0x692a70d2e424a56d2c6c27aa97d1a86395877b3a")),
@@ -421,7 +421,7 @@ public class FunctionEncoderTest {
     }*/
 
     @Test
-    public void testEncodel_String() {
+    public void testEncodelString() {
         assertThat(
                 FunctionEncoder.encodeParameters(
                         Arrays.asList(new Utf8String("asfdjhljfadksjf;sdajf")),
@@ -444,7 +444,7 @@ public class FunctionEncoderTest {
     }
 
     @Test
-    public void testEncodel_Bytes() {
+    public void testEncodelBytes() {
         assertThat(
                 FunctionEncoder.encodeParameters(
                         Arrays.asList(new DynamicBytes("asfdjhljfadksjf;sdajf".getBytes())),
