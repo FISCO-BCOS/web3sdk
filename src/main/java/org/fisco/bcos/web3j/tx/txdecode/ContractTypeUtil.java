@@ -198,7 +198,7 @@ public class ContractTypeUtil {
         }
     }
 
-    static <T extends NumericType> T encodeNumeric(String input, Class<T> type)
+    public static <T extends NumericType> T encodeNumeric(String input, Class<T> type)
             throws BaseException {
         try {
             BigInteger numericValue = new BigInteger(input);
@@ -215,7 +215,8 @@ public class ContractTypeUtil {
         }
     }
 
-    static <T extends Bytes> T encodeBytes(String input, Class<T> type) throws BaseException {
+    public static <T extends Bytes> T encodeBytes(String input, Class<T> type)
+            throws BaseException {
         try {
             String simpleName = type.getSimpleName();
             String[] splitName = simpleName.split(Bytes.class.getSimpleName());

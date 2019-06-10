@@ -30,7 +30,8 @@ public class TestTxDecode {
         //    	System.out.println(contructorResult);
 
         // decode input
-        String inputResult = transactionDecoder.decodeInputReturnJson(txReceipt.getInput());
+        //        String inputResult =
+        // transactionDecoder.decodeInputReturnJson(txReceipt.getInput());
         //    	System.out.println(inputResult);
 
         // decode output
@@ -68,7 +69,7 @@ public class TestTxDecode {
                         new StaticGasProvider(
                                 new BigInteger("30000000"), new BigInteger("30000000")));
         TableTest tableTest = deploy.send();
-        TransactionReceipt createReceipt = tableTest.create().send();
+        tableTest.create().send();
 
         String name = "fruit";
         int item_id = 1;

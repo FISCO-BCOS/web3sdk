@@ -58,7 +58,6 @@ public class ContractAbiUtil {
         outputStream.write(contractArr);
         outputStream.flush();
         outputStream.close();
-        return;
     }
 
     /**

@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.Data;
 import org.fisco.bcos.web3j.abi.FunctionEncoder;
@@ -66,7 +65,7 @@ public class TransactionDecoder {
             throw new TransactionException("The method is not included in the contract abi.");
         }
         // decode input
-        String substring = input.substring(10);
+        //        String inputStr = input.substring(10);
         List<String> intputString = ContractAbiUtil.getFuncInputType(abiFunc);
         List<Type> inputType = ContractAbiUtil.inputFormat(intputString, null);
         List<Object> resultObj = ContractAbiUtil.callResultParse(intputString, inputType);
@@ -133,7 +132,6 @@ public class TransactionDecoder {
         // format event to json
         Map<String, List<EventEntity>> resultEventEntityMap = new HashMap<>();
 
-        Set<String> keySet = resultObjectMap.keySet();
         for (AbiDefinition abiDefinition : eventAbiDefinitions) {
             if (resultObjectMap.containsKey(abiDefinition.getName())) {
                 List<EventEntity> eventEntityList = new ArrayList<>();
