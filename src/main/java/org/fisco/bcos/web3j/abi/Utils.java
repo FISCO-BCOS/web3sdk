@@ -24,7 +24,7 @@ public class Utils {
         return getTypeName(typeReference.getType());
     }
 
-    static private <T extends Type> String getTypeName(java.lang.reflect.Type type) {
+    static public <T extends Type> String getTypeName(java.lang.reflect.Type type) {
         try {
 
             Class<?> cls = Utils.getClassType(type);
@@ -39,7 +39,7 @@ public class Utils {
         }
     }
 
-    static <T extends Type, U extends Type> String getParameterizedTypeName(
+    static private <T extends Type, U extends Type> String getParameterizedTypeName(
             java.lang.reflect.Type type) {
 
         try {
@@ -141,33 +141,6 @@ public class Utils {
             return (Class<T>) ((ParameterizedType) type).getRawType();
         } else {
             return (Class<T>) Class.forName(type.getTypeName());
-        }
-    }
-
-    private static <T extends Type, U extends Type> String getParameterizedTypeName(
-            TypeReference<T> typeReference, Class<?> type) {
-
-        try {
-            if (DynamicArray.class.isAssignableFrom(type)) {
-                Class<U> parameterizedType = getParameterizedTypeFromArray(typeReference.getType());
-                String parameterizedTypeName = getSimpleTypeName(parameterizedType);
-                return parameterizedTypeName + "[]";
-            } else if (StaticArray.class.isAssignableFrom(type)) {
-                Class<U> parameterizedType = getParameterizedTypeFromArray(typeReference.getType());
-                String parameterizedTypeName = getSimpleTypeName(parameterizedType);
-
-                int length =
-                        Integer.parseInt(
-                                type.getSimpleName()
-                                        .substring(StaticArray.class.getSimpleName().length()));
-
-                return parameterizedTypeName + "[" + length + "]";
-
-            } else {
-                throw new UnsupportedOperationException("Invalid type provided " + type.getName());
-            }
-        } catch (ClassNotFoundException e) {
-            throw new UnsupportedOperationException("Invalid class reference provided", e);
         }
     }
 
