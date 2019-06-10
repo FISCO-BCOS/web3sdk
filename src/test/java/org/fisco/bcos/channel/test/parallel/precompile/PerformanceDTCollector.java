@@ -55,6 +55,7 @@ public class PerformanceDTCollector {
                         ret_error.addAndGet(1);
                     }
                 } else {
+                	logger.error("Received error");
                     error.addAndGet(1);
                 }
             } else {

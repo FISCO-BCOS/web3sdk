@@ -7,6 +7,8 @@ import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.protocol.Web3j;
@@ -261,7 +263,7 @@ public class PerformanceDTTest {
 
             // end or not
             while (!collector.isEnd()) {
-                Thread.sleep(3000);
+                Thread.sleep(100);
             }
 
             dagUserMgr.writeDagTransferUser();
@@ -276,8 +278,6 @@ public class PerformanceDTTest {
     public void userTransferTest(BigInteger count, BigInteger qps, BigInteger deci) {
         System.out.println("Start UserTransfer test...");
         System.out.println("===================================================================");
-
-        Lock lock = new ReentrantLock();
 
         String dirName = "./.signed_transactions";
         File dir = new File(dirName);
@@ -297,19 +297,18 @@ public class PerformanceDTTest {
         }
 
         try {
-            RateLimiter limiter = RateLimiter.create(qps.intValue());
-
             System.out.println(dateFormat.format(new Date()) + " Querying account state...");
+            
+            List<DagTransferUser> allUser = dagUserMgr.getUserList();
 
             int coreNum = Runtime.getRuntime().availableProcessors();
             ThreadPoolTaskExecutor threadPool = new ThreadPoolTaskExecutor();
-            threadPool.setCorePoolSize(coreNum);
-            threadPool.setMaxPoolSize(32 * coreNum);
-            threadPool.setQueueCapacity(count.intValue());
+            threadPool.setCorePoolSize(200);
+            threadPool.setMaxPoolSize(500);
+            threadPool.setQueueCapacity(Math.max(count.intValue(), allUser.size()));
             threadPool.initialize();
             
-            List<DagTransferUser> allUser = dagUserMgr.getUserList();
-            
+            Lock lock = new ReentrantLock();
             final DagTransfer _dagTransfer = dagTransfer;
             AtomicInteger geted = new AtomicInteger(0);
             for (int i = 0; i < allUser.size(); ++i) {
@@ -327,7 +326,10 @@ public class PerformanceDTTest {
 			                    System.out.println(" Query failed, user is " + allUser.get(_i).getUser());
 			                    System.exit(0);
 			                }
-			                geted.incrementAndGet();
+			                int all = geted.incrementAndGet();
+			                if(all >= allUser.size()) {
+			            		System.out.println(dateFormat.format(new Date()) + " Query account finished");
+			            	}
 						}
 						catch(Exception e) {
 							System.out.println(" Query failed, user is " + allUser.get(_i).getUser());
@@ -337,23 +339,20 @@ public class PerformanceDTTest {
 				});
             }
             
-            while(true) {
-            	if(geted.get() + 1 >= allUser.size()) {
-            		System.out.println(dateFormat.format(new Date()) + " Query account finished");
-            		break;
-            	}
-            	Thread.sleep(40);
+            while(geted.get() < allUser.size()) {
+            	Thread.sleep(50);
             }
-            
             
             System.out.println("");
 
+            AtomicLong signed = new AtomicLong(0);
             int segmentSize = 200000;
             int segmentCount = count.intValue() / segmentSize;
             if (count.intValue() % segmentSize != 0) {
                 segmentCount++;
             }
             
+            AtomicLong totalWrited = new AtomicLong(0);
             for(int i = 0; i < segmentCount; ++i) {
                 int start = i * segmentSize;
                 int end = start + segmentSize;
@@ -363,11 +362,13 @@ public class PerformanceDTTest {
 
                 String fileName = dirName +  "/signed_transactions_" + i;
                 
+                Lock fileLock = new ReentrantLock();
                 BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
-                latch = new CountDownLatch(end - start);
 
+                AtomicLong writed = new AtomicLong(0);
                 for(int j = start; j < end; ++j) {
                     final int index = j;
+                    final int totalWrite = end - start;
                     threadPool.execute(
                         new Runnable() {
                             @Override
@@ -388,50 +389,50 @@ public class PerformanceDTTest {
                                         String signedTransaction = dagTransfer.userTransferSeq(
                                                 from.getUser(), to.getUser(), amount);
                                         String content = String.format("%s %d %d%n", signedTransaction, index, r);
-                                        lock.lock();
+                                        fileLock.lock();
                                         writer.write(content);
+                                        
+                                        long totalSigned = signed.incrementAndGet();
+                                        if(totalSigned % (count.longValue() / 10) == 0) {
+                                    		System.out.println("Signed transaction: " + String.valueOf(totalSigned * 100 / count.longValue()) + "%");
+                                    	}
+                                        
+                                        long writedCount = writed.incrementAndGet();
+                                        totalWrited.incrementAndGet();
+                                        if(writedCount >= totalWrite) {
+                                        	writer.close();
+                                        }
+                                        
                                         break;
                                     } catch (Exception e) {
                                         e.printStackTrace();
                                         continue;
                                     }
                                     finally {
-                                        lock.unlock();
+                                        fileLock.unlock();
                                     }
                                 }
-                                latch.countDown();
                             }
                         });
                 }
-
-                long latchCount;
-                Boolean deleted = false;
-                while((latchCount = latch.getCount()) != 0) {
-            		int c = 1;
-            		if(deleted) {
-            			//System.out.print(String.format("\033[%dA", c));
-            		}
-                    //String percent = (int)((((end - latchCount) / (double)count.intValue()) * 100) + 1) + "%         ";
-                    //System.out.println(dateFormat.format(new Date()) + " Prepare transactions..." + percent);
-                    
-                    deleted = true;
-                    Thread.sleep(40);
-                }
-
-                writer.close();
-                System.out.print(new Date() + " Prepare transactions finished");
             }
+
+            while(totalWrited.get() < count.intValue()) {
+            	Thread.sleep(50);
+            }
+            
+            System.out.print(dateFormat.format(new Date()) + " Prepare transactions finished");
             System.out.println("");
 
             long sent = 0;
             File[] fileList = dir.listFiles();
 
-            logger.info("Start to send");
             System.out.println(dateFormat.format(new Date()) + " Sending signed transactions...");
 
             long startTime = System.currentTimeMillis();
             collector.setStartTimestamp(startTime);
 
+            RateLimiter limiter = RateLimiter.create(qps.intValue());
             for(int i = 0; i < fileList.length; ++i) {
                 BufferedReader reader = new BufferedReader(new FileReader(fileList[i]));
 
@@ -503,7 +504,7 @@ public class PerformanceDTTest {
             while (!collector.isEnd()) {
                 Thread.sleep(1000);
             }
-
+            
             logger.info("End to send");
 
             System.out.println(dateFormat.format(new Date()) + " Verifying result...");

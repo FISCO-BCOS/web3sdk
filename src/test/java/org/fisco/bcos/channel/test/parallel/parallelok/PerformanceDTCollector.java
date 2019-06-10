@@ -98,11 +98,11 @@ public class PerformanceDTCollector {
                         "Avg time cost: " + String.valueOf(totalCost.get() / total) + "ms");
                 System.out.println(
                         "Error rate: "
-                                + String.valueOf((error.get() / received.get()) * 100)
+                                + String.valueOf(((double)error.get() / (double)received.get()) * 100)
                                 + "%");
                 System.out.println(
                         "Return Error rate: "
-                                + String.valueOf((ret_error.get() / received.get()) * 100)
+                                + String.valueOf(((double)ret_error.get() / (double)received.get()) * 100)
                                 + "%");
 
                 System.out.println("Time area:");
