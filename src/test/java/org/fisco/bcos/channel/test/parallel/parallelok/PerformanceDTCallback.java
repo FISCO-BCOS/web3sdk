@@ -69,8 +69,10 @@ public class PerformanceDTCallback extends TransactionSucCallback {
 
                 if (callBackType.compareTo("set") == 0) { // add test
                     dagUserMgr.addUser(user);
-                } else if (callBackType.compareTo("transfer") == 0
-                        || callBackType.compareTo("transferRevert") == 0) { // transfer test
+                } else if (callBackType.compareTo("transfer") == 0) { // transfer test
+                    fromUser.decrease(amount);
+                    toUser.increase(amount);
+                } else if (callBackType.compareTo("transferRevert") == 0) { // tranfer revert test
                     fromUser.decrease(amount);
                     toUser.increase(amount);
                 }
