@@ -434,7 +434,7 @@ public class Service {
                     bcosMessage.getSeq());
 
         } catch (Exception e) {
-            logger.error("system error: " + e.getMessage());
+            logger.error("system error: " + e);
 
             BcosResponse response = new BcosResponse();
             response.setErrorCode(-1);
