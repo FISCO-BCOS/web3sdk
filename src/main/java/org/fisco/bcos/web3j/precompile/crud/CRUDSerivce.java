@@ -133,6 +133,7 @@ public class CRUDSerivce {
         List<Map<String, String>> userTable = select(table, condition);
         Table tableInfo = new Table();
         if (userTable.size() != 0) {
+            tableInfo.setTableName(tableName);
             tableInfo.setKey(userTable.get(0).get("key_field"));
             tableInfo.setValueFields(userTable.get(0).get("value_field"));
         } else {
