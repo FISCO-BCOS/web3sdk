@@ -445,7 +445,7 @@ public class Service {
             response.setErrorCode(-1);
             response.setErrorMessage(
                     e.getMessage()
-                            + "Requset send failed! Can not connect to nodes success, please checkout the node status and the sdk config!");
+                            + " Requset send failed! Can not connect to nodes success, please checkout the node status and the sdk config!");
             response.setContent("");
             response.setMessageID(request.getMessageID());
 
