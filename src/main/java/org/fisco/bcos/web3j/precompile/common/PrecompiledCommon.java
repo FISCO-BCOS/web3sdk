@@ -52,7 +52,7 @@ public class PrecompiledCommon {
 
     public static final int TABLE_KEY_MAX_LENGTH = 255;
 
-    private static String BCOS_VERSION = "";
+    public static String BCOS_VERSION = "";
 
     public static String transferToJson(int code) throws IOException {
         // adapt fisco-bcos rc1 || rc2 || rc3
