@@ -28,7 +28,11 @@ import org.fisco.bcos.channel.dto.ChannelPush;
 import org.fisco.bcos.channel.dto.ChannelPush2;
 import org.fisco.bcos.channel.dto.ChannelRequest;
 import org.fisco.bcos.channel.dto.ChannelResponse;
-import org.fisco.bcos.channel.handler.*;
+import org.fisco.bcos.channel.handler.ChannelConnections;
+import org.fisco.bcos.channel.handler.ConnectionCallback;
+import org.fisco.bcos.channel.handler.ConnectionInfo;
+import org.fisco.bcos.channel.handler.GroupChannelConnectionsConfig;
+import org.fisco.bcos.channel.handler.Message;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +50,7 @@ public class Service {
     private int groupId;
     private static ObjectMapper objectMapper = new ObjectMapper();
     private BigInteger number = BigInteger.valueOf(0);
-
+    private ConcurrentHashMap<String, Integer> nodeToBlockNumberMap = new ConcurrentHashMap<>();
     /** add transaction seq callback */
     private Map<String, Object> seq2TransactionCallback = new ConcurrentHashMap<String, Object>();
 
@@ -61,6 +65,14 @@ public class Service {
         } catch (Exception e) {
             logger.error("system error", e);
         }
+    }
+
+    public ConcurrentHashMap<String, Integer> getNodeToBlockNumberMap() {
+        return nodeToBlockNumberMap;
+    }
+
+    public void setNodeToBlockNumberMap(ConcurrentHashMap<String, Integer> nodeToBlockNumberMap) {
+        this.nodeToBlockNumberMap = nodeToBlockNumberMap;
     }
 
     public boolean flushTopics(List<String> topics) {
@@ -398,7 +410,8 @@ public class Service {
                     throw new Exception("not found agencyName");
                 }
             }
-            ChannelHandlerContext ctx = channelConnections.randomNetworkConnection();
+            ChannelHandlerContext ctx =
+                    channelConnections.randomNetworkConnection(nodeToBlockNumberMap);
 
             ByteBuf out = ctx.alloc().buffer();
             bcosMessage.writeHeader(out);
@@ -440,7 +453,7 @@ public class Service {
             response.setErrorCode(-1);
             response.setErrorMessage(
                     e.getMessage()
-                            + "Requset send failed! Can not connect to nodes success, please checkout the node status and the sdk config!");
+                            + " Requset send failed! Can not connect to nodes success, please checkout the node status and the sdk config!");
             response.setContent("");
             response.setMessageID(request.getMessageID());
 
@@ -754,11 +767,11 @@ public class Service {
             int port = socketChannel.remoteAddress().getPort();
             Integer number = Integer.parseInt(split[1]);
 
-            ChannelConnections.nodeToBlockNumberMap.put(hostAddress + port, number);
+            nodeToBlockNumberMap.put(hostAddress + port, number);
             // get max blockNumber to set blocklimit
             Integer maxBlockNumber = number;
-            for (String key : ChannelConnections.nodeToBlockNumberMap.keySet()) {
-                int blockNumber = ChannelConnections.nodeToBlockNumberMap.get(key);
+            for (String key : nodeToBlockNumberMap.keySet()) {
+                int blockNumber = nodeToBlockNumberMap.get(key);
                 if (blockNumber >= maxBlockNumber) {
                     maxBlockNumber = blockNumber;
                 }
