@@ -10,12 +10,12 @@ import org.junit.Test;
 public class PermissionServiceTest extends TestBase {
 
 
-	PermissionService permissionService = new PermissionService(web3j, credentials);
+  private PermissionService permissionService = new PermissionService(web3j, credentials);
 
   @Test(expected= PrecompileMessageException.class) 
   public void userTableManager() throws Exception {
   	
-	  String grantUserTableManagerResult = permissionService.grantUserTableManager("tt", Common.TX_ORIGIN);
+	  permissionService.grantUserTableManager("tt", Common.TX_ORIGIN);
   
   }
   
