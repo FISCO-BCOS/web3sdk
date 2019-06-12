@@ -37,20 +37,24 @@ public class TransactionDecoder {
         List<AbiDefinition> funcAbiDefinitionList = ContractAbiUtil.getFuncAbiDefinition(abi);
         for (AbiDefinition abiDefinition : funcAbiDefinitionList) {
             List<String> inputTypes = ContractAbiUtil.getFuncInputType(abiDefinition);
-            StringBuilder result = new StringBuilder();
-            result.append(abiDefinition.getName());
-            result.append("(");
-            String params =
-                    inputTypes.stream().map(String::toString).collect(Collectors.joining(","));
-            result.append(params);
-            result.append(")");
-            String methodID = FunctionEncoder.buildMethodId(result.toString());
+            String methodSign = decodeMethodSign(abiDefinition, inputTypes);
+            String methodID = FunctionEncoder.buildMethodId(methodSign);
             methodIDMap.put(methodID, abiDefinition);
         }
     }
 
+    private String decodeMethodSign(AbiDefinition abiDefinition, List<String> inputTypes) {
+        StringBuilder methodSign = new StringBuilder();
+        methodSign.append(abiDefinition.getName());
+        methodSign.append("(");
+        String params = inputTypes.stream().map(String::toString).collect(Collectors.joining(","));
+        methodSign.append(params);
+        methodSign.append(")");
+        return methodSign.toString();
+    }
+
     public String decodeConstructorReturnJson(String input) throws JsonProcessingException {
-        AbiDefinition abiConstructor = ContractAbiUtil.getAbiDefinitionForConstructor(abi);
+        AbiDefinition abiConstructor = ContractAbiUtil.getConstructorAbiDefinition(abi);
         List<String> constructorTypes = ContractAbiUtil.getFuncInputType(abiConstructor);
         String result = ObjectMapperFactory.getObjectMapper().writeValueAsString(constructorTypes);
         return result;
@@ -59,18 +63,46 @@ public class TransactionDecoder {
     public String decodeInputReturnJson(String input)
             throws JsonProcessingException, TransactionException, BaseException {
         // get function abi
+        //        System.out.println(input.contains(bin));
+        //        System.out.println(input.length());
+        //        if (input.startsWith(bin)) {
+        //            System.out.println("constructor...");
+        //            input = "0x" + input.substring(bin.length() + 2);
+        //        }
         String methodID = input.substring(0, 10);
         AbiDefinition abiFunc = methodIDMap.get(methodID);
         if (abiFunc == null) {
             throw new TransactionException("The method is not included in the contract abi.");
         }
         // decode input
-        //        String inputStr = input.substring(10);
-        List<String> intputString = ContractAbiUtil.getFuncInputType(abiFunc);
-        List<Type> inputType = ContractAbiUtil.inputFormat(intputString, null);
-        List<Object> resultObj = ContractAbiUtil.callResultParse(intputString, inputType);
+        String inputStr = input.substring(10);
+        List<String> inputTypes = ContractAbiUtil.getFuncInputType(abiFunc);
+        List<TypeReference<?>> finalOutputs = ContractAbiUtil.paramFormat(inputTypes);
+        Function function = new Function(abiFunc.getName(), null, finalOutputs);
+        List<Type> typeList =
+                FunctionReturnDecoder.decode(inputStr, function.getOutputParameters());
+        List<Object> resultObj = ContractAbiUtil.callResultParse(inputTypes, typeList);
         System.out.println(resultObj);
-        return "";
+        // format input to json
+        List<NamedType> intputs = abiFunc.getInputs();
+        List<InputEntity> resultList = new ArrayList<>();
+        for (int i = 0; i < inputTypes.size(); i++) {
+            resultList.add(
+                    new InputEntity(
+                            intputs.get(i).getName(), intputs.get(i).getType(), resultObj.get(i)));
+        }
+        Map<String, Object> resultMap = new HashMap<>();
+        String methodSign = decodeMethodSign(abiFunc, inputTypes);
+        resultMap.put("function", methodSign);
+        resultMap.put("methodID", FunctionEncoder.buildMethodId(methodSign));
+        resultMap.put("data", resultList);
+
+        String result =
+                ObjectMapperFactory.getObjectMapper()
+                        .enable(SerializationFeature.INDENT_OUTPUT)
+                        .writeValueAsString(resultMap);
+
+        return result;
     }
     /**
      * @param input
@@ -90,17 +122,17 @@ public class TransactionDecoder {
         }
         // decode output
         List<String> outTypes = ContractAbiUtil.getFuncOutputType(abiFunc);
-        List<TypeReference<?>> finalOutputs = ContractAbiUtil.outputFormat(outTypes);
+        List<TypeReference<?>> finalOutputs = ContractAbiUtil.paramFormat(outTypes);
         Function function = new Function(abiFunc.getName(), null, finalOutputs);
         List<Type> typeList = FunctionReturnDecoder.decode(output, function.getOutputParameters());
         List<Object> resultObj = ContractAbiUtil.callResultParse(outTypes, typeList);
-
+        System.out.println(resultObj);
         // format output to json
         List<NamedType> outputs = abiFunc.getOutputs();
-        List<OutPutEntity> resultList = new ArrayList<>();
+        List<OutputEntity> resultList = new ArrayList<>();
         for (int i = 0; i < outTypes.size(); i++) {
             resultList.add(
-                    new OutPutEntity(
+                    new OutputEntity(
                             outputs.get(i).getName(), outputs.get(i).getType(), resultObj.get(i)));
         }
         String result =
@@ -111,24 +143,23 @@ public class TransactionDecoder {
     }
 
     /**
-     * @param log
+     * @param logs
      * @return
      * @throws BaseException
      * @throws IOException
      */
-    public String decodeEventReturnJson(String log) throws BaseException, IOException {
+    public String decodeEventReturnJson(String logs) throws BaseException, IOException {
         // log json trans to list log
         ObjectMapper mapper = ObjectMapperFactory.getObjectMapper();
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
         CollectionType listType =
                 mapper.getTypeFactory().constructCollectionType(ArrayList.class, Log.class);
-        List<Log> logList = (List<Log>) mapper.readValue(log, listType);
-
+        List<Log> logList = (List<Log>) mapper.readValue(logs, listType);
+        System.out.println(logList);
         // decode event
         List<AbiDefinition> eventAbiDefinitions = ContractAbiUtil.getEventAbiDefinitions(abi);
         Map<String, List<Object>> resultObjectMap =
                 ContractAbiUtil.decodeEvents(logList, eventAbiDefinitions);
-
         // format event to json
         Map<String, List<EventEntity>> resultEventEntityMap = new HashMap<>();
 

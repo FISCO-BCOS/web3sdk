@@ -30,17 +30,19 @@ public class TestTxDecode {
         //    	System.out.println(contructorResult);
 
         // decode input
-        //        String inputResult =
-        // transactionDecoder.decodeInputReturnJson(txReceipt.getInput());
-        //    	System.out.println(inputResult);
+        System.out.println("===================decode input===================");
+        String inputResult = transactionDecoder.decodeInputReturnJson(txReceipt.getInput());
+        System.out.println(inputResult);
 
         // decode output
+        System.out.println("===================decode output===================");
         String outputResult =
                 transactionDecoder.decodeOutputReturnJson(
                         txReceipt.getInput(), txReceipt.getOutput());
         System.out.println(outputResult);
 
         // decode event
+        System.out.println("===================decode event===================");
         List<Log> logList = txReceipt.getLogs();
         String logJson = ObjectMapperFactory.getObjectMapper().writeValueAsString(logList);
         String eventResult = transactionDecoder.decodeEventReturnJson(logJson);
@@ -79,6 +81,8 @@ public class TestTxDecode {
                 tableTest.insert(name, BigInteger.valueOf(item_id), item_name);
         TransactionReceipt txReceipt = insert.send();
 
+        //        return
+        // web3j.getTransactionReceipt(txReceipt.getTransactionHash()).send().getResult();
         return web3j.getTransactionReceipt(txReceipt.getTransactionHash()).send().getResult();
     }
 }
