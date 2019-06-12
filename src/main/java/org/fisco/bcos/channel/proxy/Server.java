@@ -8,7 +8,13 @@ import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timer;
 import java.io.UnsupportedEncodingException;
 import java.security.SecureRandom;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.net.ssl.SSLException;
 import org.fisco.bcos.channel.handler.ChannelConnections;
@@ -462,7 +468,7 @@ public class Server {
                     // 没有这个seq，可能是新发请求或者新收到的push
 
                     // 其他消息（链上链下一期），随机发
-                    localCtx = localConnections.randomNetworkConnection();
+                    localCtx = localConnections.randomNetworkConnection(null);
                 }
             }
 
