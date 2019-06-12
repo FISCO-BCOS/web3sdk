@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class OutPutEntity {
+public class InputEntity {
 
     private String name;
     private String type;
