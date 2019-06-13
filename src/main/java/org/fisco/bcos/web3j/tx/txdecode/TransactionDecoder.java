@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import lombok.Data;
 import org.fisco.bcos.web3j.abi.FunctionEncoder;
 import org.fisco.bcos.web3j.abi.FunctionReturnDecoder;
 import org.fisco.bcos.web3j.abi.TypeReference;
@@ -20,10 +19,8 @@ import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 import org.fisco.bcos.web3j.protocol.core.methods.response.AbiDefinition;
 import org.fisco.bcos.web3j.protocol.core.methods.response.AbiDefinition.NamedType;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Log;
-import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.protocol.exceptions.TransactionException;
 
-@Data
 public class TransactionDecoder {
 
     private String abi;
@@ -62,13 +59,7 @@ public class TransactionDecoder {
 
     public String decodeInputReturnJson(String input)
             throws JsonProcessingException, TransactionException, BaseException {
-        // get function abi
-        //        System.out.println(input.contains(bin));
-        //        System.out.println(input.length());
-        //        if (input.startsWith(bin)) {
-        //            System.out.println("constructor...");
-        //            input = "0x" + input.substring(bin.length() + 2);
-        //        }
+
         String methodID = input.substring(0, 10);
         AbiDefinition abiFunc = methodIDMap.get(methodID);
         if (abiFunc == null) {
@@ -79,17 +70,19 @@ public class TransactionDecoder {
         List<String> inputTypes = ContractAbiUtil.getFuncInputType(abiFunc);
         List<TypeReference<?>> finalOutputs = ContractAbiUtil.paramFormat(inputTypes);
         Function function = new Function(abiFunc.getName(), null, finalOutputs);
-        List<Type> typeList =
+        List<Type> resultObj =
                 FunctionReturnDecoder.decode(inputStr, function.getOutputParameters());
-        List<Object> resultObj = ContractAbiUtil.callResultParse(inputTypes, typeList);
-        System.out.println(resultObj);
+        // List<Object> resultObj = ContractAbiUtil.callResultParse(inputTypes, typeList);
+
         // format input to json
         List<NamedType> intputs = abiFunc.getInputs();
         List<InputEntity> resultList = new ArrayList<>();
         for (int i = 0; i < inputTypes.size(); i++) {
             resultList.add(
                     new InputEntity(
-                            intputs.get(i).getName(), intputs.get(i).getType(), resultObj.get(i)));
+                            intputs.get(i).getName(),
+                            intputs.get(i).getType(),
+                            resultObj.get(i).toString()));
         }
         Map<String, Object> resultMap = new HashMap<>();
         String methodSign = decodeMethodSign(abiFunc, inputTypes);
@@ -124,9 +117,9 @@ public class TransactionDecoder {
         List<String> outTypes = ContractAbiUtil.getFuncOutputType(abiFunc);
         List<TypeReference<?>> finalOutputs = ContractAbiUtil.paramFormat(outTypes);
         Function function = new Function(abiFunc.getName(), null, finalOutputs);
-        List<Type> typeList = FunctionReturnDecoder.decode(output, function.getOutputParameters());
-        List<Object> resultObj = ContractAbiUtil.callResultParse(outTypes, typeList);
-        System.out.println(resultObj);
+        List<Type> resultObj = FunctionReturnDecoder.decode(output, function.getOutputParameters());
+        // List<Object> resultObj = ContractAbiUtil.callResultParse(outTypes, typeList);
+
         // format output to json
         List<NamedType> outputs = abiFunc.getOutputs();
         List<OutputEntity> resultList = new ArrayList<>();
@@ -158,7 +151,7 @@ public class TransactionDecoder {
         System.out.println(logList);
         // decode event
         List<AbiDefinition> eventAbiDefinitions = ContractAbiUtil.getEventAbiDefinitions(abi);
-        Map<String, List<Object>> resultObjectMap =
+        Map<String, List<Type>> resultObjectMap =
                 ContractAbiUtil.decodeEvents(logList, eventAbiDefinitions);
         // format event to json
         Map<String, List<EventEntity>> resultEventEntityMap = new HashMap<>();
@@ -182,18 +175,48 @@ public class TransactionDecoder {
         return result;
     }
 
-    public Object decodeInputReturnObject(TransactionReceipt receipt) {
-        // TODO
-        return null;
+    public List<Type> decodeInputReturnObject(String input)
+            throws BaseException, TransactionException {
+
+        String methodID = input.substring(0, 10);
+        AbiDefinition abiFunc = methodIDMap.get(methodID);
+        if (abiFunc == null) {
+            throw new TransactionException("The method is not included in the contract abi.");
+        }
+        // decode input
+        List<String> inputTypes = ContractAbiUtil.getFuncInputType(abiFunc);
+        List<TypeReference<?>> finalOutputs = ContractAbiUtil.paramFormat(inputTypes);
+        Function function = new Function(abiFunc.getName(), null, finalOutputs);
+        List<Type> result =
+                FunctionReturnDecoder.decode(input.substring(10), function.getOutputParameters());
+
+        return result;
     }
 
-    public Object decodeOutPutReturnObject(TransactionReceipt receipt) {
-        // TODO
-        return null;
+    public List<Type> decodeOutPutReturnObject(String input, String output)
+            throws TransactionException, BaseException {
+
+        String methodID = output.substring(0, 10);
+        AbiDefinition abiFunc = methodIDMap.get(methodID);
+        if (abiFunc == null) {
+            throw new TransactionException("The method is not included in the contract abi.");
+        }
+
+        // decode output
+        List<String> outputTypes = ContractAbiUtil.getFuncOutputType(abiFunc);
+        List<TypeReference<?>> finalOutputs = ContractAbiUtil.paramFormat(outputTypes);
+        Function function = new Function(abiFunc.getName(), null, finalOutputs);
+        List<Type> result = FunctionReturnDecoder.decode(output, function.getOutputParameters());
+
+        return result;
     }
 
-    public Object decodeEventReturnObject(TransactionReceipt receipt) {
-        // TODO
-        return null;
+    public Map<String, List<Type>> decodeEventReturnObject(List<Log> logList)
+            throws BaseException, IOException {
+
+        List<AbiDefinition> eventAbiDefinitions = ContractAbiUtil.getEventAbiDefinitions(abi);
+        Map<String, List<Type>> result = ContractAbiUtil.decodeEvents(logList, eventAbiDefinitions);
+
+        return result;
     }
 }
