@@ -72,17 +72,14 @@ public class TransactionDecoder {
         Function function = new Function(abiFunc.getName(), null, finalOutputs);
         List<Type> resultObj =
                 FunctionReturnDecoder.decode(inputStr, function.getOutputParameters());
-        // List<Object> resultObj = ContractAbiUtil.callResultParse(inputTypes, typeList);
 
         // format input to json
         List<NamedType> intputs = abiFunc.getInputs();
-        List<InputEntity> resultList = new ArrayList<>();
+        List<ResultEntity> resultList = new ArrayList<>();
         for (int i = 0; i < inputTypes.size(); i++) {
             resultList.add(
-                    new InputEntity(
-                            intputs.get(i).getName(),
-                            intputs.get(i).getType(),
-                            resultObj.get(i).toString()));
+                    new ResultEntity(
+                            intputs.get(i).getName(), intputs.get(i).getType(), resultObj.get(i)));
         }
         Map<String, Object> resultMap = new HashMap<>();
         String methodSign = decodeMethodSign(abiFunc, inputTypes);
@@ -118,14 +115,13 @@ public class TransactionDecoder {
         List<TypeReference<?>> finalOutputs = ContractAbiUtil.paramFormat(outTypes);
         Function function = new Function(abiFunc.getName(), null, finalOutputs);
         List<Type> resultObj = FunctionReturnDecoder.decode(output, function.getOutputParameters());
-        // List<Object> resultObj = ContractAbiUtil.callResultParse(outTypes, typeList);
 
         // format output to json
         List<NamedType> outputs = abiFunc.getOutputs();
-        List<OutputEntity> resultList = new ArrayList<>();
+        List<ResultEntity> resultList = new ArrayList<>();
         for (int i = 0; i < outTypes.size(); i++) {
             resultList.add(
-                    new OutputEntity(
+                    new ResultEntity(
                             outputs.get(i).getName(), outputs.get(i).getType(), resultObj.get(i)));
         }
         String result =
@@ -154,15 +150,15 @@ public class TransactionDecoder {
         Map<String, List<Type>> resultObjectMap =
                 ContractAbiUtil.decodeEvents(logList, eventAbiDefinitions);
         // format event to json
-        Map<String, List<EventEntity>> resultEventEntityMap = new HashMap<>();
+        Map<String, List<ResultEntity>> resultEventEntityMap = new HashMap<>();
 
         for (AbiDefinition abiDefinition : eventAbiDefinitions) {
             if (resultObjectMap.containsKey(abiDefinition.getName())) {
-                List<EventEntity> eventEntityList = new ArrayList<>();
+                List<ResultEntity> eventEntityList = new ArrayList<>();
                 List<NamedType> inputs = abiDefinition.getInputs();
                 for (int i = 0; i < inputs.size(); i++) {
-                    EventEntity eventEntity =
-                            new EventEntity(
+                    ResultEntity eventEntity =
+                            new ResultEntity(
                                     inputs.get(i).getName(),
                                     inputs.get(i).getType(),
                                     resultObjectMap.get(abiDefinition.getName()).get(i));

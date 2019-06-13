@@ -26,15 +26,14 @@ import org.fisco.bcos.web3j.abi.datatypes.generated.*;
 public class ContractTypeUtil {
 
     @SuppressWarnings("rawtypes")
-    public static <T extends org.fisco.bcos.web3j.abi.datatypes.Type>
-            TypeReference<DynamicArray<T>> createDynamicArrayTypeReference(Class<T> cls) {
+    public static <T extends Type> TypeReference<DynamicArray<T>> createDynamicArrayTypeReference(
+            Class<T> cls) {
         return new TypeReference<DynamicArray<T>>() {};
     }
 
     @SuppressWarnings("rawtypes")
-    public static <T extends org.fisco.bcos.web3j.abi.datatypes.Type>
-            TypeReference<?> createStaticArrayTypeReference(Class<T> cls, int dimensions)
-                    throws BaseException {
+    public static <T extends Type> TypeReference<?> createStaticArrayTypeReference(
+            Class<T> cls, int dimensions) throws BaseException {
         switch (dimensions) {
             case 1:
                 return new TypeReference<StaticArray1<T>>() {};
