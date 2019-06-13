@@ -19,6 +19,8 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collector;
+
 import org.fisco.bcos.channel.dto.BcosMessage;
 import org.fisco.bcos.channel.dto.BcosRequest;
 import org.fisco.bcos.channel.dto.BcosResponse;
@@ -529,6 +531,83 @@ public class Service {
                 response.setContent("");
 
                 callback.onResponse(response);
+                return;
+            }
+        } catch (Exception e) {
+            logger.error("system error", e);
+        }
+    }
+    
+    public void asyncMulticastChannelMessage2(ChannelRequest request) {
+    	try {
+            logger.debug("ChannelRequest: " + request.getMessageID());
+
+            ChannelMessage2 channelMessage = new ChannelMessage2();
+
+            channelMessage.setSeq(request.getMessageID());
+            channelMessage.setResult(0);
+            channelMessage.setType((short) 0x32); // 链上链下多播请求0x32
+            channelMessage.setData(request.getContent().getBytes());
+            channelMessage.setTopic(request.getToTopic());
+
+            try {
+                List<ConnectionInfo> fromConnectionInfos = new ArrayList<ConnectionInfo>();
+
+                // 设置发送节点
+                List<ChannelConnections> fromChannelConnections =
+                        allChannelConnections
+                                .getAllChannelConnections()
+                                .stream()
+                                .filter(x -> x.getGroupId() == groupId).collect(toList());
+                if (fromChannelConnections.isEmpty()) {
+                    // 没有找到对应的链
+                    // 返回错误
+                    if (orgID != null) {
+                        logger.error("not found:{}", orgID);
+                        throw new Exception("not found orgID");
+                    } else {
+                        logger.error("not found:{}", agencyName);
+                        throw new Exception("not found agencyName");
+                    }
+                }
+                
+                logger.debug(
+                        "FromOrg:{} nodes:{}",
+                        request.getFromOrg(),
+                        fromChannelConnections.size());
+                
+                for(ConnectionInfo connectionInfo: fromConnectionInfos) {
+	                ChannelHandlerContext ctx =
+	                        fromChannelConnections.getNetworkConnectionByHost(
+	                        		connectionInfo.getHost(), connectionInfo.getPort());
+	
+	                if (ctx != null && ctx.channel().isActive()) {
+	                    ByteBuf out = ctx.alloc().buffer();
+	                    message.writeHeader(out);
+	                    message.writeExtra(out);
+	
+	                    ctx.writeAndFlush(out);
+	
+	                    logger.debug(
+	                            "send message to  "
+	                                    + fromConnection.getHost()
+	                                    + ":"
+	                                    + String.valueOf(fromConnection.getPort())
+	                                    + " 成功");
+	                } else {
+	                    logger.error("sending node unavailable, {}",
+	                    		connectionInfo.getHost() + ":" + String.valueOf(connectionInfo.getPort()));
+	                }
+                }
+            } catch (Exception e) {
+                logger.error("send message fail:", e);
+
+                ChannelResponse response = new ChannelResponse();
+                response.setErrorCode(100);
+                response.setMessageID(request.getMessageID());
+                response.setErrorMessage(e.getMessage());
+                response.setContent("");
+
                 return;
             }
         } catch (Exception e) {
