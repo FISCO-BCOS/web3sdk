@@ -81,13 +81,34 @@ public class ChannelPush {
         this.ttl = ttl;
     }
 
-    public String getContent() {
-        return content;
-    }
+  public byte[] getContent2() {
+    return content;
+  }
+  
+  
+  public String getContent()
+  {
+	  if(content == null) {
+		  return null;
+	  }
+	  
+	  String _content = new String(content);
+	  return _content;
+  }
 
-    public void setContent(String content) {
-        this.content = content;
-    }
+  public void setContent(String content) {
+	  if(content == null)
+	  {
+		  this.content = null;
+		  return;
+	  }
+	  this.content = content.getBytes();
+  }
+  
+  
+  public void setContent(byte[] content) {
+	  this.content = content;
+  }
 
     public void sendResponse(ChannelResponse response) {
         logger.debug("send ChannelResponse seq:{}", response.getMessageID());
@@ -109,7 +130,7 @@ public class ChannelPush {
     private Integer timeout; // 超时时间（毫秒）
     private Integer ttl; // TTL
 
-    private String content; // 请求包体
+  private byte[] content; // 请求包体
 
     // 回包用字段
 
