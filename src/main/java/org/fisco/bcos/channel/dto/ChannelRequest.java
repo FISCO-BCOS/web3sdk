@@ -82,13 +82,38 @@ public class ChannelRequest {
         this.ttl = ttl;
     }
 
-    public String getContent() {
-        return content;
+  public String getContent() 
+  {
+    
+    if (this.content == null) 
+    {
+        return null;
     }
+    String _content = new String(this.content);
+    return _content;
+ }
+  
+  public byte[] getContentByteArray() 
+  {
+	  return this.content;
+ }
 
-    public void setContent(String content) {
-        this.content = content;
-    }
+  public void setContent(String content) {
+	  if (content == null) 
+	  {
+	        this.content = null;
+	  }
+	  else
+	  {
+		  this.content = content.getBytes();
+	  }
+  }
+  
+  
+  public void setContent(byte[] content)
+  {
+	  this.content = content;
+  }
 
     private String fromOrg; // 链ID
     private String orgApp; // 来源标识
@@ -103,5 +128,5 @@ public class ChannelRequest {
     private Integer timeout = 0; // 超时时间（毫秒）
     private Integer ttl; // TTL 限制重试的次数
 
-    private String content; // 请求包体
+  private byte[] content; // 请求包体
 }

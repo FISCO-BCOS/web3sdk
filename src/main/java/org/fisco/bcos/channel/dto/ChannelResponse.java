@@ -25,18 +25,43 @@ public class ChannelResponse {
         this.messageID = messageID;
     }
 
-    public String getContent() {
-        return content;
+  public String getContent() 
+  {
+    
+    if (this.content == null) 
+    {
+        return null;
     }
+    String _content = new String(this.content);
+    return _content;
+ }
+  
+  public byte[] getContentByteArray() 
+  {
+	  return this.content;
+ }
 
-    public void setContent(String content) {
-        this.content = content;
-    }
+  public void setContent(String content) {
+	  if (content == null) 
+	  {
+	        this.content = null;
+	  }
+	  else
+	  {
+		  this.content = content.getBytes();
+	  }
+  }
+  
+  
+  public void setContent(byte[] content)
+  {
+	  this.content = content;
+  }
 
     private Integer errorCode; // 错误码
     private String errorMessage; // 错误信息
 
     private String messageID; // 消息唯一ID
 
-    private String content; // 响应包体
+  private byte[] content; // 响应包体
 }
