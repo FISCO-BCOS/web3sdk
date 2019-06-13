@@ -11,13 +11,13 @@ import org.fisco.bcos.web3j.protocol.exceptions.TransactionException;
  */
 public class NoOpProcessor extends TransactionReceiptProcessor {
 
-  public NoOpProcessor(Web3j web3j) {
-    super(web3j);
-  }
+    public NoOpProcessor(Web3j web3j) {
+        super(web3j);
+    }
 
-  @Override
-  public TransactionReceipt waitForTransactionReceipt(String transactionHash)
-      throws IOException, TransactionException {
-    return new EmptyTransactionReceipt(transactionHash);
-  }
+    @Override
+    public TransactionReceipt waitForTransactionReceipt(String transactionHash)
+            throws IOException, TransactionException {
+        return new EmptyTransactionReceipt(transactionHash);
+    }
 }

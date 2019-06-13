@@ -13,12 +13,12 @@ import org.fisco.bcos.web3j.abi.datatypes.Type;
  * href="https://github.com/web3j/web3j/tree/master/codegen">codegen module</a> to update.
  */
 public class StaticArray26<T extends Type> extends StaticArray<T> {
-  public StaticArray26(List<T> values) {
-    super(26, values);
-  }
+    public StaticArray26(List<T> values) {
+        super(26, values);
+    }
 
-  @SafeVarargs
-  public StaticArray26(T... values) {
-    super(26, values);
-  }
+    @SafeVarargs
+    public StaticArray26(T... values) {
+        super(26, values);
+    }
 }
