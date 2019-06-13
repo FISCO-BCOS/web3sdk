@@ -76,7 +76,6 @@ public class ConnectionCallback implements ChannelConnections.Callback {
             ctx.writeAndFlush(out);
 
             queryBlockNumberForSelectNodes(ctx);
-
         } catch (Exception e) {
             logger.error("error:", e);
         }

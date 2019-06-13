@@ -169,8 +169,12 @@ public class ExtendedRawTransactionManager extends TransactionManager {
         Request<?, SendTransaction> request = web3j.sendRawTransaction(signedTransaction);
         request.setNeedTransCallback(true);
         request.setTransactionSucCallback(callback);
-        SendTransaction ethSendTransaction = request.send();
+        
+        request.sendOnly();
+        
+        return null;
 
+        /*
         if (ethSendTransaction != null && !ethSendTransaction.hasError()) {
             String txHashLocal = Hash.sha3(signedTransaction);
             String txHashRemote = ethSendTransaction.getTransactionHash();
@@ -180,6 +184,7 @@ public class ExtendedRawTransactionManager extends TransactionManager {
         }
 
         return ethSendTransaction;
+        */
     }
 
     @Override
