@@ -169,9 +169,9 @@ public class ExtendedRawTransactionManager extends TransactionManager {
         Request<?, SendTransaction> request = web3j.sendRawTransaction(signedTransaction);
         request.setNeedTransCallback(true);
         request.setTransactionSucCallback(callback);
-        
+
         request.sendOnly();
-        
+
         return null;
 
         /*
