@@ -142,7 +142,7 @@ public class ConnectionCallback implements ChannelConnections.Callback {
                 channelMessage.readExtra(message);
 
                 channelService.onReceiveChannelMessage(ctx, channelMessage);
-            } else if (msg.getType() == 0x30 || msg.getType() == 0x31) {
+            } else if (msg.getType() == 0x30 || msg.getType() == 0x31 || msg.getType() == 0x35) {
                 ChannelMessage2 channelMessage = new ChannelMessage2(msg);
                 channelMessage.readExtra(message);
 
