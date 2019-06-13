@@ -1,5 +1,6 @@
 package org.fisco.bcos.channel.test.parallel.parallelok;
 
+import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
@@ -9,10 +10,43 @@ import org.slf4j.LoggerFactory;
 public class PerformanceDTCollector {
 
     static Logger logger = LoggerFactory.getLogger(PerformanceDTCollector.class);
+    static HashMap<String, String> errorInfos = new HashMap<String, String>();
 
     private Integer total = 0;
     private DagUserMgr dagUserMrg;
     private PerformanceDTTest PerformanceDTTest;
+
+    public PerformanceDTCollector() {
+        errorInfos.put("0x0", "None");
+        errorInfos.put("0x1", "Unknown");
+        errorInfos.put("0x2", "BadRLP");
+        errorInfos.put("0x3", "InvalidFormat");
+        errorInfos.put("0x4", "OutOfGasIntrinsic");
+        errorInfos.put("0x5", "InvalidSignature");
+        errorInfos.put("0x6", "InvalidNonce");
+        errorInfos.put("0x7", "NotEnoughCash");
+        errorInfos.put("0x8", "OutOfGasBase");
+        errorInfos.put("0x9", "BlockGasLimitReached");
+        errorInfos.put("0xa", "BadInstruction");
+        errorInfos.put("0xb", "BadJumpDestination");
+        errorInfos.put("0xc", "OutOfGas");
+        errorInfos.put("0xd", "OutOfStack");
+        errorInfos.put("0xe", "StackUnderflow");
+        errorInfos.put("0xf", "NonceCheckFail");
+        errorInfos.put("0x10", "BlockLimitCheckFail");
+        errorInfos.put("0x11", "FilterCheckFail");
+        errorInfos.put("0x12", "NoDeployPermission");
+        errorInfos.put("0x13", "NoCallPermission");
+        errorInfos.put("0x14", "NoTxPermission");
+        errorInfos.put("0x15", "PrecompiledError");
+        errorInfos.put("0x16", "RevertInstruction");
+        errorInfos.put("0x17", "InvalidZeroSignatureFormat");
+        errorInfos.put("0x18", "AddressAlreadyUsed");
+        errorInfos.put("0x19", "PermissionDenied");
+        errorInfos.put("0x1a", "CallAddressError");
+        errorInfos.put("0x1b", "GasOverflow");
+        errorInfos.put("0x1c", "TxPoolIsFull");
+    }
 
     public PerformanceDTTest getPerformanceDTTest() {
         return PerformanceDTTest;
@@ -45,7 +79,7 @@ public class PerformanceDTCollector {
     public void onMessage(TransactionReceipt receipt, Long cost) {
         try {
             if (!receipt.isStatusOK()) {
-                System.out.println("receipt error! status: " + receipt.getStatus());
+                System.out.println("receipt error! status: " + errorInfos.get(receipt.getStatus()));
                 error.addAndGet(1);
             }
 
@@ -98,11 +132,13 @@ public class PerformanceDTCollector {
                         "Avg time cost: " + String.valueOf(totalCost.get() / total) + "ms");
                 System.out.println(
                         "Error rate: "
-                                + String.valueOf(((double)error.get() / (double)received.get()) * 100)
+                                + String.valueOf(
+                                        ((double) error.get() / (double) received.get()) * 100)
                                 + "%");
                 System.out.println(
                         "Return Error rate: "
-                                + String.valueOf(((double)ret_error.get() / (double)received.get()) * 100)
+                                + String.valueOf(
+                                        ((double) ret_error.get() / (double) received.get()) * 100)
                                 + "%");
 
                 System.out.println("Time area:");
