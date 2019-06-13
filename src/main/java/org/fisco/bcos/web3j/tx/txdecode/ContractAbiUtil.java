@@ -17,19 +17,16 @@ package org.fisco.bcos.web3j.tx.txdecode;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.fisco.bcos.web3j.abi.EventValues;
 import org.fisco.bcos.web3j.abi.TypeReference;
-import org.fisco.bcos.web3j.abi.datatypes.DynamicArray;
 import org.fisco.bcos.web3j.abi.datatypes.Event;
 import org.fisco.bcos.web3j.abi.datatypes.Type;
 import org.fisco.bcos.web3j.protocol.core.methods.response.AbiDefinition;
 import org.fisco.bcos.web3j.protocol.core.methods.response.AbiDefinition.NamedType;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Log;
-import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.tx.Contract;
 
 /** ContractAbiUtil. */
@@ -129,50 +126,6 @@ public class ContractAbiUtil {
     }
 
     /**
-     * input parameter format.
-     *
-     * @param funcInputTypes list
-     * @param params list
-     * @return
-     */
-    public static List<Type> inputFormat(List<String> funcInputTypes, List<Object> params)
-            throws BaseException {
-        List<Type> finalInputs = new ArrayList<>();
-        for (int i = 0; i < funcInputTypes.size(); i++) {
-            Class<? extends Type> inputType = null;
-            Object input = null;
-            if (funcInputTypes.get(i).indexOf("[") != -1
-                    && funcInputTypes.get(i).indexOf("]") != -1) {
-                List<Object> arrList =
-                        new ArrayList<>(Arrays.asList(params.get(i).toString().split(",")));
-                List<Type> arrParams = new ArrayList<>();
-                for (int j = 0; j < arrList.size(); j++) {
-                    inputType =
-                            ContractTypeUtil.getType(
-                                    funcInputTypes
-                                            .get(i)
-                                            .substring(0, funcInputTypes.get(i).indexOf("[")));
-                    input =
-                            ContractTypeUtil.parseByType(
-                                    funcInputTypes
-                                            .get(i)
-                                            .substring(0, funcInputTypes.get(i).indexOf("[")),
-                                    arrList.get(j).toString());
-                    arrParams.add(ContractTypeUtil.encodeString(input.toString(), inputType));
-                }
-                finalInputs.add(new DynamicArray<>(arrParams));
-            } else {
-                inputType = ContractTypeUtil.getType(funcInputTypes.get(i));
-                input =
-                        ContractTypeUtil.parseByType(
-                                funcInputTypes.get(i), params.get(i).toString());
-                finalInputs.add(ContractTypeUtil.encodeString(input.toString(), inputType));
-            }
-        }
-        return finalInputs;
-    }
-
-    /**
      * output parameter format.
      *
      * @param funOutputTypes list
@@ -180,116 +133,56 @@ public class ContractAbiUtil {
      */
     public static List<TypeReference<?>> paramFormat(List<String> paramTypes) throws BaseException {
         List<TypeReference<?>> finalOutputs = new ArrayList<>();
+
         for (int i = 0; i < paramTypes.size(); i++) {
-            Class<? extends Type> outputType = null;
-            TypeReference<?> typeReference = null;
-            if (paramTypes.get(i).indexOf("[") != -1 && paramTypes.get(i).indexOf("]") != -1) {
-                typeReference =
-                        ContractTypeUtil.getArrayType(
-                                paramTypes.get(i).substring(0, paramTypes.get(i).indexOf("[")));
-            } else {
-                outputType = ContractTypeUtil.getType(paramTypes.get(i));
-                typeReference = TypeReference.create(outputType);
+
+            AbiDefinition.NamedType.Type type = new AbiDefinition.NamedType.Type(paramTypes.get(i));
+            // nested array , not support now.
+            if (type.getDepth() > 1) {
+                throw new BaseException(
+                        201202,
+                        String.format("type:%s unsupported array decoding", type.getName()));
             }
+
+            TypeReference<?> typeReference = null;
+            if (type.dynamicArray()) {
+                typeReference =
+                        ContractTypeUtil.createDynamicArrayTypeReference(
+                                ContractTypeUtil.getType(type.getBaseName()));
+            } else if (type.dynamicArray()) {
+                typeReference =
+                        ContractTypeUtil.createStaticArrayTypeReference(
+                                ContractTypeUtil.getType(type.getBaseName()), type.getDimensions());
+            } else {
+                typeReference = TypeReference.create(ContractTypeUtil.getType(paramTypes.get(i)));
+            }
+
             finalOutputs.add(typeReference);
         }
         return finalOutputs;
     }
 
     /**
-     * ethCall Result Parse.
-     *
-     * @param funOutputTypes list
-     * @param typeList list
-     * @return List<Object>
-     */
-    public static List<Object> callResultParse(List<String> funOutputTypes, List<Type> typeList)
-            throws BaseException {
-        if (funOutputTypes.size() == typeList.size()) {
-            List<Object> result = new ArrayList<>();
-            for (int i = 0; i < funOutputTypes.size(); i++) {
-                Class<? extends Type> outputType = null;
-                Object value = null;
-                if (funOutputTypes.get(i).indexOf("[") != -1
-                        && funOutputTypes.get(i).indexOf("]") != -1) {
-                    List<Object> values = new ArrayList<>();
-                    List<Type> results = (List<Type>) typeList.get(i).getValue();
-                    for (int j = 0; j < results.size(); j++) {
-                        outputType =
-                                ContractTypeUtil.getType(
-                                        funOutputTypes
-                                                .get(i)
-                                                .substring(0, funOutputTypes.get(i).indexOf("[")));
-                        value = ContractTypeUtil.decodeResult(results.get(j), outputType);
-                        values.add(value);
-                    }
-                    result.add(values);
-                } else {
-                    outputType = ContractTypeUtil.getType(funOutputTypes.get(i));
-                    value = ContractTypeUtil.decodeResult(typeList.get(i), outputType);
-                    result.add(value);
-                }
-            }
-            return result;
-        }
-        return null;
-    }
-
-    /**
-     * receiptParse.
-     *
-     * @param receipt info
-     * @param abiList info
-     * @return
-     * @return
-     */
-    public static Map<String, Object> receiptParse(
-            TransactionReceipt receipt, List<AbiDefinition> abiList) throws BaseException {
-        Map<String, Object> resultMap = new HashMap<>();
-        List<Log> logList = receipt.getLogs();
-        for (AbiDefinition abiDefinition : abiList) {
-            String eventName = abiDefinition.getName();
-            List<String> funcInputTypes = getFuncInputType(abiDefinition);
-            List<TypeReference<?>> finalOutputs = paramFormat(funcInputTypes);
-            Event event = new Event(eventName, finalOutputs);
-            Object result = null;
-            for (Log logInfo : logList) {
-                EventValues eventValues = Contract.staticExtractEventParameters(event, logInfo);
-                if (eventValues != null) {
-                    result = callResultParse(funcInputTypes, eventValues.getNonIndexedValues());
-                    break;
-                }
-            }
-            if (result != null) {
-                resultMap.put(eventName, result);
-            }
-        }
-        return resultMap;
-    }
-    /**
      * @param logList
      * @param abiList
      * @return
      * @throws BaseException
      */
-    public static Map<String, List<Object>> decodeEvents(
+    public static Map<String, List<Type>> decodeEvents(
             List<Log> logList, List<AbiDefinition> abiList) throws BaseException {
-        Map<String, List<Object>> resultMap = new HashMap<>();
+        Map<String, List<Type>> resultMap = new HashMap<>();
         for (AbiDefinition abiDefinition : abiList) {
             String eventName = abiDefinition.getName();
             List<String> funcInputTypes = getFuncInputType(abiDefinition);
             List<TypeReference<?>> finalOutputs = paramFormat(funcInputTypes);
             Event event = new Event(eventName, finalOutputs);
-            List<Object> result = null;
+            // List<Object> result = null;
             for (Log logInfo : logList) {
                 EventValues eventValues = Contract.staticExtractEventParameters(event, logInfo);
                 if (eventValues != null) {
-                    result = callResultParse(funcInputTypes, eventValues.getNonIndexedValues());
+                    resultMap.put(eventName, eventValues.getIndexedValues());
                     break;
                 }
-            }
-            if (result != null) {
-                resultMap.put(eventName, result);
             }
         }
         return resultMap;
