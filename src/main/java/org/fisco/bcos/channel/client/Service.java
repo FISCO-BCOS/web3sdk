@@ -546,20 +546,20 @@ public class Service {
 
             channelMessage.setSeq(request.getMessageID());
             channelMessage.setResult(0);
-            channelMessage.setType((short) 0x32); // 链上链下多播请求0x32
+            channelMessage.setType((short) 0x35); // 链上链下多播请求0x35
             channelMessage.setData(request.getContent().getBytes());
             channelMessage.setTopic(request.getToTopic());
 
             try {
-                List<ConnectionInfo> fromConnectionInfos = new ArrayList<ConnectionInfo>();
-
                 // 设置发送节点
-                List<ChannelConnections> fromChannelConnections =
+                ChannelConnections fromChannelConnections =
                         allChannelConnections
                                 .getAllChannelConnections()
                                 .stream()
-                                .filter(x -> x.getGroupId() == groupId).collect(toList());
-                if (fromChannelConnections.isEmpty()) {
+                                .filter(x -> x.getGroupId() == groupId)
+                                .findFirst()
+                                .get();
+                if (fromChannelConnections == null) {
                     // 没有找到对应的链
                     // 返回错误
                     if (orgID != null) {
@@ -574,25 +574,25 @@ public class Service {
                 logger.debug(
                         "FromOrg:{} nodes:{}",
                         request.getFromOrg(),
-                        fromChannelConnections.size());
+                        fromChannelConnections.getConnections().size());
                 
-                for(ConnectionInfo connectionInfo: fromConnectionInfos) {
+                for(ConnectionInfo connectionInfo: fromChannelConnections.getConnections()) {
 	                ChannelHandlerContext ctx =
 	                        fromChannelConnections.getNetworkConnectionByHost(
 	                        		connectionInfo.getHost(), connectionInfo.getPort());
 	
 	                if (ctx != null && ctx.channel().isActive()) {
 	                    ByteBuf out = ctx.alloc().buffer();
-	                    message.writeHeader(out);
-	                    message.writeExtra(out);
+	                    channelMessage.writeHeader(out);
+	                    channelMessage.writeExtra(out);
 	
 	                    ctx.writeAndFlush(out);
 	
 	                    logger.debug(
 	                            "send message to  "
-	                                    + fromConnection.getHost()
+	                                    + connectionInfo.getHost()
 	                                    + ":"
-	                                    + String.valueOf(fromConnection.getPort())
+	                                    + String.valueOf(connectionInfo.getPort())
 	                                    + " 成功");
 	                } else {
 	                    logger.error("sending node unavailable, {}",
@@ -758,7 +758,7 @@ public class Service {
                 (ChannelResponseCallback2) seq2Callback.get(message.getSeq());
         logger.debug("ChannelResponse seq:{}", message.getSeq());
 
-        if (message.getType() == 0x30) { // 链上链下请求
+        if (message.getType() == 0x30 || message.getType() == 0x35) { // 链上链下请求
             logger.debug("channel PUSH");
             if (callback != null) {
                 // 清空callback再处理
