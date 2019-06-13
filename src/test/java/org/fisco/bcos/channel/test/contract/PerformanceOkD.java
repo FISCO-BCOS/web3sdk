@@ -18,92 +18,111 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 public class PerformanceOkD {
-  private static Logger logger = LoggerFactory.getLogger(PerformanceOkD.class);
-  private static AtomicInteger sended = new AtomicInteger(0);
+    private static Logger logger = LoggerFactory.getLogger(PerformanceOkD.class);
+    private static AtomicInteger sended = new AtomicInteger(0);
 
-  public static void main(String[] args) throws Exception {
-    try {
-      String groupId = args[3];
-      ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
-      Service service = context.getBean(Service.class);
-      service.setGroupId(Integer.parseInt(groupId));
-      service.run();
+    public static void main(String[] args) throws Exception {
+        try {
+            String groupId = args[3];
+            ApplicationContext context =
+                    new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
+            Service service = context.getBean(Service.class);
+            service.setGroupId(Integer.parseInt(groupId));
+            service.run();
 
-      System.out.println("Start test...");
-      System.out.println("===================================================================");
+            System.out.println("Start test...");
+            System.out.println(
+                    "===================================================================");
 
-      ChannelEthereumService channelEthereumService = new ChannelEthereumService();
-      channelEthereumService.setChannelService(service);
+            ChannelEthereumService channelEthereumService = new ChannelEthereumService();
+            channelEthereumService.setChannelService(service);
 
-      ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(500);
-      Web3j web3 = Web3j.build(channelEthereumService, 15 * 100, scheduledExecutorService, Integer.parseInt(groupId));
+            ScheduledExecutorService scheduledExecutorService =
+                    Executors.newScheduledThreadPool(500);
+            Web3j web3 =
+                    Web3j.build(
+                            channelEthereumService,
+                            15 * 100,
+                            scheduledExecutorService,
+                            Integer.parseInt(groupId));
 
-      Credentials credentials = Credentials.create("b83261efa42895c38c6c2364ca878f43e77f3cddbc922bf57d0d48070f79feb6");
+            Credentials credentials =
+                    Credentials.create(
+                            "b83261efa42895c38c6c2364ca878f43e77f3cddbc922bf57d0d48070f79feb6");
 
-      BigInteger gasPrice = new BigInteger("30000000");
-      BigInteger gasLimit = new BigInteger("30000000");
+            BigInteger gasPrice = new BigInteger("30000000");
+            BigInteger gasLimit = new BigInteger("30000000");
 
-      String command = args[0];
-      Integer count = 0;
-      Integer qps = 0;
+            String command = args[0];
+            Integer count = 0;
+            Integer qps = 0;
 
-      switch (command) {
-      case "trans":
-        count = Integer.parseInt(args[1]);
-        qps = Integer.parseInt(args[2]);
-        break;
-      default:
-        System.out.println("Args: <trans> <Total> <QPS>");
-      }
-
-      ThreadPoolTaskExecutor threadPool = new ThreadPoolTaskExecutor();
-      threadPool.setCorePoolSize(200);
-      threadPool.setMaxPoolSize(500);
-      threadPool.setQueueCapacity(count);
-
-      threadPool.initialize();
-
-      System.out.println("Deploying contract...");
-      OkD ok = OkD.deploy(web3, credentials, gasPrice, gasLimit).send();
-
-      PerformanceCollector collector = new PerformanceCollector();
-      collector.setTotal(count);
-
-      RateLimiter limiter = RateLimiter.create(qps);
-      Integer area = count / 10;
-      final Integer total = count;
-
-      Random random = new Random(System.currentTimeMillis());
-
-      System.out.println("Start test，total：" + count);
-      for (Integer i = 0; i < count; ++i) {
-        threadPool.execute(new Runnable() {
-          @Override
-          public void run() {
-            limiter.acquire();
-            PerformanceOkCallback callback = new PerformanceOkCallback();
-            callback.setCollector(collector);
-            try {
-              ok.trans(String.valueOf(random.nextLong()), new BigInteger("1"), callback);
-            } catch (Exception e) {
-              TransactionReceipt receipt = new TransactionReceipt();
-              receipt.setStatus("-1");
-
-              callback.onResponse(receipt);
-              logger.error("Error sending:", e);
+            switch (command) {
+                case "trans":
+                    count = Integer.parseInt(args[1]);
+                    qps = Integer.parseInt(args[2]);
+                    break;
+                default:
+                    System.out.println("Args: <trans> <Total> <QPS>");
             }
 
-            int current = sended.incrementAndGet();
+            ThreadPoolTaskExecutor threadPool = new ThreadPoolTaskExecutor();
+            threadPool.setCorePoolSize(200);
+            threadPool.setMaxPoolSize(500);
+            threadPool.setQueueCapacity(count);
 
-            if (current >= area && ((current % area) == 0)) {
-              System.out.println("Already sended: " + current + "/" + total + " transactions");
+            threadPool.initialize();
+
+            System.out.println("Deploying contract...");
+            OkD ok = OkD.deploy(web3, credentials, gasPrice, gasLimit).send();
+
+            PerformanceCollector collector = new PerformanceCollector();
+            collector.setTotal(count);
+
+            RateLimiter limiter = RateLimiter.create(qps);
+            Integer area = count / 10;
+            final Integer total = count;
+
+            Random random = new Random(System.currentTimeMillis());
+
+            System.out.println("Start test，total：" + count);
+            for (Integer i = 0; i < count; ++i) {
+                threadPool.execute(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                limiter.acquire();
+                                PerformanceOkCallback callback = new PerformanceOkCallback();
+                                callback.setCollector(collector);
+                                try {
+                                    ok.trans(
+                                            String.valueOf(random.nextLong()),
+                                            new BigInteger("1"),
+                                            callback);
+                                } catch (Exception e) {
+                                    TransactionReceipt receipt = new TransactionReceipt();
+                                    receipt.setStatus("-1");
+
+                                    callback.onResponse(receipt);
+                                    logger.error("Error sending:", e);
+                                }
+
+                                int current = sended.incrementAndGet();
+
+                                if (current >= area && ((current % area) == 0)) {
+                                    System.out.println(
+                                            "Already sended: "
+                                                    + current
+                                                    + "/"
+                                                    + total
+                                                    + " transactions");
+                                }
+                            }
+                        });
             }
-          }
-        });
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
-      System.exit(-1);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(-1);
+        }
     }
-  }
 }

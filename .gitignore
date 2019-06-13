@@ -39,3 +39,5 @@ gradle.properties
 /src/test/resources/node.key
 /src/test/java/org/fisco/bcos/temp
 build.gradle.bak
+/.settings/
+.project
