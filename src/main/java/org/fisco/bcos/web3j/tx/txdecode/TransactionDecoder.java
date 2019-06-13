@@ -192,7 +192,7 @@ public class TransactionDecoder {
     public List<Type> decodeOutPutReturnObject(String input, String output)
             throws TransactionException, BaseException {
 
-        String methodID = output.substring(0, 10);
+        String methodID = input.substring(0, 10);
         AbiDefinition abiFunc = methodIDMap.get(methodID);
         if (abiFunc == null) {
             throw new TransactionException("The method is not included in the contract abi.");
