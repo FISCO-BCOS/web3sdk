@@ -43,17 +43,6 @@ public class ContractTypeUtilTest {
     }
 
     @Test
-    public void validBSTest() {
-        assertThat(ContractTypeUtil.invalidBS("bytes"), is(false));
-        assertThat(ContractTypeUtil.invalidBS("bytes1"), is(true));
-        assertThat(ContractTypeUtil.invalidBS("bytes31"), is(true));
-        assertThat(ContractTypeUtil.invalidBS("bytes33"), is(false));
-        assertThat(ContractTypeUtil.invalidBS("aa"), is(false));
-        assertThat(ContractTypeUtil.invalidBS(""), is(false));
-        assertThat(ContractTypeUtil.invalidBS("int"), is(false));
-    }
-
-    @Test
     public void getTypeTest() throws BaseException {
         assertThat(ContractTypeUtil.getType("bytes").getName(), is(DynamicBytes.class.getName()));
         assertThat(ContractTypeUtil.getType("address").getName(), is(Address.class.getName()));

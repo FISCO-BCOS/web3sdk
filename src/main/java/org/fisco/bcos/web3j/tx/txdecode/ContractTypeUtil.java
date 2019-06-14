@@ -68,24 +68,6 @@ public class ContractTypeUtil {
         }
     }
 
-    public static boolean invalidBS(String type) {
-        if (!type.startsWith("bytes")) {
-            return false;
-        }
-
-        try {
-            Integer r = Integer.valueOf(type.substring(5));
-            if (r == null) {
-                return false;
-            }
-
-            return (r.intValue() >= 1 && r.intValue() <= 32);
-
-        } catch (NumberFormatException e) {
-            return false;
-        }
-    }
-
     public static Class<? extends Type> getType(String type) throws BaseException {
         switch (type) {
             case "address":
