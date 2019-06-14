@@ -81,9 +81,4 @@ public class ResultEntity {
 
         return obj;
     }
-
-    public static void main(String[] args) {
-        ResultEntity r = new ResultEntity("name", "type", new Utf8String("章鱼丸子"));
-        System.out.println(r.toJson());
-    }
 }

@@ -47,9 +47,4 @@ public abstract class NumericType implements Type<BigInteger> {
         result = 31 * result + (value != null ? value.hashCode() : 0);
         return result;
     }
-
-    @Override
-    public String toString() {
-        return value.toString();
-    }
 }
