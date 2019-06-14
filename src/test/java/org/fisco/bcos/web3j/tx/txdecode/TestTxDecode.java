@@ -2,6 +2,7 @@ package org.fisco.bcos.web3j.tx.txdecode;
 
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Map;
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.crypto.ECKeyPair;
@@ -24,29 +25,35 @@ public class TestTxDecode {
                 TransactionDecoderFactory.buildTransactionDecoder("TableTest");
         TransactionReceipt txReceipt = sentTx();
 
-        // decode constructor
-        //    	String contructorResult =
-        // transactionDecoder.decodeConstructorReturnJson(txReceipt.getInput());
-        //    	System.out.println(contructorResult);
-
         // decode input
         System.out.println("===================decode input===================");
-        String inputResult = transactionDecoder.decodeInputReturnJson(txReceipt.getInput());
-        System.out.println(inputResult);
+        String input = txReceipt.getInput();
+        String inputResult1 = transactionDecoder.decodeInputReturnJson(input);
+        List<ResultEntity> inputResult2 = transactionDecoder.decodeInputReturnObject(input);
+
+        System.out.println(inputResult1);
+        System.out.println(inputResult2);
 
         // decode output
         System.out.println("===================decode output===================");
-        String outputResult =
-                transactionDecoder.decodeOutputReturnJson(
-                        txReceipt.getInput(), txReceipt.getOutput());
-        System.out.println(outputResult);
+        String output = txReceipt.getOutput();
+        String outputResult1 = transactionDecoder.decodeOutputReturnJson(input, output);
+        List<ResultEntity> outputResult2 =
+                transactionDecoder.decodeOutputReturnObject(input, output);
+
+        System.out.println(outputResult1);
+        System.out.println(outputResult2);
 
         // decode event
         System.out.println("===================decode event===================");
         List<Log> logList = txReceipt.getLogs();
         String logJson = ObjectMapperFactory.getObjectMapper().writeValueAsString(logList);
-        String eventResult = transactionDecoder.decodeEventReturnJson(logJson);
-        System.out.println(eventResult);
+        String eventResult1 = transactionDecoder.decodeEventReturnJson(logJson);
+        Map<String, List<List<ResultEntity>>> eventResult2 =
+                transactionDecoder.decodeEventReturnObject(logList);
+
+        System.out.println(eventResult1);
+        System.out.println(eventResult2);
 
         System.exit(0);
     }
@@ -81,8 +88,6 @@ public class TestTxDecode {
                 tableTest.insert(name, BigInteger.valueOf(item_id), item_name);
         TransactionReceipt txReceipt = insert.send();
 
-        //        return
-        // web3j.getTransactionReceipt(txReceipt.getTransactionHash()).send().getResult();
-        return web3j.getTransactionReceipt(txReceipt.getTransactionHash()).send().getResult();
+        return txReceipt;
     }
 }
