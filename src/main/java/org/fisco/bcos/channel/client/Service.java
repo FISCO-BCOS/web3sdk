@@ -560,7 +560,7 @@ public class Service {
             channelMessage.setSeq(request.getMessageID());
             channelMessage.setResult(0);
             channelMessage.setType((short) 0x35); // 链上链下多播请求0x35
-            channelMessage.setData(request.getContent().getBytes());
+            channelMessage.setData(request.getContentByteArray());
             channelMessage.setTopic(request.getToTopic());
 
             try {
