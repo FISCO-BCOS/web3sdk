@@ -462,7 +462,7 @@ public class Service {
     			  	request.getContentByteArray().length);
     	  System.out.println("send byte length should not greater than 32M now length:"+
   			  	request.getContentByteArray().length);
-          throw new Exception("send byte length should not greater than 32M");
+          throw new AmopException("send byte length should not greater than 32M");
       }
       
       logger.debug("ChannelRequest: " + request.getMessageID());
