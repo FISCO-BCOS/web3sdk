@@ -12,12 +12,10 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.channel.test.parallel.parallelok.DagUserMgr;
-import org.fisco.bcos.channel.test.parallel.precompile.DagTransfer;
 import org.fisco.bcos.channel.test.parallel.parallelok.DagTransferUser;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
-import org.fisco.bcos.web3j.tuples.generated.Tuple2;
 import org.fisco.bcos.web3j.tx.gas.StaticGasProvider;
 import org.fisco.bcos.web3j.utils.Web3AsyncThreadPoolSize;
 import org.fisco.bcos.web3j.tx.TransactionManager;
@@ -30,12 +28,12 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import java.util.ArrayList;
 import java.util.Date;
 
-import org.fisco.bcos.web3j.tx.ExtendedRawTransactionManager;
 import java.util.concurrent.locks.*;
 import java.util.concurrent.CountDownLatch;
 
 public class PerformanceDTTest {
     private static Logger logger = LoggerFactory.getLogger(PerformanceDTTest.class);
+    private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     private static String groupId = "1";
 
@@ -139,7 +137,7 @@ public class PerformanceDTTest {
             }
             
             while(verify_success.get() + verify_failed.get() < total_user) {
-            	Thread.sleep(40);;
+            	Thread.sleep(40);
             }
 
             System.out.println("validation:");
@@ -397,8 +395,6 @@ public class PerformanceDTTest {
         }
     }
     
-    private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
     public void userTransferTest(BigInteger count, BigInteger qps, BigInteger deci) {
         List<String> signedTransactions = new ArrayList<String>();
         List<PerformanceDTCallback> callbacks = new ArrayList<PerformanceDTCallback>();
@@ -425,7 +421,6 @@ public class PerformanceDTTest {
 
             List<DagTransferUser> allUser = dagUserMgr.getUserList();
             
-            int coreNum = Runtime.getRuntime().availableProcessors();
             ThreadPoolTaskExecutor threadPool = new ThreadPoolTaskExecutor();
             threadPool.setCorePoolSize(200);
             threadPool.setMaxPoolSize(500);
