@@ -25,16 +25,13 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import java.util.concurrent.locks.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.ArrayList;
-import org.fisco.bcos.web3j.tx.ExtendedRawTransactionManager;
 import org.fisco.bcos.web3j.tx.TransactionManager;
 import org.fisco.bcos.web3j.tx.Contract;
-import java.util.concurrent.BlockingQueue;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.BufferedWriter;
 import java.io.BufferedReader;
-import java.util.concurrent.TimeUnit;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 
@@ -147,7 +144,7 @@ public class PerformanceDTTest {
             }
             
             while(verify_success.get() + verify_failed.get() < total_user) {
-            	Thread.sleep(40);;
+            	Thread.sleep(40);
             }
 
             System.out.println("validation:");
@@ -301,14 +298,12 @@ public class PerformanceDTTest {
             
             List<DagTransferUser> allUser = dagUserMgr.getUserList();
 
-            int coreNum = Runtime.getRuntime().availableProcessors();
             ThreadPoolTaskExecutor threadPool = new ThreadPoolTaskExecutor();
             threadPool.setCorePoolSize(200);
             threadPool.setMaxPoolSize(500);
             threadPool.setQueueCapacity(Math.max(count.intValue(), allUser.size()));
             threadPool.initialize();
             
-            Lock lock = new ReentrantLock();
             final DagTransfer _dagTransfer = dagTransfer;
             AtomicInteger geted = new AtomicInteger(0);
             for (int i = 0; i < allUser.size(); ++i) {
