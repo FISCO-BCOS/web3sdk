@@ -146,13 +146,10 @@ public class ContractAbiUtil {
 
             TypeReference<?> typeReference = null;
             if (type.dynamicArray()) {
+                typeReference = DynamicArrayReference.create(type.getBaseName());
+            } else if (type.staticArray()) {
                 typeReference =
-                        ContractTypeUtil.createDynamicArrayTypeReference(
-                                ContractTypeUtil.getType(type.getBaseName()));
-            } else if (type.dynamicArray()) {
-                typeReference =
-                        ContractTypeUtil.createStaticArrayTypeReference(
-                                ContractTypeUtil.getType(type.getBaseName()), type.getDimensions());
+                        StaticArrayReference.create(type.getBaseName(), type.getDimensions());
             } else {
                 typeReference = TypeReference.create(ContractTypeUtil.getType(paramTypes.get(i)));
             }
@@ -176,7 +173,7 @@ public class ContractAbiUtil {
             List<String> funcInputTypes = getFuncInputType(abiDefinition);
             List<TypeReference<?>> finalOutputs = paramFormat(funcInputTypes);
             Event event = new Event(eventName, finalOutputs);
-            // List<Object> result = null;
+
             for (Log logInfo : logList) {
                 EventValues eventValues = Contract.staticExtractEventParameters(event, logInfo);
                 if (eventValues != null) {
