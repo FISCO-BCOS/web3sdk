@@ -144,6 +144,7 @@ public class ChannelHandler extends SimpleChannelInboundHandler<ByteBuf> {
                             }
                         });
             }
+            
         } catch (RejectedExecutionException e) {
             logger.error("threadPool is full, reject to request", e);
         }
