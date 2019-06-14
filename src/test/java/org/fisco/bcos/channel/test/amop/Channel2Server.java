@@ -9,7 +9,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class Channel2Server {
-    static Logger logger = LoggerFactory.getLogger(Channel2Server.class);
+    private static Logger logger = LoggerFactory.getLogger(Channel2Server.class);
 
     public static void main(String[] args) throws Exception {
         if (args.length < 1) {
