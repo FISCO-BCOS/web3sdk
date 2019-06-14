@@ -29,7 +29,7 @@ public class ContractTypeUtil {
             return false;
         }
 
-        if (type.equals("uint")) {
+        if ("uint".equals(type)) {
             return true;
         }
 
@@ -39,11 +39,8 @@ public class ContractTypeUtil {
                 return false;
             }
 
-            if (r.intValue() >= 1 && r.intValue() <= 256) {
-                return true;
-            }
+            return (r.intValue() >= 1 && r.intValue() <= 256);
 
-            return false;
         } catch (NumberFormatException e) {
             return false;
         }
@@ -54,7 +51,7 @@ public class ContractTypeUtil {
             return false;
         }
 
-        if (type.equals("int")) {
+        if ("int".equals(type)) {
             return true;
         }
 
@@ -64,11 +61,8 @@ public class ContractTypeUtil {
                 return false;
             }
 
-            if (r.intValue() >= 1 && r.intValue() <= 256) {
-                return true;
-            }
+            return (r.intValue() >= 1 && r.intValue() <= 256);
 
-            return false;
         } catch (NumberFormatException e) {
             return false;
         }
@@ -85,11 +79,8 @@ public class ContractTypeUtil {
                 return false;
             }
 
-            if (r.intValue() >= 1 && r.intValue() <= 32) {
-                return true;
-            }
+            return (r.intValue() >= 1 && r.intValue() <= 32);
 
-            return false;
         } catch (NumberFormatException e) {
             return false;
         }
