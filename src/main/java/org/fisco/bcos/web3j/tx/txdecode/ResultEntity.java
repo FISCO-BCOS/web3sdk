@@ -1,6 +1,7 @@
 package org.fisco.bcos.web3j.tx.txdecode;
 
-import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.ArrayList;
 import java.util.List;
 import org.fisco.bcos.web3j.abi.datatypes.Address;
@@ -11,18 +12,21 @@ import org.fisco.bcos.web3j.abi.datatypes.DynamicBytes;
 import org.fisco.bcos.web3j.abi.datatypes.NumericType;
 import org.fisco.bcos.web3j.abi.datatypes.Type;
 import org.fisco.bcos.web3j.abi.datatypes.Utf8String;
+import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 
 public class ResultEntity {
 
     private String name;
     private String type;
     private Object data;
+    @JsonIgnore private Type typeObject;
 
     @SuppressWarnings("rawtypes")
     public ResultEntity(String name, String type, Type data) {
         this.name = name;
         this.type = type;
         this.data = typeToObject(data);
+        this.typeObject = data;
     }
 
     public String getName() {
@@ -41,16 +45,20 @@ public class ResultEntity {
         this.type = type;
     }
 
-    public String toJson() {
-        return JSONObject.toJSONString(this);
+    public String toJson() throws JsonProcessingException {
+        return ObjectMapperFactory.getObjectMapper().writeValueAsString(this);
     }
 
     public Object getData() {
         return data;
     }
 
+    public Type getTypeObject() {
+        return typeObject;
+    }
+
     public void setData(Type data) {
-        this.data = (Object) data;
+        this.data = data;
     }
 
     public static Object typeToObject(Type type) {
@@ -62,7 +70,7 @@ public class ResultEntity {
         } else if (type instanceof Address) { // address
             obj = type.toString();
         } else if (type instanceof Bytes) { // bytes32
-            obj = new String(((Bytes) type).getValue());
+            obj = new String(((Bytes) type).getValue()).trim();
         } else if (type instanceof DynamicBytes) { // bytes
             obj = new String(((DynamicBytes) type).getValue()).trim();
         } else if (type instanceof Utf8String) { // string
@@ -80,5 +88,10 @@ public class ResultEntity {
         }
 
         return obj;
+    }
+
+    @Override
+    public String toString() {
+        return "ResultEntity [name=" + name + ", type=" + type + ", data=" + data + "]";
     }
 }
