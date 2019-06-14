@@ -64,7 +64,7 @@ public class ResultEntity {
         } else if (type instanceof Bytes) { // bytes32
             obj = new String(((Bytes) type).getValue());
         } else if (type instanceof DynamicBytes) { // bytes
-            obj = new String(((DynamicBytes) type).getValue());
+            obj = new String(((DynamicBytes) type).getValue()).trim();
         } else if (type instanceof Utf8String) { // string
             obj = ((Utf8String) type).getValue();
         } else if (type instanceof Array) { // T[] T[k]
