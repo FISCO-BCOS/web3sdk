@@ -14,10 +14,8 @@
 
 package org.fisco.bcos.web3j.tx.txdecode;
 
-import org.fisco.bcos.web3j.abi.TypeReference;
 import org.fisco.bcos.web3j.abi.datatypes.Address;
 import org.fisco.bcos.web3j.abi.datatypes.Bool;
-import org.fisco.bcos.web3j.abi.datatypes.DynamicArray;
 import org.fisco.bcos.web3j.abi.datatypes.DynamicBytes;
 import org.fisco.bcos.web3j.abi.datatypes.Type;
 import org.fisco.bcos.web3j.abi.datatypes.Utf8String;
@@ -25,98 +23,51 @@ import org.fisco.bcos.web3j.abi.datatypes.generated.*;
 
 public class ContractTypeUtil {
 
-    @SuppressWarnings("rawtypes")
-    public static <T extends org.fisco.bcos.web3j.abi.datatypes.Type>
-            TypeReference<DynamicArray<T>> createDynamicArrayTypeReference(Class<T> cls) {
-        return new TypeReference<DynamicArray<T>>() {};
-    }
+    public static boolean invalidUint(String type) {
 
-    @SuppressWarnings("rawtypes")
-    public static <T extends org.fisco.bcos.web3j.abi.datatypes.Type>
-            TypeReference<?> createStaticArrayTypeReference(Class<T> cls, int dimensions)
-                    throws BaseException {
-        switch (dimensions) {
-            case 1:
-                return new TypeReference<StaticArray1<T>>() {};
-            case 2:
-                return new TypeReference<StaticArray2<T>>() {};
-            case 3:
-                return new TypeReference<StaticArray3<T>>() {};
-            case 4:
-                return new TypeReference<StaticArray4<T>>() {};
-            case 5:
-                return new TypeReference<StaticArray5<T>>() {};
-            case 6:
-                return new TypeReference<StaticArray6<T>>() {};
-            case 7:
-                return new TypeReference<StaticArray7<T>>() {};
-            case 8:
-                return new TypeReference<StaticArray8<T>>() {};
-            case 9:
-                return new TypeReference<StaticArray9<T>>() {};
-            case 10:
-                return new TypeReference<StaticArray10<T>>() {};
-            case 11:
-                return new TypeReference<StaticArray11<T>>() {};
-            case 12:
-                return new TypeReference<StaticArray12<T>>() {};
-            case 13:
-                return new TypeReference<StaticArray13<T>>() {};
-            case 14:
-                return new TypeReference<StaticArray14<T>>() {};
-            case 15:
-                return new TypeReference<StaticArray15<T>>() {};
-            case 16:
-                return new TypeReference<StaticArray16<T>>() {};
-            case 17:
-                return new TypeReference<StaticArray17<T>>() {};
-            case 18:
-                return new TypeReference<StaticArray18<T>>() {};
-            case 19:
-                return new TypeReference<StaticArray19<T>>() {};
-            case 20:
-                return new TypeReference<StaticArray20<T>>() {};
-            case 21:
-                return new TypeReference<StaticArray21<T>>() {};
-            case 22:
-                return new TypeReference<StaticArray22<T>>() {};
-            case 23:
-                return new TypeReference<StaticArray23<T>>() {};
-            case 24:
-                return new TypeReference<StaticArray24<T>>() {};
-            case 25:
-                return new TypeReference<StaticArray25<T>>() {};
-            case 26:
-                return new TypeReference<StaticArray26<T>>() {};
-            case 27:
-                return new TypeReference<StaticArray27<T>>() {};
-            case 28:
-                return new TypeReference<StaticArray28<T>>() {};
-            case 29:
-                return new TypeReference<StaticArray29<T>>() {};
-            case 30:
-                return new TypeReference<StaticArray30<T>>() {};
-            case 31:
-                return new TypeReference<StaticArray31<T>>() {};
-            case 32:
-                return new TypeReference<StaticArray32<T>>() {};
-                /*case 1024:
-                return new TypeReference<StaticArray1024<T>>() {};
-                break;*/
-            default:
-                throw new BaseException(
-                        201201,
-                        String.format(
-                                "dimensions:%d unsupported encoding static array ", dimensions));
+        if (!type.startsWith("uint")) {
+            return false;
+        }
+
+        if ("uint".equals(type)) {
+            return true;
+        }
+
+        try {
+            Integer r = Integer.valueOf(type.substring(4));
+            if (r == null) {
+                return false;
+            }
+
+            return (r.intValue() >= 1 && r.intValue() <= 256);
+
+        } catch (NumberFormatException e) {
+            return false;
         }
     }
 
-    /**
-     * getType.
-     *
-     * @param type type
-     * @return
-     */
+    public static boolean invalidInt(String type) {
+        if (!type.startsWith("int")) {
+            return false;
+        }
+
+        if ("int".equals(type)) {
+            return true;
+        }
+
+        try {
+            Integer r = Integer.valueOf(type.substring(3));
+            if (r == null) {
+                return false;
+            }
+
+            return (r.intValue() >= 1 && r.intValue() <= 256);
+
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
     public static Class<? extends Type> getType(String type) throws BaseException {
         switch (type) {
             case "address":
@@ -254,6 +205,10 @@ public class ContractTypeUtil {
             case "uint256":
                 return Uint256.class;
             case "int256":
+                return Int256.class;
+            case "uint":
+                return Uint256.class;
+            case "int":
                 return Int256.class;
             case "bytes1":
                 return Bytes1.class;
