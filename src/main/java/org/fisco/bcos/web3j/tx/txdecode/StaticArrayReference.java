@@ -9,8 +9,6 @@ import org.fisco.bcos.web3j.abi.datatypes.generated.*;
 
 public class StaticArrayReference {
 
-    public StaticArrayReference() {}
-
     public static TypeReference<?> create(String type, int dimension) throws BaseException {
 
         switch (dimension) {
