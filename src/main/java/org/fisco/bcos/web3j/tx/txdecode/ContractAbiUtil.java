@@ -177,7 +177,7 @@ public class ContractAbiUtil {
             for (Log logInfo : logList) {
                 EventValues eventValues = Contract.staticExtractEventParameters(event, logInfo);
                 if (eventValues != null) {
-                    resultMap.put(eventName, eventValues.getIndexedValues());
+                    resultMap.put(eventName, eventValues.getNonIndexedValues());
                     break;
                 }
             }
