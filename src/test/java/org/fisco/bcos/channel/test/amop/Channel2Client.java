@@ -2,6 +2,8 @@ package org.fisco.bcos.channel.test.amop;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.channel.dto.ChannelRequest;
 import org.fisco.bcos.channel.dto.ChannelResponse;
@@ -41,21 +43,23 @@ public class Channel2Client {
         System.out.println("start test");
         System.out.println("===================================================================");
 
-        for (Integer i = 0; i < count; ++i) {
-            Thread.sleep(2000);
-            ChannelRequest request = new ChannelRequest();
-            request.setToTopic(topic);
-            request.setMessageID(service.newSeq());
-            request.setTimeout(5000);
+    for (Integer i = 0; i < count; ++i) {
+      Thread.sleep(2000);
+      ChannelRequest request = new ChannelRequest();
+      request.setToTopic(topic);
+      request.setMessageID(service.newSeq());
+      request.setTimeout(5000);
+      
+      String content ="request seq:" + request.getMessageID();
 
-            request.setContent("request seq:" + request.getMessageID());
+      request.setContent(content.getBytes());
 
-            System.out.println(
-                    df.format(LocalDateTime.now())
-                            + " request seq:"
-                            + String.valueOf(request.getMessageID())
-                            + ", Content:"
-                            + request.getContent());
+      System.out.println(
+          df.format(LocalDateTime.now())
+              + " request seq:"
+              + String.valueOf(request.getMessageID())
+              + ", Content:"
+              + request.getContent()+" content:"+Arrays.toString(request.getContentByteArray()));
 
             ChannelResponse response = service.sendChannelMessage2(request);
 
