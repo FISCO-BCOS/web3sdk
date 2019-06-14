@@ -89,14 +89,8 @@ public class StaticArrayReference {
 
         if (ContractTypeUtil.invalidInt(type)) {
             return new TypeReference<StaticArray1<Int256>>() {};
-        }
-
-        if (ContractTypeUtil.invalidUint(type)) {
+        } else if (ContractTypeUtil.invalidUint(type)) {
             return new TypeReference<StaticArray1<Uint256>>() {};
-        }
-
-        if (ContractTypeUtil.invalidBS(type)) {
-            return new TypeReference<StaticArray1<Bytes32>>() {};
         }
 
         switch (type) {
@@ -108,6 +102,70 @@ public class StaticArrayReference {
                 return new TypeReference<StaticArray1<Utf8String>>() {};
             case "bytes":
                 return new TypeReference<StaticArray1<DynamicBytes>>() {};
+            case "bytes1":
+                return new TypeReference<StaticArray1<Bytes1>>() {};
+            case "bytes2":
+                return new TypeReference<StaticArray1<Bytes2>>() {};
+            case "bytes3":
+                return new TypeReference<StaticArray1<Bytes3>>() {};
+            case "bytes4":
+                return new TypeReference<StaticArray1<Bytes4>>() {};
+            case "bytes5":
+                return new TypeReference<StaticArray1<Bytes5>>() {};
+            case "bytes6":
+                return new TypeReference<StaticArray1<Bytes6>>() {};
+            case "bytes7":
+                return new TypeReference<StaticArray1<Bytes7>>() {};
+            case "bytes8":
+                return new TypeReference<StaticArray1<Bytes8>>() {};
+            case "bytes9":
+                return new TypeReference<StaticArray1<Bytes9>>() {};
+            case "bytes10":
+                return new TypeReference<StaticArray1<Bytes10>>() {};
+            case "bytes11":
+                return new TypeReference<StaticArray1<Bytes11>>() {};
+            case "bytes12":
+                return new TypeReference<StaticArray1<Bytes12>>() {};
+            case "bytes13":
+                return new TypeReference<StaticArray1<Bytes13>>() {};
+            case "bytes14":
+                return new TypeReference<StaticArray1<Bytes14>>() {};
+            case "bytes15":
+                return new TypeReference<StaticArray1<Bytes15>>() {};
+            case "bytes16":
+                return new TypeReference<StaticArray1<Bytes16>>() {};
+            case "bytes17":
+                return new TypeReference<StaticArray1<Bytes17>>() {};
+            case "bytes18":
+                return new TypeReference<StaticArray1<Bytes18>>() {};
+            case "bytes19":
+                return new TypeReference<StaticArray1<Bytes19>>() {};
+            case "bytes20":
+                return new TypeReference<StaticArray1<Bytes20>>() {};
+            case "bytes21":
+                return new TypeReference<StaticArray1<Bytes21>>() {};
+            case "bytes22":
+                return new TypeReference<StaticArray1<Bytes22>>() {};
+            case "bytes23":
+                return new TypeReference<StaticArray1<Bytes23>>() {};
+            case "bytes24":
+                return new TypeReference<StaticArray1<Bytes24>>() {};
+            case "bytes25":
+                return new TypeReference<StaticArray1<Bytes25>>() {};
+            case "bytes26":
+                return new TypeReference<StaticArray1<Bytes26>>() {};
+            case "bytes27":
+                return new TypeReference<StaticArray1<Bytes27>>() {};
+            case "bytes28":
+                return new TypeReference<StaticArray1<Bytes28>>() {};
+            case "bytes29":
+                return new TypeReference<StaticArray1<Bytes29>>() {};
+            case "bytes30":
+                return new TypeReference<StaticArray1<Bytes30>>() {};
+            case "bytes31":
+                return new TypeReference<StaticArray1<Bytes31>>() {};
+            case "bytes32":
+                return new TypeReference<StaticArray1<Bytes32>>() {};
             default:
                 throw new BaseException(
                         201201, String.format(" %s[1] unsupported encoding array type ", type));
@@ -120,8 +178,6 @@ public class StaticArrayReference {
             return new TypeReference<StaticArray2<Int256>>() {};
         } else if (ContractTypeUtil.invalidUint(type)) {
             return new TypeReference<StaticArray2<Uint256>>() {};
-        } else if (ContractTypeUtil.invalidBS(type)) {
-            return new TypeReference<StaticArray2<Bytes32>>() {};
         }
 
         switch (type) {
@@ -133,6 +189,70 @@ public class StaticArrayReference {
                 return new TypeReference<StaticArray2<Utf8String>>() {};
             case "bytes":
                 return new TypeReference<StaticArray2<DynamicBytes>>() {};
+            case "bytes1":
+                return new TypeReference<StaticArray2<Bytes1>>() {};
+            case "bytes2":
+                return new TypeReference<StaticArray2<Bytes2>>() {};
+            case "bytes3":
+                return new TypeReference<StaticArray2<Bytes3>>() {};
+            case "bytes4":
+                return new TypeReference<StaticArray2<Bytes4>>() {};
+            case "bytes5":
+                return new TypeReference<StaticArray2<Bytes5>>() {};
+            case "bytes6":
+                return new TypeReference<StaticArray2<Bytes6>>() {};
+            case "bytes7":
+                return new TypeReference<StaticArray2<Bytes7>>() {};
+            case "bytes8":
+                return new TypeReference<StaticArray2<Bytes8>>() {};
+            case "bytes9":
+                return new TypeReference<StaticArray2<Bytes9>>() {};
+            case "bytes10":
+                return new TypeReference<StaticArray2<Bytes10>>() {};
+            case "bytes11":
+                return new TypeReference<StaticArray2<Bytes11>>() {};
+            case "bytes12":
+                return new TypeReference<StaticArray2<Bytes12>>() {};
+            case "bytes13":
+                return new TypeReference<StaticArray2<Bytes13>>() {};
+            case "bytes14":
+                return new TypeReference<StaticArray2<Bytes14>>() {};
+            case "bytes15":
+                return new TypeReference<StaticArray2<Bytes15>>() {};
+            case "bytes16":
+                return new TypeReference<StaticArray2<Bytes16>>() {};
+            case "bytes17":
+                return new TypeReference<StaticArray2<Bytes17>>() {};
+            case "bytes18":
+                return new TypeReference<StaticArray2<Bytes18>>() {};
+            case "bytes19":
+                return new TypeReference<StaticArray2<Bytes19>>() {};
+            case "bytes20":
+                return new TypeReference<StaticArray2<Bytes20>>() {};
+            case "bytes21":
+                return new TypeReference<StaticArray2<Bytes21>>() {};
+            case "bytes22":
+                return new TypeReference<StaticArray2<Bytes22>>() {};
+            case "bytes23":
+                return new TypeReference<StaticArray2<Bytes23>>() {};
+            case "bytes24":
+                return new TypeReference<StaticArray2<Bytes24>>() {};
+            case "bytes25":
+                return new TypeReference<StaticArray2<Bytes25>>() {};
+            case "bytes26":
+                return new TypeReference<StaticArray2<Bytes26>>() {};
+            case "bytes27":
+                return new TypeReference<StaticArray2<Bytes27>>() {};
+            case "bytes28":
+                return new TypeReference<StaticArray2<Bytes28>>() {};
+            case "bytes29":
+                return new TypeReference<StaticArray2<Bytes29>>() {};
+            case "bytes30":
+                return new TypeReference<StaticArray2<Bytes30>>() {};
+            case "bytes31":
+                return new TypeReference<StaticArray2<Bytes31>>() {};
+            case "bytes32":
+                return new TypeReference<StaticArray2<Bytes32>>() {};
             default:
                 throw new BaseException(
                         201201, String.format(" %s[2] unsupported encoding array type ", type));
@@ -145,8 +265,6 @@ public class StaticArrayReference {
             return new TypeReference<StaticArray3<Int256>>() {};
         } else if (ContractTypeUtil.invalidUint(type)) {
             return new TypeReference<StaticArray3<Uint256>>() {};
-        } else if (ContractTypeUtil.invalidBS(type)) {
-            return new TypeReference<StaticArray3<Bytes32>>() {};
         }
 
         switch (type) {
@@ -158,6 +276,70 @@ public class StaticArrayReference {
                 return new TypeReference<StaticArray3<Utf8String>>() {};
             case "bytes":
                 return new TypeReference<StaticArray3<DynamicBytes>>() {};
+            case "bytes1":
+                return new TypeReference<StaticArray3<Bytes1>>() {};
+            case "bytes2":
+                return new TypeReference<StaticArray3<Bytes2>>() {};
+            case "bytes3":
+                return new TypeReference<StaticArray3<Bytes3>>() {};
+            case "bytes4":
+                return new TypeReference<StaticArray3<Bytes4>>() {};
+            case "bytes5":
+                return new TypeReference<StaticArray3<Bytes5>>() {};
+            case "bytes6":
+                return new TypeReference<StaticArray3<Bytes6>>() {};
+            case "bytes7":
+                return new TypeReference<StaticArray3<Bytes7>>() {};
+            case "bytes8":
+                return new TypeReference<StaticArray3<Bytes8>>() {};
+            case "bytes9":
+                return new TypeReference<StaticArray3<Bytes9>>() {};
+            case "bytes10":
+                return new TypeReference<StaticArray3<Bytes10>>() {};
+            case "bytes11":
+                return new TypeReference<StaticArray3<Bytes11>>() {};
+            case "bytes12":
+                return new TypeReference<StaticArray3<Bytes12>>() {};
+            case "bytes13":
+                return new TypeReference<StaticArray3<Bytes13>>() {};
+            case "bytes14":
+                return new TypeReference<StaticArray3<Bytes14>>() {};
+            case "bytes15":
+                return new TypeReference<StaticArray3<Bytes15>>() {};
+            case "bytes16":
+                return new TypeReference<StaticArray3<Bytes16>>() {};
+            case "bytes17":
+                return new TypeReference<StaticArray3<Bytes17>>() {};
+            case "bytes18":
+                return new TypeReference<StaticArray3<Bytes18>>() {};
+            case "bytes19":
+                return new TypeReference<StaticArray3<Bytes19>>() {};
+            case "bytes20":
+                return new TypeReference<StaticArray3<Bytes20>>() {};
+            case "bytes21":
+                return new TypeReference<StaticArray3<Bytes21>>() {};
+            case "bytes22":
+                return new TypeReference<StaticArray3<Bytes22>>() {};
+            case "bytes23":
+                return new TypeReference<StaticArray3<Bytes23>>() {};
+            case "bytes24":
+                return new TypeReference<StaticArray3<Bytes24>>() {};
+            case "bytes25":
+                return new TypeReference<StaticArray3<Bytes25>>() {};
+            case "bytes26":
+                return new TypeReference<StaticArray3<Bytes26>>() {};
+            case "bytes27":
+                return new TypeReference<StaticArray3<Bytes27>>() {};
+            case "bytes28":
+                return new TypeReference<StaticArray3<Bytes28>>() {};
+            case "bytes29":
+                return new TypeReference<StaticArray3<Bytes29>>() {};
+            case "bytes30":
+                return new TypeReference<StaticArray3<Bytes30>>() {};
+            case "bytes31":
+                return new TypeReference<StaticArray3<Bytes31>>() {};
+            case "bytes32":
+                return new TypeReference<StaticArray3<Bytes32>>() {};
             default:
                 throw new BaseException(
                         201201, String.format(" %s[3] unsupported encoding array type ", type));
@@ -170,8 +352,6 @@ public class StaticArrayReference {
             return new TypeReference<StaticArray4<Int256>>() {};
         } else if (ContractTypeUtil.invalidUint(type)) {
             return new TypeReference<StaticArray4<Uint256>>() {};
-        } else if (ContractTypeUtil.invalidBS(type)) {
-            return new TypeReference<StaticArray4<Bytes32>>() {};
         }
 
         switch (type) {
@@ -183,6 +363,70 @@ public class StaticArrayReference {
                 return new TypeReference<StaticArray4<Utf8String>>() {};
             case "bytes":
                 return new TypeReference<StaticArray4<DynamicBytes>>() {};
+            case "bytes1":
+                return new TypeReference<StaticArray4<Bytes1>>() {};
+            case "bytes2":
+                return new TypeReference<StaticArray4<Bytes2>>() {};
+            case "bytes3":
+                return new TypeReference<StaticArray4<Bytes3>>() {};
+            case "bytes4":
+                return new TypeReference<StaticArray4<Bytes4>>() {};
+            case "bytes5":
+                return new TypeReference<StaticArray4<Bytes5>>() {};
+            case "bytes6":
+                return new TypeReference<StaticArray4<Bytes6>>() {};
+            case "bytes7":
+                return new TypeReference<StaticArray4<Bytes7>>() {};
+            case "bytes8":
+                return new TypeReference<StaticArray4<Bytes8>>() {};
+            case "bytes9":
+                return new TypeReference<StaticArray4<Bytes9>>() {};
+            case "bytes10":
+                return new TypeReference<StaticArray4<Bytes10>>() {};
+            case "bytes11":
+                return new TypeReference<StaticArray4<Bytes11>>() {};
+            case "bytes12":
+                return new TypeReference<StaticArray4<Bytes12>>() {};
+            case "bytes13":
+                return new TypeReference<StaticArray4<Bytes13>>() {};
+            case "bytes14":
+                return new TypeReference<StaticArray4<Bytes14>>() {};
+            case "bytes15":
+                return new TypeReference<StaticArray4<Bytes15>>() {};
+            case "bytes16":
+                return new TypeReference<StaticArray4<Bytes16>>() {};
+            case "bytes17":
+                return new TypeReference<StaticArray4<Bytes17>>() {};
+            case "bytes18":
+                return new TypeReference<StaticArray4<Bytes18>>() {};
+            case "bytes19":
+                return new TypeReference<StaticArray4<Bytes19>>() {};
+            case "bytes20":
+                return new TypeReference<StaticArray4<Bytes20>>() {};
+            case "bytes21":
+                return new TypeReference<StaticArray4<Bytes21>>() {};
+            case "bytes22":
+                return new TypeReference<StaticArray4<Bytes22>>() {};
+            case "bytes23":
+                return new TypeReference<StaticArray4<Bytes23>>() {};
+            case "bytes24":
+                return new TypeReference<StaticArray4<Bytes24>>() {};
+            case "bytes25":
+                return new TypeReference<StaticArray4<Bytes25>>() {};
+            case "bytes26":
+                return new TypeReference<StaticArray4<Bytes26>>() {};
+            case "bytes27":
+                return new TypeReference<StaticArray4<Bytes27>>() {};
+            case "bytes28":
+                return new TypeReference<StaticArray4<Bytes28>>() {};
+            case "bytes29":
+                return new TypeReference<StaticArray4<Bytes29>>() {};
+            case "bytes30":
+                return new TypeReference<StaticArray4<Bytes30>>() {};
+            case "bytes31":
+                return new TypeReference<StaticArray4<Bytes31>>() {};
+            case "bytes32":
+                return new TypeReference<StaticArray4<Bytes32>>() {};
             default:
                 throw new BaseException(
                         201201, String.format(" %s[4] unsupported encoding array type ", type));
@@ -195,8 +439,6 @@ public class StaticArrayReference {
             return new TypeReference<StaticArray5<Int256>>() {};
         } else if (ContractTypeUtil.invalidUint(type)) {
             return new TypeReference<StaticArray5<Uint256>>() {};
-        } else if (ContractTypeUtil.invalidBS(type)) {
-            return new TypeReference<StaticArray5<Bytes32>>() {};
         }
 
         switch (type) {
@@ -208,6 +450,70 @@ public class StaticArrayReference {
                 return new TypeReference<StaticArray4<Utf8String>>() {};
             case "bytes":
                 return new TypeReference<StaticArray5<DynamicBytes>>() {};
+            case "bytes1":
+                return new TypeReference<StaticArray5<Bytes1>>() {};
+            case "bytes2":
+                return new TypeReference<StaticArray5<Bytes2>>() {};
+            case "bytes3":
+                return new TypeReference<StaticArray5<Bytes3>>() {};
+            case "bytes4":
+                return new TypeReference<StaticArray5<Bytes4>>() {};
+            case "bytes5":
+                return new TypeReference<StaticArray5<Bytes5>>() {};
+            case "bytes6":
+                return new TypeReference<StaticArray5<Bytes6>>() {};
+            case "bytes7":
+                return new TypeReference<StaticArray5<Bytes7>>() {};
+            case "bytes8":
+                return new TypeReference<StaticArray5<Bytes8>>() {};
+            case "bytes9":
+                return new TypeReference<StaticArray5<Bytes9>>() {};
+            case "bytes10":
+                return new TypeReference<StaticArray5<Bytes10>>() {};
+            case "bytes11":
+                return new TypeReference<StaticArray5<Bytes11>>() {};
+            case "bytes12":
+                return new TypeReference<StaticArray5<Bytes12>>() {};
+            case "bytes13":
+                return new TypeReference<StaticArray5<Bytes13>>() {};
+            case "bytes14":
+                return new TypeReference<StaticArray5<Bytes14>>() {};
+            case "bytes15":
+                return new TypeReference<StaticArray5<Bytes15>>() {};
+            case "bytes16":
+                return new TypeReference<StaticArray5<Bytes16>>() {};
+            case "bytes17":
+                return new TypeReference<StaticArray5<Bytes17>>() {};
+            case "bytes18":
+                return new TypeReference<StaticArray5<Bytes18>>() {};
+            case "bytes19":
+                return new TypeReference<StaticArray5<Bytes19>>() {};
+            case "bytes20":
+                return new TypeReference<StaticArray5<Bytes20>>() {};
+            case "bytes21":
+                return new TypeReference<StaticArray5<Bytes21>>() {};
+            case "bytes22":
+                return new TypeReference<StaticArray5<Bytes22>>() {};
+            case "bytes23":
+                return new TypeReference<StaticArray5<Bytes23>>() {};
+            case "bytes24":
+                return new TypeReference<StaticArray5<Bytes24>>() {};
+            case "bytes25":
+                return new TypeReference<StaticArray5<Bytes25>>() {};
+            case "bytes26":
+                return new TypeReference<StaticArray5<Bytes26>>() {};
+            case "bytes27":
+                return new TypeReference<StaticArray5<Bytes27>>() {};
+            case "bytes28":
+                return new TypeReference<StaticArray5<Bytes28>>() {};
+            case "bytes29":
+                return new TypeReference<StaticArray5<Bytes29>>() {};
+            case "bytes30":
+                return new TypeReference<StaticArray5<Bytes30>>() {};
+            case "bytes31":
+                return new TypeReference<StaticArray5<Bytes31>>() {};
+            case "bytes32":
+                return new TypeReference<StaticArray5<Bytes32>>() {};
             default:
                 throw new BaseException(
                         201201, String.format(" %s[5] unsupported encoding array type ", type));
@@ -220,8 +526,6 @@ public class StaticArrayReference {
             return new TypeReference<StaticArray6<Int256>>() {};
         } else if (ContractTypeUtil.invalidUint(type)) {
             return new TypeReference<StaticArray6<Uint256>>() {};
-        } else if (ContractTypeUtil.invalidBS(type)) {
-            return new TypeReference<StaticArray6<Bytes32>>() {};
         }
 
         switch (type) {
@@ -233,6 +537,70 @@ public class StaticArrayReference {
                 return new TypeReference<StaticArray4<Utf8String>>() {};
             case "bytes":
                 return new TypeReference<StaticArray6<DynamicBytes>>() {};
+            case "bytes1":
+                return new TypeReference<StaticArray6<Bytes1>>() {};
+            case "bytes2":
+                return new TypeReference<StaticArray6<Bytes2>>() {};
+            case "bytes3":
+                return new TypeReference<StaticArray6<Bytes3>>() {};
+            case "bytes4":
+                return new TypeReference<StaticArray6<Bytes4>>() {};
+            case "bytes5":
+                return new TypeReference<StaticArray6<Bytes5>>() {};
+            case "bytes6":
+                return new TypeReference<StaticArray6<Bytes6>>() {};
+            case "bytes7":
+                return new TypeReference<StaticArray6<Bytes7>>() {};
+            case "bytes8":
+                return new TypeReference<StaticArray6<Bytes8>>() {};
+            case "bytes9":
+                return new TypeReference<StaticArray6<Bytes9>>() {};
+            case "bytes10":
+                return new TypeReference<StaticArray6<Bytes10>>() {};
+            case "bytes11":
+                return new TypeReference<StaticArray6<Bytes11>>() {};
+            case "bytes12":
+                return new TypeReference<StaticArray6<Bytes12>>() {};
+            case "bytes13":
+                return new TypeReference<StaticArray6<Bytes13>>() {};
+            case "bytes14":
+                return new TypeReference<StaticArray6<Bytes14>>() {};
+            case "bytes15":
+                return new TypeReference<StaticArray6<Bytes15>>() {};
+            case "bytes16":
+                return new TypeReference<StaticArray6<Bytes16>>() {};
+            case "bytes17":
+                return new TypeReference<StaticArray6<Bytes17>>() {};
+            case "bytes18":
+                return new TypeReference<StaticArray6<Bytes18>>() {};
+            case "bytes19":
+                return new TypeReference<StaticArray6<Bytes19>>() {};
+            case "bytes20":
+                return new TypeReference<StaticArray6<Bytes20>>() {};
+            case "bytes21":
+                return new TypeReference<StaticArray6<Bytes21>>() {};
+            case "bytes22":
+                return new TypeReference<StaticArray6<Bytes22>>() {};
+            case "bytes23":
+                return new TypeReference<StaticArray6<Bytes23>>() {};
+            case "bytes24":
+                return new TypeReference<StaticArray6<Bytes24>>() {};
+            case "bytes25":
+                return new TypeReference<StaticArray6<Bytes25>>() {};
+            case "bytes26":
+                return new TypeReference<StaticArray6<Bytes26>>() {};
+            case "bytes27":
+                return new TypeReference<StaticArray6<Bytes27>>() {};
+            case "bytes28":
+                return new TypeReference<StaticArray6<Bytes28>>() {};
+            case "bytes29":
+                return new TypeReference<StaticArray6<Bytes29>>() {};
+            case "bytes30":
+                return new TypeReference<StaticArray6<Bytes30>>() {};
+            case "bytes31":
+                return new TypeReference<StaticArray6<Bytes31>>() {};
+            case "bytes32":
+                return new TypeReference<StaticArray6<Bytes32>>() {};
             default:
                 throw new BaseException(
                         201201, String.format(" %s[6] unsupported encoding array type ", type));
@@ -245,8 +613,6 @@ public class StaticArrayReference {
             return new TypeReference<StaticArray7<Int256>>() {};
         } else if (ContractTypeUtil.invalidUint(type)) {
             return new TypeReference<StaticArray7<Uint256>>() {};
-        } else if (ContractTypeUtil.invalidBS(type)) {
-            return new TypeReference<StaticArray7<Bytes32>>() {};
         }
 
         switch (type) {
@@ -258,6 +624,70 @@ public class StaticArrayReference {
                 return new TypeReference<StaticArray4<Utf8String>>() {};
             case "bytes":
                 return new TypeReference<StaticArray7<DynamicBytes>>() {};
+            case "bytes1":
+                return new TypeReference<StaticArray7<Bytes1>>() {};
+            case "bytes2":
+                return new TypeReference<StaticArray7<Bytes2>>() {};
+            case "bytes3":
+                return new TypeReference<StaticArray7<Bytes3>>() {};
+            case "bytes4":
+                return new TypeReference<StaticArray7<Bytes4>>() {};
+            case "bytes5":
+                return new TypeReference<StaticArray7<Bytes5>>() {};
+            case "bytes6":
+                return new TypeReference<StaticArray7<Bytes6>>() {};
+            case "bytes7":
+                return new TypeReference<StaticArray7<Bytes7>>() {};
+            case "bytes8":
+                return new TypeReference<StaticArray7<Bytes8>>() {};
+            case "bytes9":
+                return new TypeReference<StaticArray7<Bytes9>>() {};
+            case "bytes10":
+                return new TypeReference<StaticArray7<Bytes10>>() {};
+            case "bytes11":
+                return new TypeReference<StaticArray7<Bytes11>>() {};
+            case "bytes12":
+                return new TypeReference<StaticArray7<Bytes12>>() {};
+            case "bytes13":
+                return new TypeReference<StaticArray7<Bytes13>>() {};
+            case "bytes14":
+                return new TypeReference<StaticArray7<Bytes14>>() {};
+            case "bytes15":
+                return new TypeReference<StaticArray7<Bytes15>>() {};
+            case "bytes16":
+                return new TypeReference<StaticArray7<Bytes16>>() {};
+            case "bytes17":
+                return new TypeReference<StaticArray7<Bytes17>>() {};
+            case "bytes18":
+                return new TypeReference<StaticArray7<Bytes18>>() {};
+            case "bytes19":
+                return new TypeReference<StaticArray7<Bytes19>>() {};
+            case "bytes20":
+                return new TypeReference<StaticArray7<Bytes20>>() {};
+            case "bytes21":
+                return new TypeReference<StaticArray7<Bytes21>>() {};
+            case "bytes22":
+                return new TypeReference<StaticArray7<Bytes22>>() {};
+            case "bytes23":
+                return new TypeReference<StaticArray7<Bytes23>>() {};
+            case "bytes24":
+                return new TypeReference<StaticArray7<Bytes24>>() {};
+            case "bytes25":
+                return new TypeReference<StaticArray7<Bytes25>>() {};
+            case "bytes26":
+                return new TypeReference<StaticArray7<Bytes26>>() {};
+            case "bytes27":
+                return new TypeReference<StaticArray7<Bytes27>>() {};
+            case "bytes28":
+                return new TypeReference<StaticArray7<Bytes28>>() {};
+            case "bytes29":
+                return new TypeReference<StaticArray7<Bytes29>>() {};
+            case "bytes30":
+                return new TypeReference<StaticArray7<Bytes30>>() {};
+            case "bytes31":
+                return new TypeReference<StaticArray7<Bytes31>>() {};
+            case "bytes32":
+                return new TypeReference<StaticArray7<Bytes32>>() {};
             default:
                 throw new BaseException(
                         201201, String.format(" %s[7] unsupported encoding array type ", type));
@@ -270,8 +700,6 @@ public class StaticArrayReference {
             return new TypeReference<StaticArray8<Int256>>() {};
         } else if (ContractTypeUtil.invalidUint(type)) {
             return new TypeReference<StaticArray8<Uint256>>() {};
-        } else if (ContractTypeUtil.invalidBS(type)) {
-            return new TypeReference<StaticArray8<Bytes32>>() {};
         }
 
         switch (type) {
@@ -283,6 +711,70 @@ public class StaticArrayReference {
                 return new TypeReference<StaticArray8<Utf8String>>() {};
             case "bytes":
                 return new TypeReference<StaticArray8<DynamicBytes>>() {};
+            case "bytes1":
+                return new TypeReference<StaticArray8<Bytes1>>() {};
+            case "bytes2":
+                return new TypeReference<StaticArray8<Bytes2>>() {};
+            case "bytes3":
+                return new TypeReference<StaticArray8<Bytes3>>() {};
+            case "bytes4":
+                return new TypeReference<StaticArray8<Bytes4>>() {};
+            case "bytes5":
+                return new TypeReference<StaticArray8<Bytes5>>() {};
+            case "bytes6":
+                return new TypeReference<StaticArray8<Bytes6>>() {};
+            case "bytes7":
+                return new TypeReference<StaticArray8<Bytes7>>() {};
+            case "bytes8":
+                return new TypeReference<StaticArray8<Bytes8>>() {};
+            case "bytes9":
+                return new TypeReference<StaticArray8<Bytes9>>() {};
+            case "bytes10":
+                return new TypeReference<StaticArray8<Bytes10>>() {};
+            case "bytes11":
+                return new TypeReference<StaticArray8<Bytes11>>() {};
+            case "bytes12":
+                return new TypeReference<StaticArray8<Bytes12>>() {};
+            case "bytes13":
+                return new TypeReference<StaticArray8<Bytes13>>() {};
+            case "bytes14":
+                return new TypeReference<StaticArray8<Bytes14>>() {};
+            case "bytes15":
+                return new TypeReference<StaticArray8<Bytes15>>() {};
+            case "bytes16":
+                return new TypeReference<StaticArray8<Bytes16>>() {};
+            case "bytes17":
+                return new TypeReference<StaticArray8<Bytes17>>() {};
+            case "bytes18":
+                return new TypeReference<StaticArray8<Bytes18>>() {};
+            case "bytes19":
+                return new TypeReference<StaticArray8<Bytes19>>() {};
+            case "bytes20":
+                return new TypeReference<StaticArray8<Bytes20>>() {};
+            case "bytes21":
+                return new TypeReference<StaticArray8<Bytes21>>() {};
+            case "bytes22":
+                return new TypeReference<StaticArray8<Bytes22>>() {};
+            case "bytes23":
+                return new TypeReference<StaticArray8<Bytes23>>() {};
+            case "bytes24":
+                return new TypeReference<StaticArray8<Bytes24>>() {};
+            case "bytes25":
+                return new TypeReference<StaticArray8<Bytes25>>() {};
+            case "bytes26":
+                return new TypeReference<StaticArray8<Bytes26>>() {};
+            case "bytes27":
+                return new TypeReference<StaticArray8<Bytes27>>() {};
+            case "bytes28":
+                return new TypeReference<StaticArray8<Bytes28>>() {};
+            case "bytes29":
+                return new TypeReference<StaticArray8<Bytes29>>() {};
+            case "bytes30":
+                return new TypeReference<StaticArray8<Bytes30>>() {};
+            case "bytes31":
+                return new TypeReference<StaticArray8<Bytes31>>() {};
+            case "bytes32":
+                return new TypeReference<StaticArray8<Bytes32>>() {};
             default:
                 throw new BaseException(
                         201201, String.format(" %s[8] unsupported encoding array type ", type));
@@ -295,8 +787,6 @@ public class StaticArrayReference {
             return new TypeReference<StaticArray9<Int256>>() {};
         } else if (ContractTypeUtil.invalidUint(type)) {
             return new TypeReference<StaticArray9<Uint256>>() {};
-        } else if (ContractTypeUtil.invalidBS(type)) {
-            return new TypeReference<StaticArray9<Bytes32>>() {};
         }
 
         switch (type) {
@@ -308,6 +798,70 @@ public class StaticArrayReference {
                 return new TypeReference<StaticArray9<Utf8String>>() {};
             case "bytes":
                 return new TypeReference<StaticArray9<DynamicBytes>>() {};
+            case "bytes1":
+                return new TypeReference<StaticArray9<Bytes1>>() {};
+            case "bytes2":
+                return new TypeReference<StaticArray9<Bytes2>>() {};
+            case "bytes3":
+                return new TypeReference<StaticArray9<Bytes3>>() {};
+            case "bytes4":
+                return new TypeReference<StaticArray9<Bytes4>>() {};
+            case "bytes5":
+                return new TypeReference<StaticArray9<Bytes5>>() {};
+            case "bytes6":
+                return new TypeReference<StaticArray9<Bytes6>>() {};
+            case "bytes7":
+                return new TypeReference<StaticArray9<Bytes7>>() {};
+            case "bytes8":
+                return new TypeReference<StaticArray9<Bytes8>>() {};
+            case "bytes9":
+                return new TypeReference<StaticArray9<Bytes9>>() {};
+            case "bytes10":
+                return new TypeReference<StaticArray9<Bytes10>>() {};
+            case "bytes11":
+                return new TypeReference<StaticArray9<Bytes11>>() {};
+            case "bytes12":
+                return new TypeReference<StaticArray9<Bytes12>>() {};
+            case "bytes13":
+                return new TypeReference<StaticArray9<Bytes13>>() {};
+            case "bytes14":
+                return new TypeReference<StaticArray9<Bytes14>>() {};
+            case "bytes15":
+                return new TypeReference<StaticArray9<Bytes15>>() {};
+            case "bytes16":
+                return new TypeReference<StaticArray9<Bytes16>>() {};
+            case "bytes17":
+                return new TypeReference<StaticArray9<Bytes17>>() {};
+            case "bytes18":
+                return new TypeReference<StaticArray9<Bytes18>>() {};
+            case "bytes19":
+                return new TypeReference<StaticArray9<Bytes19>>() {};
+            case "bytes20":
+                return new TypeReference<StaticArray9<Bytes20>>() {};
+            case "bytes21":
+                return new TypeReference<StaticArray9<Bytes21>>() {};
+            case "bytes22":
+                return new TypeReference<StaticArray9<Bytes22>>() {};
+            case "bytes23":
+                return new TypeReference<StaticArray9<Bytes23>>() {};
+            case "bytes24":
+                return new TypeReference<StaticArray9<Bytes24>>() {};
+            case "bytes25":
+                return new TypeReference<StaticArray9<Bytes25>>() {};
+            case "bytes26":
+                return new TypeReference<StaticArray9<Bytes26>>() {};
+            case "bytes27":
+                return new TypeReference<StaticArray9<Bytes27>>() {};
+            case "bytes28":
+                return new TypeReference<StaticArray9<Bytes28>>() {};
+            case "bytes29":
+                return new TypeReference<StaticArray9<Bytes29>>() {};
+            case "bytes30":
+                return new TypeReference<StaticArray9<Bytes30>>() {};
+            case "bytes31":
+                return new TypeReference<StaticArray9<Bytes31>>() {};
+            case "bytes32":
+                return new TypeReference<StaticArray9<Bytes32>>() {};
             default:
                 throw new BaseException(
                         201201, String.format(" %s[9] unsupported encoding array type ", type));
@@ -320,8 +874,6 @@ public class StaticArrayReference {
             return new TypeReference<StaticArray10<Int256>>() {};
         } else if (ContractTypeUtil.invalidUint(type)) {
             return new TypeReference<StaticArray10<Uint256>>() {};
-        } else if (ContractTypeUtil.invalidBS(type)) {
-            return new TypeReference<StaticArray10<Bytes32>>() {};
         }
 
         switch (type) {
@@ -333,6 +885,70 @@ public class StaticArrayReference {
                 return new TypeReference<StaticArray10<Utf8String>>() {};
             case "bytes":
                 return new TypeReference<StaticArray10<DynamicBytes>>() {};
+            case "bytes1":
+                return new TypeReference<StaticArray10<Bytes1>>() {};
+            case "bytes2":
+                return new TypeReference<StaticArray10<Bytes2>>() {};
+            case "bytes3":
+                return new TypeReference<StaticArray10<Bytes3>>() {};
+            case "bytes4":
+                return new TypeReference<StaticArray10<Bytes4>>() {};
+            case "bytes5":
+                return new TypeReference<StaticArray10<Bytes5>>() {};
+            case "bytes6":
+                return new TypeReference<StaticArray10<Bytes6>>() {};
+            case "bytes7":
+                return new TypeReference<StaticArray10<Bytes7>>() {};
+            case "bytes8":
+                return new TypeReference<StaticArray10<Bytes8>>() {};
+            case "bytes9":
+                return new TypeReference<StaticArray10<Bytes9>>() {};
+            case "bytes10":
+                return new TypeReference<StaticArray10<Bytes10>>() {};
+            case "bytes11":
+                return new TypeReference<StaticArray10<Bytes11>>() {};
+            case "bytes12":
+                return new TypeReference<StaticArray10<Bytes12>>() {};
+            case "bytes13":
+                return new TypeReference<StaticArray10<Bytes13>>() {};
+            case "bytes14":
+                return new TypeReference<StaticArray10<Bytes14>>() {};
+            case "bytes15":
+                return new TypeReference<StaticArray10<Bytes15>>() {};
+            case "bytes16":
+                return new TypeReference<StaticArray10<Bytes16>>() {};
+            case "bytes17":
+                return new TypeReference<StaticArray10<Bytes17>>() {};
+            case "bytes18":
+                return new TypeReference<StaticArray10<Bytes18>>() {};
+            case "bytes19":
+                return new TypeReference<StaticArray10<Bytes19>>() {};
+            case "bytes20":
+                return new TypeReference<StaticArray10<Bytes20>>() {};
+            case "bytes21":
+                return new TypeReference<StaticArray10<Bytes21>>() {};
+            case "bytes22":
+                return new TypeReference<StaticArray10<Bytes22>>() {};
+            case "bytes23":
+                return new TypeReference<StaticArray10<Bytes23>>() {};
+            case "bytes24":
+                return new TypeReference<StaticArray10<Bytes24>>() {};
+            case "bytes25":
+                return new TypeReference<StaticArray10<Bytes25>>() {};
+            case "bytes26":
+                return new TypeReference<StaticArray10<Bytes26>>() {};
+            case "bytes27":
+                return new TypeReference<StaticArray10<Bytes27>>() {};
+            case "bytes28":
+                return new TypeReference<StaticArray10<Bytes28>>() {};
+            case "bytes29":
+                return new TypeReference<StaticArray10<Bytes29>>() {};
+            case "bytes30":
+                return new TypeReference<StaticArray10<Bytes30>>() {};
+            case "bytes31":
+                return new TypeReference<StaticArray10<Bytes31>>() {};
+            case "bytes32":
+                return new TypeReference<StaticArray10<Bytes32>>() {};
             default:
                 throw new BaseException(
                         201201, String.format(" %s[10] unsupported encoding array type ", type));
@@ -345,8 +961,6 @@ public class StaticArrayReference {
             return new TypeReference<StaticArray11<Int256>>() {};
         } else if (ContractTypeUtil.invalidUint(type)) {
             return new TypeReference<StaticArray11<Uint256>>() {};
-        } else if (ContractTypeUtil.invalidBS(type)) {
-            return new TypeReference<StaticArray11<Bytes32>>() {};
         }
 
         switch (type) {
@@ -358,6 +972,70 @@ public class StaticArrayReference {
                 return new TypeReference<StaticArray11<Utf8String>>() {};
             case "bytes":
                 return new TypeReference<StaticArray11<DynamicBytes>>() {};
+            case "bytes1":
+                return new TypeReference<StaticArray11<Bytes1>>() {};
+            case "bytes2":
+                return new TypeReference<StaticArray11<Bytes2>>() {};
+            case "bytes3":
+                return new TypeReference<StaticArray11<Bytes3>>() {};
+            case "bytes4":
+                return new TypeReference<StaticArray11<Bytes4>>() {};
+            case "bytes5":
+                return new TypeReference<StaticArray11<Bytes5>>() {};
+            case "bytes6":
+                return new TypeReference<StaticArray11<Bytes6>>() {};
+            case "bytes7":
+                return new TypeReference<StaticArray11<Bytes7>>() {};
+            case "bytes8":
+                return new TypeReference<StaticArray11<Bytes8>>() {};
+            case "bytes9":
+                return new TypeReference<StaticArray11<Bytes9>>() {};
+            case "bytes10":
+                return new TypeReference<StaticArray11<Bytes10>>() {};
+            case "bytes11":
+                return new TypeReference<StaticArray11<Bytes11>>() {};
+            case "bytes12":
+                return new TypeReference<StaticArray11<Bytes12>>() {};
+            case "bytes13":
+                return new TypeReference<StaticArray11<Bytes13>>() {};
+            case "bytes14":
+                return new TypeReference<StaticArray11<Bytes14>>() {};
+            case "bytes15":
+                return new TypeReference<StaticArray11<Bytes15>>() {};
+            case "bytes16":
+                return new TypeReference<StaticArray11<Bytes16>>() {};
+            case "bytes17":
+                return new TypeReference<StaticArray11<Bytes17>>() {};
+            case "bytes18":
+                return new TypeReference<StaticArray11<Bytes18>>() {};
+            case "bytes19":
+                return new TypeReference<StaticArray11<Bytes19>>() {};
+            case "bytes20":
+                return new TypeReference<StaticArray11<Bytes20>>() {};
+            case "bytes21":
+                return new TypeReference<StaticArray11<Bytes21>>() {};
+            case "bytes22":
+                return new TypeReference<StaticArray11<Bytes22>>() {};
+            case "bytes23":
+                return new TypeReference<StaticArray11<Bytes23>>() {};
+            case "bytes24":
+                return new TypeReference<StaticArray11<Bytes24>>() {};
+            case "bytes25":
+                return new TypeReference<StaticArray11<Bytes25>>() {};
+            case "bytes26":
+                return new TypeReference<StaticArray11<Bytes26>>() {};
+            case "bytes27":
+                return new TypeReference<StaticArray11<Bytes27>>() {};
+            case "bytes28":
+                return new TypeReference<StaticArray11<Bytes28>>() {};
+            case "bytes29":
+                return new TypeReference<StaticArray11<Bytes29>>() {};
+            case "bytes30":
+                return new TypeReference<StaticArray11<Bytes30>>() {};
+            case "bytes31":
+                return new TypeReference<StaticArray11<Bytes31>>() {};
+            case "bytes32":
+                return new TypeReference<StaticArray11<Bytes32>>() {};
             default:
                 throw new BaseException(
                         201201, String.format(" %s[11] unsupported encoding array type ", type));
@@ -370,8 +1048,6 @@ public class StaticArrayReference {
             return new TypeReference<StaticArray12<Int256>>() {};
         } else if (ContractTypeUtil.invalidUint(type)) {
             return new TypeReference<StaticArray12<Uint256>>() {};
-        } else if (ContractTypeUtil.invalidBS(type)) {
-            return new TypeReference<StaticArray12<Bytes32>>() {};
         }
 
         switch (type) {
@@ -383,6 +1059,70 @@ public class StaticArrayReference {
                 return new TypeReference<StaticArray12<Utf8String>>() {};
             case "bytes":
                 return new TypeReference<StaticArray12<DynamicBytes>>() {};
+            case "bytes1":
+                return new TypeReference<StaticArray12<Bytes1>>() {};
+            case "bytes2":
+                return new TypeReference<StaticArray12<Bytes2>>() {};
+            case "bytes3":
+                return new TypeReference<StaticArray12<Bytes3>>() {};
+            case "bytes4":
+                return new TypeReference<StaticArray12<Bytes4>>() {};
+            case "bytes5":
+                return new TypeReference<StaticArray12<Bytes5>>() {};
+            case "bytes6":
+                return new TypeReference<StaticArray12<Bytes6>>() {};
+            case "bytes7":
+                return new TypeReference<StaticArray12<Bytes7>>() {};
+            case "bytes8":
+                return new TypeReference<StaticArray12<Bytes8>>() {};
+            case "bytes9":
+                return new TypeReference<StaticArray12<Bytes9>>() {};
+            case "bytes10":
+                return new TypeReference<StaticArray12<Bytes10>>() {};
+            case "bytes11":
+                return new TypeReference<StaticArray12<Bytes11>>() {};
+            case "bytes12":
+                return new TypeReference<StaticArray12<Bytes12>>() {};
+            case "bytes13":
+                return new TypeReference<StaticArray12<Bytes13>>() {};
+            case "bytes14":
+                return new TypeReference<StaticArray12<Bytes14>>() {};
+            case "bytes15":
+                return new TypeReference<StaticArray12<Bytes15>>() {};
+            case "bytes16":
+                return new TypeReference<StaticArray12<Bytes16>>() {};
+            case "bytes17":
+                return new TypeReference<StaticArray12<Bytes17>>() {};
+            case "bytes18":
+                return new TypeReference<StaticArray12<Bytes18>>() {};
+            case "bytes19":
+                return new TypeReference<StaticArray12<Bytes19>>() {};
+            case "bytes20":
+                return new TypeReference<StaticArray12<Bytes20>>() {};
+            case "bytes21":
+                return new TypeReference<StaticArray12<Bytes21>>() {};
+            case "bytes22":
+                return new TypeReference<StaticArray12<Bytes22>>() {};
+            case "bytes23":
+                return new TypeReference<StaticArray12<Bytes23>>() {};
+            case "bytes24":
+                return new TypeReference<StaticArray12<Bytes24>>() {};
+            case "bytes25":
+                return new TypeReference<StaticArray12<Bytes25>>() {};
+            case "bytes26":
+                return new TypeReference<StaticArray12<Bytes26>>() {};
+            case "bytes27":
+                return new TypeReference<StaticArray12<Bytes27>>() {};
+            case "bytes28":
+                return new TypeReference<StaticArray12<Bytes28>>() {};
+            case "bytes29":
+                return new TypeReference<StaticArray12<Bytes29>>() {};
+            case "bytes30":
+                return new TypeReference<StaticArray12<Bytes30>>() {};
+            case "bytes31":
+                return new TypeReference<StaticArray12<Bytes31>>() {};
+            case "bytes32":
+                return new TypeReference<StaticArray12<Bytes32>>() {};
             default:
                 throw new BaseException(
                         201201, String.format(" %s[12] unsupported encoding array type ", type));
@@ -395,8 +1135,6 @@ public class StaticArrayReference {
             return new TypeReference<StaticArray13<Int256>>() {};
         } else if (ContractTypeUtil.invalidUint(type)) {
             return new TypeReference<StaticArray13<Uint256>>() {};
-        } else if (ContractTypeUtil.invalidBS(type)) {
-            return new TypeReference<StaticArray13<Bytes32>>() {};
         }
 
         switch (type) {
@@ -408,6 +1146,70 @@ public class StaticArrayReference {
                 return new TypeReference<StaticArray13<Utf8String>>() {};
             case "bytes":
                 return new TypeReference<StaticArray13<DynamicBytes>>() {};
+            case "bytes1":
+                return new TypeReference<StaticArray13<Bytes1>>() {};
+            case "bytes2":
+                return new TypeReference<StaticArray13<Bytes2>>() {};
+            case "bytes3":
+                return new TypeReference<StaticArray13<Bytes3>>() {};
+            case "bytes4":
+                return new TypeReference<StaticArray13<Bytes4>>() {};
+            case "bytes5":
+                return new TypeReference<StaticArray13<Bytes5>>() {};
+            case "bytes6":
+                return new TypeReference<StaticArray13<Bytes6>>() {};
+            case "bytes7":
+                return new TypeReference<StaticArray13<Bytes7>>() {};
+            case "bytes8":
+                return new TypeReference<StaticArray13<Bytes8>>() {};
+            case "bytes9":
+                return new TypeReference<StaticArray13<Bytes9>>() {};
+            case "bytes10":
+                return new TypeReference<StaticArray13<Bytes10>>() {};
+            case "bytes11":
+                return new TypeReference<StaticArray13<Bytes11>>() {};
+            case "bytes12":
+                return new TypeReference<StaticArray13<Bytes12>>() {};
+            case "bytes13":
+                return new TypeReference<StaticArray13<Bytes13>>() {};
+            case "bytes14":
+                return new TypeReference<StaticArray13<Bytes14>>() {};
+            case "bytes15":
+                return new TypeReference<StaticArray13<Bytes15>>() {};
+            case "bytes16":
+                return new TypeReference<StaticArray13<Bytes16>>() {};
+            case "bytes17":
+                return new TypeReference<StaticArray13<Bytes17>>() {};
+            case "bytes18":
+                return new TypeReference<StaticArray13<Bytes18>>() {};
+            case "bytes19":
+                return new TypeReference<StaticArray13<Bytes19>>() {};
+            case "bytes20":
+                return new TypeReference<StaticArray13<Bytes20>>() {};
+            case "bytes21":
+                return new TypeReference<StaticArray13<Bytes21>>() {};
+            case "bytes22":
+                return new TypeReference<StaticArray13<Bytes22>>() {};
+            case "bytes23":
+                return new TypeReference<StaticArray13<Bytes23>>() {};
+            case "bytes24":
+                return new TypeReference<StaticArray13<Bytes24>>() {};
+            case "bytes25":
+                return new TypeReference<StaticArray13<Bytes25>>() {};
+            case "bytes26":
+                return new TypeReference<StaticArray13<Bytes26>>() {};
+            case "bytes27":
+                return new TypeReference<StaticArray13<Bytes27>>() {};
+            case "bytes28":
+                return new TypeReference<StaticArray13<Bytes28>>() {};
+            case "bytes29":
+                return new TypeReference<StaticArray13<Bytes29>>() {};
+            case "bytes30":
+                return new TypeReference<StaticArray13<Bytes30>>() {};
+            case "bytes31":
+                return new TypeReference<StaticArray13<Bytes31>>() {};
+            case "bytes32":
+                return new TypeReference<StaticArray13<Bytes32>>() {};
             default:
                 throw new BaseException(
                         201201, String.format(" %s[13] unsupported encoding array type ", type));
@@ -420,8 +1222,6 @@ public class StaticArrayReference {
             return new TypeReference<StaticArray14<Int256>>() {};
         } else if (ContractTypeUtil.invalidUint(type)) {
             return new TypeReference<StaticArray14<Uint256>>() {};
-        } else if (ContractTypeUtil.invalidBS(type)) {
-            return new TypeReference<StaticArray14<Bytes32>>() {};
         }
 
         switch (type) {
@@ -433,6 +1233,70 @@ public class StaticArrayReference {
                 return new TypeReference<StaticArray14<Utf8String>>() {};
             case "bytes":
                 return new TypeReference<StaticArray14<DynamicBytes>>() {};
+            case "bytes1":
+                return new TypeReference<StaticArray14<Bytes1>>() {};
+            case "bytes2":
+                return new TypeReference<StaticArray14<Bytes2>>() {};
+            case "bytes3":
+                return new TypeReference<StaticArray14<Bytes3>>() {};
+            case "bytes4":
+                return new TypeReference<StaticArray14<Bytes4>>() {};
+            case "bytes5":
+                return new TypeReference<StaticArray14<Bytes5>>() {};
+            case "bytes6":
+                return new TypeReference<StaticArray14<Bytes6>>() {};
+            case "bytes7":
+                return new TypeReference<StaticArray14<Bytes7>>() {};
+            case "bytes8":
+                return new TypeReference<StaticArray14<Bytes8>>() {};
+            case "bytes9":
+                return new TypeReference<StaticArray14<Bytes9>>() {};
+            case "bytes10":
+                return new TypeReference<StaticArray14<Bytes10>>() {};
+            case "bytes11":
+                return new TypeReference<StaticArray14<Bytes11>>() {};
+            case "bytes12":
+                return new TypeReference<StaticArray14<Bytes12>>() {};
+            case "bytes13":
+                return new TypeReference<StaticArray14<Bytes13>>() {};
+            case "bytes14":
+                return new TypeReference<StaticArray14<Bytes14>>() {};
+            case "bytes15":
+                return new TypeReference<StaticArray14<Bytes15>>() {};
+            case "bytes16":
+                return new TypeReference<StaticArray14<Bytes16>>() {};
+            case "bytes17":
+                return new TypeReference<StaticArray14<Bytes17>>() {};
+            case "bytes18":
+                return new TypeReference<StaticArray14<Bytes18>>() {};
+            case "bytes19":
+                return new TypeReference<StaticArray14<Bytes19>>() {};
+            case "bytes20":
+                return new TypeReference<StaticArray14<Bytes20>>() {};
+            case "bytes21":
+                return new TypeReference<StaticArray14<Bytes21>>() {};
+            case "bytes22":
+                return new TypeReference<StaticArray14<Bytes22>>() {};
+            case "bytes23":
+                return new TypeReference<StaticArray14<Bytes23>>() {};
+            case "bytes24":
+                return new TypeReference<StaticArray14<Bytes24>>() {};
+            case "bytes25":
+                return new TypeReference<StaticArray14<Bytes25>>() {};
+            case "bytes26":
+                return new TypeReference<StaticArray14<Bytes26>>() {};
+            case "bytes27":
+                return new TypeReference<StaticArray14<Bytes27>>() {};
+            case "bytes28":
+                return new TypeReference<StaticArray14<Bytes28>>() {};
+            case "bytes29":
+                return new TypeReference<StaticArray14<Bytes29>>() {};
+            case "bytes30":
+                return new TypeReference<StaticArray14<Bytes30>>() {};
+            case "bytes31":
+                return new TypeReference<StaticArray14<Bytes31>>() {};
+            case "bytes32":
+                return new TypeReference<StaticArray14<Bytes32>>() {};
             default:
                 throw new BaseException(
                         201201, String.format(" %s[14] unsupported encoding array type ", type));
@@ -445,8 +1309,6 @@ public class StaticArrayReference {
             return new TypeReference<StaticArray15<Int256>>() {};
         } else if (ContractTypeUtil.invalidUint(type)) {
             return new TypeReference<StaticArray15<Uint256>>() {};
-        } else if (ContractTypeUtil.invalidBS(type)) {
-            return new TypeReference<StaticArray15<Bytes32>>() {};
         }
 
         switch (type) {
@@ -458,6 +1320,70 @@ public class StaticArrayReference {
                 return new TypeReference<StaticArray15<Utf8String>>() {};
             case "bytes":
                 return new TypeReference<StaticArray15<DynamicBytes>>() {};
+            case "bytes1":
+                return new TypeReference<StaticArray15<Bytes1>>() {};
+            case "bytes2":
+                return new TypeReference<StaticArray15<Bytes2>>() {};
+            case "bytes3":
+                return new TypeReference<StaticArray15<Bytes3>>() {};
+            case "bytes4":
+                return new TypeReference<StaticArray15<Bytes4>>() {};
+            case "bytes5":
+                return new TypeReference<StaticArray15<Bytes5>>() {};
+            case "bytes6":
+                return new TypeReference<StaticArray15<Bytes6>>() {};
+            case "bytes7":
+                return new TypeReference<StaticArray15<Bytes7>>() {};
+            case "bytes8":
+                return new TypeReference<StaticArray15<Bytes8>>() {};
+            case "bytes9":
+                return new TypeReference<StaticArray15<Bytes9>>() {};
+            case "bytes10":
+                return new TypeReference<StaticArray15<Bytes10>>() {};
+            case "bytes11":
+                return new TypeReference<StaticArray15<Bytes11>>() {};
+            case "bytes12":
+                return new TypeReference<StaticArray15<Bytes12>>() {};
+            case "bytes13":
+                return new TypeReference<StaticArray15<Bytes13>>() {};
+            case "bytes14":
+                return new TypeReference<StaticArray15<Bytes14>>() {};
+            case "bytes15":
+                return new TypeReference<StaticArray15<Bytes15>>() {};
+            case "bytes16":
+                return new TypeReference<StaticArray15<Bytes16>>() {};
+            case "bytes17":
+                return new TypeReference<StaticArray15<Bytes17>>() {};
+            case "bytes18":
+                return new TypeReference<StaticArray15<Bytes18>>() {};
+            case "bytes19":
+                return new TypeReference<StaticArray15<Bytes19>>() {};
+            case "bytes20":
+                return new TypeReference<StaticArray15<Bytes20>>() {};
+            case "bytes21":
+                return new TypeReference<StaticArray15<Bytes21>>() {};
+            case "bytes22":
+                return new TypeReference<StaticArray15<Bytes22>>() {};
+            case "bytes23":
+                return new TypeReference<StaticArray15<Bytes23>>() {};
+            case "bytes24":
+                return new TypeReference<StaticArray15<Bytes24>>() {};
+            case "bytes25":
+                return new TypeReference<StaticArray15<Bytes25>>() {};
+            case "bytes26":
+                return new TypeReference<StaticArray15<Bytes26>>() {};
+            case "bytes27":
+                return new TypeReference<StaticArray15<Bytes27>>() {};
+            case "bytes28":
+                return new TypeReference<StaticArray15<Bytes28>>() {};
+            case "bytes29":
+                return new TypeReference<StaticArray15<Bytes29>>() {};
+            case "bytes30":
+                return new TypeReference<StaticArray15<Bytes30>>() {};
+            case "bytes31":
+                return new TypeReference<StaticArray15<Bytes31>>() {};
+            case "bytes32":
+                return new TypeReference<StaticArray15<Bytes32>>() {};
             default:
                 throw new BaseException(
                         201201, String.format(" %s[15] unsupported encoding array type ", type));
@@ -470,8 +1396,6 @@ public class StaticArrayReference {
             return new TypeReference<StaticArray16<Int256>>() {};
         } else if (ContractTypeUtil.invalidUint(type)) {
             return new TypeReference<StaticArray16<Uint256>>() {};
-        } else if (ContractTypeUtil.invalidBS(type)) {
-            return new TypeReference<StaticArray16<Bytes32>>() {};
         }
 
         switch (type) {
@@ -483,6 +1407,70 @@ public class StaticArrayReference {
                 return new TypeReference<StaticArray16<Utf8String>>() {};
             case "bytes":
                 return new TypeReference<StaticArray16<DynamicBytes>>() {};
+            case "bytes1":
+                return new TypeReference<StaticArray16<Bytes1>>() {};
+            case "bytes2":
+                return new TypeReference<StaticArray16<Bytes2>>() {};
+            case "bytes3":
+                return new TypeReference<StaticArray16<Bytes3>>() {};
+            case "bytes4":
+                return new TypeReference<StaticArray16<Bytes4>>() {};
+            case "bytes5":
+                return new TypeReference<StaticArray16<Bytes5>>() {};
+            case "bytes6":
+                return new TypeReference<StaticArray16<Bytes6>>() {};
+            case "bytes7":
+                return new TypeReference<StaticArray16<Bytes7>>() {};
+            case "bytes8":
+                return new TypeReference<StaticArray16<Bytes8>>() {};
+            case "bytes9":
+                return new TypeReference<StaticArray16<Bytes9>>() {};
+            case "bytes10":
+                return new TypeReference<StaticArray16<Bytes10>>() {};
+            case "bytes11":
+                return new TypeReference<StaticArray16<Bytes11>>() {};
+            case "bytes12":
+                return new TypeReference<StaticArray16<Bytes12>>() {};
+            case "bytes13":
+                return new TypeReference<StaticArray16<Bytes13>>() {};
+            case "bytes14":
+                return new TypeReference<StaticArray16<Bytes14>>() {};
+            case "bytes15":
+                return new TypeReference<StaticArray16<Bytes15>>() {};
+            case "bytes16":
+                return new TypeReference<StaticArray16<Bytes16>>() {};
+            case "bytes17":
+                return new TypeReference<StaticArray16<Bytes17>>() {};
+            case "bytes18":
+                return new TypeReference<StaticArray16<Bytes18>>() {};
+            case "bytes19":
+                return new TypeReference<StaticArray16<Bytes19>>() {};
+            case "bytes20":
+                return new TypeReference<StaticArray16<Bytes20>>() {};
+            case "bytes21":
+                return new TypeReference<StaticArray16<Bytes21>>() {};
+            case "bytes22":
+                return new TypeReference<StaticArray16<Bytes22>>() {};
+            case "bytes23":
+                return new TypeReference<StaticArray16<Bytes23>>() {};
+            case "bytes24":
+                return new TypeReference<StaticArray16<Bytes24>>() {};
+            case "bytes25":
+                return new TypeReference<StaticArray16<Bytes25>>() {};
+            case "bytes26":
+                return new TypeReference<StaticArray16<Bytes26>>() {};
+            case "bytes27":
+                return new TypeReference<StaticArray16<Bytes27>>() {};
+            case "bytes28":
+                return new TypeReference<StaticArray16<Bytes28>>() {};
+            case "bytes29":
+                return new TypeReference<StaticArray16<Bytes29>>() {};
+            case "bytes30":
+                return new TypeReference<StaticArray16<Bytes30>>() {};
+            case "bytes31":
+                return new TypeReference<StaticArray16<Bytes31>>() {};
+            case "bytes32":
+                return new TypeReference<StaticArray16<Bytes32>>() {};
             default:
                 throw new BaseException(
                         201201, String.format(" %s[16] unsupported encoding array type ", type));
@@ -495,8 +1483,6 @@ public class StaticArrayReference {
             return new TypeReference<StaticArray17<Int256>>() {};
         } else if (ContractTypeUtil.invalidUint(type)) {
             return new TypeReference<StaticArray17<Uint256>>() {};
-        } else if (ContractTypeUtil.invalidBS(type)) {
-            return new TypeReference<StaticArray17<Bytes32>>() {};
         }
 
         switch (type) {
@@ -508,6 +1494,70 @@ public class StaticArrayReference {
                 return new TypeReference<StaticArray17<Utf8String>>() {};
             case "bytes":
                 return new TypeReference<StaticArray17<DynamicBytes>>() {};
+            case "bytes1":
+                return new TypeReference<StaticArray17<Bytes1>>() {};
+            case "bytes2":
+                return new TypeReference<StaticArray17<Bytes2>>() {};
+            case "bytes3":
+                return new TypeReference<StaticArray17<Bytes3>>() {};
+            case "bytes4":
+                return new TypeReference<StaticArray17<Bytes4>>() {};
+            case "bytes5":
+                return new TypeReference<StaticArray17<Bytes5>>() {};
+            case "bytes6":
+                return new TypeReference<StaticArray17<Bytes6>>() {};
+            case "bytes7":
+                return new TypeReference<StaticArray17<Bytes7>>() {};
+            case "bytes8":
+                return new TypeReference<StaticArray17<Bytes8>>() {};
+            case "bytes9":
+                return new TypeReference<StaticArray17<Bytes9>>() {};
+            case "bytes10":
+                return new TypeReference<StaticArray17<Bytes10>>() {};
+            case "bytes11":
+                return new TypeReference<StaticArray17<Bytes11>>() {};
+            case "bytes12":
+                return new TypeReference<StaticArray17<Bytes12>>() {};
+            case "bytes13":
+                return new TypeReference<StaticArray17<Bytes13>>() {};
+            case "bytes14":
+                return new TypeReference<StaticArray17<Bytes14>>() {};
+            case "bytes15":
+                return new TypeReference<StaticArray17<Bytes15>>() {};
+            case "bytes16":
+                return new TypeReference<StaticArray17<Bytes16>>() {};
+            case "bytes17":
+                return new TypeReference<StaticArray17<Bytes17>>() {};
+            case "bytes18":
+                return new TypeReference<StaticArray17<Bytes18>>() {};
+            case "bytes19":
+                return new TypeReference<StaticArray17<Bytes19>>() {};
+            case "bytes20":
+                return new TypeReference<StaticArray17<Bytes20>>() {};
+            case "bytes21":
+                return new TypeReference<StaticArray17<Bytes21>>() {};
+            case "bytes22":
+                return new TypeReference<StaticArray17<Bytes22>>() {};
+            case "bytes23":
+                return new TypeReference<StaticArray17<Bytes23>>() {};
+            case "bytes24":
+                return new TypeReference<StaticArray17<Bytes24>>() {};
+            case "bytes25":
+                return new TypeReference<StaticArray17<Bytes25>>() {};
+            case "bytes26":
+                return new TypeReference<StaticArray17<Bytes26>>() {};
+            case "bytes27":
+                return new TypeReference<StaticArray17<Bytes27>>() {};
+            case "bytes28":
+                return new TypeReference<StaticArray17<Bytes28>>() {};
+            case "bytes29":
+                return new TypeReference<StaticArray17<Bytes29>>() {};
+            case "bytes30":
+                return new TypeReference<StaticArray17<Bytes30>>() {};
+            case "bytes31":
+                return new TypeReference<StaticArray17<Bytes31>>() {};
+            case "bytes32":
+                return new TypeReference<StaticArray17<Bytes32>>() {};
             default:
                 throw new BaseException(
                         201201, String.format(" %s[17] unsupported encoding array type ", type));
@@ -520,8 +1570,6 @@ public class StaticArrayReference {
             return new TypeReference<StaticArray18<Int256>>() {};
         } else if (ContractTypeUtil.invalidUint(type)) {
             return new TypeReference<StaticArray18<Uint256>>() {};
-        } else if (ContractTypeUtil.invalidBS(type)) {
-            return new TypeReference<StaticArray18<Bytes32>>() {};
         }
 
         switch (type) {
@@ -533,6 +1581,70 @@ public class StaticArrayReference {
                 return new TypeReference<StaticArray18<Utf8String>>() {};
             case "bytes":
                 return new TypeReference<StaticArray18<DynamicBytes>>() {};
+            case "bytes1":
+                return new TypeReference<StaticArray18<Bytes1>>() {};
+            case "bytes2":
+                return new TypeReference<StaticArray18<Bytes2>>() {};
+            case "bytes3":
+                return new TypeReference<StaticArray18<Bytes3>>() {};
+            case "bytes4":
+                return new TypeReference<StaticArray18<Bytes4>>() {};
+            case "bytes5":
+                return new TypeReference<StaticArray18<Bytes5>>() {};
+            case "bytes6":
+                return new TypeReference<StaticArray18<Bytes6>>() {};
+            case "bytes7":
+                return new TypeReference<StaticArray18<Bytes7>>() {};
+            case "bytes8":
+                return new TypeReference<StaticArray18<Bytes8>>() {};
+            case "bytes9":
+                return new TypeReference<StaticArray18<Bytes9>>() {};
+            case "bytes10":
+                return new TypeReference<StaticArray18<Bytes10>>() {};
+            case "bytes11":
+                return new TypeReference<StaticArray18<Bytes11>>() {};
+            case "bytes12":
+                return new TypeReference<StaticArray18<Bytes12>>() {};
+            case "bytes13":
+                return new TypeReference<StaticArray18<Bytes13>>() {};
+            case "bytes14":
+                return new TypeReference<StaticArray18<Bytes14>>() {};
+            case "bytes15":
+                return new TypeReference<StaticArray18<Bytes15>>() {};
+            case "bytes16":
+                return new TypeReference<StaticArray18<Bytes16>>() {};
+            case "bytes17":
+                return new TypeReference<StaticArray18<Bytes17>>() {};
+            case "bytes18":
+                return new TypeReference<StaticArray18<Bytes18>>() {};
+            case "bytes19":
+                return new TypeReference<StaticArray18<Bytes19>>() {};
+            case "bytes20":
+                return new TypeReference<StaticArray18<Bytes20>>() {};
+            case "bytes21":
+                return new TypeReference<StaticArray18<Bytes21>>() {};
+            case "bytes22":
+                return new TypeReference<StaticArray18<Bytes22>>() {};
+            case "bytes23":
+                return new TypeReference<StaticArray18<Bytes23>>() {};
+            case "bytes24":
+                return new TypeReference<StaticArray18<Bytes24>>() {};
+            case "bytes25":
+                return new TypeReference<StaticArray18<Bytes25>>() {};
+            case "bytes26":
+                return new TypeReference<StaticArray18<Bytes26>>() {};
+            case "bytes27":
+                return new TypeReference<StaticArray18<Bytes27>>() {};
+            case "bytes28":
+                return new TypeReference<StaticArray18<Bytes28>>() {};
+            case "bytes29":
+                return new TypeReference<StaticArray18<Bytes29>>() {};
+            case "bytes30":
+                return new TypeReference<StaticArray18<Bytes30>>() {};
+            case "bytes31":
+                return new TypeReference<StaticArray18<Bytes31>>() {};
+            case "bytes32":
+                return new TypeReference<StaticArray18<Bytes32>>() {};
             default:
                 throw new BaseException(
                         201201, String.format(" %s[18] unsupported encoding array type ", type));
@@ -545,8 +1657,6 @@ public class StaticArrayReference {
             return new TypeReference<StaticArray19<Int256>>() {};
         } else if (ContractTypeUtil.invalidUint(type)) {
             return new TypeReference<StaticArray19<Uint256>>() {};
-        } else if (ContractTypeUtil.invalidBS(type)) {
-            return new TypeReference<StaticArray19<Bytes32>>() {};
         }
 
         switch (type) {
@@ -558,6 +1668,70 @@ public class StaticArrayReference {
                 return new TypeReference<StaticArray19<Utf8String>>() {};
             case "bytes":
                 return new TypeReference<StaticArray19<DynamicBytes>>() {};
+            case "bytes1":
+                return new TypeReference<StaticArray19<Bytes1>>() {};
+            case "bytes2":
+                return new TypeReference<StaticArray19<Bytes2>>() {};
+            case "bytes3":
+                return new TypeReference<StaticArray19<Bytes3>>() {};
+            case "bytes4":
+                return new TypeReference<StaticArray19<Bytes4>>() {};
+            case "bytes5":
+                return new TypeReference<StaticArray19<Bytes5>>() {};
+            case "bytes6":
+                return new TypeReference<StaticArray19<Bytes6>>() {};
+            case "bytes7":
+                return new TypeReference<StaticArray19<Bytes7>>() {};
+            case "bytes8":
+                return new TypeReference<StaticArray19<Bytes8>>() {};
+            case "bytes9":
+                return new TypeReference<StaticArray19<Bytes9>>() {};
+            case "bytes10":
+                return new TypeReference<StaticArray19<Bytes10>>() {};
+            case "bytes11":
+                return new TypeReference<StaticArray19<Bytes11>>() {};
+            case "bytes12":
+                return new TypeReference<StaticArray19<Bytes12>>() {};
+            case "bytes13":
+                return new TypeReference<StaticArray19<Bytes13>>() {};
+            case "bytes14":
+                return new TypeReference<StaticArray19<Bytes14>>() {};
+            case "bytes15":
+                return new TypeReference<StaticArray19<Bytes15>>() {};
+            case "bytes16":
+                return new TypeReference<StaticArray19<Bytes16>>() {};
+            case "bytes17":
+                return new TypeReference<StaticArray19<Bytes17>>() {};
+            case "bytes18":
+                return new TypeReference<StaticArray19<Bytes18>>() {};
+            case "bytes19":
+                return new TypeReference<StaticArray19<Bytes19>>() {};
+            case "bytes20":
+                return new TypeReference<StaticArray19<Bytes20>>() {};
+            case "bytes21":
+                return new TypeReference<StaticArray19<Bytes21>>() {};
+            case "bytes22":
+                return new TypeReference<StaticArray19<Bytes22>>() {};
+            case "bytes23":
+                return new TypeReference<StaticArray19<Bytes23>>() {};
+            case "bytes24":
+                return new TypeReference<StaticArray19<Bytes24>>() {};
+            case "bytes25":
+                return new TypeReference<StaticArray19<Bytes25>>() {};
+            case "bytes26":
+                return new TypeReference<StaticArray19<Bytes26>>() {};
+            case "bytes27":
+                return new TypeReference<StaticArray19<Bytes27>>() {};
+            case "bytes28":
+                return new TypeReference<StaticArray19<Bytes28>>() {};
+            case "bytes29":
+                return new TypeReference<StaticArray19<Bytes29>>() {};
+            case "bytes30":
+                return new TypeReference<StaticArray19<Bytes30>>() {};
+            case "bytes31":
+                return new TypeReference<StaticArray19<Bytes31>>() {};
+            case "bytes32":
+                return new TypeReference<StaticArray19<Bytes32>>() {};
             default:
                 throw new BaseException(
                         201201, String.format(" %s[19] unsupported encoding array type ", type));
@@ -570,8 +1744,6 @@ public class StaticArrayReference {
             return new TypeReference<StaticArray20<Int256>>() {};
         } else if (ContractTypeUtil.invalidUint(type)) {
             return new TypeReference<StaticArray20<Uint256>>() {};
-        } else if (ContractTypeUtil.invalidBS(type)) {
-            return new TypeReference<StaticArray20<Bytes32>>() {};
         }
 
         switch (type) {
@@ -583,6 +1755,70 @@ public class StaticArrayReference {
                 return new TypeReference<StaticArray20<Utf8String>>() {};
             case "bytes":
                 return new TypeReference<StaticArray20<DynamicBytes>>() {};
+            case "bytes1":
+                return new TypeReference<StaticArray20<Bytes1>>() {};
+            case "bytes2":
+                return new TypeReference<StaticArray20<Bytes2>>() {};
+            case "bytes3":
+                return new TypeReference<StaticArray20<Bytes3>>() {};
+            case "bytes4":
+                return new TypeReference<StaticArray20<Bytes4>>() {};
+            case "bytes5":
+                return new TypeReference<StaticArray20<Bytes5>>() {};
+            case "bytes6":
+                return new TypeReference<StaticArray20<Bytes6>>() {};
+            case "bytes7":
+                return new TypeReference<StaticArray20<Bytes7>>() {};
+            case "bytes8":
+                return new TypeReference<StaticArray20<Bytes8>>() {};
+            case "bytes9":
+                return new TypeReference<StaticArray20<Bytes9>>() {};
+            case "bytes10":
+                return new TypeReference<StaticArray20<Bytes10>>() {};
+            case "bytes11":
+                return new TypeReference<StaticArray20<Bytes11>>() {};
+            case "bytes12":
+                return new TypeReference<StaticArray20<Bytes12>>() {};
+            case "bytes13":
+                return new TypeReference<StaticArray20<Bytes13>>() {};
+            case "bytes14":
+                return new TypeReference<StaticArray20<Bytes14>>() {};
+            case "bytes15":
+                return new TypeReference<StaticArray20<Bytes15>>() {};
+            case "bytes16":
+                return new TypeReference<StaticArray20<Bytes16>>() {};
+            case "bytes17":
+                return new TypeReference<StaticArray20<Bytes17>>() {};
+            case "bytes18":
+                return new TypeReference<StaticArray20<Bytes18>>() {};
+            case "bytes19":
+                return new TypeReference<StaticArray20<Bytes19>>() {};
+            case "bytes20":
+                return new TypeReference<StaticArray20<Bytes20>>() {};
+            case "bytes21":
+                return new TypeReference<StaticArray20<Bytes21>>() {};
+            case "bytes22":
+                return new TypeReference<StaticArray20<Bytes22>>() {};
+            case "bytes23":
+                return new TypeReference<StaticArray20<Bytes23>>() {};
+            case "bytes24":
+                return new TypeReference<StaticArray20<Bytes24>>() {};
+            case "bytes25":
+                return new TypeReference<StaticArray20<Bytes25>>() {};
+            case "bytes26":
+                return new TypeReference<StaticArray20<Bytes26>>() {};
+            case "bytes27":
+                return new TypeReference<StaticArray20<Bytes27>>() {};
+            case "bytes28":
+                return new TypeReference<StaticArray20<Bytes28>>() {};
+            case "bytes29":
+                return new TypeReference<StaticArray20<Bytes29>>() {};
+            case "bytes30":
+                return new TypeReference<StaticArray20<Bytes30>>() {};
+            case "bytes31":
+                return new TypeReference<StaticArray20<Bytes31>>() {};
+            case "bytes32":
+                return new TypeReference<StaticArray20<Bytes32>>() {};
             default:
                 throw new BaseException(
                         201201, String.format(" %s[20] unsupported encoding array type ", type));
@@ -595,8 +1831,6 @@ public class StaticArrayReference {
             return new TypeReference<StaticArray21<Int256>>() {};
         } else if (ContractTypeUtil.invalidUint(type)) {
             return new TypeReference<StaticArray21<Uint256>>() {};
-        } else if (ContractTypeUtil.invalidBS(type)) {
-            return new TypeReference<StaticArray21<Bytes32>>() {};
         }
 
         switch (type) {
@@ -608,6 +1842,70 @@ public class StaticArrayReference {
                 return new TypeReference<StaticArray21<Utf8String>>() {};
             case "bytes":
                 return new TypeReference<StaticArray21<DynamicBytes>>() {};
+            case "bytes1":
+                return new TypeReference<StaticArray21<Bytes1>>() {};
+            case "bytes2":
+                return new TypeReference<StaticArray21<Bytes2>>() {};
+            case "bytes3":
+                return new TypeReference<StaticArray21<Bytes3>>() {};
+            case "bytes4":
+                return new TypeReference<StaticArray21<Bytes4>>() {};
+            case "bytes5":
+                return new TypeReference<StaticArray21<Bytes5>>() {};
+            case "bytes6":
+                return new TypeReference<StaticArray21<Bytes6>>() {};
+            case "bytes7":
+                return new TypeReference<StaticArray21<Bytes7>>() {};
+            case "bytes8":
+                return new TypeReference<StaticArray21<Bytes8>>() {};
+            case "bytes9":
+                return new TypeReference<StaticArray21<Bytes9>>() {};
+            case "bytes10":
+                return new TypeReference<StaticArray21<Bytes10>>() {};
+            case "bytes11":
+                return new TypeReference<StaticArray21<Bytes11>>() {};
+            case "bytes12":
+                return new TypeReference<StaticArray21<Bytes12>>() {};
+            case "bytes13":
+                return new TypeReference<StaticArray21<Bytes13>>() {};
+            case "bytes14":
+                return new TypeReference<StaticArray21<Bytes14>>() {};
+            case "bytes15":
+                return new TypeReference<StaticArray21<Bytes15>>() {};
+            case "bytes16":
+                return new TypeReference<StaticArray21<Bytes16>>() {};
+            case "bytes17":
+                return new TypeReference<StaticArray21<Bytes17>>() {};
+            case "bytes18":
+                return new TypeReference<StaticArray21<Bytes18>>() {};
+            case "bytes19":
+                return new TypeReference<StaticArray21<Bytes19>>() {};
+            case "bytes20":
+                return new TypeReference<StaticArray21<Bytes20>>() {};
+            case "bytes21":
+                return new TypeReference<StaticArray21<Bytes21>>() {};
+            case "bytes22":
+                return new TypeReference<StaticArray21<Bytes22>>() {};
+            case "bytes23":
+                return new TypeReference<StaticArray21<Bytes23>>() {};
+            case "bytes24":
+                return new TypeReference<StaticArray21<Bytes24>>() {};
+            case "bytes25":
+                return new TypeReference<StaticArray21<Bytes25>>() {};
+            case "bytes26":
+                return new TypeReference<StaticArray21<Bytes26>>() {};
+            case "bytes27":
+                return new TypeReference<StaticArray21<Bytes27>>() {};
+            case "bytes28":
+                return new TypeReference<StaticArray21<Bytes28>>() {};
+            case "bytes29":
+                return new TypeReference<StaticArray21<Bytes29>>() {};
+            case "bytes30":
+                return new TypeReference<StaticArray21<Bytes30>>() {};
+            case "bytes31":
+                return new TypeReference<StaticArray21<Bytes31>>() {};
+            case "bytes32":
+                return new TypeReference<StaticArray21<Bytes32>>() {};
             default:
                 throw new BaseException(
                         201201, String.format(" %s[21] unsupported encoding array type ", type));
@@ -620,8 +1918,6 @@ public class StaticArrayReference {
             return new TypeReference<StaticArray22<Int256>>() {};
         } else if (ContractTypeUtil.invalidUint(type)) {
             return new TypeReference<StaticArray22<Uint256>>() {};
-        } else if (ContractTypeUtil.invalidBS(type)) {
-            return new TypeReference<StaticArray22<Bytes32>>() {};
         }
 
         switch (type) {
@@ -633,6 +1929,70 @@ public class StaticArrayReference {
                 return new TypeReference<StaticArray22<Utf8String>>() {};
             case "bytes":
                 return new TypeReference<StaticArray22<DynamicBytes>>() {};
+            case "bytes1":
+                return new TypeReference<StaticArray22<Bytes1>>() {};
+            case "bytes2":
+                return new TypeReference<StaticArray22<Bytes2>>() {};
+            case "bytes3":
+                return new TypeReference<StaticArray22<Bytes3>>() {};
+            case "bytes4":
+                return new TypeReference<StaticArray22<Bytes4>>() {};
+            case "bytes5":
+                return new TypeReference<StaticArray22<Bytes5>>() {};
+            case "bytes6":
+                return new TypeReference<StaticArray22<Bytes6>>() {};
+            case "bytes7":
+                return new TypeReference<StaticArray22<Bytes7>>() {};
+            case "bytes8":
+                return new TypeReference<StaticArray22<Bytes8>>() {};
+            case "bytes9":
+                return new TypeReference<StaticArray22<Bytes9>>() {};
+            case "bytes10":
+                return new TypeReference<StaticArray22<Bytes10>>() {};
+            case "bytes11":
+                return new TypeReference<StaticArray22<Bytes11>>() {};
+            case "bytes12":
+                return new TypeReference<StaticArray22<Bytes12>>() {};
+            case "bytes13":
+                return new TypeReference<StaticArray22<Bytes13>>() {};
+            case "bytes14":
+                return new TypeReference<StaticArray22<Bytes14>>() {};
+            case "bytes15":
+                return new TypeReference<StaticArray22<Bytes15>>() {};
+            case "bytes16":
+                return new TypeReference<StaticArray22<Bytes16>>() {};
+            case "bytes17":
+                return new TypeReference<StaticArray22<Bytes17>>() {};
+            case "bytes18":
+                return new TypeReference<StaticArray22<Bytes18>>() {};
+            case "bytes19":
+                return new TypeReference<StaticArray22<Bytes19>>() {};
+            case "bytes20":
+                return new TypeReference<StaticArray22<Bytes20>>() {};
+            case "bytes21":
+                return new TypeReference<StaticArray22<Bytes21>>() {};
+            case "bytes22":
+                return new TypeReference<StaticArray22<Bytes22>>() {};
+            case "bytes23":
+                return new TypeReference<StaticArray22<Bytes23>>() {};
+            case "bytes24":
+                return new TypeReference<StaticArray22<Bytes24>>() {};
+            case "bytes25":
+                return new TypeReference<StaticArray22<Bytes25>>() {};
+            case "bytes26":
+                return new TypeReference<StaticArray22<Bytes26>>() {};
+            case "bytes27":
+                return new TypeReference<StaticArray22<Bytes27>>() {};
+            case "bytes28":
+                return new TypeReference<StaticArray22<Bytes28>>() {};
+            case "bytes29":
+                return new TypeReference<StaticArray22<Bytes29>>() {};
+            case "bytes30":
+                return new TypeReference<StaticArray22<Bytes30>>() {};
+            case "bytes31":
+                return new TypeReference<StaticArray22<Bytes31>>() {};
+            case "bytes32":
+                return new TypeReference<StaticArray22<Bytes32>>() {};
             default:
                 throw new BaseException(
                         201201, String.format(" %s[22] unsupported encoding array type ", type));
@@ -645,8 +2005,6 @@ public class StaticArrayReference {
             return new TypeReference<StaticArray23<Int256>>() {};
         } else if (ContractTypeUtil.invalidUint(type)) {
             return new TypeReference<StaticArray23<Uint256>>() {};
-        } else if (ContractTypeUtil.invalidBS(type)) {
-            return new TypeReference<StaticArray23<Bytes32>>() {};
         }
 
         switch (type) {
@@ -658,6 +2016,70 @@ public class StaticArrayReference {
                 return new TypeReference<StaticArray23<Utf8String>>() {};
             case "bytes":
                 return new TypeReference<StaticArray23<DynamicBytes>>() {};
+            case "bytes1":
+                return new TypeReference<StaticArray23<Bytes1>>() {};
+            case "bytes2":
+                return new TypeReference<StaticArray23<Bytes2>>() {};
+            case "bytes3":
+                return new TypeReference<StaticArray23<Bytes3>>() {};
+            case "bytes4":
+                return new TypeReference<StaticArray23<Bytes4>>() {};
+            case "bytes5":
+                return new TypeReference<StaticArray23<Bytes5>>() {};
+            case "bytes6":
+                return new TypeReference<StaticArray23<Bytes6>>() {};
+            case "bytes7":
+                return new TypeReference<StaticArray23<Bytes7>>() {};
+            case "bytes8":
+                return new TypeReference<StaticArray23<Bytes8>>() {};
+            case "bytes9":
+                return new TypeReference<StaticArray23<Bytes9>>() {};
+            case "bytes10":
+                return new TypeReference<StaticArray23<Bytes10>>() {};
+            case "bytes11":
+                return new TypeReference<StaticArray23<Bytes11>>() {};
+            case "bytes12":
+                return new TypeReference<StaticArray23<Bytes12>>() {};
+            case "bytes13":
+                return new TypeReference<StaticArray23<Bytes13>>() {};
+            case "bytes14":
+                return new TypeReference<StaticArray23<Bytes14>>() {};
+            case "bytes15":
+                return new TypeReference<StaticArray23<Bytes15>>() {};
+            case "bytes16":
+                return new TypeReference<StaticArray23<Bytes16>>() {};
+            case "bytes17":
+                return new TypeReference<StaticArray23<Bytes17>>() {};
+            case "bytes18":
+                return new TypeReference<StaticArray23<Bytes18>>() {};
+            case "bytes19":
+                return new TypeReference<StaticArray23<Bytes19>>() {};
+            case "bytes20":
+                return new TypeReference<StaticArray23<Bytes20>>() {};
+            case "bytes21":
+                return new TypeReference<StaticArray23<Bytes21>>() {};
+            case "bytes22":
+                return new TypeReference<StaticArray23<Bytes22>>() {};
+            case "bytes23":
+                return new TypeReference<StaticArray23<Bytes23>>() {};
+            case "bytes24":
+                return new TypeReference<StaticArray23<Bytes24>>() {};
+            case "bytes25":
+                return new TypeReference<StaticArray23<Bytes25>>() {};
+            case "bytes26":
+                return new TypeReference<StaticArray23<Bytes26>>() {};
+            case "bytes27":
+                return new TypeReference<StaticArray23<Bytes27>>() {};
+            case "bytes28":
+                return new TypeReference<StaticArray23<Bytes28>>() {};
+            case "bytes29":
+                return new TypeReference<StaticArray23<Bytes29>>() {};
+            case "bytes30":
+                return new TypeReference<StaticArray23<Bytes30>>() {};
+            case "bytes31":
+                return new TypeReference<StaticArray23<Bytes31>>() {};
+            case "bytes32":
+                return new TypeReference<StaticArray23<Bytes32>>() {};
             default:
                 throw new BaseException(
                         201201, String.format(" %s[23] unsupported encoding array type ", type));
@@ -670,8 +2092,6 @@ public class StaticArrayReference {
             return new TypeReference<StaticArray24<Int256>>() {};
         } else if (ContractTypeUtil.invalidUint(type)) {
             return new TypeReference<StaticArray24<Uint256>>() {};
-        } else if (ContractTypeUtil.invalidBS(type)) {
-            return new TypeReference<StaticArray24<Bytes32>>() {};
         }
 
         switch (type) {
@@ -683,6 +2103,70 @@ public class StaticArrayReference {
                 return new TypeReference<StaticArray24<Utf8String>>() {};
             case "bytes":
                 return new TypeReference<StaticArray24<DynamicBytes>>() {};
+            case "bytes1":
+                return new TypeReference<StaticArray24<Bytes1>>() {};
+            case "bytes2":
+                return new TypeReference<StaticArray24<Bytes2>>() {};
+            case "bytes3":
+                return new TypeReference<StaticArray24<Bytes3>>() {};
+            case "bytes4":
+                return new TypeReference<StaticArray24<Bytes4>>() {};
+            case "bytes5":
+                return new TypeReference<StaticArray24<Bytes5>>() {};
+            case "bytes6":
+                return new TypeReference<StaticArray24<Bytes6>>() {};
+            case "bytes7":
+                return new TypeReference<StaticArray24<Bytes7>>() {};
+            case "bytes8":
+                return new TypeReference<StaticArray24<Bytes8>>() {};
+            case "bytes9":
+                return new TypeReference<StaticArray24<Bytes9>>() {};
+            case "bytes10":
+                return new TypeReference<StaticArray24<Bytes10>>() {};
+            case "bytes11":
+                return new TypeReference<StaticArray24<Bytes11>>() {};
+            case "bytes12":
+                return new TypeReference<StaticArray24<Bytes12>>() {};
+            case "bytes13":
+                return new TypeReference<StaticArray24<Bytes13>>() {};
+            case "bytes14":
+                return new TypeReference<StaticArray24<Bytes14>>() {};
+            case "bytes15":
+                return new TypeReference<StaticArray24<Bytes15>>() {};
+            case "bytes16":
+                return new TypeReference<StaticArray24<Bytes16>>() {};
+            case "bytes17":
+                return new TypeReference<StaticArray24<Bytes17>>() {};
+            case "bytes18":
+                return new TypeReference<StaticArray24<Bytes18>>() {};
+            case "bytes19":
+                return new TypeReference<StaticArray24<Bytes19>>() {};
+            case "bytes20":
+                return new TypeReference<StaticArray24<Bytes20>>() {};
+            case "bytes21":
+                return new TypeReference<StaticArray24<Bytes21>>() {};
+            case "bytes22":
+                return new TypeReference<StaticArray24<Bytes22>>() {};
+            case "bytes23":
+                return new TypeReference<StaticArray24<Bytes23>>() {};
+            case "bytes24":
+                return new TypeReference<StaticArray24<Bytes24>>() {};
+            case "bytes25":
+                return new TypeReference<StaticArray24<Bytes25>>() {};
+            case "bytes26":
+                return new TypeReference<StaticArray24<Bytes26>>() {};
+            case "bytes27":
+                return new TypeReference<StaticArray24<Bytes27>>() {};
+            case "bytes28":
+                return new TypeReference<StaticArray24<Bytes28>>() {};
+            case "bytes29":
+                return new TypeReference<StaticArray24<Bytes29>>() {};
+            case "bytes30":
+                return new TypeReference<StaticArray24<Bytes30>>() {};
+            case "bytes31":
+                return new TypeReference<StaticArray24<Bytes31>>() {};
+            case "bytes32":
+                return new TypeReference<StaticArray24<Bytes32>>() {};
             default:
                 throw new BaseException(
                         201201, String.format(" %s[24] unsupported encoding array type ", type));
@@ -695,8 +2179,6 @@ public class StaticArrayReference {
             return new TypeReference<StaticArray25<Int256>>() {};
         } else if (ContractTypeUtil.invalidUint(type)) {
             return new TypeReference<StaticArray25<Uint256>>() {};
-        } else if (ContractTypeUtil.invalidBS(type)) {
-            return new TypeReference<StaticArray25<Bytes32>>() {};
         }
 
         switch (type) {
@@ -708,6 +2190,70 @@ public class StaticArrayReference {
                 return new TypeReference<StaticArray25<Utf8String>>() {};
             case "bytes":
                 return new TypeReference<StaticArray25<DynamicBytes>>() {};
+            case "bytes1":
+                return new TypeReference<StaticArray25<Bytes1>>() {};
+            case "bytes2":
+                return new TypeReference<StaticArray25<Bytes2>>() {};
+            case "bytes3":
+                return new TypeReference<StaticArray25<Bytes3>>() {};
+            case "bytes4":
+                return new TypeReference<StaticArray25<Bytes4>>() {};
+            case "bytes5":
+                return new TypeReference<StaticArray25<Bytes5>>() {};
+            case "bytes6":
+                return new TypeReference<StaticArray25<Bytes6>>() {};
+            case "bytes7":
+                return new TypeReference<StaticArray25<Bytes7>>() {};
+            case "bytes8":
+                return new TypeReference<StaticArray25<Bytes8>>() {};
+            case "bytes9":
+                return new TypeReference<StaticArray25<Bytes9>>() {};
+            case "bytes10":
+                return new TypeReference<StaticArray25<Bytes10>>() {};
+            case "bytes11":
+                return new TypeReference<StaticArray25<Bytes11>>() {};
+            case "bytes12":
+                return new TypeReference<StaticArray25<Bytes12>>() {};
+            case "bytes13":
+                return new TypeReference<StaticArray25<Bytes13>>() {};
+            case "bytes14":
+                return new TypeReference<StaticArray25<Bytes14>>() {};
+            case "bytes15":
+                return new TypeReference<StaticArray25<Bytes15>>() {};
+            case "bytes16":
+                return new TypeReference<StaticArray25<Bytes16>>() {};
+            case "bytes17":
+                return new TypeReference<StaticArray25<Bytes17>>() {};
+            case "bytes18":
+                return new TypeReference<StaticArray25<Bytes18>>() {};
+            case "bytes19":
+                return new TypeReference<StaticArray25<Bytes19>>() {};
+            case "bytes20":
+                return new TypeReference<StaticArray25<Bytes20>>() {};
+            case "bytes21":
+                return new TypeReference<StaticArray25<Bytes21>>() {};
+            case "bytes22":
+                return new TypeReference<StaticArray25<Bytes22>>() {};
+            case "bytes23":
+                return new TypeReference<StaticArray25<Bytes23>>() {};
+            case "bytes24":
+                return new TypeReference<StaticArray25<Bytes24>>() {};
+            case "bytes25":
+                return new TypeReference<StaticArray25<Bytes25>>() {};
+            case "bytes26":
+                return new TypeReference<StaticArray25<Bytes26>>() {};
+            case "bytes27":
+                return new TypeReference<StaticArray25<Bytes27>>() {};
+            case "bytes28":
+                return new TypeReference<StaticArray25<Bytes28>>() {};
+            case "bytes29":
+                return new TypeReference<StaticArray25<Bytes29>>() {};
+            case "bytes30":
+                return new TypeReference<StaticArray25<Bytes30>>() {};
+            case "bytes31":
+                return new TypeReference<StaticArray25<Bytes31>>() {};
+            case "bytes32":
+                return new TypeReference<StaticArray25<Bytes32>>() {};
             default:
                 throw new BaseException(
                         201201, String.format("%s[25] unsupported encoding array type", type));
@@ -720,8 +2266,6 @@ public class StaticArrayReference {
             return new TypeReference<StaticArray26<Int256>>() {};
         } else if (ContractTypeUtil.invalidUint(type)) {
             return new TypeReference<StaticArray26<Uint256>>() {};
-        } else if (ContractTypeUtil.invalidBS(type)) {
-            return new TypeReference<StaticArray26<Bytes32>>() {};
         }
 
         switch (type) {
@@ -733,6 +2277,70 @@ public class StaticArrayReference {
                 return new TypeReference<StaticArray26<Utf8String>>() {};
             case "bytes":
                 return new TypeReference<StaticArray26<DynamicBytes>>() {};
+            case "bytes1":
+                return new TypeReference<StaticArray26<Bytes1>>() {};
+            case "bytes2":
+                return new TypeReference<StaticArray26<Bytes2>>() {};
+            case "bytes3":
+                return new TypeReference<StaticArray26<Bytes3>>() {};
+            case "bytes4":
+                return new TypeReference<StaticArray26<Bytes4>>() {};
+            case "bytes5":
+                return new TypeReference<StaticArray26<Bytes5>>() {};
+            case "bytes6":
+                return new TypeReference<StaticArray26<Bytes6>>() {};
+            case "bytes7":
+                return new TypeReference<StaticArray26<Bytes7>>() {};
+            case "bytes8":
+                return new TypeReference<StaticArray26<Bytes8>>() {};
+            case "bytes9":
+                return new TypeReference<StaticArray26<Bytes9>>() {};
+            case "bytes10":
+                return new TypeReference<StaticArray26<Bytes10>>() {};
+            case "bytes11":
+                return new TypeReference<StaticArray26<Bytes11>>() {};
+            case "bytes12":
+                return new TypeReference<StaticArray26<Bytes12>>() {};
+            case "bytes13":
+                return new TypeReference<StaticArray26<Bytes13>>() {};
+            case "bytes14":
+                return new TypeReference<StaticArray26<Bytes14>>() {};
+            case "bytes15":
+                return new TypeReference<StaticArray26<Bytes15>>() {};
+            case "bytes16":
+                return new TypeReference<StaticArray26<Bytes16>>() {};
+            case "bytes17":
+                return new TypeReference<StaticArray26<Bytes17>>() {};
+            case "bytes18":
+                return new TypeReference<StaticArray26<Bytes18>>() {};
+            case "bytes19":
+                return new TypeReference<StaticArray26<Bytes19>>() {};
+            case "bytes20":
+                return new TypeReference<StaticArray26<Bytes20>>() {};
+            case "bytes21":
+                return new TypeReference<StaticArray26<Bytes21>>() {};
+            case "bytes22":
+                return new TypeReference<StaticArray26<Bytes22>>() {};
+            case "bytes23":
+                return new TypeReference<StaticArray26<Bytes23>>() {};
+            case "bytes24":
+                return new TypeReference<StaticArray26<Bytes24>>() {};
+            case "bytes25":
+                return new TypeReference<StaticArray26<Bytes25>>() {};
+            case "bytes26":
+                return new TypeReference<StaticArray26<Bytes26>>() {};
+            case "bytes27":
+                return new TypeReference<StaticArray26<Bytes27>>() {};
+            case "bytes28":
+                return new TypeReference<StaticArray26<Bytes28>>() {};
+            case "bytes29":
+                return new TypeReference<StaticArray26<Bytes29>>() {};
+            case "bytes30":
+                return new TypeReference<StaticArray26<Bytes30>>() {};
+            case "bytes31":
+                return new TypeReference<StaticArray26<Bytes31>>() {};
+            case "bytes32":
+                return new TypeReference<StaticArray26<Bytes32>>() {};
             default:
                 throw new BaseException(
                         201201, String.format(" %s[26] unsupported encoding array type ", type));
@@ -745,8 +2353,6 @@ public class StaticArrayReference {
             return new TypeReference<StaticArray27<Int256>>() {};
         } else if (ContractTypeUtil.invalidUint(type)) {
             return new TypeReference<StaticArray27<Uint256>>() {};
-        } else if (ContractTypeUtil.invalidBS(type)) {
-            return new TypeReference<StaticArray27<Bytes32>>() {};
         }
 
         switch (type) {
@@ -758,6 +2364,70 @@ public class StaticArrayReference {
                 return new TypeReference<StaticArray27<Utf8String>>() {};
             case "bytes":
                 return new TypeReference<StaticArray27<DynamicBytes>>() {};
+            case "bytes1":
+                return new TypeReference<StaticArray27<Bytes1>>() {};
+            case "bytes2":
+                return new TypeReference<StaticArray27<Bytes2>>() {};
+            case "bytes3":
+                return new TypeReference<StaticArray27<Bytes3>>() {};
+            case "bytes4":
+                return new TypeReference<StaticArray27<Bytes4>>() {};
+            case "bytes5":
+                return new TypeReference<StaticArray27<Bytes5>>() {};
+            case "bytes6":
+                return new TypeReference<StaticArray27<Bytes6>>() {};
+            case "bytes7":
+                return new TypeReference<StaticArray27<Bytes7>>() {};
+            case "bytes8":
+                return new TypeReference<StaticArray27<Bytes8>>() {};
+            case "bytes9":
+                return new TypeReference<StaticArray27<Bytes9>>() {};
+            case "bytes10":
+                return new TypeReference<StaticArray27<Bytes10>>() {};
+            case "bytes11":
+                return new TypeReference<StaticArray27<Bytes11>>() {};
+            case "bytes12":
+                return new TypeReference<StaticArray27<Bytes12>>() {};
+            case "bytes13":
+                return new TypeReference<StaticArray27<Bytes13>>() {};
+            case "bytes14":
+                return new TypeReference<StaticArray27<Bytes14>>() {};
+            case "bytes15":
+                return new TypeReference<StaticArray27<Bytes15>>() {};
+            case "bytes16":
+                return new TypeReference<StaticArray27<Bytes16>>() {};
+            case "bytes17":
+                return new TypeReference<StaticArray27<Bytes17>>() {};
+            case "bytes18":
+                return new TypeReference<StaticArray27<Bytes18>>() {};
+            case "bytes19":
+                return new TypeReference<StaticArray27<Bytes19>>() {};
+            case "bytes20":
+                return new TypeReference<StaticArray27<Bytes20>>() {};
+            case "bytes21":
+                return new TypeReference<StaticArray27<Bytes21>>() {};
+            case "bytes22":
+                return new TypeReference<StaticArray27<Bytes22>>() {};
+            case "bytes23":
+                return new TypeReference<StaticArray27<Bytes23>>() {};
+            case "bytes24":
+                return new TypeReference<StaticArray27<Bytes24>>() {};
+            case "bytes25":
+                return new TypeReference<StaticArray27<Bytes25>>() {};
+            case "bytes26":
+                return new TypeReference<StaticArray27<Bytes26>>() {};
+            case "bytes27":
+                return new TypeReference<StaticArray27<Bytes27>>() {};
+            case "bytes28":
+                return new TypeReference<StaticArray27<Bytes28>>() {};
+            case "bytes29":
+                return new TypeReference<StaticArray27<Bytes29>>() {};
+            case "bytes30":
+                return new TypeReference<StaticArray27<Bytes30>>() {};
+            case "bytes31":
+                return new TypeReference<StaticArray27<Bytes31>>() {};
+            case "bytes32":
+                return new TypeReference<StaticArray27<Bytes32>>() {};
             default:
                 throw new BaseException(
                         201201, String.format(" %s[27] unsupported encoding array type ", type));
@@ -770,8 +2440,6 @@ public class StaticArrayReference {
             return new TypeReference<StaticArray28<Int256>>() {};
         } else if (ContractTypeUtil.invalidUint(type)) {
             return new TypeReference<StaticArray28<Uint256>>() {};
-        } else if (ContractTypeUtil.invalidBS(type)) {
-            return new TypeReference<StaticArray28<Bytes32>>() {};
         }
 
         switch (type) {
@@ -783,6 +2451,70 @@ public class StaticArrayReference {
                 return new TypeReference<StaticArray28<Utf8String>>() {};
             case "bytes":
                 return new TypeReference<StaticArray28<DynamicBytes>>() {};
+            case "bytes1":
+                return new TypeReference<StaticArray28<Bytes1>>() {};
+            case "bytes2":
+                return new TypeReference<StaticArray28<Bytes2>>() {};
+            case "bytes3":
+                return new TypeReference<StaticArray28<Bytes3>>() {};
+            case "bytes4":
+                return new TypeReference<StaticArray28<Bytes4>>() {};
+            case "bytes5":
+                return new TypeReference<StaticArray28<Bytes5>>() {};
+            case "bytes6":
+                return new TypeReference<StaticArray28<Bytes6>>() {};
+            case "bytes7":
+                return new TypeReference<StaticArray28<Bytes7>>() {};
+            case "bytes8":
+                return new TypeReference<StaticArray28<Bytes8>>() {};
+            case "bytes9":
+                return new TypeReference<StaticArray28<Bytes9>>() {};
+            case "bytes10":
+                return new TypeReference<StaticArray28<Bytes10>>() {};
+            case "bytes11":
+                return new TypeReference<StaticArray28<Bytes11>>() {};
+            case "bytes12":
+                return new TypeReference<StaticArray28<Bytes12>>() {};
+            case "bytes13":
+                return new TypeReference<StaticArray28<Bytes13>>() {};
+            case "bytes14":
+                return new TypeReference<StaticArray28<Bytes14>>() {};
+            case "bytes15":
+                return new TypeReference<StaticArray28<Bytes15>>() {};
+            case "bytes16":
+                return new TypeReference<StaticArray28<Bytes16>>() {};
+            case "bytes17":
+                return new TypeReference<StaticArray28<Bytes17>>() {};
+            case "bytes18":
+                return new TypeReference<StaticArray28<Bytes18>>() {};
+            case "bytes19":
+                return new TypeReference<StaticArray28<Bytes19>>() {};
+            case "bytes20":
+                return new TypeReference<StaticArray28<Bytes20>>() {};
+            case "bytes21":
+                return new TypeReference<StaticArray28<Bytes21>>() {};
+            case "bytes22":
+                return new TypeReference<StaticArray28<Bytes22>>() {};
+            case "bytes23":
+                return new TypeReference<StaticArray28<Bytes23>>() {};
+            case "bytes24":
+                return new TypeReference<StaticArray28<Bytes24>>() {};
+            case "bytes25":
+                return new TypeReference<StaticArray28<Bytes25>>() {};
+            case "bytes26":
+                return new TypeReference<StaticArray28<Bytes26>>() {};
+            case "bytes27":
+                return new TypeReference<StaticArray28<Bytes27>>() {};
+            case "bytes28":
+                return new TypeReference<StaticArray28<Bytes28>>() {};
+            case "bytes29":
+                return new TypeReference<StaticArray28<Bytes29>>() {};
+            case "bytes30":
+                return new TypeReference<StaticArray28<Bytes30>>() {};
+            case "bytes31":
+                return new TypeReference<StaticArray28<Bytes31>>() {};
+            case "bytes32":
+                return new TypeReference<StaticArray28<Bytes32>>() {};
             default:
                 throw new BaseException(
                         201201, String.format(" %s[28] unsupported encoding array type ", type));
@@ -795,8 +2527,6 @@ public class StaticArrayReference {
             return new TypeReference<StaticArray29<Int256>>() {};
         } else if (ContractTypeUtil.invalidUint(type)) {
             return new TypeReference<StaticArray29<Uint256>>() {};
-        } else if (ContractTypeUtil.invalidBS(type)) {
-            return new TypeReference<StaticArray29<Bytes32>>() {};
         }
 
         switch (type) {
@@ -808,6 +2538,70 @@ public class StaticArrayReference {
                 return new TypeReference<StaticArray29<Utf8String>>() {};
             case "bytes":
                 return new TypeReference<StaticArray29<DynamicBytes>>() {};
+            case "bytes1":
+                return new TypeReference<StaticArray29<Bytes1>>() {};
+            case "bytes2":
+                return new TypeReference<StaticArray29<Bytes2>>() {};
+            case "bytes3":
+                return new TypeReference<StaticArray29<Bytes3>>() {};
+            case "bytes4":
+                return new TypeReference<StaticArray29<Bytes4>>() {};
+            case "bytes5":
+                return new TypeReference<StaticArray29<Bytes5>>() {};
+            case "bytes6":
+                return new TypeReference<StaticArray29<Bytes6>>() {};
+            case "bytes7":
+                return new TypeReference<StaticArray29<Bytes7>>() {};
+            case "bytes8":
+                return new TypeReference<StaticArray29<Bytes8>>() {};
+            case "bytes9":
+                return new TypeReference<StaticArray29<Bytes9>>() {};
+            case "bytes10":
+                return new TypeReference<StaticArray29<Bytes10>>() {};
+            case "bytes11":
+                return new TypeReference<StaticArray29<Bytes11>>() {};
+            case "bytes12":
+                return new TypeReference<StaticArray29<Bytes12>>() {};
+            case "bytes13":
+                return new TypeReference<StaticArray29<Bytes13>>() {};
+            case "bytes14":
+                return new TypeReference<StaticArray29<Bytes14>>() {};
+            case "bytes15":
+                return new TypeReference<StaticArray29<Bytes15>>() {};
+            case "bytes16":
+                return new TypeReference<StaticArray29<Bytes16>>() {};
+            case "bytes17":
+                return new TypeReference<StaticArray29<Bytes17>>() {};
+            case "bytes18":
+                return new TypeReference<StaticArray29<Bytes18>>() {};
+            case "bytes19":
+                return new TypeReference<StaticArray29<Bytes19>>() {};
+            case "bytes20":
+                return new TypeReference<StaticArray29<Bytes20>>() {};
+            case "bytes21":
+                return new TypeReference<StaticArray29<Bytes21>>() {};
+            case "bytes22":
+                return new TypeReference<StaticArray29<Bytes22>>() {};
+            case "bytes23":
+                return new TypeReference<StaticArray29<Bytes23>>() {};
+            case "bytes24":
+                return new TypeReference<StaticArray29<Bytes24>>() {};
+            case "bytes25":
+                return new TypeReference<StaticArray29<Bytes25>>() {};
+            case "bytes26":
+                return new TypeReference<StaticArray29<Bytes26>>() {};
+            case "bytes27":
+                return new TypeReference<StaticArray29<Bytes27>>() {};
+            case "bytes28":
+                return new TypeReference<StaticArray29<Bytes28>>() {};
+            case "bytes29":
+                return new TypeReference<StaticArray29<Bytes29>>() {};
+            case "bytes30":
+                return new TypeReference<StaticArray29<Bytes30>>() {};
+            case "bytes31":
+                return new TypeReference<StaticArray29<Bytes31>>() {};
+            case "bytes32":
+                return new TypeReference<StaticArray29<Bytes32>>() {};
             default:
                 throw new BaseException(
                         201201, String.format(" %s[29] unsupported encoding array type ", type));
@@ -820,8 +2614,6 @@ public class StaticArrayReference {
             return new TypeReference<StaticArray30<Int256>>() {};
         } else if (ContractTypeUtil.invalidUint(type)) {
             return new TypeReference<StaticArray30<Uint256>>() {};
-        } else if (ContractTypeUtil.invalidBS(type)) {
-            return new TypeReference<StaticArray30<Bytes32>>() {};
         }
 
         switch (type) {
@@ -833,6 +2625,70 @@ public class StaticArrayReference {
                 return new TypeReference<StaticArray30<Utf8String>>() {};
             case "bytes":
                 return new TypeReference<StaticArray30<DynamicBytes>>() {};
+            case "bytes1":
+                return new TypeReference<StaticArray30<Bytes1>>() {};
+            case "bytes2":
+                return new TypeReference<StaticArray30<Bytes2>>() {};
+            case "bytes3":
+                return new TypeReference<StaticArray30<Bytes3>>() {};
+            case "bytes4":
+                return new TypeReference<StaticArray30<Bytes4>>() {};
+            case "bytes5":
+                return new TypeReference<StaticArray30<Bytes5>>() {};
+            case "bytes6":
+                return new TypeReference<StaticArray30<Bytes6>>() {};
+            case "bytes7":
+                return new TypeReference<StaticArray30<Bytes7>>() {};
+            case "bytes8":
+                return new TypeReference<StaticArray30<Bytes8>>() {};
+            case "bytes9":
+                return new TypeReference<StaticArray30<Bytes9>>() {};
+            case "bytes10":
+                return new TypeReference<StaticArray30<Bytes10>>() {};
+            case "bytes11":
+                return new TypeReference<StaticArray30<Bytes11>>() {};
+            case "bytes12":
+                return new TypeReference<StaticArray30<Bytes12>>() {};
+            case "bytes13":
+                return new TypeReference<StaticArray30<Bytes13>>() {};
+            case "bytes14":
+                return new TypeReference<StaticArray30<Bytes14>>() {};
+            case "bytes15":
+                return new TypeReference<StaticArray30<Bytes15>>() {};
+            case "bytes16":
+                return new TypeReference<StaticArray30<Bytes16>>() {};
+            case "bytes17":
+                return new TypeReference<StaticArray30<Bytes17>>() {};
+            case "bytes18":
+                return new TypeReference<StaticArray30<Bytes18>>() {};
+            case "bytes19":
+                return new TypeReference<StaticArray30<Bytes19>>() {};
+            case "bytes20":
+                return new TypeReference<StaticArray30<Bytes20>>() {};
+            case "bytes21":
+                return new TypeReference<StaticArray30<Bytes21>>() {};
+            case "bytes22":
+                return new TypeReference<StaticArray30<Bytes22>>() {};
+            case "bytes23":
+                return new TypeReference<StaticArray30<Bytes23>>() {};
+            case "bytes24":
+                return new TypeReference<StaticArray30<Bytes24>>() {};
+            case "bytes25":
+                return new TypeReference<StaticArray30<Bytes25>>() {};
+            case "bytes26":
+                return new TypeReference<StaticArray30<Bytes26>>() {};
+            case "bytes27":
+                return new TypeReference<StaticArray30<Bytes27>>() {};
+            case "bytes28":
+                return new TypeReference<StaticArray30<Bytes28>>() {};
+            case "bytes29":
+                return new TypeReference<StaticArray30<Bytes29>>() {};
+            case "bytes30":
+                return new TypeReference<StaticArray30<Bytes30>>() {};
+            case "bytes31":
+                return new TypeReference<StaticArray30<Bytes31>>() {};
+            case "bytes32":
+                return new TypeReference<StaticArray30<Bytes32>>() {};
             default:
                 throw new BaseException(
                         201201, String.format(" %s[30] unsupported encoding array type ", type));
@@ -845,8 +2701,6 @@ public class StaticArrayReference {
             return new TypeReference<StaticArray31<Int256>>() {};
         } else if (ContractTypeUtil.invalidUint(type)) {
             return new TypeReference<StaticArray31<Uint256>>() {};
-        } else if (ContractTypeUtil.invalidBS(type)) {
-            return new TypeReference<StaticArray31<Bytes32>>() {};
         }
 
         switch (type) {
@@ -858,6 +2712,70 @@ public class StaticArrayReference {
                 return new TypeReference<StaticArray31<Utf8String>>() {};
             case "bytes":
                 return new TypeReference<StaticArray31<DynamicBytes>>() {};
+            case "bytes1":
+                return new TypeReference<StaticArray31<Bytes1>>() {};
+            case "bytes2":
+                return new TypeReference<StaticArray31<Bytes2>>() {};
+            case "bytes3":
+                return new TypeReference<StaticArray31<Bytes3>>() {};
+            case "bytes4":
+                return new TypeReference<StaticArray31<Bytes4>>() {};
+            case "bytes5":
+                return new TypeReference<StaticArray31<Bytes5>>() {};
+            case "bytes6":
+                return new TypeReference<StaticArray31<Bytes6>>() {};
+            case "bytes7":
+                return new TypeReference<StaticArray31<Bytes7>>() {};
+            case "bytes8":
+                return new TypeReference<StaticArray31<Bytes8>>() {};
+            case "bytes9":
+                return new TypeReference<StaticArray31<Bytes9>>() {};
+            case "bytes10":
+                return new TypeReference<StaticArray31<Bytes10>>() {};
+            case "bytes11":
+                return new TypeReference<StaticArray31<Bytes11>>() {};
+            case "bytes12":
+                return new TypeReference<StaticArray31<Bytes12>>() {};
+            case "bytes13":
+                return new TypeReference<StaticArray31<Bytes13>>() {};
+            case "bytes14":
+                return new TypeReference<StaticArray31<Bytes14>>() {};
+            case "bytes15":
+                return new TypeReference<StaticArray31<Bytes15>>() {};
+            case "bytes16":
+                return new TypeReference<StaticArray31<Bytes16>>() {};
+            case "bytes17":
+                return new TypeReference<StaticArray31<Bytes17>>() {};
+            case "bytes18":
+                return new TypeReference<StaticArray31<Bytes18>>() {};
+            case "bytes19":
+                return new TypeReference<StaticArray31<Bytes19>>() {};
+            case "bytes20":
+                return new TypeReference<StaticArray31<Bytes20>>() {};
+            case "bytes21":
+                return new TypeReference<StaticArray31<Bytes21>>() {};
+            case "bytes22":
+                return new TypeReference<StaticArray31<Bytes22>>() {};
+            case "bytes23":
+                return new TypeReference<StaticArray31<Bytes23>>() {};
+            case "bytes24":
+                return new TypeReference<StaticArray31<Bytes24>>() {};
+            case "bytes25":
+                return new TypeReference<StaticArray31<Bytes25>>() {};
+            case "bytes26":
+                return new TypeReference<StaticArray31<Bytes26>>() {};
+            case "bytes27":
+                return new TypeReference<StaticArray31<Bytes27>>() {};
+            case "bytes28":
+                return new TypeReference<StaticArray31<Bytes28>>() {};
+            case "bytes29":
+                return new TypeReference<StaticArray31<Bytes29>>() {};
+            case "bytes30":
+                return new TypeReference<StaticArray31<Bytes30>>() {};
+            case "bytes31":
+                return new TypeReference<StaticArray31<Bytes31>>() {};
+            case "bytes32":
+                return new TypeReference<StaticArray31<Bytes32>>() {};
             default:
                 throw new BaseException(
                         201201, String.format(" %s[31] unsupported encoding array type ", type));
@@ -870,8 +2788,6 @@ public class StaticArrayReference {
             return new TypeReference<StaticArray32<Int256>>() {};
         } else if (ContractTypeUtil.invalidUint(type)) {
             return new TypeReference<StaticArray32<Uint256>>() {};
-        } else if (ContractTypeUtil.invalidBS(type)) {
-            return new TypeReference<StaticArray32<Bytes32>>() {};
         }
 
         switch (type) {
@@ -883,6 +2799,70 @@ public class StaticArrayReference {
                 return new TypeReference<StaticArray32<Utf8String>>() {};
             case "bytes":
                 return new TypeReference<StaticArray32<DynamicBytes>>() {};
+            case "bytes1":
+                return new TypeReference<StaticArray32<Bytes1>>() {};
+            case "bytes2":
+                return new TypeReference<StaticArray32<Bytes2>>() {};
+            case "bytes3":
+                return new TypeReference<StaticArray32<Bytes3>>() {};
+            case "bytes4":
+                return new TypeReference<StaticArray32<Bytes4>>() {};
+            case "bytes5":
+                return new TypeReference<StaticArray32<Bytes5>>() {};
+            case "bytes6":
+                return new TypeReference<StaticArray32<Bytes6>>() {};
+            case "bytes7":
+                return new TypeReference<StaticArray32<Bytes7>>() {};
+            case "bytes8":
+                return new TypeReference<StaticArray32<Bytes8>>() {};
+            case "bytes9":
+                return new TypeReference<StaticArray32<Bytes9>>() {};
+            case "bytes10":
+                return new TypeReference<StaticArray32<Bytes10>>() {};
+            case "bytes11":
+                return new TypeReference<StaticArray32<Bytes11>>() {};
+            case "bytes12":
+                return new TypeReference<StaticArray32<Bytes12>>() {};
+            case "bytes13":
+                return new TypeReference<StaticArray32<Bytes13>>() {};
+            case "bytes14":
+                return new TypeReference<StaticArray32<Bytes14>>() {};
+            case "bytes15":
+                return new TypeReference<StaticArray32<Bytes15>>() {};
+            case "bytes16":
+                return new TypeReference<StaticArray32<Bytes16>>() {};
+            case "bytes17":
+                return new TypeReference<StaticArray32<Bytes17>>() {};
+            case "bytes18":
+                return new TypeReference<StaticArray32<Bytes18>>() {};
+            case "bytes19":
+                return new TypeReference<StaticArray32<Bytes19>>() {};
+            case "bytes20":
+                return new TypeReference<StaticArray32<Bytes20>>() {};
+            case "bytes21":
+                return new TypeReference<StaticArray32<Bytes21>>() {};
+            case "bytes22":
+                return new TypeReference<StaticArray32<Bytes22>>() {};
+            case "bytes23":
+                return new TypeReference<StaticArray32<Bytes23>>() {};
+            case "bytes24":
+                return new TypeReference<StaticArray32<Bytes24>>() {};
+            case "bytes25":
+                return new TypeReference<StaticArray32<Bytes25>>() {};
+            case "bytes26":
+                return new TypeReference<StaticArray32<Bytes26>>() {};
+            case "bytes27":
+                return new TypeReference<StaticArray32<Bytes27>>() {};
+            case "bytes28":
+                return new TypeReference<StaticArray32<Bytes28>>() {};
+            case "bytes29":
+                return new TypeReference<StaticArray32<Bytes29>>() {};
+            case "bytes30":
+                return new TypeReference<StaticArray32<Bytes30>>() {};
+            case "bytes31":
+                return new TypeReference<StaticArray32<Bytes31>>() {};
+            case "bytes32":
+                return new TypeReference<StaticArray32<Bytes32>>() {};
             default:
                 throw new BaseException(
                         201201, String.format(" %s[32] unsupported encoding array type ", type));

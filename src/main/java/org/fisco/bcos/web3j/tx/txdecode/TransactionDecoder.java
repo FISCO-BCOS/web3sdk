@@ -101,7 +101,7 @@ public class TransactionDecoder {
 
         String result =
                 ObjectMapperFactory.getObjectMapper()
-                        .enable(SerializationFeature.INDENT_OUTPUT)
+                        // .enable(SerializationFeature.INDENT_OUTPUT)
                         .writeValueAsString(resultMap);
 
         return result;
@@ -138,7 +138,7 @@ public class TransactionDecoder {
         }
         String result =
                 ObjectMapperFactory.getObjectMapper()
-                        .enable(SerializationFeature.INDENT_OUTPUT)
+                        // .enable(SerializationFeature.INDENT_OUTPUT)
                         .writeValueAsString(resultList);
         return result;
     }
