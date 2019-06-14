@@ -1,5 +1,7 @@
 package org.fisco.bcos.channel.dto;
 
+import java.nio.charset.StandardCharsets;
+
 public class ChannelResponse {
 	
 	private Integer errorCode; // 错误码
@@ -39,7 +41,7 @@ public class ChannelResponse {
     {
         return null;
     }
-    String _content = new String(this.content);
+    String _content = new String(this.content, StandardCharsets.UTF_8);
     return _content;
  }
   
