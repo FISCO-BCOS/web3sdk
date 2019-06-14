@@ -16,7 +16,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class Channel2ClientBin {
-  static Logger logger = LoggerFactory.getLogger(Channel2ClientBin.class);
+  private static Logger logger = LoggerFactory.getLogger(Channel2ClientBin.class);
   
   public static byte[] toByteArrFromFile(String path) throws Exception{  
       File inFile = new File(path);  
