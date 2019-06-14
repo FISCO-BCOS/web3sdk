@@ -83,12 +83,12 @@ public class PerformanceDTCollector {
                 error.addAndGet(1);
             }
 
-            received.incrementAndGet();
+            int count = received.incrementAndGet();
 
-            if ((received.get() + 1) % (total / 10) == 0) {
+            if (count % (total / 10) == 0) {
                 System.out.println(
                         "                                                       |received:"
-                                + String.valueOf((received.get() + 1) * 100 / total)
+                                + String.valueOf(count * 100 / total)
                                 + "%");
             }
 
