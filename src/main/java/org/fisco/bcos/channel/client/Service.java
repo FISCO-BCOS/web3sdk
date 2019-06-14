@@ -19,6 +19,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+
 import org.fisco.bcos.channel.dto.BcosMessage;
 import org.fisco.bcos.channel.dto.BcosRequest;
 import org.fisco.bcos.channel.dto.BcosResponse;
@@ -434,7 +435,7 @@ public class Service {
                     bcosMessage.getSeq());
 
         } catch (Exception e) {
-            logger.error("system error: " + e.getMessage());
+            logger.error("system error: " + e);
 
             BcosResponse response = new BcosResponse();
             response.setErrorCode(-1);
@@ -529,6 +530,83 @@ public class Service {
                 response.setContent("");
 
                 callback.onResponse(response);
+                return;
+            }
+        } catch (Exception e) {
+            logger.error("system error", e);
+        }
+    }
+    
+    public void asyncMulticastChannelMessage2(ChannelRequest request) {
+    	try {
+            logger.debug("ChannelRequest: " + request.getMessageID());
+
+            ChannelMessage2 channelMessage = new ChannelMessage2();
+
+            channelMessage.setSeq(request.getMessageID());
+            channelMessage.setResult(0);
+            channelMessage.setType((short) 0x35); // 链上链下多播请求0x35
+            channelMessage.setData(request.getContent().getBytes());
+            channelMessage.setTopic(request.getToTopic());
+
+            try {
+                // 设置发送节点
+                ChannelConnections fromChannelConnections =
+                        allChannelConnections
+                                .getAllChannelConnections()
+                                .stream()
+                                .filter(x -> x.getGroupId() == groupId)
+                                .findFirst()
+                                .get();
+                if (fromChannelConnections == null) {
+                    // 没有找到对应的链
+                    // 返回错误
+                    if (orgID != null) {
+                        logger.error("not found:{}", orgID);
+                        throw new Exception("not found orgID");
+                    } else {
+                        logger.error("not found:{}", agencyName);
+                        throw new Exception("not found agencyName");
+                    }
+                }
+                
+                logger.debug(
+                        "FromOrg:{} nodes:{}",
+                        request.getFromOrg(),
+                        fromChannelConnections.getConnections().size());
+                
+                for(ConnectionInfo connectionInfo: fromChannelConnections.getConnections()) {
+	                ChannelHandlerContext ctx =
+	                        fromChannelConnections.getNetworkConnectionByHost(
+	                        		connectionInfo.getHost(), connectionInfo.getPort());
+	
+	                if (ctx != null && ctx.channel().isActive()) {
+	                    ByteBuf out = ctx.alloc().buffer();
+	                    channelMessage.writeHeader(out);
+	                    channelMessage.writeExtra(out);
+	
+	                    ctx.writeAndFlush(out);
+	
+	                    logger.debug(
+	                            "send message to  "
+	                                    + connectionInfo.getHost()
+	                                    + ":"
+	                                    + String.valueOf(connectionInfo.getPort())
+	                                    + " 成功");
+	                } else {
+	                    logger.error("sending node unavailable, {}",
+	                    		connectionInfo.getHost() + ":" + String.valueOf(connectionInfo.getPort()));
+	                }
+                }
+            } catch (Exception e) {
+                logger.error("send message fail:", e);
+
+                ChannelResponse response = new ChannelResponse();
+                response.setErrorCode(100);
+                response.setMessageID(request.getMessageID());
+                response.setErrorMessage(e.getMessage());
+                response.setContent("");
+
                 return;
             }
         } catch (Exception e) {
@@ -679,7 +757,7 @@ public class Service {
                 (ChannelResponseCallback2) seq2Callback.get(message.getSeq());
         logger.debug("ChannelResponse seq:{}", message.getSeq());
 
-        if (message.getType() == 0x30) { // 链上链下请求
+        if (message.getType() == 0x30 || message.getType() == 0x35) { // 链上链下请求
             logger.debug("channel PUSH");
             if (callback != null) {
                 // 清空callback再处理
