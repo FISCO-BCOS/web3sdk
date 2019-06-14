@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -24,6 +25,14 @@ import org.fisco.bcos.web3j.protocol.exceptions.TransactionException;
 import org.junit.Test;
 
 public class TransactionDecoderTest {
+
+    public static List<Type> transEntitytoType(List<ResultEntity> entityList) {
+        List<Type> listType = new ArrayList<>();
+        for (ResultEntity resultEntity : entityList) {
+            listType.add(resultEntity.getTypeObject());
+        }
+        return listType;
+    }
 
     @Test
     public void testOK() throws JsonProcessingException, TransactionException, BaseException {
@@ -60,15 +69,16 @@ public class TransactionDecoderTest {
                                 new TypeReference<DynamicBytes>() {},
                                 new TypeReference<Bytes32>() {}));
 
-        String sr = decode.decodeInputReturnJson(FunctionEncoder.encode(test));
-        List<Type> lr = decode.decodeInputReturnObject(FunctionEncoder.encode(test));
-
+        String resultInputJson = decode.decodeInputReturnJson(FunctionEncoder.encode(test));
+        List<ResultEntity> resultInputList =
+                decode.decodeInputReturnObject(FunctionEncoder.encode(test));
+        List<Type> resultInputListType = transEntitytoType(resultInputList);
         assertThat(
-                sr,
+                resultInputJson,
                 is(
                         "{\"data\":[{\"name\":\"_u\",\"type\":\"uint256\",\"data\":111111},{\"name\":\"_i\",\"type\":\"int256\",\"data\":-1111111},{\"name\":\"_b\",\"type\":\"bool\",\"data\":false},{\"name\":\"_addr\",\"type\":\"address\",\"data\":\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"},{\"name\":\"_s\",\"type\":\"string\",\"data\":\"章鱼小丸子ljjkl;adjsfkljlkjl\"},{\"name\":\"_bs\",\"type\":\"bytes\",\"data\":\"sadfljkjkljkl\"},{\"name\":\"_bs32\",\"type\":\"bytes32\",\"data\":\"abcdefghiabcdefghiabcdefghiabhji\"}],\"function\":\"test(uint256,int256,bool,address,string,bytes,bytes32)\",\"methodID\":\"0x0061b7bb\"}"));
         assertThat(
-                lr,
+                resultInputListType,
                 is(
                         Arrays.asList(
                                 new Uint256(111111),
@@ -79,7 +89,7 @@ public class TransactionDecoderTest {
                                 new DynamicBytes("sadfljkjkljkl".getBytes()),
                                 new Bytes32("abcdefghiabcdefghiabcdefghiabhji".getBytes()))));
 
-        String or =
+        String resultOutputJson =
                 decode.decodeOutputReturnJson(
                         FunctionEncoder.encode(test),
                         FunctionEncoder.encodeConstructor(
@@ -92,8 +102,8 @@ public class TransactionDecoderTest {
                                         new DynamicBytes("sadfljkjkljkl".getBytes()),
                                         new Bytes32(
                                                 "abcdefghiabcdefghiabcdefghiabhji".getBytes()))));
-        List<Type> lo =
-                decode.decodeOutPutReturnObject(
+        List<ResultEntity> resultOutputList =
+                decode.decodeOutputReturnObject(
                         FunctionEncoder.encode(test),
                         FunctionEncoder.encodeConstructor(
                                 Arrays.asList(
@@ -105,12 +115,13 @@ public class TransactionDecoderTest {
                                         new DynamicBytes("sadfljkjkljkl".getBytes()),
                                         new Bytes32(
                                                 "abcdefghiabcdefghiabcdefghiabhji".getBytes()))));
+        List<Type> resultOutputListType = transEntitytoType(resultOutputList);
         assertThat(
-                or,
+                resultOutputJson,
                 is(
                         "[{\"name\":\"\",\"type\":\"uint256\",\"data\":111111},{\"name\":\"\",\"type\":\"int256\",\"data\":-1111111},{\"name\":\"\",\"type\":\"bool\",\"data\":false},{\"name\":\"\",\"type\":\"address\",\"data\":\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"},{\"name\":\"\",\"type\":\"string\",\"data\":\"章鱼小丸子ljjkl;adjsfkljlkjl\"},{\"name\":\"\",\"type\":\"bytes\",\"data\":\"sadfljkjkljkl\"},{\"name\":\"\",\"type\":\"bytes32\",\"data\":\"abcdefghiabcdefghiabcdefghiabhji\"}]"));
         assertThat(
-                lo,
+                resultOutputListType,
                 is(
                         Arrays.asList(
                                 new Uint256(111111),
@@ -165,15 +176,16 @@ public class TransactionDecoderTest {
                                 new TypeReference<DynamicBytes>() {},
                                 new TypeReference<Bytes32>() {}));
 
-        String sr = decode.decodeInputReturnJson(FunctionEncoder.encode(test));
-        List<Type> lr = decode.decodeInputReturnObject(FunctionEncoder.encode(test));
-
+        String resultInputJson = decode.decodeInputReturnJson(FunctionEncoder.encode(test));
+        List<ResultEntity> resultInputList =
+                decode.decodeInputReturnObject(FunctionEncoder.encode(test));
+        List<Type> resultInputListType = transEntitytoType(resultInputList);
         assertThat(
-                sr,
+                resultInputJson,
                 is(
                         "{\"data\":[{\"name\":\"_u\",\"type\":\"uint256[]\",\"data\":[11111,22222,33333]},{\"name\":\"_i\",\"type\":\"int256[]\",\"data\":[-1111111,-3333333,-2222222]},{\"name\":\"_b\",\"type\":\"bool[]\",\"data\":[false,true,false]},{\"name\":\"_addr\",\"type\":\"address[]\",\"data\":[\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"]},{\"name\":\"_bs32\",\"type\":\"bytes32[]\",\"data\":[\"abcdefghiabcdefghiabcdefghiabhji\",\"abcdefghiabcdefghiabcdefghiabhji\"]},{\"name\":\"_s\",\"type\":\"string\",\"data\":\"章鱼小丸子ljjkl;adjsfkljlkjl\"},{\"name\":\"_bs\",\"type\":\"bytes\",\"data\":\"sadfljkjkljkl\"}],\"function\":\"test(uint256[],int256[],bool[],address[],bytes32[],string,bytes)\",\"methodID\":\"0x982d73e5\"}"));
         assertThat(
-                lr,
+                resultInputListType,
                 is(
                         Arrays.asList(
                                 new DynamicArray<Uint256>(
@@ -193,7 +205,7 @@ public class TransactionDecoderTest {
                                 new Utf8String("章鱼小丸子ljjkl;adjsfkljlkjl"),
                                 new DynamicBytes("sadfljkjkljkl".getBytes()))));
 
-        String or =
+        String resultOutputJson =
                 decode.decodeOutputReturnJson(
                         FunctionEncoder.encode(test),
                         FunctionEncoder.encodeConstructor(
@@ -222,8 +234,8 @@ public class TransactionDecoderTest {
                                                                 .getBytes())),
                                         new Utf8String("章鱼小丸子ljjkl;adjsfkljlkjl"),
                                         new DynamicBytes("sadfljkjkljkl".getBytes()))));
-        List<Type> lo =
-                decode.decodeOutPutReturnObject(
+        List<ResultEntity> resultOutputList =
+                decode.decodeOutputReturnObject(
                         FunctionEncoder.encode(test),
                         FunctionEncoder.encodeConstructor(
                                 Arrays.asList(
@@ -251,12 +263,13 @@ public class TransactionDecoderTest {
                                                                 .getBytes())),
                                         new Utf8String("章鱼小丸子ljjkl;adjsfkljlkjl"),
                                         new DynamicBytes("sadfljkjkljkl".getBytes()))));
+        List<Type> resultOutputListType = transEntitytoType(resultOutputList);
         assertThat(
-                or,
+                resultOutputJson,
                 is(
                         "[{\"name\":\"\",\"type\":\"uint256[]\",\"data\":[11111,22222,33333]},{\"name\":\"\",\"type\":\"int256[]\",\"data\":[-1111111,-3333333,-2222222]},{\"name\":\"\",\"type\":\"bool[]\",\"data\":[false,true,false]},{\"name\":\"\",\"type\":\"address[]\",\"data\":[\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"]},{\"name\":\"\",\"type\":\"bytes32[]\",\"data\":[\"abcdefghiabcdefghiabcdefghiabhji\",\"abcdefghiabcdefghiabcdefghiabhji\"]},{\"name\":\"\",\"type\":\"string\",\"data\":\"章鱼小丸子ljjkl;adjsfkljlkjl\"},{\"name\":\"\",\"type\":\"bytes\",\"data\":\"sadfljkjkljkl\"}]"));
         assertThat(
-                lo,
+                resultOutputListType,
                 is(
                         Arrays.asList(
                                 new DynamicArray<Uint256>(
@@ -316,15 +329,16 @@ public class TransactionDecoderTest {
                                 new TypeReference<DynamicBytes>() {},
                                 new TypeReference<Bytes32>() {}));
 
-        String sr = decode.decodeInputReturnJson(FunctionEncoder.encode(test));
-        List<Type> lr = decode.decodeInputReturnObject(FunctionEncoder.encode(test));
-
+        String resultInputJson = decode.decodeInputReturnJson(FunctionEncoder.encode(test));
+        List<ResultEntity> resultInputList =
+                decode.decodeInputReturnObject(FunctionEncoder.encode(test));
+        List<Type> resultInputListType = transEntitytoType(resultInputList);
         assertThat(
-                sr,
+                resultInputJson,
                 is(
                         "{\"data\":[{\"name\":\"_u\",\"type\":\"uint256[2]\",\"data\":[11111,33333]},{\"name\":\"_i\",\"type\":\"int256[2]\",\"data\":[-1111111,-2222222]},{\"name\":\"_b\",\"type\":\"bool[2]\",\"data\":[true,false]},{\"name\":\"_addr\",\"type\":\"address[2]\",\"data\":[\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"]},{\"name\":\"_bs32\",\"type\":\"bytes32[2]\",\"data\":[\"abcdefghiabcdefghiabcdefghiabhji\",\"abcdefghiabcdefghiabcdefghiabhji\"]},{\"name\":\"_s\",\"type\":\"string\",\"data\":\"章鱼小丸子ljjkl;adjsfkljlkjl\"},{\"name\":\"_bs\",\"type\":\"bytes\",\"data\":\"sadfljkjkljkl\"}],\"function\":\"test(uint256[2],int256[2],bool[2],address[2],bytes32[2],string,bytes)\",\"methodID\":\"0xd7754ebf\"}"));
         assertThat(
-                lr,
+                resultInputListType,
                 is(
                         Arrays.asList(
                                 new StaticArray2<Uint256>(new Uint256(11111), new Uint256(33333)),
@@ -340,7 +354,7 @@ public class TransactionDecoderTest {
                                 new Utf8String("章鱼小丸子ljjkl;adjsfkljlkjl"),
                                 new DynamicBytes("sadfljkjkljkl".getBytes()))));
 
-        String or =
+        String resultOutputJson =
                 decode.decodeOutputReturnJson(
                         FunctionEncoder.encode(test),
                         FunctionEncoder.encodeConstructor(
@@ -364,8 +378,8 @@ public class TransactionDecoderTest {
                                                                 .getBytes())),
                                         new Utf8String("章鱼小丸子ljjkl;adjsfkljlkjl"),
                                         new DynamicBytes("sadfljkjkljkl".getBytes()))));
-        List<Type> lo =
-                decode.decodeOutPutReturnObject(
+        List<ResultEntity> resultOutputList =
+                decode.decodeOutputReturnObject(
                         FunctionEncoder.encode(test),
                         FunctionEncoder.encodeConstructor(
                                 Arrays.asList(
@@ -388,12 +402,13 @@ public class TransactionDecoderTest {
                                                                 .getBytes())),
                                         new Utf8String("章鱼小丸子ljjkl;adjsfkljlkjl"),
                                         new DynamicBytes("sadfljkjkljkl".getBytes()))));
+        List<Type> resultOutputListType = transEntitytoType(resultOutputList);
         assertThat(
-                or,
+                resultOutputJson,
                 is(
                         "[{\"name\":\"\",\"type\":\"uint256[2]\",\"data\":[11111,33333]},{\"name\":\"\",\"type\":\"int256[2]\",\"data\":[-1111111,-2222222]},{\"name\":\"\",\"type\":\"bool[2]\",\"data\":[true,false]},{\"name\":\"\",\"type\":\"address[2]\",\"data\":[\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"]},{\"name\":\"\",\"type\":\"bytes32[2]\",\"data\":[\"abcdefghiabcdefghiabcdefghiabhji\",\"abcdefghiabcdefghiabcdefghiabhji\"]},{\"name\":\"\",\"type\":\"string\",\"data\":\"章鱼小丸子ljjkl;adjsfkljlkjl\"},{\"name\":\"\",\"type\":\"bytes\",\"data\":\"sadfljkjkljkl\"}]"));
         assertThat(
-                lo,
+                resultOutputListType,
                 is(
                         Arrays.asList(
                                 new StaticArray2<Uint256>(new Uint256(11111), new Uint256(33333)),
@@ -445,8 +460,9 @@ public class TransactionDecoderTest {
                 is(
                         "{\"data\":[{\"name\":\"name\",\"type\":\"string\",\"data\":\"HelloWorld!\"}],\"function\":\"select(string)\",\"methodID\":\"0xfcd7e3c1\"}"));
 
-        List<Type> selectOR = decode.decodeInputReturnObject(FunctionEncoder.encode(select));
-        assertThat(selectOR, is(Arrays.asList(new Utf8String("HelloWorld!"))));
+        List<ResultEntity> selectOR =
+                decode.decodeInputReturnObject(FunctionEncoder.encode(select));
+        assertThat(transEntitytoType(selectOR), is(Arrays.asList(new Utf8String("HelloWorld!"))));
 
         String output =
                 FunctionEncoder.encodeConstructor(
@@ -466,14 +482,14 @@ public class TransactionDecoderTest {
                                                 "abcdefghijklmnopqrstuvwxyzadfljk".getBytes()))));
 
         String selectSOR = decode.decodeOutputReturnJson(FunctionEncoder.encode(select), output);
-        List<Type> selectOutOR =
-                decode.decodeOutPutReturnObject(FunctionEncoder.encode(select), output);
+        List<ResultEntity> selectOutOR =
+                decode.decodeOutputReturnObject(FunctionEncoder.encode(select), output);
         assertThat(
                 selectSOR,
                 is(
                         "[{\"name\":\"\",\"type\":\"bytes32[]\",\"data\":[\"01234567890123456789012345678912\",\"a123456789012345f7890f2345678d12\",\"abcdefghijklmnopqrstuvwxyzadfljk\"]},{\"name\":\"\",\"type\":\"int256[]\",\"data\":[1234567,-1234567,98877]},{\"name\":\"\",\"type\":\"bytes32[]\",\"data\":[\"01234567890123456789012345678912\",\"a123456789012345f7890f2345678d12\",\"abcdefghijklmnopqrstuvwxyzadfljk\"]}]"));
         assertThat(
-                selectOutOR,
+                transEntitytoType(selectOutOR),
                 is(
                         Arrays.asList(
                                 new DynamicArray<Bytes32>(
@@ -506,9 +522,10 @@ public class TransactionDecoderTest {
                 is(
                         "{\"data\":[{\"name\":\"name\",\"type\":\"string\",\"data\":\"HelloWorld! My First Hello.\"},{\"name\":\"item_id\",\"type\":\"int256\",\"data\":5555},{\"name\":\"item_name\",\"type\":\"string\",\"data\":\"Good afternoon\"}],\"function\":\"update(string,int256,string)\",\"methodID\":\"0x487a5a10\"}"));
 
-        List<Type> updateOR = decode.decodeInputReturnObject(FunctionEncoder.encode(update));
+        List<ResultEntity> updateOR =
+                decode.decodeInputReturnObject(FunctionEncoder.encode(update));
         assertThat(
-                updateOR,
+                transEntitytoType(updateOR),
                 is(
                         Arrays.asList(
                                 new Utf8String("HelloWorld! My First Hello."),
@@ -526,13 +543,14 @@ public class TransactionDecoderTest {
 
         String removeSR = decode.decodeInputReturnJson(FunctionEncoder.encode(remove));
 
-        List<Type> removeOR = decode.decodeInputReturnObject(FunctionEncoder.encode(remove));
+        List<ResultEntity> removeOR =
+                decode.decodeInputReturnObject(FunctionEncoder.encode(remove));
         assertThat(
                 removeSR,
                 is(
                         "{\"data\":[{\"name\":\"name\",\"type\":\"string\",\"data\":\"HelloWorld! My First Hello.\"},{\"name\":\"item_id\",\"type\":\"int256\",\"data\":-1111111}],\"function\":\"remove(string,int256)\",\"methodID\":\"0xc4f41ab3\"}"));
         assertThat(
-                removeOR,
+                transEntitytoType(removeOR),
                 is(
                         Arrays.asList(
                                 new Utf8String("HelloWorld! My First Hello."),

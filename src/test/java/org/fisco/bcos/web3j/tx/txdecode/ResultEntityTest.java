@@ -3,6 +3,7 @@ package org.fisco.bcos.web3j.tx.txdecode;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import java.math.BigInteger;
 import org.fisco.bcos.web3j.abi.datatypes.Address;
 import org.fisco.bcos.web3j.abi.datatypes.Bool;
@@ -44,29 +45,29 @@ public class ResultEntityTest {
     }
 
     @Test
-    public void typeToObjectArrayTest() {
+    public void typeToObjectArrayTest() throws JsonProcessingException {
         ResultEntity r0 = new ResultEntity("string", "string", new Utf8String("章鱼丸子"));
-        assertThat(r0.toJson(), is("{\"data\":\"章鱼丸子\",\"name\":\"string\",\"type\":\"string\"}"));
+        assertThat(r0.toJson(), is("{\"name\":\"string\",\"type\":\"string\",\"data\":\"章鱼丸子\"}"));
         ResultEntity r1 = new ResultEntity("uint256", "uint256", new Uint256(247809787));
         assertThat(
-                r1.toJson(), is("{\"data\":247809787,\"name\":\"uint256\",\"type\":\"uint256\"}"));
+                r1.toJson(), is("{\"name\":\"uint256\",\"type\":\"uint256\",\"data\":247809787}"));
         ResultEntity r2 = new ResultEntity("int256", "int256", new Int256(-247809787));
         assertThat(
-                r2.toJson(), is("{\"data\":-247809787,\"name\":\"int256\",\"type\":\"int256\"}"));
+                r2.toJson(), is("{\"name\":\"int256\",\"type\":\"int256\",\"data\":-247809787}"));
         ResultEntity r3 = new ResultEntity("bool", "bool", new Bool(true));
-        assertThat(r3.toJson(), is("{\"data\":true,\"name\":\"bool\",\"type\":\"bool\"}"));
+        assertThat(r3.toJson(), is("{\"name\":\"bool\",\"type\":\"bool\",\"data\":true}"));
         ResultEntity r4 =
                 new ResultEntity("bytes", "bytes", new DynamicBytes("dasfjl;kljadfkl".getBytes()));
         assertThat(
                 r4.toJson(),
-                is("{\"data\":\"dasfjl;kljadfkl\",\"name\":\"bytes\",\"type\":\"bytes\"}"));
+                is("{\"name\":\"bytes\",\"type\":\"bytes\",\"data\":\"dasfjl;kljadfkl\"}"));
 
         ResultEntity r5 =
                 new ResultEntity(
                         "StaticArray1", "StaticArray1", new StaticArray1<Uint256>(new Uint256(22)));
         assertThat(
                 r5.toJson(),
-                is("{\"data\":[22],\"name\":\"StaticArray1\",\"type\":\"StaticArray1\"}"));
+                is("{\"name\":\"StaticArray1\",\"type\":\"StaticArray1\",\"data\":[22]}"));
         ResultEntity r6 =
                 new ResultEntity(
                         "StaticArray3",
@@ -74,7 +75,7 @@ public class ResultEntityTest {
                         new StaticArray3<Uint256>(new Uint256(1), new Uint256(2), new Uint256(3)));
         assertThat(
                 r6.toJson(),
-                is("{\"data\":[1,2,3],\"name\":\"StaticArray3\",\"type\":\"StaticArray3\"}"));
+                is("{\"name\":\"StaticArray3\",\"type\":\"StaticArray3\",\"data\":[1,2,3]}"));
         ResultEntity r7 =
                 new ResultEntity(
                         "DynamicArray",
@@ -83,7 +84,7 @@ public class ResultEntityTest {
         assertThat(
                 r7.toJson(),
                 is(
-                        "{\"data\":[true,false,true],\"name\":\"DynamicArray\",\"type\":\"DynamicArray\"}"));
+                        "{\"name\":\"DynamicArray\",\"type\":\"DynamicArray\",\"data\":[true,false,true]}"));
         ResultEntity r8 =
                 new ResultEntity(
                         "DynamicArray",
@@ -95,6 +96,6 @@ public class ResultEntityTest {
         assertThat(
                 r8.toJson(),
                 is(
-                        "{\"data\":[\"sdafljk\",\"sdafljk\",\"sdafljk\"],\"name\":\"DynamicArray\",\"type\":\"DynamicArray\"}"));
+                        "{\"name\":\"DynamicArray\",\"type\":\"DynamicArray\",\"data\":[\"sdafljk\",\"sdafljk\",\"sdafljk\"]}"));
     }
 }
