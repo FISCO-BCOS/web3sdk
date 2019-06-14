@@ -10,11 +10,6 @@ import org.junit.Test;
 
 public class ArrayReferenceTest {
 
-    public static void main(String[] args) throws BaseException, ClassNotFoundException {
-        Object o = StaticArrayReference.create("int", 1);
-        System.out.println(StaticArrayReference.create("int", 1).getClassType().getName());
-    }
-
     @Test
     public void staticArrayRefTest() throws BaseException {
         assertThat(

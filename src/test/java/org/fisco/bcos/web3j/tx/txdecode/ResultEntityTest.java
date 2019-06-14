@@ -20,7 +20,7 @@ import org.junit.Test;
 public class ResultEntityTest {
 
     @Test
-    public void ResultEntityTestTest() {
+    public void resultEntityTestTest() {
         ResultEntity r = new ResultEntity("name", "type", new Uint256(2));
         assertThat(r.getName(), is("name"));
         assertThat(r.getType(), is("type"));
@@ -31,7 +31,7 @@ public class ResultEntityTest {
 
         assertThat(ResultEntity.typeToObject(new Uint256(2)), is(new BigInteger("2")));
         assertThat(ResultEntity.typeToObject(new Int256(-1)), is(new BigInteger("-1")));
-        assertThat(ResultEntity.typeToObject(new Utf8String("adsfjkl")), is(new String("adsfjkl")));
+        assertThat(ResultEntity.typeToObject(new Utf8String("adsfjkl")), is("adsfjkl"));
         assertThat(ResultEntity.typeToObject(new Bool(true)), is(true));
         assertThat(ResultEntity.typeToObject(new DynamicBytes("0x111".getBytes())), is("0x111"));
         assertThat(

@@ -23,9 +23,21 @@ import org.fisco.bcos.web3j.protocol.exceptions.TransactionException;
 
 public class TransactionDecoder {
 
-    private String abi;
-    private String bin;
+    private String abi = "";
+    private String bin = "";
     private Map<String, AbiDefinition> methodIDMap;
+
+    public TransactionDecoder(String abi) {
+        this.abi = abi;
+        methodIDMap = new HashMap<>();
+        List<AbiDefinition> funcAbiDefinitionList = ContractAbiUtil.getFuncAbiDefinition(abi);
+        for (AbiDefinition abiDefinition : funcAbiDefinitionList) {
+            List<String> inputTypes = ContractAbiUtil.getFuncInputType(abiDefinition);
+            String methodSign = decodeMethodSign(abiDefinition, inputTypes);
+            String methodID = FunctionEncoder.buildMethodId(methodSign);
+            methodIDMap.put(methodID, abiDefinition);
+        }
+    }
 
     public TransactionDecoder(String abi, String bin) {
         this.abi = abi;
