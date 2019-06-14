@@ -11,6 +11,7 @@ import io.netty.util.TimerTask;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -455,16 +456,29 @@ public class Service {
     public void asyncSendChannelMessage2(
             ChannelRequest request, ChannelResponseCallback2 callback) {
         try {
-            logger.debug("ChannelRequest: " + request.getMessageID());
-            callback.setService(this);
+       
+      if(request.getContentByteArray().length >= 32*1024*1024)
+      {
+    	  logger.error("send byte length should not greater than 32M now length:{}",
+    			  	request.getContentByteArray().length);
+    	  System.out.println("send byte length should not greater than 32M now length:"+
+  			  	request.getContentByteArray().length);
+          throw new AmopException("send byte length should not greater than 32M");
+      }
+      
+      logger.debug("ChannelRequest: " + request.getMessageID());
+      callback.setService(this);
 
-            ChannelMessage2 channelMessage = new ChannelMessage2();
+      ChannelMessage2 channelMessage = new ChannelMessage2();
 
-            channelMessage.setSeq(request.getMessageID());
-            channelMessage.setResult(0);
-            channelMessage.setType((short) 0x30); // 链上链下请求0x30
-            channelMessage.setData(request.getContent().getBytes());
-            channelMessage.setTopic(request.getToTopic());
+      channelMessage.setSeq(request.getMessageID());
+      channelMessage.setResult(0);
+      channelMessage.setType((short) 0x30); // 链上链下请求0x30
+      channelMessage.setData(request.getContentByteArray());
+      
+      System.out.println("value length:"+request.getContentByteArray().length
+    		  	+":"+request.getContent().getBytes().length);
+      channelMessage.setTopic(request.getToTopic());
 
             try {
                 List<ConnectionInfo> fromConnectionInfos = new ArrayList<ConnectionInfo>();
@@ -546,7 +560,7 @@ public class Service {
             channelMessage.setSeq(request.getMessageID());
             channelMessage.setResult(0);
             channelMessage.setType((short) 0x35); // 链上链下多播请求0x35
-            channelMessage.setData(request.getContent().getBytes());
+            channelMessage.setData(request.getContentByteArray());
             channelMessage.setTopic(request.getToTopic());
 
             try {
@@ -775,21 +789,22 @@ public class Service {
                     push.setCtx(ctx);
                     push.setTopic(message.getTopic());
 
-                    push.setSeq(message.getSeq());
-                    push.setMessageID(message.getSeq());
-                    push.setContent(new String(message.getData(), 0, message.getData().length));
-
-                    pushCallback.onPush(push);
-                } else {
-                    logger.error("can not push，unset push callback");
-                }
-            } catch (Exception e) {
-                logger.error("push error:", e);
-            }
-        } else if (message.getType() == 0x31) { // 链上链下回包
-            logger.debug("channel message:{}", message.getSeq());
-            if (callback != null) {
-                logger.debug("found callback response");
+          push.setSeq(message.getSeq());
+          push.setMessageID(message.getSeq());
+          System.out.println("data length:"+message.getData().length);
+          logger.info("msg:"+Arrays.toString(message.getData()));
+          push.setContent(message.getData());
+          pushCallback.onPush(push);
+        } else {
+          logger.error("can not push，unset push callback");
+        }
+      } catch (Exception e) {
+        logger.error("push error:", e);
+      }
+    } else if (message.getType() == 0x31) { // 链上链下回包
+      logger.debug("channel message:{}", message.getSeq());
+      if (callback != null) {
+        logger.debug("found callback response");
 
                 ChannelResponse response = new ChannelResponse();
                 if (message.getResult() != 0) {
