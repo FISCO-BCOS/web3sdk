@@ -19,6 +19,7 @@ import org.fisco.bcos.web3j.abi.datatypes.Utf8String;
 import org.fisco.bcos.web3j.abi.datatypes.generated.Bytes32;
 import org.fisco.bcos.web3j.abi.datatypes.generated.Int256;
 import org.fisco.bcos.web3j.abi.datatypes.generated.StaticArray2;
+import org.fisco.bcos.web3j.abi.datatypes.generated.StaticArray4;
 import org.fisco.bcos.web3j.abi.datatypes.generated.Uint256;
 import org.fisco.bcos.web3j.protocol.exceptions.TransactionException;
 import org.junit.Test;
@@ -28,17 +29,21 @@ public class TransactionDecoderTest {
     @Test
     public void testOK() throws JsonProcessingException, TransactionException, BaseException {
 
-        /*contract TestOk
+        /*
+        pragma solidity ^0.4.24;
+        pragma experimental ABIEncoderV2;
+        contract Test
         {
+            event TestEvent(uint256 _u,int256 _i,bool _b,address _addr,string _s,bytes _bs,bytes32 _bs32);
         	function test(uint256 _u,int256 _i,bool _b,address _addr,string _s,bytes _bs,bytes32 _bs32) public constant returns (uint256,int256,bool,address,string,bytes,bytes32) {
 
         	}
-        }*/
+        }
+        */
 
-        // [{"constant":true,"inputs":[{"name":"_u","type":"uint256"},{"name":"_i","type":"int256"},{"name":"_b","type":"bool"},{"name":"_addr","type":"address"},{"name":"_s","type":"string"},{"name":"_bs","type":"bytes"},{"name":"_bs32","type":"bytes32"}],"name":"test","outputs":[{"name":"","type":"uint256"},{"name":"","type":"int256"},{"name":"","type":"bool"},{"name":"","type":"address"},{"name":"","type":"string"},{"name":"","type":"bytes"},{"name":"","type":"bytes32"}],"payable":false,"stateMutability":"view","type":"function"}]
         TransactionDecoder decode =
                 TransactionDecoderFactory.buildTransactionDecoder(
-                        "[{\"constant\":true,\"inputs\":[{\"name\":\"_u\",\"type\":\"uint256\"},{\"name\":\"_i\",\"type\":\"int256\"},{\"name\":\"_b\",\"type\":\"bool\"},{\"name\":\"_addr\",\"type\":\"address\"},{\"name\":\"_s\",\"type\":\"string\"},{\"name\":\"_bs\",\"type\":\"bytes\"},{\"name\":\"_bs32\",\"type\":\"bytes32\"}],\"name\":\"test\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"},{\"name\":\"\",\"type\":\"int256\"},{\"name\":\"\",\"type\":\"bool\"},{\"name\":\"\",\"type\":\"address\"},{\"name\":\"\",\"type\":\"string\"},{\"name\":\"\",\"type\":\"bytes\"},{\"name\":\"\",\"type\":\"bytes32\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"}]",
+                        "[{\"constant\":true,\"inputs\":[{\"name\":\"_u\",\"type\":\"uint256\"},{\"name\":\"_i\",\"type\":\"int256\"},{\"name\":\"_b\",\"type\":\"bool\"},{\"name\":\"_addr\",\"type\":\"address\"},{\"name\":\"_s\",\"type\":\"string\"},{\"name\":\"_bs\",\"type\":\"bytes\"},{\"name\":\"_bs32\",\"type\":\"bytes32\"}],\"name\":\"test\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"},{\"name\":\"\",\"type\":\"int256\"},{\"name\":\"\",\"type\":\"bool\"},{\"name\":\"\",\"type\":\"address\"},{\"name\":\"\",\"type\":\"string\"},{\"name\":\"\",\"type\":\"bytes\"},{\"name\":\"\",\"type\":\"bytes32\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"_u\",\"type\":\"uint256\"},{\"indexed\":false,\"name\":\"_i\",\"type\":\"int256\"},{\"indexed\":false,\"name\":\"_b\",\"type\":\"bool\"},{\"indexed\":false,\"name\":\"_addr\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"_s\",\"type\":\"string\"},{\"indexed\":false,\"name\":\"_bs\",\"type\":\"bytes\"},{\"indexed\":false,\"name\":\"_bs32\",\"type\":\"bytes32\"}],\"name\":\"TestEvent\",\"type\":\"event\"}]",
                         "");
 
         Function test =
@@ -125,16 +130,19 @@ public class TransactionDecoderTest {
     @Test
     public void testOK1() throws JsonProcessingException, TransactionException, BaseException {
 
-        /*contract TestOk
+        /*
+         pragma solidity ^0.4.24;
+         pragma experimental ABIEncoderV2;
+         contract TestOk
         {
-        	function test(uint256[] _u,int256[] _i,bool[] _b,address[] _addr,bytes32[] _bs32,string _s,bytes _bs) public constant returns (uint256[],int256[],bool[],address[],bytes32[],string,bytes) {
+        	function test(uint256[] _u,int256[] _i,bool[] _b,address[] _addr,bytes32[] _bs32,string _s,bytes _bs) public constant returns (uint256[],int256[],bool[],address[],bytes32[],string[],bytes[]) {
 
         	}
         }*/
 
         TransactionDecoder decode =
                 TransactionDecoderFactory.buildTransactionDecoder(
-                        "[{\"constant\":true,\"inputs\":[{\"name\":\"_u\",\"type\":\"uint256[]\"},{\"name\":\"_i\",\"type\":\"int256[]\"},{\"name\":\"_b\",\"type\":\"bool[]\"},{\"name\":\"_addr\",\"type\":\"address[]\"},{\"name\":\"_bs32\",\"type\":\"bytes32[]\"},{\"name\":\"_s\",\"type\":\"string\"},{\"name\":\"_bs\",\"type\":\"bytes\"}],\"name\":\"test\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256[]\"},{\"name\":\"\",\"type\":\"int256[]\"},{\"name\":\"\",\"type\":\"bool[]\"},{\"name\":\"\",\"type\":\"address[]\"},{\"name\":\"\",\"type\":\"bytes32[]\"},{\"name\":\"\",\"type\":\"string\"},{\"name\":\"\",\"type\":\"bytes\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"}]",
+                        "[{\"constant\":true,\"inputs\":[{\"name\":\"_u\",\"type\":\"uint256[]\"},{\"name\":\"_i\",\"type\":\"int256[]\"},{\"name\":\"_b\",\"type\":\"bool[]\"},{\"name\":\"_addr\",\"type\":\"address[]\"},{\"name\":\"_bs32\",\"type\":\"bytes32[]\"},{\"name\":\"_s\",\"type\":\"string[]\"},{\"name\":\"_bs\",\"type\":\"bytes[]\"}],\"name\":\"test\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256[]\"},{\"name\":\"\",\"type\":\"int256[]\"},{\"name\":\"\",\"type\":\"bool[]\"},{\"name\":\"\",\"type\":\"address[]\"},{\"name\":\"\",\"type\":\"bytes32[]\"},{\"name\":\"\",\"type\":\"string[]\"},{\"name\":\"\",\"type\":\"bytes[]\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"}]",
                         "");
 
         Function test =
@@ -155,8 +163,14 @@ public class TransactionDecoderTest {
                                 new DynamicArray<Bytes32>(
                                         new Bytes32("abcdefghiabcdefghiabcdefghiabhji".getBytes()),
                                         new Bytes32("abcdefghiabcdefghiabcdefghiabhji".getBytes())),
-                                new Utf8String("章鱼小丸子ljjkl;adjsfkljlkjl"),
-                                new DynamicBytes("sadfljkjkljkl".getBytes())),
+                                new DynamicArray<Utf8String>(
+                                        new Utf8String(""),
+                                        new Utf8String("章鱼小丸子ljjkl;adjsfkljlkjl"),
+                                        new Utf8String("章鱼小丸子ljjkl;adjsfkljlkjl")),
+                                new DynamicArray<DynamicBytes>(
+                                        new DynamicBytes("".getBytes()),
+                                        new DynamicBytes("sadfljkjkljkl".getBytes()),
+                                        new DynamicBytes("章鱼小丸子ljjkl;adjsfkljlkjl".getBytes()))),
                         Arrays.asList(
                                 new TypeReference<Uint256>() {},
                                 new TypeReference<Int256>() {},
@@ -171,7 +185,7 @@ public class TransactionDecoderTest {
         assertThat(
                 sr,
                 is(
-                        "{\"data\":[{\"name\":\"_u\",\"type\":\"uint256[]\",\"data\":[11111,22222,33333]},{\"name\":\"_i\",\"type\":\"int256[]\",\"data\":[-1111111,-3333333,-2222222]},{\"name\":\"_b\",\"type\":\"bool[]\",\"data\":[false,true,false]},{\"name\":\"_addr\",\"type\":\"address[]\",\"data\":[\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"]},{\"name\":\"_bs32\",\"type\":\"bytes32[]\",\"data\":[\"abcdefghiabcdefghiabcdefghiabhji\",\"abcdefghiabcdefghiabcdefghiabhji\"]},{\"name\":\"_s\",\"type\":\"string\",\"data\":\"章鱼小丸子ljjkl;adjsfkljlkjl\"},{\"name\":\"_bs\",\"type\":\"bytes\",\"data\":\"sadfljkjkljkl\"}],\"function\":\"test(uint256[],int256[],bool[],address[],bytes32[],string,bytes)\",\"methodID\":\"0x982d73e5\"}"));
+                        "{\"data\":[{\"name\":\"_u\",\"type\":\"uint256[]\",\"data\":[11111,22222,33333]},{\"name\":\"_i\",\"type\":\"int256[]\",\"data\":[-1111111,-3333333,-2222222]},{\"name\":\"_b\",\"type\":\"bool[]\",\"data\":[false,true,false]},{\"name\":\"_addr\",\"type\":\"address[]\",\"data\":[\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"]},{\"name\":\"_bs32\",\"type\":\"bytes32[]\",\"data\":[\"abcdefghiabcdefghiabcdefghiabhji\",\"abcdefghiabcdefghiabcdefghiabhji\"]},{\"name\":\"_s\",\"type\":\"string[]\",\"data\":[\"\",\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"]},{\"name\":\"_bs\",\"type\":\"bytes[]\",\"data\":[\"\",\"sadfljkjkljkl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"]}],\"function\":\"test(uint256[],int256[],bool[],address[],bytes32[],string[],bytes[])\",\"methodID\":\"0x6dd9902a\"}"));
         assertThat(
                 lr,
                 is(
@@ -190,8 +204,14 @@ public class TransactionDecoderTest {
                                 new DynamicArray<Bytes32>(
                                         new Bytes32("abcdefghiabcdefghiabcdefghiabhji".getBytes()),
                                         new Bytes32("abcdefghiabcdefghiabcdefghiabhji".getBytes())),
-                                new Utf8String("章鱼小丸子ljjkl;adjsfkljlkjl"),
-                                new DynamicBytes("sadfljkjkljkl".getBytes()))));
+                                new DynamicArray<Utf8String>(
+                                        new Utf8String(""),
+                                        new Utf8String("章鱼小丸子ljjkl;adjsfkljlkjl"),
+                                        new Utf8String("章鱼小丸子ljjkl;adjsfkljlkjl")),
+                                new DynamicArray<DynamicBytes>(
+                                        new DynamicBytes("".getBytes()),
+                                        new DynamicBytes("sadfljkjkljkl".getBytes()),
+                                        new DynamicBytes("章鱼小丸子ljjkl;adjsfkljlkjl".getBytes())))));
 
         String or =
                 decode.decodeOutputReturnJson(
@@ -220,8 +240,15 @@ public class TransactionDecoderTest {
                                                 new Bytes32(
                                                         "abcdefghiabcdefghiabcdefghiabhji"
                                                                 .getBytes())),
-                                        new Utf8String("章鱼小丸子ljjkl;adjsfkljlkjl"),
-                                        new DynamicBytes("sadfljkjkljkl".getBytes()))));
+                                        new DynamicArray<Utf8String>(
+                                                new Utf8String(""),
+                                                new Utf8String("章鱼小丸子ljjkl;adjsfkljlkjl"),
+                                                new Utf8String("章鱼小丸子ljjkl;adjsfkljlkjl")),
+                                        new DynamicArray<DynamicBytes>(
+                                                new DynamicBytes("".getBytes()),
+                                                new DynamicBytes("sadfljkjkljkl".getBytes()),
+                                                new DynamicBytes(
+                                                        "章鱼小丸子ljjkl;adjsfkljlkjl".getBytes())))));
         List<Type> lo =
                 decode.decodeOutPutReturnObject(
                         FunctionEncoder.encode(test),
@@ -249,12 +276,19 @@ public class TransactionDecoderTest {
                                                 new Bytes32(
                                                         "abcdefghiabcdefghiabcdefghiabhji"
                                                                 .getBytes())),
-                                        new Utf8String("章鱼小丸子ljjkl;adjsfkljlkjl"),
-                                        new DynamicBytes("sadfljkjkljkl".getBytes()))));
+                                        new DynamicArray<Utf8String>(
+                                                new Utf8String(""),
+                                                new Utf8String("章鱼小丸子ljjkl;adjsfkljlkjl"),
+                                                new Utf8String("章鱼小丸子ljjkl;adjsfkljlkjl")),
+                                        new DynamicArray<DynamicBytes>(
+                                                new DynamicBytes("".getBytes()),
+                                                new DynamicBytes("sadfljkjkljkl".getBytes()),
+                                                new DynamicBytes(
+                                                        "章鱼小丸子ljjkl;adjsfkljlkjl".getBytes())))));
         assertThat(
                 or,
                 is(
-                        "[{\"name\":\"\",\"type\":\"uint256[]\",\"data\":[11111,22222,33333]},{\"name\":\"\",\"type\":\"int256[]\",\"data\":[-1111111,-3333333,-2222222]},{\"name\":\"\",\"type\":\"bool[]\",\"data\":[false,true,false]},{\"name\":\"\",\"type\":\"address[]\",\"data\":[\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"]},{\"name\":\"\",\"type\":\"bytes32[]\",\"data\":[\"abcdefghiabcdefghiabcdefghiabhji\",\"abcdefghiabcdefghiabcdefghiabhji\"]},{\"name\":\"\",\"type\":\"string\",\"data\":\"章鱼小丸子ljjkl;adjsfkljlkjl\"},{\"name\":\"\",\"type\":\"bytes\",\"data\":\"sadfljkjkljkl\"}]"));
+                        "[{\"name\":\"\",\"type\":\"uint256[]\",\"data\":[11111,22222,33333]},{\"name\":\"\",\"type\":\"int256[]\",\"data\":[-1111111,-3333333,-2222222]},{\"name\":\"\",\"type\":\"bool[]\",\"data\":[false,true,false]},{\"name\":\"\",\"type\":\"address[]\",\"data\":[\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"]},{\"name\":\"\",\"type\":\"bytes32[]\",\"data\":[\"abcdefghiabcdefghiabcdefghiabhji\",\"abcdefghiabcdefghiabcdefghiabhji\"]},{\"name\":\"\",\"type\":\"string[]\",\"data\":[\"\",\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"]},{\"name\":\"\",\"type\":\"bytes[]\",\"data\":[\"\",\"sadfljkjkljkl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"]}]"));
         assertThat(
                 lo,
                 is(
@@ -273,41 +307,74 @@ public class TransactionDecoderTest {
                                 new DynamicArray<Bytes32>(
                                         new Bytes32("abcdefghiabcdefghiabcdefghiabhji".getBytes()),
                                         new Bytes32("abcdefghiabcdefghiabcdefghiabhji".getBytes())),
-                                new Utf8String("章鱼小丸子ljjkl;adjsfkljlkjl"),
-                                new DynamicBytes("sadfljkjkljkl".getBytes()))));
+                                new DynamicArray<Utf8String>(
+                                        new Utf8String(""),
+                                        new Utf8String("章鱼小丸子ljjkl;adjsfkljlkjl"),
+                                        new Utf8String("章鱼小丸子ljjkl;adjsfkljlkjl")),
+                                new DynamicArray<DynamicBytes>(
+                                        new DynamicBytes("".getBytes()),
+                                        new DynamicBytes("sadfljkjkljkl".getBytes()),
+                                        new DynamicBytes("章鱼小丸子ljjkl;adjsfkljlkjl".getBytes())))));
     }
 
     @Test
     public void testOK2() throws JsonProcessingException, TransactionException, BaseException {
 
-        /*contract TestOk
-        {
-        	function test(uint256[2] _u,int256[2] _i,bool[2] _b,address[2] _addr,bytes32[2] _bs32,string _s,bytes _bs) public constant returns (uint256[2],int256[2],bool[2],address[2],bytes32[2],string,bytes) {
+        /*
+              pragma solidity ^0.4.24;
+        pragma experimental ABIEncoderV2;
+              contract TestOk
+              contract TestOk
+        	{
+        		function test(uint256[4] _u,int256[4] _i,bool[4] _b,address[4] _addr,bytes32[4] _bs32,string[4] _s,bytes[4] _bs) public constant returns (uint256[2],int256[2],bool[2],address[2],bytes32[2],string[2],bytes[2]) {
 
         	}
-        }*/
+              }*/
 
         TransactionDecoder decode =
                 TransactionDecoderFactory.buildTransactionDecoder(
-                        "[{\"constant\":true,\"inputs\":[{\"name\":\"_u\",\"type\":\"uint256[2]\"},{\"name\":\"_i\",\"type\":\"int256[2]\"},{\"name\":\"_b\",\"type\":\"bool[2]\"},{\"name\":\"_addr\",\"type\":\"address[2]\"},{\"name\":\"_bs32\",\"type\":\"bytes32[2]\"},{\"name\":\"_s\",\"type\":\"string\"},{\"name\":\"_bs\",\"type\":\"bytes\"}],\"name\":\"test\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256[2]\"},{\"name\":\"\",\"type\":\"int256[2]\"},{\"name\":\"\",\"type\":\"bool[2]\"},{\"name\":\"\",\"type\":\"address[2]\"},{\"name\":\"\",\"type\":\"bytes32[2]\"},{\"name\":\"\",\"type\":\"string\"},{\"name\":\"\",\"type\":\"bytes\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"}]",
+                        "[{\"constant\":true,\"inputs\":[{\"name\":\"_u\",\"type\":\"uint256[4]\"},{\"name\":\"_i\",\"type\":\"int256[4]\"},{\"name\":\"_b\",\"type\":\"bool[4]\"},{\"name\":\"_addr\",\"type\":\"address[4]\"},{\"name\":\"_bs32\",\"type\":\"bytes32[4]\"},{\"name\":\"_s\",\"type\":\"string[4]\"},{\"name\":\"_bs\",\"type\":\"bytes[4]\"}],\"name\":\"test\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256[2]\"},{\"name\":\"\",\"type\":\"int256[2]\"},{\"name\":\"\",\"type\":\"bool[2]\"},{\"name\":\"\",\"type\":\"address[2]\"},{\"name\":\"\",\"type\":\"bytes32[2]\"},{\"name\":\"\",\"type\":\"string[2]\"},{\"name\":\"\",\"type\":\"bytes[2]\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"}]",
                         "");
 
         Function test =
                 new Function(
                         "test",
                         Arrays.asList(
-                                new StaticArray2<Uint256>(new Uint256(11111), new Uint256(33333)),
-                                new StaticArray2<Int256>(
-                                        new Int256(-1111111), new Int256(-2222222)),
-                                new StaticArray2<Bool>(new Bool(true), new Bool(false)),
-                                new StaticArray2<Address>(
+                                new StaticArray4<Uint256>(
+                                        new Uint256(11111),
+                                        new Uint256(22222),
+                                        new Uint256(33333),
+                                        new Uint256(44444)),
+                                new StaticArray4<Int256>(
+                                        new Int256(-1111111),
+                                        new Int256(-2222222),
+                                        new Int256(-3333333),
+                                        new Int256(-4444444)),
+                                new StaticArray4<Bool>(
+                                        new Bool(true),
+                                        new Bool(false),
+                                        new Bool(true),
+                                        new Bool(false)),
+                                new StaticArray4<Address>(
                                         new Address("0x692a70d2e424a56d2c6c27aa97d1a86395877b3a"),
+                                        new Address("0x692a70d2e424a56d2c6c27aa97d1a86395877b3a"),
+                                        new Address("0x0"),
                                         new Address("0x692a70d2e424a56d2c6c27aa97d1a86395877b3a")),
-                                new StaticArray2<Bytes32>(
+                                new StaticArray4<Bytes32>(
                                         new Bytes32("abcdefghiabcdefghiabcdefghiabhji".getBytes()),
+                                        new Bytes32("abcdefghiabcdefghiabcdefghiabhji".getBytes()),
+                                        new Bytes32("00000000000000000000000000000000".getBytes()),
                                         new Bytes32("abcdefghiabcdefghiabcdefghiabhji".getBytes())),
-                                new Utf8String("章鱼小丸子ljjkl;adjsfkljlkjl"),
-                                new DynamicBytes("sadfljkjkljkl".getBytes())),
+                                new StaticArray4<Utf8String>(
+                                        new Utf8String("章鱼小丸子ljjkl;adjsfkljlkjl"),
+                                        new Utf8String("xxxfjlk"),
+                                        new Utf8String("fdajl;jkdsafjkljkadfjklf"),
+                                        new Utf8String("")),
+                                new StaticArray4<DynamicBytes>(
+                                        new DynamicBytes("sadfljkjkljkl".getBytes()),
+                                        new DynamicBytes("".getBytes()),
+                                        new DynamicBytes("sadfljkjkljkl".getBytes()),
+                                        new DynamicBytes("章鱼小丸子ljjkl;adjsfkljlkjl".getBytes()))),
                         Arrays.asList(
                                 new TypeReference<Uint256>() {},
                                 new TypeReference<Int256>() {},
@@ -322,23 +389,46 @@ public class TransactionDecoderTest {
         assertThat(
                 sr,
                 is(
-                        "{\"data\":[{\"name\":\"_u\",\"type\":\"uint256[2]\",\"data\":[11111,33333]},{\"name\":\"_i\",\"type\":\"int256[2]\",\"data\":[-1111111,-2222222]},{\"name\":\"_b\",\"type\":\"bool[2]\",\"data\":[true,false]},{\"name\":\"_addr\",\"type\":\"address[2]\",\"data\":[\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"]},{\"name\":\"_bs32\",\"type\":\"bytes32[2]\",\"data\":[\"abcdefghiabcdefghiabcdefghiabhji\",\"abcdefghiabcdefghiabcdefghiabhji\"]},{\"name\":\"_s\",\"type\":\"string\",\"data\":\"章鱼小丸子ljjkl;adjsfkljlkjl\"},{\"name\":\"_bs\",\"type\":\"bytes\",\"data\":\"sadfljkjkljkl\"}],\"function\":\"test(uint256[2],int256[2],bool[2],address[2],bytes32[2],string,bytes)\",\"methodID\":\"0xd7754ebf\"}"));
+                        "{\"data\":[{\"name\":\"_u\",\"type\":\"uint256[4]\",\"data\":[11111,22222,33333,44444]},{\"name\":\"_i\",\"type\":\"int256[4]\",\"data\":[-1111111,-2222222,-3333333,-4444444]},{\"name\":\"_b\",\"type\":\"bool[4]\",\"data\":[true,false,true,false]},{\"name\":\"_addr\",\"type\":\"address[4]\",\"data\":[\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x0000000000000000000000000000000000000000\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"]},{\"name\":\"_bs32\",\"type\":\"bytes32[4]\",\"data\":[\"abcdefghiabcdefghiabcdefghiabhji\",\"abcdefghiabcdefghiabcdefghiabhji\",\"00000000000000000000000000000000\",\"abcdefghiabcdefghiabcdefghiabhji\"]},{\"name\":\"_s\",\"type\":\"string[4]\",\"data\":[\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"xxxfjlk\",\"fdajl;jkdsafjkljkadfjklf\",\"\"]},{\"name\":\"_bs\",\"type\":\"bytes[4]\",\"data\":[\"sadfljkjkljkl\",\"\",\"sadfljkjkljkl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"]}],\"function\":\"test(uint256[4],int256[4],bool[4],address[4],bytes32[4],string[4],bytes[4])\",\"methodID\":\"0x5682504e\"}"));
         assertThat(
                 lr,
                 is(
                         Arrays.asList(
-                                new StaticArray2<Uint256>(new Uint256(11111), new Uint256(33333)),
-                                new StaticArray2<Int256>(
-                                        new Int256(-1111111), new Int256(-2222222)),
-                                new StaticArray2<Bool>(new Bool(true), new Bool(false)),
-                                new StaticArray2<Address>(
+                                new StaticArray4<Uint256>(
+                                        new Uint256(11111),
+                                        new Uint256(22222),
+                                        new Uint256(33333),
+                                        new Uint256(44444)),
+                                new StaticArray4<Int256>(
+                                        new Int256(-1111111),
+                                        new Int256(-2222222),
+                                        new Int256(-3333333),
+                                        new Int256(-4444444)),
+                                new StaticArray4<Bool>(
+                                        new Bool(true),
+                                        new Bool(false),
+                                        new Bool(true),
+                                        new Bool(false)),
+                                new StaticArray4<Address>(
                                         new Address("0x692a70d2e424a56d2c6c27aa97d1a86395877b3a"),
+                                        new Address("0x692a70d2e424a56d2c6c27aa97d1a86395877b3a"),
+                                        new Address("0x0"),
                                         new Address("0x692a70d2e424a56d2c6c27aa97d1a86395877b3a")),
-                                new StaticArray2<Bytes32>(
+                                new StaticArray4<Bytes32>(
                                         new Bytes32("abcdefghiabcdefghiabcdefghiabhji".getBytes()),
+                                        new Bytes32("abcdefghiabcdefghiabcdefghiabhji".getBytes()),
+                                        new Bytes32("00000000000000000000000000000000".getBytes()),
                                         new Bytes32("abcdefghiabcdefghiabcdefghiabhji".getBytes())),
-                                new Utf8String("章鱼小丸子ljjkl;adjsfkljlkjl"),
-                                new DynamicBytes("sadfljkjkljkl".getBytes()))));
+                                new StaticArray4<Utf8String>(
+                                        new Utf8String("章鱼小丸子ljjkl;adjsfkljlkjl"),
+                                        new Utf8String("xxxfjlk"),
+                                        new Utf8String("fdajl;jkdsafjkljkadfjklf"),
+                                        new Utf8String("")),
+                                new StaticArray4<DynamicBytes>(
+                                        new DynamicBytes("sadfljkjkljkl".getBytes()),
+                                        new DynamicBytes("".getBytes()),
+                                        new DynamicBytes("sadfljkjkljkl".getBytes()),
+                                        new DynamicBytes("章鱼小丸子ljjkl;adjsfkljlkjl".getBytes())))));
 
         String or =
                 decode.decodeOutputReturnJson(
@@ -360,10 +450,15 @@ public class TransactionDecoderTest {
                                                         "abcdefghiabcdefghiabcdefghiabhji"
                                                                 .getBytes()),
                                                 new Bytes32(
-                                                        "abcdefghiabcdefghiabcdefghiabhji"
+                                                        "01234567890123456789012345678901"
                                                                 .getBytes())),
-                                        new Utf8String("章鱼小丸子ljjkl;adjsfkljlkjl"),
-                                        new DynamicBytes("sadfljkjkljkl".getBytes()))));
+                                        new StaticArray2<Utf8String>(
+                                                new Utf8String("章鱼小丸子ljjkl;adjsfkljlkjl"),
+                                                new Utf8String("dasfjklk;jlj")),
+                                        new StaticArray2<DynamicBytes>(
+                                                new DynamicBytes(
+                                                        "章鱼小丸子ljjkl;adjsfkljlkjl".getBytes()),
+                                                new DynamicBytes("dasfjklk;jlj".getBytes())))));
         List<Type> lo =
                 decode.decodeOutPutReturnObject(
                         FunctionEncoder.encode(test),
@@ -384,14 +479,19 @@ public class TransactionDecoderTest {
                                                         "abcdefghiabcdefghiabcdefghiabhji"
                                                                 .getBytes()),
                                                 new Bytes32(
-                                                        "abcdefghiabcdefghiabcdefghiabhji"
+                                                        "01234567890123456789012345678901"
                                                                 .getBytes())),
-                                        new Utf8String("章鱼小丸子ljjkl;adjsfkljlkjl"),
-                                        new DynamicBytes("sadfljkjkljkl".getBytes()))));
+                                        new StaticArray2<Utf8String>(
+                                                new Utf8String("章鱼小丸子ljjkl;adjsfkljlkjl"),
+                                                new Utf8String("dasfjklk;jlj")),
+                                        new StaticArray2<DynamicBytes>(
+                                                new DynamicBytes(
+                                                        "章鱼小丸子ljjkl;adjsfkljlkjl".getBytes()),
+                                                new DynamicBytes("dasfjklk;jlj".getBytes())))));
         assertThat(
                 or,
                 is(
-                        "[{\"name\":\"\",\"type\":\"uint256[2]\",\"data\":[11111,33333]},{\"name\":\"\",\"type\":\"int256[2]\",\"data\":[-1111111,-2222222]},{\"name\":\"\",\"type\":\"bool[2]\",\"data\":[true,false]},{\"name\":\"\",\"type\":\"address[2]\",\"data\":[\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"]},{\"name\":\"\",\"type\":\"bytes32[2]\",\"data\":[\"abcdefghiabcdefghiabcdefghiabhji\",\"abcdefghiabcdefghiabcdefghiabhji\"]},{\"name\":\"\",\"type\":\"string\",\"data\":\"章鱼小丸子ljjkl;adjsfkljlkjl\"},{\"name\":\"\",\"type\":\"bytes\",\"data\":\"sadfljkjkljkl\"}]"));
+                        "[{\"name\":\"\",\"type\":\"uint256[2]\",\"data\":[11111,33333]},{\"name\":\"\",\"type\":\"int256[2]\",\"data\":[-1111111,-2222222]},{\"name\":\"\",\"type\":\"bool[2]\",\"data\":[true,false]},{\"name\":\"\",\"type\":\"address[2]\",\"data\":[\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"]},{\"name\":\"\",\"type\":\"bytes32[2]\",\"data\":[\"abcdefghiabcdefghiabcdefghiabhji\",\"01234567890123456789012345678901\"]},{\"name\":\"\",\"type\":\"string[2]\",\"data\":[\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"dasfjklk;jlj\"]},{\"name\":\"\",\"type\":\"bytes[2]\",\"data\":[\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"dasfjklk;jlj\"]}]"));
         assertThat(
                 lo,
                 is(
@@ -405,9 +505,13 @@ public class TransactionDecoderTest {
                                         new Address("0x692a70d2e424a56d2c6c27aa97d1a86395877b3a")),
                                 new StaticArray2<Bytes32>(
                                         new Bytes32("abcdefghiabcdefghiabcdefghiabhji".getBytes()),
-                                        new Bytes32("abcdefghiabcdefghiabcdefghiabhji".getBytes())),
-                                new Utf8String("章鱼小丸子ljjkl;adjsfkljlkjl"),
-                                new DynamicBytes("sadfljkjkljkl".getBytes()))));
+                                        new Bytes32("01234567890123456789012345678901".getBytes())),
+                                new StaticArray2<Utf8String>(
+                                        new Utf8String("章鱼小丸子ljjkl;adjsfkljlkjl"),
+                                        new Utf8String("dasfjklk;jlj")),
+                                new StaticArray2<DynamicBytes>(
+                                        new DynamicBytes("章鱼小丸子ljjkl;adjsfkljlkjl".getBytes()),
+                                        new DynamicBytes("dasfjklk;jlj".getBytes())))));
     }
 
     @Test
