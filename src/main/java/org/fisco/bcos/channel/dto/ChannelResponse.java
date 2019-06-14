@@ -1,6 +1,13 @@
 package org.fisco.bcos.channel.dto;
 
 public class ChannelResponse {
+	
+	private Integer errorCode; // 错误码
+    private String errorMessage; // 错误信息
+    private String messageID; // 消息唯一ID
+    private byte[] content; // 响应包体
+	
+	
     public Integer getErrorCode() {
         return errorCode;
     }
@@ -57,11 +64,4 @@ public class ChannelResponse {
   {
 	  this.content = content;
   }
-
-    private Integer errorCode; // 错误码
-    private String errorMessage; // 错误信息
-
-    private String messageID; // 消息唯一ID
-
-  private byte[] content; // 响应包体
 }

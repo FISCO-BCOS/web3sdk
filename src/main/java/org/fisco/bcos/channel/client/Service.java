@@ -456,13 +456,13 @@ public class Service {
             ChannelRequest request, ChannelResponseCallback2 callback) {
         try {
        
-      if(request.getContentByteArray().length >= 256*256*1024)
+      if(request.getContentByteArray().length >= 32*1024*1024)
       {
-    	  logger.error("send byte length should not greater than 256M now length:{}",
+    	  logger.error("send byte length should not greater than 32M now length:{}",
     			  	request.getContentByteArray().length);
-    	  System.out.println("send byte length should not greater than 256M now length:"+
+    	  System.out.println("send byte length should not greater than 32M now length:"+
   			  	request.getContentByteArray().length);
-          throw new Exception("send byte length should not greater than 256M");
+          throw new Exception("send byte length should not greater than 32M");
       }
       
       logger.debug("ChannelRequest: " + request.getMessageID());

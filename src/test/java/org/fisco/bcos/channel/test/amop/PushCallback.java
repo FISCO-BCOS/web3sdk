@@ -58,7 +58,6 @@ class PushCallback extends ChannelPushCallback {
 
   @Override
   public void onPush(ChannelPush push) {
-    DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     System.out.println("onPush content length:"+push.getContent2().length);
     logger.debug("onPush content content:"+Arrays.toString(push.getContent2()));
     
