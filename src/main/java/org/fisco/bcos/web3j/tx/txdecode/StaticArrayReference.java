@@ -447,7 +447,7 @@ public class StaticArrayReference {
             case "bool":
                 return new TypeReference<StaticArray5<Bool>>() {};
             case "string":
-                return new TypeReference<StaticArray4<Utf8String>>() {};
+                return new TypeReference<StaticArray5<Utf8String>>() {};
             case "bytes":
                 return new TypeReference<StaticArray5<DynamicBytes>>() {};
             case "bytes1":
@@ -534,7 +534,7 @@ public class StaticArrayReference {
             case "bool":
                 return new TypeReference<StaticArray6<Bool>>() {};
             case "string":
-                return new TypeReference<StaticArray4<Utf8String>>() {};
+                return new TypeReference<StaticArray6<Utf8String>>() {};
             case "bytes":
                 return new TypeReference<StaticArray6<DynamicBytes>>() {};
             case "bytes1":
@@ -621,7 +621,7 @@ public class StaticArrayReference {
             case "bool":
                 return new TypeReference<StaticArray7<Bool>>() {};
             case "string":
-                return new TypeReference<StaticArray4<Utf8String>>() {};
+                return new TypeReference<StaticArray7<Utf8String>>() {};
             case "bytes":
                 return new TypeReference<StaticArray7<DynamicBytes>>() {};
             case "bytes1":
