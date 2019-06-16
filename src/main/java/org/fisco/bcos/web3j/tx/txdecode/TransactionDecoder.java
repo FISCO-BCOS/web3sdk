@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.fisco.bcos.web3j.abi.EventEncoder;
 import org.fisco.bcos.web3j.abi.FunctionEncoder;
 import org.fisco.bcos.web3j.abi.FunctionReturnDecoder;
 import org.fisco.bcos.web3j.abi.TypeReference;
@@ -19,6 +20,7 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.AbiDefinition;
 import org.fisco.bcos.web3j.protocol.core.methods.response.AbiDefinition.NamedType;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Log;
 import org.fisco.bcos.web3j.protocol.exceptions.TransactionException;
+import org.fisco.bcos.web3j.tuples.generated.Tuple2;
 
 public class TransactionDecoder {
 
@@ -31,8 +33,7 @@ public class TransactionDecoder {
         methodIDMap = new HashMap<>();
         List<AbiDefinition> funcAbiDefinitionList = ContractAbiUtil.getFuncAbiDefinition(abi);
         for (AbiDefinition abiDefinition : funcAbiDefinitionList) {
-            List<String> inputTypes = ContractAbiUtil.getFuncInputType(abiDefinition);
-            String methodSign = decodeMethodSign(abiDefinition, inputTypes);
+            String methodSign = decodeMethodSign(abiDefinition);
             String methodID = FunctionEncoder.buildMethodId(methodSign);
             methodIDMap.put(methodID, abiDefinition);
         }
@@ -44,8 +45,7 @@ public class TransactionDecoder {
         methodIDMap = new HashMap<>();
         List<AbiDefinition> funcAbiDefinitionList = ContractAbiUtil.getFuncAbiDefinition(abi);
         for (AbiDefinition abiDefinition : funcAbiDefinitionList) {
-            List<String> inputTypes = ContractAbiUtil.getFuncInputType(abiDefinition);
-            String methodSign = decodeMethodSign(abiDefinition, inputTypes);
+            String methodSign = decodeMethodSign(abiDefinition);
             String methodID = FunctionEncoder.buildMethodId(methodSign);
             methodIDMap.put(methodID, abiDefinition);
         }
@@ -64,12 +64,11 @@ public class TransactionDecoder {
         AbiDefinition abiFunc = selectAbiDefinition(input);
 
         // decode input
-        List<String> inputTypes = ContractAbiUtil.getFuncInputType(abiFunc);
         List<ResultEntity> resultList = decodeInputReturnObject(input);
 
         // format result to json
         Map<String, Object> resultMap = new HashMap<>();
-        String methodSign = decodeMethodSign(abiFunc, inputTypes);
+        String methodSign = decodeMethodSign(abiFunc);
         resultMap.put("function", methodSign);
         resultMap.put("methodID", FunctionEncoder.buildMethodId(methodSign));
         resultMap.put("data", resultList);
@@ -166,10 +165,11 @@ public class TransactionDecoder {
         ObjectMapper mapper = ObjectMapperFactory.getObjectMapper();
         CollectionType listType =
                 mapper.getTypeFactory().constructCollectionType(ArrayList.class, Log.class);
+        @SuppressWarnings("unchecked")
         List<Log> logList = (List<Log>) mapper.readValue(logs, listType);
 
         // decode event
-        Map<String, List<ResultEntity>> resultEntityMap = decodeEventReturnObject(logList);
+        Map<String, List<List<ResultEntity>>> resultEntityMap = decodeEventReturnObject(logList);
         String result = mapper.writeValueAsString(resultEntityMap);
 
         return result;
@@ -181,32 +181,85 @@ public class TransactionDecoder {
      * @throws BaseException
      * @throws IOException
      */
-    public Map<String, List<ResultEntity>> decodeEventReturnObject(List<Log> logList)
+    public String decodeEventReturnJson(List<Log> logList) throws BaseException, IOException {
+        // log json trans to list log
+        ObjectMapper mapper = ObjectMapperFactory.getObjectMapper();
+        // decode event
+        Map<String, List<List<ResultEntity>>> resultEntityMap = decodeEventReturnObject(logList);
+        String result = mapper.writeValueAsString(resultEntityMap);
+
+        return result;
+    }
+
+    /**
+     * @param logList
+     * @return
+     * @throws BaseException
+     * @throws IOException
+     */
+    public Map<String, List<List<ResultEntity>>> decodeEventReturnObject(List<Log> logList)
             throws BaseException, IOException {
+
+        // set result to java bean
+        Map<String, List<List<ResultEntity>>> resultEntityMap = new HashMap<>();
+
+        for (Log log : logList) {
+            Tuple2<AbiDefinition, List<ResultEntity>> resultTuple2 = decodeEventReturnObject(log);
+            if (null == resultTuple2) {
+                continue;
+            }
+
+            AbiDefinition abiDefinition = resultTuple2.getValue1();
+            String eventName = decodeMethodSign(abiDefinition);
+            if (resultEntityMap.containsKey(eventName)) {
+                resultEntityMap.get(eventName).add(resultTuple2.getValue2());
+            } else {
+                List<List<ResultEntity>> eventEntityList = new ArrayList<List<ResultEntity>>();
+                eventEntityList.add(resultTuple2.getValue2());
+                resultEntityMap.put(eventName, eventEntityList);
+            }
+        }
+
+        return resultEntityMap;
+    }
+
+    public Tuple2<AbiDefinition, List<ResultEntity>> decodeEventReturnObject(Log log)
+            throws BaseException, IOException {
+
+        Tuple2<AbiDefinition, List<ResultEntity>> result = null;
 
         // decode log
         List<AbiDefinition> abiDefinitions = ContractAbiUtil.getEventAbiDefinitions(abi);
-        Map<String, List<Type>> resultObjectMap =
-                ContractAbiUtil.decodeEvents(logList, abiDefinitions);
 
-        // set result to java bean
-        Map<String, List<ResultEntity>> resultEntityMap = new HashMap<>();
         for (AbiDefinition abiDefinition : abiDefinitions) {
-            if (resultObjectMap.containsKey(abiDefinition.getName())) {
-                List<ResultEntity> eventEntityList = new ArrayList<>();
+
+            String eventSignature =
+                    EventEncoder.buildEventSignature(decodeMethodSign(abiDefinition));
+
+            List<String> topics = log.getTopics();
+            if ((null == topics) || topics.isEmpty() || !topics.get(0).equals(eventSignature)) {
+                continue;
+            }
+
+            List<Type> resultList = ContractAbiUtil.decodeEvent(log, abiDefinition);
+            if (null != resultList) {
+            	List<ResultEntity> resultEntityList = new ArrayList<>();
                 List<NamedType> inputs = abiDefinition.getInputs();
                 for (int i = 0; i < inputs.size(); i++) {
                     ResultEntity eventEntity =
                             new ResultEntity(
                                     inputs.get(i).getName(),
                                     inputs.get(i).getType(),
-                                    resultObjectMap.get(abiDefinition.getName()).get(i));
-                    eventEntityList.add(eventEntity);
+                                    resultList.get(i));
+                    resultEntityList.add(eventEntity);
                 }
-                resultEntityMap.put(abiDefinition.getName(), eventEntityList);
+
+                result = new Tuple2<AbiDefinition, List<ResultEntity>>(abiDefinition, resultEntityList);
+                break;
             }
         }
-        return resultEntityMap;
+
+        return result;
     }
 
     /**
@@ -228,10 +281,10 @@ public class TransactionDecoder {
 
     /**
      * @param abiDefinition
-     * @param inputTypes
      * @return
      */
-    private String decodeMethodSign(AbiDefinition abiDefinition, List<String> inputTypes) {
+    private String decodeMethodSign(AbiDefinition abiDefinition) {
+        List<String> inputTypes = ContractAbiUtil.getFuncInputType(abiDefinition);
         StringBuilder methodSign = new StringBuilder();
         methodSign.append(abiDefinition.getName());
         methodSign.append("(");

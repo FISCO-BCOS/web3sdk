@@ -17,9 +17,7 @@ package org.fisco.bcos.web3j.tx.txdecode;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.fisco.bcos.web3j.abi.EventValues;
 import org.fisco.bcos.web3j.abi.TypeReference;
 import org.fisco.bcos.web3j.abi.datatypes.Event;
@@ -37,9 +35,7 @@ public class ContractAbiUtil {
     public static final String TYPE_EVENT = "event";
 
     /**
-     * get constructor abi info.
-     *
-     * @param contractAbi contractAbi
+     * @param contractAbi
      * @return
      */
     public static AbiDefinition getConstructorAbiDefinition(String contractAbi) {
@@ -56,10 +52,7 @@ public class ContractAbiUtil {
     }
 
     /**
-     * get function abi info.
-     *
-     * @param name name
-     * @param contractAbi contractAbi
+     * @param contractAbi
      * @return
      */
     public static List<AbiDefinition> getFuncAbiDefinition(String contractAbi) {
@@ -76,9 +69,7 @@ public class ContractAbiUtil {
     }
 
     /**
-     * get event abi info.
-     *
-     * @param contractAbi contractAbi
+     * @param contractAbi
      * @return
      */
     public static List<AbiDefinition> getEventAbiDefinitions(String contractAbi) {
@@ -94,9 +85,7 @@ public class ContractAbiUtil {
     }
 
     /**
-     * getFuncInputType.
-     *
-     * @param abiDefinition abiDefinition
+     * @param abiDefinition
      * @return
      */
     public static List<String> getFuncInputType(AbiDefinition abiDefinition) {
@@ -111,9 +100,7 @@ public class ContractAbiUtil {
     }
 
     /**
-     * getFuncOutputType.
-     *
-     * @param abiDefinition abiDefinition
+     * @param abiDefinition
      * @return
      */
     public static List<String> getFuncOutputType(AbiDefinition abiDefinition) {
@@ -126,10 +113,9 @@ public class ContractAbiUtil {
     }
 
     /**
-     * output parameter format.
-     *
-     * @param funOutputTypes list
+     * @param paramTypes
      * @return
+     * @throws BaseException
      */
     public static List<TypeReference<?>> paramFormat(List<String> paramTypes) throws BaseException {
         List<TypeReference<?>> finalOutputs = new ArrayList<>();
@@ -160,28 +146,22 @@ public class ContractAbiUtil {
     }
 
     /**
-     * @param logList
-     * @param abiList
+     * @param log
+     * @param abiDefinition
      * @return
      * @throws BaseException
      */
-    public static Map<String, List<Type>> decodeEvents(
-            List<Log> logList, List<AbiDefinition> abiList) throws BaseException {
-        Map<String, List<Type>> resultMap = new HashMap<>();
-        for (AbiDefinition abiDefinition : abiList) {
-            String eventName = abiDefinition.getName();
-            List<String> funcInputTypes = getFuncInputType(abiDefinition);
-            List<TypeReference<?>> finalOutputs = paramFormat(funcInputTypes);
-            Event event = new Event(eventName, finalOutputs);
+    public static List<Type> decodeEvent(Log log, AbiDefinition abiDefinition)
+            throws BaseException {
 
-            for (Log logInfo : logList) {
-                EventValues eventValues = Contract.staticExtractEventParameters(event, logInfo);
-                if (eventValues != null) {
-                    resultMap.put(eventName, eventValues.getNonIndexedValues());
-                    break;
-                }
-            }
+        List<Type> result = null;
+        List<TypeReference<?>> finalOutputs = paramFormat(getFuncInputType(abiDefinition));
+        Event event = new Event(abiDefinition.getName(), finalOutputs);
+
+        EventValues eventValues = Contract.staticExtractEventParameters(event, log);
+        if (null != eventValues) {
+            result = eventValues.getNonIndexedValues();
         }
-        return resultMap;
+        return result;
     }
 }
