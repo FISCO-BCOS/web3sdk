@@ -49,7 +49,7 @@ public class TestTxDecode {
         List<Log> logList = txReceipt.getLogs();
         String logJson = ObjectMapperFactory.getObjectMapper().writeValueAsString(logList);
         String eventResult1 = transactionDecoder.decodeEventReturnJson(logJson);
-        Map<String, List<ResultEntity>> eventResult2 =
+        Map<String, List<List<ResultEntity>>> eventResult2 =
                 transactionDecoder.decodeEventReturnObject(logList);
 
         System.out.println(eventResult1);
