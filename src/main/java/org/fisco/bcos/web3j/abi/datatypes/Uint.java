@@ -26,4 +26,14 @@ public class Uint extends IntType {
     boolean valid(int bitSize, BigInteger value) {
         return super.valid(bitSize, value) && value.signum() != -1;
     }
+
+    @Override
+    public boolean dynamicType() {
+        return false;
+    }
+
+    @Override
+    public int offset() {
+        return 1;
+    }
 }
