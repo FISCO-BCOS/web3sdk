@@ -30,8 +30,13 @@ import org.fisco.bcos.channel.dto.ChannelPush;
 import org.fisco.bcos.channel.dto.ChannelPush2;
 import org.fisco.bcos.channel.dto.ChannelRequest;
 import org.fisco.bcos.channel.dto.ChannelResponse;
-import org.fisco.bcos.channel.handler.*;
+import org.fisco.bcos.channel.handler.ChannelConnections;
+import org.fisco.bcos.channel.handler.ConnectionCallback;
+import org.fisco.bcos.channel.handler.ConnectionInfo;
+import org.fisco.bcos.channel.handler.GroupChannelConnectionsConfig;
+import org.fisco.bcos.channel.handler.Message;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.fisco.bcos.web3j.protocol.exceptions.TransactionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -234,6 +239,9 @@ public class Service {
 
     public BcosResponse sendEthereumMessage(BcosRequest request) {
         class Callback extends BcosResponseCallback {
+            public BcosResponse bcosResponse;
+            public Semaphore semaphore = new Semaphore(1, true);
+
             Callback() {
                 try {
                     semaphore.acquire(1);
@@ -246,19 +254,16 @@ public class Service {
 
             @Override
             public void onResponse(BcosResponse response) {
-                fiscoResponse = response;
+                bcosResponse = response;
 
-                if (fiscoResponse != null && fiscoResponse.getContent() != null) {
+                if (bcosResponse != null && bcosResponse.getContent() != null) {
                     logger.debug("response: {}", response.getContent());
                 } else {
-                    logger.error("fisco error");
+                    logger.error("response is null");
                 }
 
                 semaphore.release();
             }
-
-            public BcosResponse fiscoResponse;
-            public Semaphore semaphore = new Semaphore(1, true);
         };
 
         Callback callback = new Callback();
@@ -271,7 +276,7 @@ public class Service {
             Thread.currentThread().interrupt();
         }
 
-        return callback.fiscoResponse;
+        return callback.bcosResponse;
     }
 
     public BcosResponse sendEthereumMessage(
@@ -394,10 +399,10 @@ public class Service {
             if (channelConnections == null) {
                 if (orgID != null) {
                     logger.error("not found:{}", orgID);
-                    throw new Exception("not found orgID");
+                    throw new TransactionException("not found orgID");
                 } else {
                     logger.error("not found:{}", agencyName);
-                    throw new Exception("not found agencyName");
+                    throw new TransactionException("not found agencyName");
                 }
             }
             ChannelHandlerContext ctx = channelConnections.randomNetworkConnection();
@@ -442,7 +447,7 @@ public class Service {
             response.setErrorCode(-1);
             response.setErrorMessage(
                     e.getMessage()
-                            + "Requset send failed! Can not connect to nodes success, please checkout the node status and the sdk config!");
+                            + " Requset send failed! Can not connect to nodes success, please checkout the node status and the sdk config!");
             response.setContent("");
             response.setMessageID(request.getMessageID());
 

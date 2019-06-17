@@ -18,6 +18,7 @@ public class TransactionReceipt {
     private String status;
     private String from;
     private String to;
+    private String input;
     private String output;
     private List<Log> logs;
     private String logsBloom;
@@ -35,6 +36,7 @@ public class TransactionReceipt {
             String status,
             String from,
             String to,
+            String input,
             String output,
             List<Log> logs,
             String logsBloom) {
@@ -48,6 +50,7 @@ public class TransactionReceipt {
         this.status = status;
         this.from = from;
         this.to = to;
+        this.input = input;
         this.output = output;
         this.logs = logs;
         this.logsBloom = logsBloom;
@@ -95,6 +98,14 @@ public class TransactionReceipt {
 
     public void setOutput(String output) {
         this.output = output;
+    }
+
+    public String getInput() {
+        return input;
+    }
+
+    public void setInput(String input) {
+        this.input = input;
     }
 
     public void setBlockNumber(String blockNumber) {
@@ -238,6 +249,9 @@ public class TransactionReceipt {
                 : that.getOutput() != null) {
             return false;
         }
+        if (getInput() != null ? !getInput().equals(that.getInput()) : that.getInput() != null) {
+            return false;
+        }
         return getLogsBloom() != null
                 ? getLogsBloom().equals(that.getLogsBloom())
                 : that.getLogsBloom() == null;
@@ -256,6 +270,7 @@ public class TransactionReceipt {
         result = 31 * result + (getFrom() != null ? getFrom().hashCode() : 0);
         result = 31 * result + (getTo() != null ? getTo().hashCode() : 0);
         result = 31 * result + (getOutput() != null ? getOutput().hashCode() : 0);
+        result = 31 * result + (getInput() != null ? getInput().hashCode() : 0);
         result = 31 * result + (getLogs() != null ? getLogs().hashCode() : 0);
         result = 31 * result + (getLogsBloom() != null ? getLogsBloom().hashCode() : 0);
         return result;
@@ -293,6 +308,9 @@ public class TransactionReceipt {
                 + '\''
                 + ", to='"
                 + to
+                + '\''
+                + ", input='"
+                + input
                 + '\''
                 + ", output='"
                 + output
