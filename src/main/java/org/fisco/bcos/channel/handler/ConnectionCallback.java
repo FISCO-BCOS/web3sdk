@@ -117,10 +117,12 @@ public class ConnectionCallback implements ChannelConnections.Callback {
                                                     response.getContent(), BlockNumber.class);
                                     SocketChannel socketChannel = (SocketChannel) ctx.channel();
                                     InetSocketAddress socketAddress = socketChannel.remoteAddress();
-                                    ChannelConnections.nodeToBlockNumberMap.put(
-                                            socketAddress.getAddress().getHostAddress()
-                                                    + socketAddress.getPort(),
-                                            blockNumber.getBlockNumber().intValue());
+                                    channelService
+                                            .getNodeToBlockNumberMap()
+                                            .put(
+                                                    socketAddress.getAddress().getHostAddress()
+                                                            + socketAddress.getPort(),
+                                                    blockNumber.getBlockNumber().intValue());
                                 } catch (Exception e) {
                                     throw new MessageDecodingException(response.getContent());
                                 }

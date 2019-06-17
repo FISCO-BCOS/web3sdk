@@ -19,16 +19,19 @@ public class Channel2ClientMultiBin {
         }
         String topic = args[0];
         Integer count = 1;
-        String	filename = args[1];
-        
+        String filename = args[1];
+
         int flag = -128;
-        byte [] byteflag = Channel2ClientBin.intToByteArray(flag);
+        byte[] byteflag = Channel2ClientBin.intToByteArray(flag);
         int filelength = filename.length();
-        byte [] bytelength = Channel2ClientBin.intToByteArray(filelength);
+        byte[] bytelength = Channel2ClientBin.intToByteArray(filelength);
         byte[] bytefilename = filename.getBytes();
         byte[] contentfile = Channel2ClientBin.toByteArrFromFile(filename);
-        byte[] content = Channel2ClientBin.byteCat(Channel2ClientBin.byteCat(Channel2ClientBin.byteCat(byteflag,bytelength),bytefilename),contentfile);
-        
+        byte[] content =
+                Channel2ClientBin.byteCat(
+                        Channel2ClientBin.byteCat(
+                                Channel2ClientBin.byteCat(byteflag, bytelength), bytefilename),
+                        contentfile);
 
         DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -55,7 +58,7 @@ public class Channel2ClientMultiBin {
             ChannelRequest request = new ChannelRequest();
             request.setToTopic(topic);
             request.setMessageID(service.newSeq());
-            request.setTimeout(5000);            
+            request.setTimeout(5000);
             request.setContent(content);
 
             System.out.println(
@@ -65,7 +68,6 @@ public class Channel2ClientMultiBin {
                             + ", filename:"
                             + filename);
             service.asyncMulticastChannelMessage2(request);
-
         }
     }
 }

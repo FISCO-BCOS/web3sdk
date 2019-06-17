@@ -57,8 +57,6 @@ public class ChannelConnections {
             new HashMap<String, ChannelHandlerContext>();
     private int groupId;
     private Bootstrap bootstrap = new Bootstrap();
-    public static ConcurrentHashMap<String, Integer> nodeToBlockNumberMap =
-            new ConcurrentHashMap<>();
     ServerBootstrap serverBootstrap = new ServerBootstrap();
 
     public int getGroupId() {
@@ -149,7 +147,8 @@ public class ChannelConnections {
         this.caCertPath = caCertPath;
     }
 
-    public ChannelHandlerContext randomNetworkConnection() throws Exception {
+    public ChannelHandlerContext randomNetworkConnection(
+            ConcurrentHashMap<String, Integer> nodeToBlockNumberMap) throws Exception {
         List<ChannelHandlerContext> activeConnections = new ArrayList<ChannelHandlerContext>();
 
         for (String key : networkConnections.keySet()) {
@@ -167,31 +166,33 @@ public class ChannelConnections {
         List<ChannelHandlerContext> maxBlockNumberConnections =
                 new ArrayList<ChannelHandlerContext>();
         long maxBlockNumber = 0;
-        for (String key : nodeToBlockNumberMap.keySet()) {
-            int blockNumber = nodeToBlockNumberMap.get(key);
-            if (blockNumber >= maxBlockNumber) {
-                if (blockNumber > maxBlockNumber) {
-                    maxBlockNumberConnections.clear();
-                }
+        if (nodeToBlockNumberMap != null) {
+            for (String key : nodeToBlockNumberMap.keySet()) {
+                int blockNumber = nodeToBlockNumberMap.get(key);
+                if (blockNumber >= maxBlockNumber) {
+                    if (blockNumber > maxBlockNumber) {
+                        maxBlockNumberConnections.clear();
+                    }
 
-                Optional<ChannelHandlerContext> optionalCtx =
-                        activeConnections
-                                .stream()
-                                .filter(
-                                        x ->
-                                                key.equals(
-                                                        ((SocketChannel) x.channel())
-                                                                        .remoteAddress()
-                                                                        .getAddress()
-                                                                        .getHostAddress()
-                                                                + ((SocketChannel) x.channel())
-                                                                        .remoteAddress()
-                                                                        .getPort()))
-                                .findFirst();
-                if (optionalCtx.isPresent()) {
-                    ChannelHandlerContext channelHandlerContext = optionalCtx.get();
-                    maxBlockNumberConnections.add(channelHandlerContext);
-                    maxBlockNumber = blockNumber;
+                    Optional<ChannelHandlerContext> optionalCtx =
+                            activeConnections
+                                    .stream()
+                                    .filter(
+                                            x ->
+                                                    key.equals(
+                                                            ((SocketChannel) x.channel())
+                                                                            .remoteAddress()
+                                                                            .getAddress()
+                                                                            .getHostAddress()
+                                                                    + ((SocketChannel) x.channel())
+                                                                            .remoteAddress()
+                                                                            .getPort()))
+                                    .findFirst();
+                    if (optionalCtx.isPresent()) {
+                        ChannelHandlerContext channelHandlerContext = optionalCtx.get();
+                        maxBlockNumberConnections.add(channelHandlerContext);
+                        maxBlockNumber = blockNumber;
+                    }
                 }
             }
         }

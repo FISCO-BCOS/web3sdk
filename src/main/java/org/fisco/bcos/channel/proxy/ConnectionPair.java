@@ -156,7 +156,7 @@ class ConnectionPair {
             } else {
                 // ethereum消息，不用改类型
             }
-            
+
             message.setResult(99);
 
             ByteBuf out = localConnection.alloc().buffer();

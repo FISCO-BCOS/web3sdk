@@ -28,7 +28,8 @@ public class PrecompiledCommon {
     public static final int PermissionDenied_RC1 = 80;
     public static final int PermissionDenied = 50000;
     public static final int PermissionDenied_RC3 = -50000;
-    public static final int TableExist = -50001;
+    public static final int TableExist = 50001;
+    public static final int TableExist_RC3 = -50001;
     public static final int TableNameAndAddressExist_RC1 = 56;
     public static final int TableNameAndAddressExist = 51000;
     public static final int TableNameAndAddressExist_RC3 = -51000;
@@ -51,7 +52,7 @@ public class PrecompiledCommon {
 
     public static final int TABLE_KEY_MAX_LENGTH = 255;
 
-    private static String BCOS_VERSION = "";
+    public static String BCOS_VERSION = "";
 
     public static String transferToJson(int code) throws IOException {
         // adapt fisco-bcos rc1 || rc2 || rc3
@@ -77,6 +78,8 @@ public class PrecompiledCommon {
                 msg = "table name and address does not exist";
             } else if (code == LastSealer) {
                 msg = "the last sealer cannot be removed";
+            } else if (code == TableExist) {
+                msg = "table already exist";
             } else if (code == InvalidKey) {
                 msg = "invalid configuration entry";
             }
@@ -89,6 +92,8 @@ public class PrecompiledCommon {
                 msg = "table name and address does not exist";
             } else if (code == LastSealer_RC3) {
                 msg = "the last sealer cannot be removed";
+            } else if (code == TableExist_RC3) {
+                msg = "table already exist";
             } else if (code == InvalidKey_RC3) {
                 msg = "invalid configuration entry";
             }
@@ -107,8 +112,6 @@ public class PrecompiledCommon {
             msg = "the node is already in the observer list";
         } else if (code == ContractNameAndVersionExist) {
             msg = "contract name and version already exist";
-        } else if (code == TableExist) {
-            msg = "table already exist";
         } else if (code == VersionExceeds) {
             msg = "version string length exceeds the maximum limit";
         }
