@@ -139,7 +139,6 @@ public class PerformanceDTTest {
 
             while (verify_success.get() + verify_failed.get() < total_user) {
                 Thread.sleep(40);
-                ;
             }
 
             System.out.println("validation:");
