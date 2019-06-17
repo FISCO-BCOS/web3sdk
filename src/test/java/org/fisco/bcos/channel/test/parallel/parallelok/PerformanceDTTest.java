@@ -29,6 +29,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 public class PerformanceDTTest {
     private static Logger logger = LoggerFactory.getLogger(PerformanceDTTest.class);
+    private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     private static String groupId = "1";
 
@@ -396,8 +397,6 @@ public class PerformanceDTTest {
         }
     }
 
-    private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
     public void userTransferTest(BigInteger count, BigInteger qps, BigInteger deci) {
         List<String> signedTransactions = new ArrayList<String>();
         List<PerformanceDTCallback> callbacks = new ArrayList<PerformanceDTCallback>();
@@ -423,7 +422,6 @@ public class PerformanceDTTest {
 
             List<DagTransferUser> allUser = dagUserMgr.getUserList();
 
-            int coreNum = Runtime.getRuntime().availableProcessors();
             ThreadPoolTaskExecutor threadPool = new ThreadPoolTaskExecutor();
             threadPool.setCorePoolSize(200);
             threadPool.setMaxPoolSize(500);

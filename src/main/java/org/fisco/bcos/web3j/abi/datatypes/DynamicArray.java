@@ -21,4 +21,14 @@ public class DynamicArray<T extends Type> extends Array<T> {
     public static DynamicArray empty(String type) {
         return new DynamicArray(type);
     }
+
+    @Override
+    public boolean dynamicType() {
+        return true;
+    }
+
+    @Override
+    public int offset() {
+        return 1;
+    }
 }
