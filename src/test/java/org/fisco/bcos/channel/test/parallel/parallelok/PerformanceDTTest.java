@@ -94,7 +94,6 @@ public class PerformanceDTTest {
         allUser = dagUserMgr.getUserList();
 
         try {
-            final ParallelOk _parallelok = parallelok;
             final List<DagTransferUser> _allUser = allUser;
 
             for (int i = 0; i < allUser.size(); ++i) {
