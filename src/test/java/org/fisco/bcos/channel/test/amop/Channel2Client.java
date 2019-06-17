@@ -2,6 +2,7 @@ package org.fisco.bcos.channel.test.amop;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.channel.dto.ChannelRequest;
 import org.fisco.bcos.channel.dto.ChannelResponse;
@@ -48,14 +49,18 @@ public class Channel2Client {
             request.setMessageID(service.newSeq());
             request.setTimeout(5000);
 
-            request.setContent("request seq:" + request.getMessageID());
+            String content = "request seq:" + request.getMessageID();
+
+            request.setContent(content.getBytes());
 
             System.out.println(
                     df.format(LocalDateTime.now())
                             + " request seq:"
                             + String.valueOf(request.getMessageID())
                             + ", Content:"
-                            + request.getContent());
+                            + request.getContent()
+                            + " content:"
+                            + Arrays.toString(request.getContentByteArray()));
 
             ChannelResponse response = service.sendChannelMessage2(request);
 

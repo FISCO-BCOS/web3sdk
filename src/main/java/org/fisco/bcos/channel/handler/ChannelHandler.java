@@ -127,8 +127,6 @@ public class ChannelHandler extends SimpleChannelInboundHandler<ByteBuf> {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        String host = ((SocketChannel) ctx.channel()).remoteAddress().getAddress().getHostAddress();
-        Integer port = ((SocketChannel) ctx.channel()).remoteAddress().getPort();
 
         final ChannelHandlerContext ctxF = ctx;
         final ByteBuf in = (ByteBuf) msg;

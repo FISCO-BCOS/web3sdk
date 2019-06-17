@@ -57,13 +57,7 @@ public abstract class TypeReference<T extends org.fisco.bcos.web3j.abi.datatypes
      */
     @SuppressWarnings("unchecked")
     public Class<T> getClassType() throws ClassNotFoundException {
-        Type clsType = getType();
-
-        if (getType() instanceof ParameterizedType) {
-            return (Class<T>) ((ParameterizedType) clsType).getRawType();
-        } else {
-            return (Class<T>) Class.forName(clsType.getTypeName());
-        }
+        return Utils.getClassType(getType());
     }
 
     public static <T extends org.fisco.bcos.web3j.abi.datatypes.Type> TypeReference<T> create(
@@ -74,21 +68,5 @@ public abstract class TypeReference<T extends org.fisco.bcos.web3j.abi.datatypes
                 return cls;
             }
         };
-    }
-
-    public abstract static class StaticArrayTypeReference<
-                    T extends org.fisco.bcos.web3j.abi.datatypes.Type>
-            extends TypeReference<T> {
-
-        private final int size;
-
-        protected StaticArrayTypeReference(int size) {
-            super();
-            this.size = size;
-        }
-
-        public int getSize() {
-            return size;
-        }
     }
 }
