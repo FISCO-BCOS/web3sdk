@@ -9,8 +9,8 @@ import org.slf4j.LoggerFactory;
 
 public class PerformanceDTCollector {
 
-    static Logger logger = LoggerFactory.getLogger(PerformanceDTCollector.class);
-    static HashMap<String, String> errorInfos = new HashMap<String, String>();
+    private static Logger logger = LoggerFactory.getLogger(PerformanceDTCollector.class);
+    private static HashMap<String, String> errorInfos = new HashMap<String, String>();
 
     private Integer total = 0;
     private DagUserMgr dagUserMrg;
