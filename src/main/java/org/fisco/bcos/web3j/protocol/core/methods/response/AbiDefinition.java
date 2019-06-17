@@ -1,7 +1,10 @@
 package org.fisco.bcos.web3j.protocol.core.methods.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /** AbiDefinition wrapper. */
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -155,8 +158,10 @@ public class AbiDefinition {
     }
 
     public static class NamedType {
+
         private String name;
         private String type;
+        private Type type0;
         private boolean indexed;
 
         public NamedType() {}
@@ -164,12 +169,14 @@ public class AbiDefinition {
         public NamedType(String name, String type) {
             this.name = name;
             this.type = type;
+            this.setType0(new Type(name));
         }
 
         public NamedType(String name, String type, boolean indexed) {
             this.name = name;
             this.type = type;
             this.indexed = indexed;
+            this.setType0(new Type(name));
         }
 
         public String getName() {
@@ -227,6 +234,78 @@ public class AbiDefinition {
             result = 31 * result + (getType() != null ? getType().hashCode() : 0);
             result = 31 * result + (isIndexed() ? 1 : 0);
             return result;
+        }
+
+        public Type getType0() {
+            return type0;
+        }
+
+        public void setType0(Type type0) {
+            this.type0 = type0;
+        }
+
+        public static class Type {
+            public String name;
+            public String baseName;
+            public List<Integer> depth = new ArrayList<Integer>();
+
+            public Type(String name) {
+                int index = name.indexOf("[");
+                this.baseName = (-1 == index) ? name.trim() : name.substring(0, index);
+
+                this.name = name;
+                this.doParser();
+            }
+
+            private void doParser() {
+                Pattern p = Pattern.compile("\\[[0-9]{0,}\\]");
+                Matcher m = p.matcher(name);
+                while (m.find()) {
+                    String s = m.group();
+                    String dig = s.substring(s.indexOf("[") + 1, s.indexOf("]")).trim();
+                    if (dig.isEmpty()) {
+                        depth.add(new Integer(0));
+                    } else {
+                        depth.add(Integer.valueOf(dig));
+                    }
+                }
+            }
+
+            @Override
+            public String toString() {
+                return "Type [name=" + name + ", baseName=" + baseName + ", depth=" + depth + "]";
+            }
+
+            public String getName() {
+                return name;
+            }
+
+            public int getDimensions() {
+                if (arrayType()) {
+                    return depth.get(depth.size() - 1);
+                }
+                return 0;
+            }
+
+            public String getBaseName() {
+                return baseName;
+            }
+
+            public boolean arrayType() {
+                return 0 != getDepth();
+            }
+
+            public boolean staticArray() {
+                return arrayType() && (depth.get(depth.size() - 1) > 0);
+            }
+
+            public boolean dynamicArray() {
+                return arrayType() && (depth.get(depth.size() - 1) == 0);
+            }
+
+            public int getDepth() {
+                return depth.size();
+            }
         }
     }
 }

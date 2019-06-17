@@ -65,9 +65,7 @@ public class PEMManager {
         // X509EncodedKeySpec(pem.getContent()));
 
         PKCS8EncodedKeySpec encodedKeySpec = new PKCS8EncodedKeySpec(pem.getContent());
-        KeyFactory keyFacotry =
-                KeyFactory.getInstance(
-                        "EC", org.bouncycastle.jce.provider.BouncyCastleProvider.PROVIDER_NAME);
+        KeyFactory keyFacotry = KeyFactory.getInstance("EC", BouncyCastleProvider.PROVIDER_NAME);
         return keyFacotry.generatePrivate(encodedKeySpec);
     }
 
@@ -86,9 +84,7 @@ public class PEMManager {
                         bcW.getAffineXCoord().toBigInteger(), bcW.getAffineYCoord().toBigInteger());
         ECPublicKeySpec keySpec = new ECPublicKeySpec(w, tryFindNamedCurveSpec(params));
         return (PublicKey)
-                KeyFactory.getInstance(
-                                "EC",
-                                org.bouncycastle.jce.provider.BouncyCastleProvider.PROVIDER_NAME)
+                KeyFactory.getInstance("EC", BouncyCastleProvider.PROVIDER_NAME)
                         .generatePublic(keySpec);
     }
 
