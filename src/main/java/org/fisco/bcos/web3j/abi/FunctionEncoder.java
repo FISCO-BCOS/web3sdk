@@ -66,7 +66,7 @@ public class FunctionEncoder {
         return result.toString();
     }
 
-    static String buildMethodId(String methodSignature) {
+    public static String buildMethodId(String methodSignature) {
         byte[] input = methodSignature.getBytes();
         byte[] hash = Hash.sha3(input);
         return Numeric.toHexString(hash).substring(0, 10);

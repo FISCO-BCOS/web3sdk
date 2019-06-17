@@ -16,7 +16,7 @@ import org.junit.Test;
 public class CRUDServiceTest extends TestBase {
 
 
-	CRUDSerivce crudSerivce = new CRUDSerivce(web3j, credentials);
+	private CRUDSerivce crudSerivce = new CRUDSerivce(web3j, credentials);
 
 	@SuppressWarnings("unchecked")
 	@Test
@@ -66,7 +66,7 @@ public class CRUDServiceTest extends TestBase {
 	  // select records
 		Condition condition2 = table.getCondition();
 		condition2.EQ("item_id", "1");
-		condition2.Limit(1);;
+		condition2.Limit(1);
 		List<Map<String, String>> resultSelect2 = crudSerivce.select(table, condition2);
 		assertEquals(resultSelect2.get(0).get("name"), "fruit");
 		assertEquals(resultSelect2.get(0).get("item_id"), "1");

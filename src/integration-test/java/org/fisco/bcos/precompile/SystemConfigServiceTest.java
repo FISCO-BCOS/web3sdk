@@ -10,7 +10,7 @@ import org.junit.Test;
 public class SystemConfigServiceTest extends TestBase {
 
 
-	SystemConfigService systemConfigSerivce = new SystemConfigService(web3j, credentials);
+  private SystemConfigService systemConfigSerivce = new SystemConfigService(web3j, credentials);
 
   @Test
   public void setValueByKey() throws Exception {
