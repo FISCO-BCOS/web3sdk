@@ -11,7 +11,7 @@
 
 ### Gradle template
 .gradle
-/build
+build
 gradle.properties
 
 
@@ -30,15 +30,16 @@ gradle.properties
 # OS X
 .DS_Store
 
-/target
-/out
-/log
-/dist
-/src/test/resources/ca.crt
-/src/test/resources/node.crt
-/src/test/resources/node.key
-/src/test/java/org/fisco/bcos/temp
+target
+out
+log
+dist
+src/test/resources/ca.crt
+src/test/resources/node.crt
+src/test/resources/node.key
+src/test/java/org/fisco/bcos/temp
 build.gradle.bak
-/.settings/
+.settings/
 .project
-/bin/
+bin/
+
