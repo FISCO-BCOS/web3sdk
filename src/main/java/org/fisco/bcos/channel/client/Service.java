@@ -20,7 +20,6 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
-
 import org.fisco.bcos.channel.dto.BcosMessage;
 import org.fisco.bcos.channel.dto.BcosRequest;
 import org.fisco.bcos.channel.dto.BcosResponse;
@@ -35,6 +34,7 @@ import org.fisco.bcos.channel.handler.ConnectionCallback;
 import org.fisco.bcos.channel.handler.ConnectionInfo;
 import org.fisco.bcos.channel.handler.GroupChannelConnectionsConfig;
 import org.fisco.bcos.channel.handler.Message;
+import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.protocol.exceptions.TransactionException;
 import org.slf4j.Logger;
@@ -470,29 +470,33 @@ public class Service {
     public void asyncSendChannelMessage2(
             ChannelRequest request, ChannelResponseCallback2 callback) {
         try {
-       
-      if(request.getContentByteArray().length >= 32*1024*1024)
-      {
-    	  logger.error("send byte length should not greater than 32M now length:{}",
-    			  	request.getContentByteArray().length);
-    	  System.out.println("send byte length should not greater than 32M now length:"+
-  			  	request.getContentByteArray().length);
-          throw new AmopException("send byte length should not greater than 32M");
-      }
-      
-      logger.debug("ChannelRequest: " + request.getMessageID());
-      callback.setService(this);
 
-      ChannelMessage2 channelMessage = new ChannelMessage2();
+            if (request.getContentByteArray().length >= 32 * 1024 * 1024) {
+                logger.error(
+                        "send byte length should not greater than 32M now length:{}",
+                        request.getContentByteArray().length);
+                System.out.println(
+                        "send byte length should not greater than 32M now length:"
+                                + request.getContentByteArray().length);
+                throw new AmopException("send byte length should not greater than 32M");
+            }
 
-      channelMessage.setSeq(request.getMessageID());
-      channelMessage.setResult(0);
-      channelMessage.setType((short) 0x30); // 链上链下请求0x30
-      channelMessage.setData(request.getContentByteArray());
-      
-      System.out.println("value length:"+request.getContentByteArray().length
-    		  	+":"+request.getContent().getBytes().length);
-      channelMessage.setTopic(request.getToTopic());
+            logger.debug("ChannelRequest: " + request.getMessageID());
+            callback.setService(this);
+
+            ChannelMessage2 channelMessage = new ChannelMessage2();
+
+            channelMessage.setSeq(request.getMessageID());
+            channelMessage.setResult(0);
+            channelMessage.setType((short) 0x30); // 链上链下请求0x30
+            channelMessage.setData(request.getContentByteArray());
+
+            System.out.println(
+                    "value length:"
+                            + request.getContentByteArray().length
+                            + ":"
+                            + request.getContent().getBytes().length);
+            channelMessage.setTopic(request.getToTopic());
 
             try {
                 List<ConnectionInfo> fromConnectionInfos = new ArrayList<ConnectionInfo>();
@@ -564,9 +568,9 @@ public class Service {
             logger.error("system error", e);
         }
     }
-    
+
     public void asyncMulticastChannelMessage2(ChannelRequest request) {
-    	try {
+        try {
             logger.debug("ChannelRequest: " + request.getMessageID());
 
             ChannelMessage2 channelMessage = new ChannelMessage2();
@@ -597,34 +601,37 @@ public class Service {
                         throw new Exception("not found agencyName");
                     }
                 }
-                
+
                 logger.debug(
                         "FromOrg:{} nodes:{}",
                         request.getFromOrg(),
                         fromChannelConnections.getConnections().size());
-                
-                for(ConnectionInfo connectionInfo: fromChannelConnections.getConnections()) {
-	                ChannelHandlerContext ctx =
-	                        fromChannelConnections.getNetworkConnectionByHost(
-	                        		connectionInfo.getHost(), connectionInfo.getPort());
-	
-	                if (ctx != null && ctx.channel().isActive()) {
-	                    ByteBuf out = ctx.alloc().buffer();
-	                    channelMessage.writeHeader(out);
-	                    channelMessage.writeExtra(out);
-	
-	                    ctx.writeAndFlush(out);
-	
-	                    logger.debug(
-	                            "send message to  "
-	                                    + connectionInfo.getHost()
-	                                    + ":"
-	                                    + String.valueOf(connectionInfo.getPort())
-	                                    + " 成功");
-	                } else {
-	                    logger.error("sending node unavailable, {}",
-	                    		connectionInfo.getHost() + ":" + String.valueOf(connectionInfo.getPort()));
-	                }
+
+                for (ConnectionInfo connectionInfo : fromChannelConnections.getConnections()) {
+                    ChannelHandlerContext ctx =
+                            fromChannelConnections.getNetworkConnectionByHost(
+                                    connectionInfo.getHost(), connectionInfo.getPort());
+
+                    if (ctx != null && ctx.channel().isActive()) {
+                        ByteBuf out = ctx.alloc().buffer();
+                        channelMessage.writeHeader(out);
+                        channelMessage.writeExtra(out);
+
+                        ctx.writeAndFlush(out);
+
+                        logger.debug(
+                                "send message to  "
+                                        + connectionInfo.getHost()
+                                        + ":"
+                                        + String.valueOf(connectionInfo.getPort())
+                                        + " 成功");
+                    } else {
+                        logger.error(
+                                "sending node unavailable, {}",
+                                connectionInfo.getHost()
+                                        + ":"
+                                        + String.valueOf(connectionInfo.getPort()));
+                    }
                 }
             } catch (Exception e) {
                 logger.error("send message fail:", e);
@@ -803,22 +810,22 @@ public class Service {
                     push.setCtx(ctx);
                     push.setTopic(message.getTopic());
 
-          push.setSeq(message.getSeq());
-          push.setMessageID(message.getSeq());
-          System.out.println("data length:"+message.getData().length);
-          logger.info("msg:"+Arrays.toString(message.getData()));
-          push.setContent(message.getData());
-          pushCallback.onPush(push);
-        } else {
-          logger.error("can not push，unset push callback");
-        }
-      } catch (Exception e) {
-        logger.error("push error:", e);
-      }
-    } else if (message.getType() == 0x31) { // 链上链下回包
-      logger.debug("channel message:{}", message.getSeq());
-      if (callback != null) {
-        logger.debug("found callback response");
+                    push.setSeq(message.getSeq());
+                    push.setMessageID(message.getSeq());
+                    System.out.println("data length:" + message.getData().length);
+                    logger.info("msg:" + Arrays.toString(message.getData()));
+                    push.setContent(message.getData());
+                    pushCallback.onPush(push);
+                } else {
+                    logger.error("can not push，unset push callback");
+                }
+            } catch (Exception e) {
+                logger.error("push error:", e);
+            }
+        } else if (message.getType() == 0x31) { // 链上链下回包
+            logger.debug("channel message:{}", message.getSeq());
+            if (callback != null) {
+                logger.debug("found callback response");
 
                 ChannelResponse response = new ChannelResponse();
                 if (message.getResult() != 0) {
@@ -890,8 +897,8 @@ public class Service {
 
             try {
                 TransactionReceipt receipt =
-                        objectMapper.readValue(message.getData(), TransactionReceipt.class);
-
+                        ObjectMapperFactory.getObjectMapper()
+                                .readValue(message.getData(), TransactionReceipt.class);
                 callback.onResponse(receipt);
             } catch (Exception e) {
                 TransactionReceipt receipt = new TransactionReceipt();
