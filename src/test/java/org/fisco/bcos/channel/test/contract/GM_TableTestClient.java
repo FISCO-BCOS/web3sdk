@@ -4,10 +4,6 @@ import java.math.BigInteger;
 import java.util.List;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.fisco.bcos.channel.client.Service;
-import org.fisco.bcos.channel.test.contract.TableTest.CreateResultEventResponse;
-import org.fisco.bcos.channel.test.contract.TableTest.InsertResultEventResponse;
-import org.fisco.bcos.channel.test.contract.TableTest.RemoveResultEventResponse;
-import org.fisco.bcos.channel.test.contract.TableTest.UpdateResultEventResponse;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.crypto.ECKeyPair;
 import org.fisco.bcos.web3j.crypto.Keys;
@@ -28,10 +24,10 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
-public class TableTestClient {
+public class GM_TableTestClient {
 
     public static int modevalue = 100;
-    static Logger logger = LoggerFactory.getLogger(TableTestClient.class);
+    static Logger logger = LoggerFactory.getLogger(GM_TableTestClient.class);
     public static Web3j web3j;
 
     public static java.math.BigInteger gasPrice = new BigInteger("1");
@@ -44,9 +40,9 @@ public class TableTestClient {
     @SuppressWarnings("deprecation")
     public static void deployTableTest() {
 
-        RemoteCall<TableTest> deploy =
-                TableTest.deploy(web3j, credentials, new StaticGasProvider(gasPrice, gasLimit));
-        TableTest tabletest;
+        RemoteCall<GM_TableTest> deploy =
+                GM_TableTest.deploy(web3j, credentials, new StaticGasProvider(gasPrice, gasLimit));
+        GM_TableTest tabletest;
         try {
             tabletest = deploy.send();
             contractAddress = tabletest.getContractAddress();
@@ -85,18 +81,19 @@ public class TableTestClient {
         }
         ContractGasProvider contractGasProvider = new StaticGasProvider(gasPrice, gasLimit);
         ;
-        TableTest tabletest =
-                TableTest.load(contractAddress, web3j, credentials, contractGasProvider);
+        GM_TableTest tabletest =
+                GM_TableTest.load(contractAddress, web3j, credentials, contractGasProvider);
         // create table
         if ("create".equals(args[0])) {
             TransactionReceipt receipt = tabletest.create().send();
-            List<CreateResultEventResponse> createResultEvents =
+            List<GM_TableTest.CreateResultEventResponse> createResultEvents =
                     tabletest.getCreateResultEvents(receipt);
             if (createResultEvents.size() == 0) {
                 System.out.println("create t_test table failed.");
                 return;
             }
-            CreateResultEventResponse createResultEventResponse = createResultEvents.get(0);
+            GM_TableTest.CreateResultEventResponse createResultEventResponse =
+                    createResultEvents.get(0);
             int createCount = createResultEventResponse.count.intValue();
             System.out.println("create table ret:" + createCount);
             switch (createCount) {
@@ -128,11 +125,11 @@ public class TableTestClient {
                     RemoteCall<TransactionReceipt> insert =
                             tabletest.insert(name, BigInteger.valueOf(item_id), item_name);
                     TransactionReceipt txReceipt = insert.send();
-                    List<InsertResultEventResponse> insertResultEvents =
+                    List<GM_TableTest.InsertResultEventResponse> insertResultEvents =
                             tabletest.getInsertResultEvents(txReceipt);
                     if (insertResultEvents.size() > 0) {
                         for (int i = 0; i < insertResultEvents.size(); i++) {
-                            InsertResultEventResponse insertResultEventResponse =
+                            GM_TableTest.InsertResultEventResponse insertResultEventResponse =
                                     insertResultEvents.get(i);
                             logger.info(
                                     "insertCount = " + insertResultEventResponse.count.intValue());
@@ -191,12 +188,12 @@ public class TableTestClient {
                     RemoteCall<TransactionReceipt> update =
                             tabletest.update(name, BigInteger.valueOf(item_id), item_name);
                     TransactionReceipt transactionReceipt = update.send();
-                    List<UpdateResultEventResponse> updateResultEvents =
+                    List<GM_TableTest.UpdateResultEventResponse> updateResultEvents =
                             tabletest.getUpdateResultEvents(transactionReceipt);
 
                     if (updateResultEvents.size() > 0) {
                         for (int i = 0; i < updateResultEvents.size(); i++) {
-                            UpdateResultEventResponse updateResultEventResponse =
+                            GM_TableTest.UpdateResultEventResponse updateResultEventResponse =
                                     updateResultEvents.get(i);
                             System.out.println(
                                     "updateCount = " + updateResultEventResponse.count.intValue());
@@ -223,11 +220,11 @@ public class TableTestClient {
                     RemoteCall<TransactionReceipt> remove =
                             tabletest.remove(name, BigInteger.valueOf(item_id));
                     TransactionReceipt transactionReceipt = remove.send();
-                    List<RemoveResultEventResponse> removeResultEvents =
+                    List<GM_TableTest.RemoveResultEventResponse> removeResultEvents =
                             tabletest.getRemoveResultEvents(transactionReceipt);
 
                     if (removeResultEvents.size() > 0) {
-                        RemoveResultEventResponse reomveResultEventResponse =
+                        GM_TableTest.RemoveResultEventResponse reomveResultEventResponse =
                                 removeResultEvents.get(0);
                         logger.info("removeCount = " + reomveResultEventResponse.count.intValue());
                         System.out.println(
