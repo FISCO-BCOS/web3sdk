@@ -243,7 +243,7 @@ public class TransactionDecoder {
 
             List<Type> resultList = ContractAbiUtil.decodeEvent(log, abiDefinition);
             if (null != resultList) {
-            	List<ResultEntity> resultEntityList = new ArrayList<>();
+                List<ResultEntity> resultEntityList = new ArrayList<>();
                 List<NamedType> inputs = abiDefinition.getInputs();
                 for (int i = 0; i < inputs.size(); i++) {
                     ResultEntity eventEntity =
@@ -254,7 +254,9 @@ public class TransactionDecoder {
                     resultEntityList.add(eventEntity);
                 }
 
-                result = new Tuple2<AbiDefinition, List<ResultEntity>>(abiDefinition, resultEntityList);
+                result =
+                        new Tuple2<AbiDefinition, List<ResultEntity>>(
+                                abiDefinition, resultEntityList);
                 break;
             }
         }
