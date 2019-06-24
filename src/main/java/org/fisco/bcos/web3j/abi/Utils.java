@@ -20,11 +20,11 @@ import org.fisco.bcos.web3j.abi.datatypes.Utf8String;
 public class Utils {
     private Utils() {}
 
-    static public <T extends Type> String getTypeName(TypeReference<T> typeReference) {
+    public static <T extends Type> String getTypeName(TypeReference<T> typeReference) {
         return getTypeName(typeReference.getType());
     }
 
-    static public <T extends Type> String getTypeName(java.lang.reflect.Type type) {
+    public static <T extends Type> String getTypeName(java.lang.reflect.Type type) {
         try {
 
             Class<?> cls = Utils.getClassType(type);
@@ -39,7 +39,7 @@ public class Utils {
         }
     }
 
-    static private <T extends Type, U extends Type> String getParameterizedTypeName(
+    private static <T extends Type, U extends Type> String getParameterizedTypeName(
             java.lang.reflect.Type type) {
 
         try {
