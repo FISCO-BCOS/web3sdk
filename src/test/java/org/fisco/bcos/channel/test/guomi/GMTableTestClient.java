@@ -1,4 +1,4 @@
-package org.fisco.bcos.channel.test.contract;
+package org.fisco.bcos.channel.test.guomi;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -24,10 +24,10 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
-public class GM_TableTestClient {
+public class GMTableTestClient {
 
     public static int modevalue = 100;
-    static Logger logger = LoggerFactory.getLogger(GM_TableTestClient.class);
+    static Logger logger = LoggerFactory.getLogger(GMTableTestClient.class);
     public static Web3j web3j;
 
     public static java.math.BigInteger gasPrice = new BigInteger("1");
@@ -40,9 +40,9 @@ public class GM_TableTestClient {
     @SuppressWarnings("deprecation")
     public static void deployTableTest() {
 
-        RemoteCall<GM_TableTest> deploy =
-                GM_TableTest.deploy(web3j, credentials, new StaticGasProvider(gasPrice, gasLimit));
-        GM_TableTest tabletest;
+        RemoteCall<TableTest> deploy =
+                TableTest.deploy(web3j, credentials, new StaticGasProvider(gasPrice, gasLimit));
+        TableTest tabletest;
         try {
             tabletest = deploy.send();
             contractAddress = tabletest.getContractAddress();
@@ -81,18 +81,18 @@ public class GM_TableTestClient {
         }
         ContractGasProvider contractGasProvider = new StaticGasProvider(gasPrice, gasLimit);
         ;
-        GM_TableTest tabletest =
-                GM_TableTest.load(contractAddress, web3j, credentials, contractGasProvider);
+        TableTest tabletest =
+                TableTest.load(contractAddress, web3j, credentials, contractGasProvider);
         // create table
         if ("create".equals(args[0])) {
             TransactionReceipt receipt = tabletest.create().send();
-            List<GM_TableTest.CreateResultEventResponse> createResultEvents =
+            List<TableTest.CreateResultEventResponse> createResultEvents =
                     tabletest.getCreateResultEvents(receipt);
             if (createResultEvents.size() == 0) {
                 System.out.println("create t_test table failed.");
                 return;
             }
-            GM_TableTest.CreateResultEventResponse createResultEventResponse =
+            TableTest.CreateResultEventResponse createResultEventResponse =
                     createResultEvents.get(0);
             int createCount = createResultEventResponse.count.intValue();
             System.out.println("create table ret:" + createCount);
@@ -125,11 +125,11 @@ public class GM_TableTestClient {
                     RemoteCall<TransactionReceipt> insert =
                             tabletest.insert(name, BigInteger.valueOf(item_id), item_name);
                     TransactionReceipt txReceipt = insert.send();
-                    List<GM_TableTest.InsertResultEventResponse> insertResultEvents =
+                    List<TableTest.InsertResultEventResponse> insertResultEvents =
                             tabletest.getInsertResultEvents(txReceipt);
                     if (insertResultEvents.size() > 0) {
                         for (int i = 0; i < insertResultEvents.size(); i++) {
-                            GM_TableTest.InsertResultEventResponse insertResultEventResponse =
+                            TableTest.InsertResultEventResponse insertResultEventResponse =
                                     insertResultEvents.get(i);
                             logger.info(
                                     "insertCount = " + insertResultEventResponse.count.intValue());
@@ -188,12 +188,12 @@ public class GM_TableTestClient {
                     RemoteCall<TransactionReceipt> update =
                             tabletest.update(name, BigInteger.valueOf(item_id), item_name);
                     TransactionReceipt transactionReceipt = update.send();
-                    List<GM_TableTest.UpdateResultEventResponse> updateResultEvents =
+                    List<TableTest.UpdateResultEventResponse> updateResultEvents =
                             tabletest.getUpdateResultEvents(transactionReceipt);
 
                     if (updateResultEvents.size() > 0) {
                         for (int i = 0; i < updateResultEvents.size(); i++) {
-                            GM_TableTest.UpdateResultEventResponse updateResultEventResponse =
+                            TableTest.UpdateResultEventResponse updateResultEventResponse =
                                     updateResultEvents.get(i);
                             System.out.println(
                                     "updateCount = " + updateResultEventResponse.count.intValue());
@@ -220,11 +220,11 @@ public class GM_TableTestClient {
                     RemoteCall<TransactionReceipt> remove =
                             tabletest.remove(name, BigInteger.valueOf(item_id));
                     TransactionReceipt transactionReceipt = remove.send();
-                    List<GM_TableTest.RemoveResultEventResponse> removeResultEvents =
+                    List<TableTest.RemoveResultEventResponse> removeResultEvents =
                             tabletest.getRemoveResultEvents(transactionReceipt);
 
                     if (removeResultEvents.size() > 0) {
-                        GM_TableTest.RemoveResultEventResponse reomveResultEventResponse =
+                        TableTest.RemoveResultEventResponse reomveResultEventResponse =
                                 removeResultEvents.get(0);
                         logger.info("removeCount = " + reomveResultEventResponse.count.intValue());
                         System.out.println(
