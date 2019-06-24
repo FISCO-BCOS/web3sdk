@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 public class ChannelPush {
     static Logger logger = LoggerFactory.getLogger(ChannelPush.class);
 
-    
     private String keyID; // 链ID
     private String orgApp; // 来源标识
     private String version; // 版本
@@ -23,8 +22,7 @@ public class ChannelPush {
     private Integer ttl; // TTL
 
     private byte[] content; // 请求包体
-    
-    
+
     public String getKeyID() {
         return keyID;
     }
@@ -97,34 +95,30 @@ public class ChannelPush {
         this.ttl = ttl;
     }
 
-  public byte[] getContent2() {
-    return content;
-  }
-  
-  
-  public String getContent()
-  {
-	  if(content == null) {
-		  return null;
-	  }
-	  
-	  String _content = new String(content);
-	  return _content;
-  }
+    public byte[] getContent2() {
+        return content;
+    }
 
-  public void setContent(String content) {
-	  if(content == null)
-	  {
-		  this.content = null;
-		  return;
-	  }
-	  this.content = content.getBytes();
-  }
-  
-  
-  public void setContent(byte[] content) {
-	  this.content = content;
-  }
+    public String getContent() {
+        if (content == null) {
+            return null;
+        }
+
+        String _content = new String(content);
+        return _content;
+    }
+
+    public void setContent(String content) {
+        if (content == null) {
+            this.content = null;
+            return;
+        }
+        this.content = content.getBytes();
+    }
+
+    public void setContent(byte[] content) {
+        this.content = content;
+    }
 
     public void sendResponse(ChannelResponse response) {
         logger.debug("send ChannelResponse seq:{}", response.getMessageID());
