@@ -41,11 +41,11 @@ public class AccountTest {
                         "classpath:applicationContext-keystore-sample.xml");
         // test p12
         P12Manager p12 = context.getBean(P12Manager.class);
-        ECKeyPair p12KeyPair = p12.getECKeyPair(p12.getPassword());
+        ECKeyPair p12KeyPair = p12.getECKeyPair();
         assertEquals(p12KeyPair.getPrivateKey().toString(16), PRIVATE_KEY);
         assertEquals(p12KeyPair.getPublicKey().toString(16), PUBLIC_KEY);
 
-        ECPublicKey publicKey = (ECPublicKey) p12.getPublicKey(p12.getPassword());
+        ECPublicKey publicKey = (ECPublicKey) p12.getPublicKey();
         byte[] publicKeyBytes = publicKey.getQ().getEncoded(false);
         BigInteger publicKeyValue =
                 new BigInteger(1, Arrays.copyOfRange(publicKeyBytes, 1, publicKeyBytes.length));
