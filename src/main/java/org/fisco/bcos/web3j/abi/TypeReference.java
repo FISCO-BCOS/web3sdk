@@ -62,7 +62,12 @@ public abstract class TypeReference<T extends org.fisco.bcos.web3j.abi.datatypes
 
     public static <T extends org.fisco.bcos.web3j.abi.datatypes.Type> TypeReference<T> create(
             Class<T> cls) {
-        return new TypeReference<T>() {
+        return create(cls, false);
+    }
+
+    public static <T extends org.fisco.bcos.web3j.abi.datatypes.Type> TypeReference<T> create(
+            Class<T> cls, boolean indexed) {
+        return new TypeReference<T>(indexed) {
             @Override
             public Type getType() {
                 return cls;
