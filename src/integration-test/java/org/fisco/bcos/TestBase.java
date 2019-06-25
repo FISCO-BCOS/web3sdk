@@ -31,7 +31,7 @@ public class TestBase {
   	context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
 
     Service service = context.getBean(Service.class);
-   service.run();
+    service.run();
 
     ChannelEthereumService channelEthereumService = new ChannelEthereumService();
     channelEthereumService.setChannelService(service);
