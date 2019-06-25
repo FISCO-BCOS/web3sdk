@@ -1,6 +1,7 @@
 import "./Table.sol";
 
-contract TableTest {
+contract GM_TableTest {
+    event createResult(int count);
     event selectResult(bytes32 name, int item_id, bytes32 item_name);
     event insertResult(int count);
     event updateResult(int count);
@@ -9,7 +10,8 @@ contract TableTest {
     //create table
     function create() public {
         TableFactory tf = TableFactory(0x1001); //The fixed address is 0x1001 for TableFactory
-        tf.createTable("t_test", "name", "item_id,item_name");
+        int count = tf.createTable("t_test", "name", "item_id,item_name");
+        emit createResult(count);
     }
 
     //select records
