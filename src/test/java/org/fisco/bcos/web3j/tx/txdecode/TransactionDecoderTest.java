@@ -28,6 +28,7 @@ import org.fisco.bcos.web3j.abi.datatypes.generated.StaticArray2;
 import org.fisco.bcos.web3j.abi.datatypes.generated.StaticArray4;
 import org.fisco.bcos.web3j.abi.datatypes.generated.Uint256;
 import org.fisco.bcos.web3j.protocol.core.methods.response.AbiDefinition;
+import org.fisco.bcos.web3j.protocol.core.methods.response.AbiDefinition.NamedType;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Log;
 import org.fisco.bcos.web3j.protocol.exceptions.TransactionException;
 import org.fisco.bcos.web3j.tuples.generated.Tuple2;
@@ -60,6 +61,14 @@ public class TransactionDecoderTest {
     public static List<Type> transEntitytoType(List<ResultEntity> entityList) {
         List<Type> listType = new ArrayList<>();
         for (ResultEntity resultEntity : entityList) {
+            listType.add(resultEntity.getTypeObject());
+        }
+        return listType;
+    }
+
+    public static List<Type> transEntitytoType0(List<EventResultEntity> entityList) {
+        List<Type> listType = new ArrayList<>();
+        for (EventResultEntity resultEntity : entityList) {
             listType.add(resultEntity.getTypeObject());
         }
         return listType;
@@ -98,7 +107,7 @@ public class TransactionDecoderTest {
         assertThat(
                 resultInputJson,
                 is(
-                        "{\"data\":[{\"name\":\"_u\",\"type\":\"uint256\",\"data\":111111},{\"name\":\"_i\",\"type\":\"int256\",\"data\":-1111111},{\"name\":\"_b\",\"type\":\"bool\",\"data\":false},{\"name\":\"_addr\",\"type\":\"address\",\"data\":\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"},{\"name\":\"_bs32\",\"type\":\"bytes32\",\"data\":\"abcdefghiabcdefghiabcdefghiabhji\"},{\"name\":\"_s\",\"type\":\"string\",\"data\":\"章鱼小丸子ljjkl;adjsfkljlkjl\"},{\"name\":\"_bs\",\"type\":\"bytes\",\"data\":\"sadfljkjkljkl\"}],\"function\":\"test(uint256,int256,bool,address,bytes32,string,bytes)\",\"methodID\":\"0x58a12c20\"}"));
+                        "{\"function\":\"test(uint256,int256,bool,address,bytes32,string,bytes)\",\"methodID\":\"0x58a12c20\",\"data\":[{\"name\":\"_u\",\"type\":\"uint256\",\"data\":111111},{\"name\":\"_i\",\"type\":\"int256\",\"data\":-1111111},{\"name\":\"_b\",\"type\":\"bool\",\"data\":false},{\"name\":\"_addr\",\"type\":\"address\",\"data\":\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"},{\"name\":\"_bs32\",\"type\":\"bytes32\",\"data\":\"abcdefghiabcdefghiabcdefghiabhji\"},{\"name\":\"_s\",\"type\":\"string\",\"data\":\"章鱼小丸子ljjkl;adjsfkljlkjl\"},{\"name\":\"_bs\",\"type\":\"bytes\",\"data\":\"sadfljkjkljkl\"}]}"));
         assertThat(resultInputListType, is(test1Params));
 
         String resultOutputJson =
@@ -152,7 +161,7 @@ public class TransactionDecoderTest {
         assertThat(
                 resultInputJson,
                 is(
-                        "{\"data\":[{\"name\":\"_u\",\"type\":\"uint256\",\"data\":0},{\"name\":\"_i\",\"type\":\"int256\",\"data\":0},{\"name\":\"_b\",\"type\":\"bool\",\"data\":false},{\"name\":\"_addr\",\"type\":\"address\",\"data\":\"0x0000000000000000000000000000000000000000\"},{\"name\":\"_bs32\",\"type\":\"bytes32\",\"data\":\"\"},{\"name\":\"_s\",\"type\":\"string\",\"data\":\"\"},{\"name\":\"_bs\",\"type\":\"bytes\",\"data\":\"\"}],\"function\":\"test(uint256,int256,bool,address,bytes32,string,bytes)\",\"methodID\":\"0x58a12c20\"}"));
+                        "{\"function\":\"test(uint256,int256,bool,address,bytes32,string,bytes)\",\"methodID\":\"0x58a12c20\",\"data\":[{\"name\":\"_u\",\"type\":\"uint256\",\"data\":0},{\"name\":\"_i\",\"type\":\"int256\",\"data\":0},{\"name\":\"_b\",\"type\":\"bool\",\"data\":false},{\"name\":\"_addr\",\"type\":\"address\",\"data\":\"0x0000000000000000000000000000000000000000\"},{\"name\":\"_bs32\",\"type\":\"bytes32\",\"data\":\"\"},{\"name\":\"_s\",\"type\":\"string\",\"data\":\"\"},{\"name\":\"_bs\",\"type\":\"bytes\",\"data\":\"\"}]}"));
         assertThat(resultInputListType, is(test1Params));
 
         String resultOutputJson =
@@ -214,13 +223,14 @@ public class TransactionDecoderTest {
                 new Function("test", test1Params, Collections.<TypeReference<?>>emptyList());
 
         String resultInputJson = decode.decodeInputReturnJson(FunctionEncoder.encode(test1));
+        // System.out.println(resultInputJson);
         List<ResultEntity> resultInputList =
                 decode.decodeInputReturnObject(FunctionEncoder.encode(test1));
         List<Type> resultInputListType = transEntitytoType(resultInputList);
         assertThat(
                 resultInputJson,
                 is(
-                        "{\"data\":[{\"name\":\"_u\",\"type\":\"uint256[]\",\"data\":[11111,22222,33333]},{\"name\":\"_i\",\"type\":\"int256[]\",\"data\":[-1111111,-3333333,-2222222]},{\"name\":\"_b\",\"type\":\"bool[]\",\"data\":[false,true,false]},{\"name\":\"_addr\",\"type\":\"address[]\",\"data\":[\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"]},{\"name\":\"_bs32\",\"type\":\"bytes32[]\",\"data\":[\"abcdefghiabcdefghiabcdefghiabhji\",\"abcdefghiabcdefghiabcdefghiabhji\"]},{\"name\":\"_s\",\"type\":\"string[]\",\"data\":[\"\",\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"]},{\"name\":\"_bs\",\"type\":\"bytes[]\",\"data\":[\"\",\"sadfljkjkljkl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"]}],\"function\":\"test(uint256[],int256[],bool[],address[],bytes32[],string[],bytes[])\",\"methodID\":\"0x6dd9902a\"}"));
+                        "{\"function\":\"test(uint256[],int256[],bool[],address[],bytes32[],string[],bytes[])\",\"methodID\":\"0x6dd9902a\",\"data\":[{\"name\":\"_u\",\"type\":\"uint256[]\",\"data\":[11111,22222,33333]},{\"name\":\"_i\",\"type\":\"int256[]\",\"data\":[-1111111,-3333333,-2222222]},{\"name\":\"_b\",\"type\":\"bool[]\",\"data\":[false,true,false]},{\"name\":\"_addr\",\"type\":\"address[]\",\"data\":[\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"]},{\"name\":\"_bs32\",\"type\":\"bytes32[]\",\"data\":[\"abcdefghiabcdefghiabcdefghiabhji\",\"abcdefghiabcdefghiabcdefghiabhji\"]},{\"name\":\"_s\",\"type\":\"string[]\",\"data\":[\"\",\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"]},{\"name\":\"_bs\",\"type\":\"bytes[]\",\"data\":[\"\",\"sadfljkjkljkl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"]}]}"));
         assertThat(resultInputListType, is(test1Params));
 
         String resultOutputJson =
@@ -279,7 +289,7 @@ public class TransactionDecoderTest {
         assertThat(
                 resultInputJson,
                 is(
-                        "{\"data\":[{\"name\":\"_u\",\"type\":\"uint256[]\",\"data\":[0,0,0]},{\"name\":\"_i\",\"type\":\"int256[]\",\"data\":[0,0,0]},{\"name\":\"_b\",\"type\":\"bool[]\",\"data\":[false,true,false]},{\"name\":\"_addr\",\"type\":\"address[]\",\"data\":[\"0x0000000000000000000000000000000000000000\",\"0x0000000000000000000000000000000000000000\"]},{\"name\":\"_bs32\",\"type\":\"bytes32[]\",\"data\":[\"\",\"\"]},{\"name\":\"_s\",\"type\":\"string[]\",\"data\":[\"\",\"\",\"\"]},{\"name\":\"_bs\",\"type\":\"bytes[]\",\"data\":[\"\",\"\",\"\"]}],\"function\":\"test(uint256[],int256[],bool[],address[],bytes32[],string[],bytes[])\",\"methodID\":\"0x6dd9902a\"}"));
+                        "{\"function\":\"test(uint256[],int256[],bool[],address[],bytes32[],string[],bytes[])\",\"methodID\":\"0x6dd9902a\",\"data\":[{\"name\":\"_u\",\"type\":\"uint256[]\",\"data\":[0,0,0]},{\"name\":\"_i\",\"type\":\"int256[]\",\"data\":[0,0,0]},{\"name\":\"_b\",\"type\":\"bool[]\",\"data\":[false,true,false]},{\"name\":\"_addr\",\"type\":\"address[]\",\"data\":[\"0x0000000000000000000000000000000000000000\",\"0x0000000000000000000000000000000000000000\"]},{\"name\":\"_bs32\",\"type\":\"bytes32[]\",\"data\":[\"\",\"\"]},{\"name\":\"_s\",\"type\":\"string[]\",\"data\":[\"\",\"\",\"\"]},{\"name\":\"_bs\",\"type\":\"bytes[]\",\"data\":[\"\",\"\",\"\"]}]}"));
         assertThat(resultInputListType, is(test1Params));
 
         String resultOutputJson =
@@ -362,7 +372,7 @@ public class TransactionDecoderTest {
         assertThat(
                 decode.decodeInputReturnJson(FunctionEncoder.encode(test1)),
                 is(
-                        "{\"data\":[{\"name\":\"_u\",\"type\":\"uint256[4]\",\"data\":[11111,22222,33333,44444]},{\"name\":\"_i\",\"type\":\"int256[4]\",\"data\":[-1111111,-2222222,-3333333,-4444444]},{\"name\":\"_b\",\"type\":\"bool[4]\",\"data\":[true,false,true,false]},{\"name\":\"_addr\",\"type\":\"address[4]\",\"data\":[\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x0000000000000000000000000000000000000000\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"]},{\"name\":\"_bs32\",\"type\":\"bytes32[4]\",\"data\":[\"abcdefghiabcdefghiabcdefghiabhji\",\"abcdefghiabcdefghiabcdefghiabhji\",\"00000000000000000000000000000000\",\"abcdefghiabcdefghiabcdefghiabhji\"]},{\"name\":\"_s\",\"type\":\"string[4]\",\"data\":[\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"xxxfjlk\",\"fdajl;jkdsafjkljkadfjklf\",\"\"]},{\"name\":\"_bs\",\"type\":\"bytes[4]\",\"data\":[\"sadfljkjkljkl\",\"\",\"sadfljkjkljkl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"]}],\"function\":\"test(uint256[4],int256[4],bool[4],address[4],bytes32[4],string[4],bytes[4])\",\"methodID\":\"0x5682504e\"}"));
+                        "{\"function\":\"test(uint256[4],int256[4],bool[4],address[4],bytes32[4],string[4],bytes[4])\",\"methodID\":\"0x5682504e\",\"data\":[{\"name\":\"_u\",\"type\":\"uint256[4]\",\"data\":[11111,22222,33333,44444]},{\"name\":\"_i\",\"type\":\"int256[4]\",\"data\":[-1111111,-2222222,-3333333,-4444444]},{\"name\":\"_b\",\"type\":\"bool[4]\",\"data\":[true,false,true,false]},{\"name\":\"_addr\",\"type\":\"address[4]\",\"data\":[\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x0000000000000000000000000000000000000000\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"]},{\"name\":\"_bs32\",\"type\":\"bytes32[4]\",\"data\":[\"abcdefghiabcdefghiabcdefghiabhji\",\"abcdefghiabcdefghiabcdefghiabhji\",\"00000000000000000000000000000000\",\"abcdefghiabcdefghiabcdefghiabhji\"]},{\"name\":\"_s\",\"type\":\"string[4]\",\"data\":[\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"xxxfjlk\",\"fdajl;jkdsafjkljkadfjklf\",\"\"]},{\"name\":\"_bs\",\"type\":\"bytes[4]\",\"data\":[\"sadfljkjkljkl\",\"\",\"sadfljkjkljkl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"]}]}"));
 
         assertThat(
                 transEntitytoType(decode.decodeInputReturnObject(FunctionEncoder.encode(test1))),
@@ -459,7 +469,7 @@ public class TransactionDecoderTest {
         assertThat(
                 decode.decodeInputReturnJson(FunctionEncoder.encode(test1)),
                 is(
-                        "{\"data\":[{\"name\":\"_u\",\"type\":\"uint256[4]\",\"data\":[0,0,0,0]},{\"name\":\"_i\",\"type\":\"int256[4]\",\"data\":[0,0,0,0]},{\"name\":\"_b\",\"type\":\"bool[4]\",\"data\":[true,false,true,false]},{\"name\":\"_addr\",\"type\":\"address[4]\",\"data\":[\"0x0000000000000000000000000000000000000000\",\"0x0000000000000000000000000000000000000000\",\"0x0000000000000000000000000000000000000000\",\"0x0000000000000000000000000000000000000000\"]},{\"name\":\"_bs32\",\"type\":\"bytes32[4]\",\"data\":[\"\",\"\",\"\",\"\"]},{\"name\":\"_s\",\"type\":\"string[4]\",\"data\":[\"\",\"\",\"\",\"\"]},{\"name\":\"_bs\",\"type\":\"bytes[4]\",\"data\":[\"\",\"\",\"\",\"\"]}],\"function\":\"test(uint256[4],int256[4],bool[4],address[4],bytes32[4],string[4],bytes[4])\",\"methodID\":\"0x5682504e\"}"));
+                        "{\"function\":\"test(uint256[4],int256[4],bool[4],address[4],bytes32[4],string[4],bytes[4])\",\"methodID\":\"0x5682504e\",\"data\":[{\"name\":\"_u\",\"type\":\"uint256[4]\",\"data\":[0,0,0,0]},{\"name\":\"_i\",\"type\":\"int256[4]\",\"data\":[0,0,0,0]},{\"name\":\"_b\",\"type\":\"bool[4]\",\"data\":[true,false,true,false]},{\"name\":\"_addr\",\"type\":\"address[4]\",\"data\":[\"0x0000000000000000000000000000000000000000\",\"0x0000000000000000000000000000000000000000\",\"0x0000000000000000000000000000000000000000\",\"0x0000000000000000000000000000000000000000\"]},{\"name\":\"_bs32\",\"type\":\"bytes32[4]\",\"data\":[\"\",\"\",\"\",\"\"]},{\"name\":\"_s\",\"type\":\"string[4]\",\"data\":[\"\",\"\",\"\",\"\"]},{\"name\":\"_bs\",\"type\":\"bytes[4]\",\"data\":[\"\",\"\",\"\",\"\"]}]}"));
 
         assertThat(
                 transEntitytoType(decode.decodeInputReturnObject(FunctionEncoder.encode(test1))),
@@ -525,7 +535,7 @@ public class TransactionDecoderTest {
         assertThat(
                 selectSR,
                 is(
-                        "{\"data\":[{\"name\":\"name\",\"type\":\"string\",\"data\":\"HelloWorld!\"}],\"function\":\"select(string)\",\"methodID\":\"0xfcd7e3c1\"}"));
+                        "{\"function\":\"select(string)\",\"methodID\":\"0xfcd7e3c1\",\"data\":[{\"name\":\"name\",\"type\":\"string\",\"data\":\"HelloWorld!\"}]}"));
 
         List<ResultEntity> selectOR =
                 decode.decodeInputReturnObject(FunctionEncoder.encode(select));
@@ -587,7 +597,7 @@ public class TransactionDecoderTest {
         assertThat(
                 updateSR,
                 is(
-                        "{\"data\":[{\"name\":\"name\",\"type\":\"string\",\"data\":\"HelloWorld! My First Hello.\"},{\"name\":\"item_id\",\"type\":\"int256\",\"data\":5555},{\"name\":\"item_name\",\"type\":\"string\",\"data\":\"Good afternoon\"}],\"function\":\"update(string,int256,string)\",\"methodID\":\"0x487a5a10\"}"));
+                        "{\"function\":\"update(string,int256,string)\",\"methodID\":\"0x487a5a10\",\"data\":[{\"name\":\"name\",\"type\":\"string\",\"data\":\"HelloWorld! My First Hello.\"},{\"name\":\"item_id\",\"type\":\"int256\",\"data\":5555},{\"name\":\"item_name\",\"type\":\"string\",\"data\":\"Good afternoon\"}]}"));
 
         List<ResultEntity> updateOR =
                 decode.decodeInputReturnObject(FunctionEncoder.encode(update));
@@ -615,7 +625,7 @@ public class TransactionDecoderTest {
         assertThat(
                 removeSR,
                 is(
-                        "{\"data\":[{\"name\":\"name\",\"type\":\"string\",\"data\":\"HelloWorld! My First Hello.\"},{\"name\":\"item_id\",\"type\":\"int256\",\"data\":-1111111}],\"function\":\"remove(string,int256)\",\"methodID\":\"0xc4f41ab3\"}"));
+                        "{\"function\":\"remove(string,int256)\",\"methodID\":\"0xc4f41ab3\",\"data\":[{\"name\":\"name\",\"type\":\"string\",\"data\":\"HelloWorld! My First Hello.\"},{\"name\":\"item_id\",\"type\":\"int256\",\"data\":-1111111}]}"));
         assertThat(
                 transEntitytoType(removeOR),
                 is(
@@ -624,12 +634,13 @@ public class TransactionDecoderTest {
                                 new Int256(-1111111))));
     }
 
-    private String decodeMethodSign(AbiDefinition abiDefinition) {
-        List<String> inputTypes = ContractAbiUtil.getFuncInputType(abiDefinition);
+    private static String decodeMethodSign(AbiDefinition abiDefinition) {
+        List<NamedType> inputTypes = abiDefinition.getInputs();
         StringBuilder methodSign = new StringBuilder();
         methodSign.append(abiDefinition.getName());
         methodSign.append("(");
-        String params = inputTypes.stream().map(String::toString).collect(Collectors.joining(","));
+        String params =
+                inputTypes.stream().map(NamedType::getType).collect(Collectors.joining(","));
         methodSign.append(params);
         methodSign.append(")");
         return methodSign.toString();
@@ -711,63 +722,67 @@ public class TransactionDecoderTest {
 
         AbiDefinition abiDefinition = null;
 
-        Tuple2<AbiDefinition, List<ResultEntity>> tupleResult1 =
+        Tuple2<AbiDefinition, List<EventResultEntity>> tupleResult1 =
                 decode.decodeEventReturnObject(log1);
-        assertThat(transEntitytoType(tupleResult1.getValue2()), is(eventDataParams1));
+        assertThat(transEntitytoType0(tupleResult1.getValue2()), is(eventDataParams1));
         abiDefinition = tupleResult1.getValue1();
 
-        Tuple2<AbiDefinition, List<ResultEntity>> tupleResult2 =
+        Tuple2<AbiDefinition, List<EventResultEntity>> tupleResult2 =
                 decode.decodeEventReturnObject(log2);
-        assertThat(transEntitytoType(tupleResult2.getValue2()), is(eventDataParams2));
+        assertThat(transEntitytoType0(tupleResult2.getValue2()), is(eventDataParams2));
 
-        Tuple2<AbiDefinition, List<ResultEntity>> tupleResult3 =
+        Tuple2<AbiDefinition, List<EventResultEntity>> tupleResult3 =
                 decode.decodeEventReturnObject(log3);
-        assertThat(transEntitytoType(tupleResult3.getValue2()), is(eventDataParams3));
+        assertThat(transEntitytoType0(tupleResult3.getValue2()), is(eventDataParams3));
 
         List<Log> logList1 = new ArrayList<Log>();
         logList1.add(log1);
-        Map<String, List<List<ResultEntity>>> mapResult1 = decode.decodeEventReturnObject(logList1);
+        Map<String, List<List<EventResultEntity>>> mapResult1 =
+                decode.decodeEventReturnObject(logList1);
         assertThat(
-                transEntitytoType(mapResult1.get(decodeMethodSign(abiDefinition)).get(0)),
+                transEntitytoType0(mapResult1.get(decodeMethodSign(abiDefinition)).get(0)),
                 is(eventDataParams1));
         assertThat(
                 decode.decodeEventReturnJson(logList1),
                 is(
-                        "{\"TestEventSimpleParams(uint256,int256,bool,address,bytes32,string,bytes)\":[[{\"name\":\"_u\",\"type\":\"uint256\",\"data\":111111},{\"name\":\"_i\",\"type\":\"int256\",\"data\":-1111111},{\"name\":\"_b\",\"type\":\"bool\",\"data\":false},{\"name\":\"_addr\",\"type\":\"address\",\"data\":\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"},{\"name\":\"_bs32\",\"type\":\"bytes32\",\"data\":\"abcdefghiabcdefghiabcdefghiabhji\"},{\"name\":\"_s\",\"type\":\"string\",\"data\":\"章鱼小丸子ljjkl;adjsfkljlkjl\"},{\"name\":\"_bs\",\"type\":\"bytes\",\"data\":\"sadfljkjkljkl\"}]]}"));
+                        "{\"TestEventSimpleParams(uint256,int256,bool,address,bytes32,string,bytes)\":[[{\"name\":\"_u\",\"type\":\"uint256\",\"data\":111111,\"indexed\":false},{\"name\":\"_i\",\"type\":\"int256\",\"data\":-1111111,\"indexed\":false},{\"name\":\"_b\",\"type\":\"bool\",\"data\":false,\"indexed\":false},{\"name\":\"_addr\",\"type\":\"address\",\"data\":\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"indexed\":false},{\"name\":\"_bs32\",\"type\":\"bytes32\",\"data\":\"abcdefghiabcdefghiabcdefghiabhji\",\"indexed\":false},{\"name\":\"_s\",\"type\":\"string\",\"data\":\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"indexed\":false},{\"name\":\"_bs\",\"type\":\"bytes\",\"data\":\"sadfljkjkljkl\",\"indexed\":false}]]}"));
 
         List<Log> logList2 = new ArrayList<Log>();
         logList2.add(log1);
         logList2.add(log2);
-        Map<String, List<List<ResultEntity>>> mapResult2 = decode.decodeEventReturnObject(logList2);
+        Map<String, List<List<EventResultEntity>>> mapResult2 =
+                decode.decodeEventReturnObject(logList2);
         assertThat(
-                transEntitytoType(mapResult2.get(decodeMethodSign(abiDefinition)).get(0)),
+                transEntitytoType0(mapResult2.get(decodeMethodSign(abiDefinition)).get(0)),
                 is(eventDataParams1));
         assertThat(
-                transEntitytoType(mapResult2.get(decodeMethodSign(abiDefinition)).get(1)),
+                transEntitytoType0(mapResult2.get(decodeMethodSign(abiDefinition)).get(1)),
                 is(eventDataParams2));
         assertThat(
                 decode.decodeEventReturnJson(logList2),
                 is(
-                        "{\"TestEventSimpleParams(uint256,int256,bool,address,bytes32,string,bytes)\":[[{\"name\":\"_u\",\"type\":\"uint256\",\"data\":111111},{\"name\":\"_i\",\"type\":\"int256\",\"data\":-1111111},{\"name\":\"_b\",\"type\":\"bool\",\"data\":false},{\"name\":\"_addr\",\"type\":\"address\",\"data\":\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"},{\"name\":\"_bs32\",\"type\":\"bytes32\",\"data\":\"abcdefghiabcdefghiabcdefghiabhji\"},{\"name\":\"_s\",\"type\":\"string\",\"data\":\"章鱼小丸子ljjkl;adjsfkljlkjl\"},{\"name\":\"_bs\",\"type\":\"bytes\",\"data\":\"sadfljkjkljkl\"}],[{\"name\":\"_u\",\"type\":\"uint256\",\"data\":0},{\"name\":\"_i\",\"type\":\"int256\",\"data\":0},{\"name\":\"_b\",\"type\":\"bool\",\"data\":true},{\"name\":\"_addr\",\"type\":\"address\",\"data\":\"0x0000000000000000000000000000000000000000\"},{\"name\":\"_bs32\",\"type\":\"bytes32\",\"data\":\"\"},{\"name\":\"_s\",\"type\":\"string\",\"data\":\"\"},{\"name\":\"_bs\",\"type\":\"bytes\",\"data\":\"\"}]]}"));
+                        "{\"TestEventSimpleParams(uint256,int256,bool,address,bytes32,string,bytes)\":[[{\"name\":\"_u\",\"type\":\"uint256\",\"data\":111111,\"indexed\":false},{\"name\":\"_i\",\"type\":\"int256\",\"data\":-1111111,\"indexed\":false},{\"name\":\"_b\",\"type\":\"bool\",\"data\":false,\"indexed\":false},{\"name\":\"_addr\",\"type\":\"address\",\"data\":\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"indexed\":false},{\"name\":\"_bs32\",\"type\":\"bytes32\",\"data\":\"abcdefghiabcdefghiabcdefghiabhji\",\"indexed\":false},{\"name\":\"_s\",\"type\":\"string\",\"data\":\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"indexed\":false},{\"name\":\"_bs\",\"type\":\"bytes\",\"data\":\"sadfljkjkljkl\",\"indexed\":false}],[{\"name\":\"_u\",\"type\":\"uint256\",\"data\":0,\"indexed\":false},{\"name\":\"_i\",\"type\":\"int256\",\"data\":0,\"indexed\":false},{\"name\":\"_b\",\"type\":\"bool\",\"data\":true,\"indexed\":false},{\"name\":\"_addr\",\"type\":\"address\",\"data\":\"0x0000000000000000000000000000000000000000\",\"indexed\":false},{\"name\":\"_bs32\",\"type\":\"bytes32\",\"data\":\"\",\"indexed\":false},{\"name\":\"_s\",\"type\":\"string\",\"data\":\"\",\"indexed\":false},{\"name\":\"_bs\",\"type\":\"bytes\",\"data\":\"\",\"indexed\":false}]]}"));
 
         List<Log> logList3 = new ArrayList<Log>();
         logList3.add(log1);
         logList3.add(log2);
         logList3.add(log3);
-        Map<String, List<List<ResultEntity>>> mapResult3 = decode.decodeEventReturnObject(logList3);
+        Map<String, List<List<EventResultEntity>>> mapResult3 =
+                decode.decodeEventReturnObject(logList3);
+        // System.out.println("mapResult3 + " + mapResult3);
         assertThat(
-                transEntitytoType(mapResult3.get(decodeMethodSign(abiDefinition)).get(0)),
+                transEntitytoType0(mapResult3.get(decodeMethodSign(abiDefinition)).get(0)),
                 is(eventDataParams1));
         assertThat(
-                transEntitytoType(mapResult3.get(decodeMethodSign(abiDefinition)).get(1)),
+                transEntitytoType0(mapResult3.get(decodeMethodSign(abiDefinition)).get(1)),
                 is(eventDataParams2));
         assertThat(
-                transEntitytoType(mapResult3.get(decodeMethodSign(abiDefinition)).get(2)),
+                transEntitytoType0(mapResult3.get(decodeMethodSign(abiDefinition)).get(2)),
                 is(eventDataParams3));
         assertThat(
                 decode.decodeEventReturnJson(logList3),
                 is(
-                        "{\"TestEventSimpleParams(uint256,int256,bool,address,bytes32,string,bytes)\":[[{\"name\":\"_u\",\"type\":\"uint256\",\"data\":111111},{\"name\":\"_i\",\"type\":\"int256\",\"data\":-1111111},{\"name\":\"_b\",\"type\":\"bool\",\"data\":false},{\"name\":\"_addr\",\"type\":\"address\",\"data\":\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"},{\"name\":\"_bs32\",\"type\":\"bytes32\",\"data\":\"abcdefghiabcdefghiabcdefghiabhji\"},{\"name\":\"_s\",\"type\":\"string\",\"data\":\"章鱼小丸子ljjkl;adjsfkljlkjl\"},{\"name\":\"_bs\",\"type\":\"bytes\",\"data\":\"sadfljkjkljkl\"}],[{\"name\":\"_u\",\"type\":\"uint256\",\"data\":0},{\"name\":\"_i\",\"type\":\"int256\",\"data\":0},{\"name\":\"_b\",\"type\":\"bool\",\"data\":true},{\"name\":\"_addr\",\"type\":\"address\",\"data\":\"0x0000000000000000000000000000000000000000\"},{\"name\":\"_bs32\",\"type\":\"bytes32\",\"data\":\"\"},{\"name\":\"_s\",\"type\":\"string\",\"data\":\"\"},{\"name\":\"_bs\",\"type\":\"bytes\",\"data\":\"\"}],[{\"name\":\"_u\",\"type\":\"uint256\",\"data\":654321},{\"name\":\"_i\",\"type\":\"int256\",\"data\":123456},{\"name\":\"_b\",\"type\":\"bool\",\"data\":false},{\"name\":\"_addr\",\"type\":\"address\",\"data\":\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"},{\"name\":\"_bs32\",\"type\":\"bytes32\",\"data\":\"\"},{\"name\":\"_s\",\"type\":\"string\",\"data\":\"jlkjlkjasdfjlkj   fsadjkljlk j章鱼小丸子\"},{\"name\":\"_bs\",\"type\":\"bytes\",\"data\":\"jlkjlkjasdfjlkj   fsadjkljlk j章鱼小丸子\"}]]}"));
+                        "{\"TestEventSimpleParams(uint256,int256,bool,address,bytes32,string,bytes)\":[[{\"name\":\"_u\",\"type\":\"uint256\",\"data\":111111,\"indexed\":false},{\"name\":\"_i\",\"type\":\"int256\",\"data\":-1111111,\"indexed\":false},{\"name\":\"_b\",\"type\":\"bool\",\"data\":false,\"indexed\":false},{\"name\":\"_addr\",\"type\":\"address\",\"data\":\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"indexed\":false},{\"name\":\"_bs32\",\"type\":\"bytes32\",\"data\":\"abcdefghiabcdefghiabcdefghiabhji\",\"indexed\":false},{\"name\":\"_s\",\"type\":\"string\",\"data\":\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"indexed\":false},{\"name\":\"_bs\",\"type\":\"bytes\",\"data\":\"sadfljkjkljkl\",\"indexed\":false}],[{\"name\":\"_u\",\"type\":\"uint256\",\"data\":0,\"indexed\":false},{\"name\":\"_i\",\"type\":\"int256\",\"data\":0,\"indexed\":false},{\"name\":\"_b\",\"type\":\"bool\",\"data\":true,\"indexed\":false},{\"name\":\"_addr\",\"type\":\"address\",\"data\":\"0x0000000000000000000000000000000000000000\",\"indexed\":false},{\"name\":\"_bs32\",\"type\":\"bytes32\",\"data\":\"\",\"indexed\":false},{\"name\":\"_s\",\"type\":\"string\",\"data\":\"\",\"indexed\":false},{\"name\":\"_bs\",\"type\":\"bytes\",\"data\":\"\",\"indexed\":false}],[{\"name\":\"_u\",\"type\":\"uint256\",\"data\":654321,\"indexed\":false},{\"name\":\"_i\",\"type\":\"int256\",\"data\":123456,\"indexed\":false},{\"name\":\"_b\",\"type\":\"bool\",\"data\":false,\"indexed\":false},{\"name\":\"_addr\",\"type\":\"address\",\"data\":\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"indexed\":false},{\"name\":\"_bs32\",\"type\":\"bytes32\",\"data\":\"\",\"indexed\":false},{\"name\":\"_s\",\"type\":\"string\",\"data\":\"jlkjlkjasdfjlkj   fsadjkljlk j章鱼小丸子\",\"indexed\":false},{\"name\":\"_bs\",\"type\":\"bytes\",\"data\":\"jlkjlkjasdfjlkj   fsadjkljlk j章鱼小丸子\",\"indexed\":false}]]}"));
     }
 
     @Test
@@ -891,66 +906,69 @@ public class TransactionDecoderTest {
 
         AbiDefinition abiDefinition = null;
 
-        Tuple2<AbiDefinition, List<ResultEntity>> tupleResult1 =
+        Tuple2<AbiDefinition, List<EventResultEntity>> tupleResult1 =
                 decode.decodeEventReturnObject(log1);
-        assertThat(transEntitytoType(tupleResult1.getValue2()), is(eventDataParams1));
+        assertThat(transEntitytoType0(tupleResult1.getValue2()), is(eventDataParams1));
         abiDefinition = tupleResult1.getValue1();
 
-        Tuple2<AbiDefinition, List<ResultEntity>> tupleResult2 =
+        Tuple2<AbiDefinition, List<EventResultEntity>> tupleResult2 =
                 decode.decodeEventReturnObject(log2);
-        assertThat(transEntitytoType(tupleResult2.getValue2()), is(eventDataParams2));
+        assertThat(transEntitytoType0(tupleResult2.getValue2()), is(eventDataParams2));
 
-        Tuple2<AbiDefinition, List<ResultEntity>> tupleResult3 =
+        Tuple2<AbiDefinition, List<EventResultEntity>> tupleResult3 =
                 decode.decodeEventReturnObject(log3);
-        assertThat(transEntitytoType(tupleResult3.getValue2()), is(eventDataParams3));
+        assertThat(transEntitytoType0(tupleResult3.getValue2()), is(eventDataParams3));
 
         List<Log> logList1 = new ArrayList<Log>();
         logList1.add(log1);
-        Map<String, List<List<ResultEntity>>> mapResult1 = decode.decodeEventReturnObject(logList1);
+        Map<String, List<List<EventResultEntity>>> mapResult1 =
+                decode.decodeEventReturnObject(logList1);
         assertThat(
-                transEntitytoType(mapResult1.get(decodeMethodSign(abiDefinition)).get(0)),
+                transEntitytoType0(mapResult1.get(decodeMethodSign(abiDefinition)).get(0)),
                 is(eventDataParams1));
         // System.out.println("111 => " + decode.decodeEventReturnJson(logList1));
         assertThat(
                 decode.decodeEventReturnJson(logList1),
                 is(
-                        "{\"TestEventDArrayParams(uint256[],int256[],bool[],address[],bytes32[],string[],bytes[])\":[[{\"name\":\"_u\",\"type\":\"uint256[]\",\"data\":[11111,22222,33333]},{\"name\":\"_i\",\"type\":\"int256[]\",\"data\":[-1111111,-3333333,-2222222]},{\"name\":\"_b\",\"type\":\"bool[]\",\"data\":[false,true,false]},{\"name\":\"_addr\",\"type\":\"address[]\",\"data\":[\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"]},{\"name\":\"_bs32\",\"type\":\"bytes32[]\",\"data\":[\"abcdefghiabcdefghiabcdefghiabhji\",\"abcdefghiabcdefghiabcdefghiabhji\"]},{\"name\":\"_s\",\"type\":\"string[]\",\"data\":[\"\",\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"]},{\"name\":\"_bs\",\"type\":\"bytes[]\",\"data\":[\"\",\"sadfljkjkljkl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"]}]]}"));
+                        "{\"TestEventDArrayParams(uint256[],int256[],bool[],address[],bytes32[],string[],bytes[])\":[[{\"name\":\"_u\",\"type\":\"uint256[]\",\"data\":[11111,22222,33333],\"indexed\":false},{\"name\":\"_i\",\"type\":\"int256[]\",\"data\":[-1111111,-3333333,-2222222],\"indexed\":false},{\"name\":\"_b\",\"type\":\"bool[]\",\"data\":[false,true,false],\"indexed\":false},{\"name\":\"_addr\",\"type\":\"address[]\",\"data\":[\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"],\"indexed\":false},{\"name\":\"_bs32\",\"type\":\"bytes32[]\",\"data\":[\"abcdefghiabcdefghiabcdefghiabhji\",\"abcdefghiabcdefghiabcdefghiabhji\"],\"indexed\":false},{\"name\":\"_s\",\"type\":\"string[]\",\"data\":[\"\",\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"],\"indexed\":false},{\"name\":\"_bs\",\"type\":\"bytes[]\",\"data\":[\"\",\"sadfljkjkljkl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"],\"indexed\":false}]]}"));
 
         List<Log> logList2 = new ArrayList<Log>();
         logList2.add(log1);
         logList2.add(log2);
-        Map<String, List<List<ResultEntity>>> mapResult2 = decode.decodeEventReturnObject(logList2);
+        Map<String, List<List<EventResultEntity>>> mapResult2 =
+                decode.decodeEventReturnObject(logList2);
         assertThat(
-                transEntitytoType(mapResult2.get(decodeMethodSign(abiDefinition)).get(0)),
+                transEntitytoType0(mapResult2.get(decodeMethodSign(abiDefinition)).get(0)),
                 is(eventDataParams1));
         assertThat(
-                transEntitytoType(mapResult2.get(decodeMethodSign(abiDefinition)).get(1)),
+                transEntitytoType0(mapResult2.get(decodeMethodSign(abiDefinition)).get(1)),
                 is(eventDataParams2));
         // System.out.println("222 => " + decode.decodeEventReturnJson(logList2));
         assertThat(
                 decode.decodeEventReturnJson(logList2),
                 is(
-                        "{\"TestEventDArrayParams(uint256[],int256[],bool[],address[],bytes32[],string[],bytes[])\":[[{\"name\":\"_u\",\"type\":\"uint256[]\",\"data\":[11111,22222,33333]},{\"name\":\"_i\",\"type\":\"int256[]\",\"data\":[-1111111,-3333333,-2222222]},{\"name\":\"_b\",\"type\":\"bool[]\",\"data\":[false,true,false]},{\"name\":\"_addr\",\"type\":\"address[]\",\"data\":[\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"]},{\"name\":\"_bs32\",\"type\":\"bytes32[]\",\"data\":[\"abcdefghiabcdefghiabcdefghiabhji\",\"abcdefghiabcdefghiabcdefghiabhji\"]},{\"name\":\"_s\",\"type\":\"string[]\",\"data\":[\"\",\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"]},{\"name\":\"_bs\",\"type\":\"bytes[]\",\"data\":[\"\",\"sadfljkjkljkl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"]}],[{\"name\":\"_u\",\"type\":\"uint256[]\",\"data\":[0,0,0]},{\"name\":\"_i\",\"type\":\"int256[]\",\"data\":[0,0,0]},{\"name\":\"_b\",\"type\":\"bool[]\",\"data\":[false,true,false]},{\"name\":\"_addr\",\"type\":\"address[]\",\"data\":[\"0x0000000000000000000000000000000000000000\",\"0x0000000000000000000000000000000000000000\"]},{\"name\":\"_bs32\",\"type\":\"bytes32[]\",\"data\":[\"\",\"\"]},{\"name\":\"_s\",\"type\":\"string[]\",\"data\":[\"\",\"\",\"\"]},{\"name\":\"_bs\",\"type\":\"bytes[]\",\"data\":[\"\",\"\",\"\"]}]]}"));
+                        "{\"TestEventDArrayParams(uint256[],int256[],bool[],address[],bytes32[],string[],bytes[])\":[[{\"name\":\"_u\",\"type\":\"uint256[]\",\"data\":[11111,22222,33333],\"indexed\":false},{\"name\":\"_i\",\"type\":\"int256[]\",\"data\":[-1111111,-3333333,-2222222],\"indexed\":false},{\"name\":\"_b\",\"type\":\"bool[]\",\"data\":[false,true,false],\"indexed\":false},{\"name\":\"_addr\",\"type\":\"address[]\",\"data\":[\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"],\"indexed\":false},{\"name\":\"_bs32\",\"type\":\"bytes32[]\",\"data\":[\"abcdefghiabcdefghiabcdefghiabhji\",\"abcdefghiabcdefghiabcdefghiabhji\"],\"indexed\":false},{\"name\":\"_s\",\"type\":\"string[]\",\"data\":[\"\",\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"],\"indexed\":false},{\"name\":\"_bs\",\"type\":\"bytes[]\",\"data\":[\"\",\"sadfljkjkljkl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"],\"indexed\":false}],[{\"name\":\"_u\",\"type\":\"uint256[]\",\"data\":[0,0,0],\"indexed\":false},{\"name\":\"_i\",\"type\":\"int256[]\",\"data\":[0,0,0],\"indexed\":false},{\"name\":\"_b\",\"type\":\"bool[]\",\"data\":[false,true,false],\"indexed\":false},{\"name\":\"_addr\",\"type\":\"address[]\",\"data\":[\"0x0000000000000000000000000000000000000000\",\"0x0000000000000000000000000000000000000000\"],\"indexed\":false},{\"name\":\"_bs32\",\"type\":\"bytes32[]\",\"data\":[\"\",\"\"],\"indexed\":false},{\"name\":\"_s\",\"type\":\"string[]\",\"data\":[\"\",\"\",\"\"],\"indexed\":false},{\"name\":\"_bs\",\"type\":\"bytes[]\",\"data\":[\"\",\"\",\"\"],\"indexed\":false}]]}"));
 
         List<Log> logList3 = new ArrayList<Log>();
         logList3.add(log1);
         logList3.add(log2);
         logList3.add(log3);
-        Map<String, List<List<ResultEntity>>> mapResult3 = decode.decodeEventReturnObject(logList3);
+        Map<String, List<List<EventResultEntity>>> mapResult3 =
+                decode.decodeEventReturnObject(logList3);
         assertThat(
-                transEntitytoType(mapResult3.get(decodeMethodSign(abiDefinition)).get(0)),
+                transEntitytoType0(mapResult3.get(decodeMethodSign(abiDefinition)).get(0)),
                 is(eventDataParams1));
         assertThat(
-                transEntitytoType(mapResult3.get(decodeMethodSign(abiDefinition)).get(1)),
+                transEntitytoType0(mapResult3.get(decodeMethodSign(abiDefinition)).get(1)),
                 is(eventDataParams2));
         assertThat(
-                transEntitytoType(mapResult3.get(decodeMethodSign(abiDefinition)).get(2)),
+                transEntitytoType0(mapResult3.get(decodeMethodSign(abiDefinition)).get(2)),
                 is(eventDataParams3));
         // System.out.println("333 => " + decode.decodeEventReturnJson(logList3));
         assertThat(
                 decode.decodeEventReturnJson(logList3),
                 is(
-                        "{\"TestEventDArrayParams(uint256[],int256[],bool[],address[],bytes32[],string[],bytes[])\":[[{\"name\":\"_u\",\"type\":\"uint256[]\",\"data\":[11111,22222,33333]},{\"name\":\"_i\",\"type\":\"int256[]\",\"data\":[-1111111,-3333333,-2222222]},{\"name\":\"_b\",\"type\":\"bool[]\",\"data\":[false,true,false]},{\"name\":\"_addr\",\"type\":\"address[]\",\"data\":[\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"]},{\"name\":\"_bs32\",\"type\":\"bytes32[]\",\"data\":[\"abcdefghiabcdefghiabcdefghiabhji\",\"abcdefghiabcdefghiabcdefghiabhji\"]},{\"name\":\"_s\",\"type\":\"string[]\",\"data\":[\"\",\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"]},{\"name\":\"_bs\",\"type\":\"bytes[]\",\"data\":[\"\",\"sadfljkjkljkl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"]}],[{\"name\":\"_u\",\"type\":\"uint256[]\",\"data\":[0,0,0]},{\"name\":\"_i\",\"type\":\"int256[]\",\"data\":[0,0,0]},{\"name\":\"_b\",\"type\":\"bool[]\",\"data\":[false,true,false]},{\"name\":\"_addr\",\"type\":\"address[]\",\"data\":[\"0x0000000000000000000000000000000000000000\",\"0x0000000000000000000000000000000000000000\"]},{\"name\":\"_bs32\",\"type\":\"bytes32[]\",\"data\":[\"\",\"\"]},{\"name\":\"_s\",\"type\":\"string[]\",\"data\":[\"\",\"\",\"\"]},{\"name\":\"_bs\",\"type\":\"bytes[]\",\"data\":[\"\",\"\",\"\"]}],[{\"name\":\"_u\",\"type\":\"uint256[]\",\"data\":[0,0,0,11111,22222,33333]},{\"name\":\"_i\",\"type\":\"int256[]\",\"data\":[0,0,0,-1111111,-3333333,-2222222]},{\"name\":\"_b\",\"type\":\"bool[]\",\"data\":[false,true,false,false]},{\"name\":\"_addr\",\"type\":\"address[]\",\"data\":[\"0x0000000000000000000000000000000000000000\",\"0x0000000000000000000000000000000000000000\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"]},{\"name\":\"_bs32\",\"type\":\"bytes32[]\",\"data\":[\"abcdefghiabcdefghiabcdefghiabhji\",\"abcdefghiabcdefghiabcdefghiabhji\",\"\",\"\"]},{\"name\":\"_s\",\"type\":\"string[]\",\"data\":[\"\",\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"\",\"\",\"\"]},{\"name\":\"_bs\",\"type\":\"bytes[]\",\"data\":[\"\",\"sadfljkjkljkl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"\",\"\",\"\"]}]]}"));
+                        "{\"TestEventDArrayParams(uint256[],int256[],bool[],address[],bytes32[],string[],bytes[])\":[[{\"name\":\"_u\",\"type\":\"uint256[]\",\"data\":[11111,22222,33333],\"indexed\":false},{\"name\":\"_i\",\"type\":\"int256[]\",\"data\":[-1111111,-3333333,-2222222],\"indexed\":false},{\"name\":\"_b\",\"type\":\"bool[]\",\"data\":[false,true,false],\"indexed\":false},{\"name\":\"_addr\",\"type\":\"address[]\",\"data\":[\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"],\"indexed\":false},{\"name\":\"_bs32\",\"type\":\"bytes32[]\",\"data\":[\"abcdefghiabcdefghiabcdefghiabhji\",\"abcdefghiabcdefghiabcdefghiabhji\"],\"indexed\":false},{\"name\":\"_s\",\"type\":\"string[]\",\"data\":[\"\",\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"],\"indexed\":false},{\"name\":\"_bs\",\"type\":\"bytes[]\",\"data\":[\"\",\"sadfljkjkljkl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"],\"indexed\":false}],[{\"name\":\"_u\",\"type\":\"uint256[]\",\"data\":[0,0,0],\"indexed\":false},{\"name\":\"_i\",\"type\":\"int256[]\",\"data\":[0,0,0],\"indexed\":false},{\"name\":\"_b\",\"type\":\"bool[]\",\"data\":[false,true,false],\"indexed\":false},{\"name\":\"_addr\",\"type\":\"address[]\",\"data\":[\"0x0000000000000000000000000000000000000000\",\"0x0000000000000000000000000000000000000000\"],\"indexed\":false},{\"name\":\"_bs32\",\"type\":\"bytes32[]\",\"data\":[\"\",\"\"],\"indexed\":false},{\"name\":\"_s\",\"type\":\"string[]\",\"data\":[\"\",\"\",\"\"],\"indexed\":false},{\"name\":\"_bs\",\"type\":\"bytes[]\",\"data\":[\"\",\"\",\"\"],\"indexed\":false}],[{\"name\":\"_u\",\"type\":\"uint256[]\",\"data\":[0,0,0,11111,22222,33333],\"indexed\":false},{\"name\":\"_i\",\"type\":\"int256[]\",\"data\":[0,0,0,-1111111,-3333333,-2222222],\"indexed\":false},{\"name\":\"_b\",\"type\":\"bool[]\",\"data\":[false,true,false,false],\"indexed\":false},{\"name\":\"_addr\",\"type\":\"address[]\",\"data\":[\"0x0000000000000000000000000000000000000000\",\"0x0000000000000000000000000000000000000000\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"],\"indexed\":false},{\"name\":\"_bs32\",\"type\":\"bytes32[]\",\"data\":[\"abcdefghiabcdefghiabcdefghiabhji\",\"abcdefghiabcdefghiabcdefghiabhji\",\"\",\"\"],\"indexed\":false},{\"name\":\"_s\",\"type\":\"string[]\",\"data\":[\"\",\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"\",\"\",\"\"],\"indexed\":false},{\"name\":\"_bs\",\"type\":\"bytes[]\",\"data\":[\"\",\"sadfljkjkljkl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"\",\"\",\"\"],\"indexed\":false}]]}"));
     }
 
     @Test
@@ -1053,42 +1071,44 @@ public class TransactionDecoderTest {
 
         AbiDefinition abiDefinition = null;
 
-        Tuple2<AbiDefinition, List<ResultEntity>> tupleResult1 =
+        Tuple2<AbiDefinition, List<EventResultEntity>> tupleResult1 =
                 decode.decodeEventReturnObject(log1);
-        assertThat(transEntitytoType(tupleResult1.getValue2()), is(eventDataParams1));
+        assertThat(transEntitytoType0(tupleResult1.getValue2()), is(eventDataParams1));
         abiDefinition = tupleResult1.getValue1();
 
-        Tuple2<AbiDefinition, List<ResultEntity>> tupleResult2 =
+        Tuple2<AbiDefinition, List<EventResultEntity>> tupleResult2 =
                 decode.decodeEventReturnObject(log2);
-        assertThat(transEntitytoType(tupleResult2.getValue2()), is(eventDataParams2));
+        assertThat(transEntitytoType0(tupleResult2.getValue2()), is(eventDataParams2));
 
         List<Log> logList1 = new ArrayList<Log>();
         logList1.add(log1);
-        Map<String, List<List<ResultEntity>>> mapResult1 = decode.decodeEventReturnObject(logList1);
+        Map<String, List<List<EventResultEntity>>> mapResult1 =
+                decode.decodeEventReturnObject(logList1);
         assertThat(
-                transEntitytoType(mapResult1.get(decodeMethodSign(abiDefinition)).get(0)),
+                transEntitytoType0(mapResult1.get(decodeMethodSign(abiDefinition)).get(0)),
                 is(eventDataParams1));
         // System.out.println("111 => " + decode.decodeEventReturnJson(logList1));
         assertThat(
                 decode.decodeEventReturnJson(logList1),
                 is(
-                        "{\"TestEventSArrayParams(uint256[4],int256[4],bool[4],address[4],bytes32[4],string[4],bytes[4])\":[[{\"name\":\"_u\",\"type\":\"uint256[4]\",\"data\":[11111,22222,33333,44444]},{\"name\":\"_i\",\"type\":\"int256[4]\",\"data\":[-1111111,-2222222,-3333333,-4444444]},{\"name\":\"_b\",\"type\":\"bool[4]\",\"data\":[true,false,true,false]},{\"name\":\"_addr\",\"type\":\"address[4]\",\"data\":[\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x0000000000000000000000000000000000000000\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"]},{\"name\":\"_bs32\",\"type\":\"bytes32[4]\",\"data\":[\"abcdefghiabcdefghiabcdefghiabhji\",\"abcdefghiabcdefghiabcdefghiabhji\",\"00000000000000000000000000000000\",\"abcdefghiabcdefghiabcdefghiabhji\"]},{\"name\":\"_s\",\"type\":\"string[4]\",\"data\":[\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"xxxfjlk\",\"fdajl;jkdsafjkljkadfjklf\",\"\"]},{\"name\":\"_bs\",\"type\":\"bytes[4]\",\"data\":[\"sadfljkjkljkl\",\"\",\"sadfljkjkljkl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"]}]]}"));
+                        "{\"TestEventSArrayParams(uint256[4],int256[4],bool[4],address[4],bytes32[4],string[4],bytes[4])\":[[{\"name\":\"_u\",\"type\":\"uint256[4]\",\"data\":[11111,22222,33333,44444],\"indexed\":false},{\"name\":\"_i\",\"type\":\"int256[4]\",\"data\":[-1111111,-2222222,-3333333,-4444444],\"indexed\":false},{\"name\":\"_b\",\"type\":\"bool[4]\",\"data\":[true,false,true,false],\"indexed\":false},{\"name\":\"_addr\",\"type\":\"address[4]\",\"data\":[\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x0000000000000000000000000000000000000000\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"],\"indexed\":false},{\"name\":\"_bs32\",\"type\":\"bytes32[4]\",\"data\":[\"abcdefghiabcdefghiabcdefghiabhji\",\"abcdefghiabcdefghiabcdefghiabhji\",\"00000000000000000000000000000000\",\"abcdefghiabcdefghiabcdefghiabhji\"],\"indexed\":false},{\"name\":\"_s\",\"type\":\"string[4]\",\"data\":[\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"xxxfjlk\",\"fdajl;jkdsafjkljkadfjklf\",\"\"],\"indexed\":false},{\"name\":\"_bs\",\"type\":\"bytes[4]\",\"data\":[\"sadfljkjkljkl\",\"\",\"sadfljkjkljkl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"],\"indexed\":false}]]}"));
 
         List<Log> logList2 = new ArrayList<Log>();
         logList2.add(log1);
         logList2.add(log2);
-        Map<String, List<List<ResultEntity>>> mapResult2 = decode.decodeEventReturnObject(logList2);
+        Map<String, List<List<EventResultEntity>>> mapResult2 =
+                decode.decodeEventReturnObject(logList2);
         assertThat(
-                transEntitytoType(mapResult2.get(decodeMethodSign(abiDefinition)).get(0)),
+                transEntitytoType0(mapResult2.get(decodeMethodSign(abiDefinition)).get(0)),
                 is(eventDataParams1));
         assertThat(
-                transEntitytoType(mapResult2.get(decodeMethodSign(abiDefinition)).get(1)),
+                transEntitytoType0(mapResult2.get(decodeMethodSign(abiDefinition)).get(1)),
                 is(eventDataParams2));
         // System.out.println("222 => " + decode.decodeEventReturnJson(logList2));
         assertThat(
                 decode.decodeEventReturnJson(logList2),
                 is(
-                        "{\"TestEventSArrayParams(uint256[4],int256[4],bool[4],address[4],bytes32[4],string[4],bytes[4])\":[[{\"name\":\"_u\",\"type\":\"uint256[4]\",\"data\":[11111,22222,33333,44444]},{\"name\":\"_i\",\"type\":\"int256[4]\",\"data\":[-1111111,-2222222,-3333333,-4444444]},{\"name\":\"_b\",\"type\":\"bool[4]\",\"data\":[true,false,true,false]},{\"name\":\"_addr\",\"type\":\"address[4]\",\"data\":[\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x0000000000000000000000000000000000000000\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"]},{\"name\":\"_bs32\",\"type\":\"bytes32[4]\",\"data\":[\"abcdefghiabcdefghiabcdefghiabhji\",\"abcdefghiabcdefghiabcdefghiabhji\",\"00000000000000000000000000000000\",\"abcdefghiabcdefghiabcdefghiabhji\"]},{\"name\":\"_s\",\"type\":\"string[4]\",\"data\":[\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"xxxfjlk\",\"fdajl;jkdsafjkljkadfjklf\",\"\"]},{\"name\":\"_bs\",\"type\":\"bytes[4]\",\"data\":[\"sadfljkjkljkl\",\"\",\"sadfljkjkljkl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"]}],[{\"name\":\"_u\",\"type\":\"uint256[4]\",\"data\":[0,0,0,0]},{\"name\":\"_i\",\"type\":\"int256[4]\",\"data\":[0,0,0,0]},{\"name\":\"_b\",\"type\":\"bool[4]\",\"data\":[true,false,true,false]},{\"name\":\"_addr\",\"type\":\"address[4]\",\"data\":[\"0x0000000000000000000000000000000000000000\",\"0x0000000000000000000000000000000000000000\",\"0x0000000000000000000000000000000000000000\",\"0x0000000000000000000000000000000000000000\"]},{\"name\":\"_bs32\",\"type\":\"bytes32[4]\",\"data\":[\"\",\"\",\"\",\"\"]},{\"name\":\"_s\",\"type\":\"string[4]\",\"data\":[\"\",\"\",\"\",\"\"]},{\"name\":\"_bs\",\"type\":\"bytes[4]\",\"data\":[\"\",\"\",\"\",\"\"]}]]}"));
+                        "{\"TestEventSArrayParams(uint256[4],int256[4],bool[4],address[4],bytes32[4],string[4],bytes[4])\":[[{\"name\":\"_u\",\"type\":\"uint256[4]\",\"data\":[11111,22222,33333,44444],\"indexed\":false},{\"name\":\"_i\",\"type\":\"int256[4]\",\"data\":[-1111111,-2222222,-3333333,-4444444],\"indexed\":false},{\"name\":\"_b\",\"type\":\"bool[4]\",\"data\":[true,false,true,false],\"indexed\":false},{\"name\":\"_addr\",\"type\":\"address[4]\",\"data\":[\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x0000000000000000000000000000000000000000\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"],\"indexed\":false},{\"name\":\"_bs32\",\"type\":\"bytes32[4]\",\"data\":[\"abcdefghiabcdefghiabcdefghiabhji\",\"abcdefghiabcdefghiabcdefghiabhji\",\"00000000000000000000000000000000\",\"abcdefghiabcdefghiabcdefghiabhji\"],\"indexed\":false},{\"name\":\"_s\",\"type\":\"string[4]\",\"data\":[\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"xxxfjlk\",\"fdajl;jkdsafjkljkadfjklf\",\"\"],\"indexed\":false},{\"name\":\"_bs\",\"type\":\"bytes[4]\",\"data\":[\"sadfljkjkljkl\",\"\",\"sadfljkjkljkl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"],\"indexed\":false}],[{\"name\":\"_u\",\"type\":\"uint256[4]\",\"data\":[0,0,0,0],\"indexed\":false},{\"name\":\"_i\",\"type\":\"int256[4]\",\"data\":[0,0,0,0],\"indexed\":false},{\"name\":\"_b\",\"type\":\"bool[4]\",\"data\":[true,false,true,false],\"indexed\":false},{\"name\":\"_addr\",\"type\":\"address[4]\",\"data\":[\"0x0000000000000000000000000000000000000000\",\"0x0000000000000000000000000000000000000000\",\"0x0000000000000000000000000000000000000000\",\"0x0000000000000000000000000000000000000000\"],\"indexed\":false},{\"name\":\"_bs32\",\"type\":\"bytes32[4]\",\"data\":[\"\",\"\",\"\",\"\"],\"indexed\":false},{\"name\":\"_s\",\"type\":\"string[4]\",\"data\":[\"\",\"\",\"\",\"\"],\"indexed\":false},{\"name\":\"_bs\",\"type\":\"bytes[4]\",\"data\":[\"\",\"\",\"\",\"\"],\"indexed\":false}]]}"));
     }
 
     @Test
@@ -1236,6 +1256,193 @@ public class TransactionDecoderTest {
         assertThat(
                 decode.decodeEventReturnJson(logList),
                 is(
-                        "{\"TestEventDArrayParams(uint256[],int256[],bool[],address[],bytes32[],string[],bytes[])\":[[{\"name\":\"_u\",\"type\":\"uint256[]\",\"data\":[11111,22222,33333]},{\"name\":\"_i\",\"type\":\"int256[]\",\"data\":[-1111111,-3333333,-2222222]},{\"name\":\"_b\",\"type\":\"bool[]\",\"data\":[false,true,false]},{\"name\":\"_addr\",\"type\":\"address[]\",\"data\":[\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"]},{\"name\":\"_bs32\",\"type\":\"bytes32[]\",\"data\":[\"abcdefghiabcdefghiabcdefghiabhji\",\"abcdefghiabcdefghiabcdefghiabhji\"]},{\"name\":\"_s\",\"type\":\"string[]\",\"data\":[\"\",\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"]},{\"name\":\"_bs\",\"type\":\"bytes[]\",\"data\":[\"\",\"sadfljkjkljkl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"]}]],\"TestEventSArrayParams(uint256[4],int256[4],bool[4],address[4],bytes32[4],string[4],bytes[4])\":[[{\"name\":\"_u\",\"type\":\"uint256[4]\",\"data\":[11111,22222,33333,44444]},{\"name\":\"_i\",\"type\":\"int256[4]\",\"data\":[-1111111,-2222222,-3333333,-4444444]},{\"name\":\"_b\",\"type\":\"bool[4]\",\"data\":[true,false,true,false]},{\"name\":\"_addr\",\"type\":\"address[4]\",\"data\":[\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x0000000000000000000000000000000000000000\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"]},{\"name\":\"_bs32\",\"type\":\"bytes32[4]\",\"data\":[\"abcdefghiabcdefghiabcdefghiabhji\",\"abcdefghiabcdefghiabcdefghiabhji\",\"00000000000000000000000000000000\",\"abcdefghiabcdefghiabcdefghiabhji\"]},{\"name\":\"_s\",\"type\":\"string[4]\",\"data\":[\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"xxxfjlk\",\"fdajl;jkdsafjkljkadfjklf\",\"\"]},{\"name\":\"_bs\",\"type\":\"bytes[4]\",\"data\":[\"sadfljkjkljkl\",\"\",\"sadfljkjkljkl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"]}]],\"TestEventSimpleParams(uint256,int256,bool,address,bytes32,string,bytes)\":[[{\"name\":\"_u\",\"type\":\"uint256\",\"data\":111111},{\"name\":\"_i\",\"type\":\"int256\",\"data\":-1111111},{\"name\":\"_b\",\"type\":\"bool\",\"data\":false},{\"name\":\"_addr\",\"type\":\"address\",\"data\":\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"},{\"name\":\"_bs32\",\"type\":\"bytes32\",\"data\":\"abcdefghiabcdefghiabcdefghiabhji\"},{\"name\":\"_s\",\"type\":\"string\",\"data\":\"章鱼小丸子ljjkl;adjsfkljlkjl\"},{\"name\":\"_bs\",\"type\":\"bytes\",\"data\":\"sadfljkjkljkl\"}]]}"));
+                        "{\"TestEventSimpleParams(uint256,int256,bool,address,bytes32,string,bytes)\":[[{\"name\":\"_u\",\"type\":\"uint256\",\"data\":111111,\"indexed\":false},{\"name\":\"_i\",\"type\":\"int256\",\"data\":-1111111,\"indexed\":false},{\"name\":\"_b\",\"type\":\"bool\",\"data\":false,\"indexed\":false},{\"name\":\"_addr\",\"type\":\"address\",\"data\":\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"indexed\":false},{\"name\":\"_bs32\",\"type\":\"bytes32\",\"data\":\"abcdefghiabcdefghiabcdefghiabhji\",\"indexed\":false},{\"name\":\"_s\",\"type\":\"string\",\"data\":\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"indexed\":false},{\"name\":\"_bs\",\"type\":\"bytes\",\"data\":\"sadfljkjkljkl\",\"indexed\":false}]],\"TestEventDArrayParams(uint256[],int256[],bool[],address[],bytes32[],string[],bytes[])\":[[{\"name\":\"_u\",\"type\":\"uint256[]\",\"data\":[11111,22222,33333],\"indexed\":false},{\"name\":\"_i\",\"type\":\"int256[]\",\"data\":[-1111111,-3333333,-2222222],\"indexed\":false},{\"name\":\"_b\",\"type\":\"bool[]\",\"data\":[false,true,false],\"indexed\":false},{\"name\":\"_addr\",\"type\":\"address[]\",\"data\":[\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"],\"indexed\":false},{\"name\":\"_bs32\",\"type\":\"bytes32[]\",\"data\":[\"abcdefghiabcdefghiabcdefghiabhji\",\"abcdefghiabcdefghiabcdefghiabhji\"],\"indexed\":false},{\"name\":\"_s\",\"type\":\"string[]\",\"data\":[\"\",\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"],\"indexed\":false},{\"name\":\"_bs\",\"type\":\"bytes[]\",\"data\":[\"\",\"sadfljkjkljkl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"],\"indexed\":false}]],\"TestEventSArrayParams(uint256[4],int256[4],bool[4],address[4],bytes32[4],string[4],bytes[4])\":[[{\"name\":\"_u\",\"type\":\"uint256[4]\",\"data\":[11111,22222,33333,44444],\"indexed\":false},{\"name\":\"_i\",\"type\":\"int256[4]\",\"data\":[-1111111,-2222222,-3333333,-4444444],\"indexed\":false},{\"name\":\"_b\",\"type\":\"bool[4]\",\"data\":[true,false,true,false],\"indexed\":false},{\"name\":\"_addr\",\"type\":\"address[4]\",\"data\":[\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x0000000000000000000000000000000000000000\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"],\"indexed\":false},{\"name\":\"_bs32\",\"type\":\"bytes32[4]\",\"data\":[\"abcdefghiabcdefghiabcdefghiabhji\",\"abcdefghiabcdefghiabcdefghiabhji\",\"00000000000000000000000000000000\",\"abcdefghiabcdefghiabcdefghiabhji\"],\"indexed\":false},{\"name\":\"_s\",\"type\":\"string[4]\",\"data\":[\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"xxxfjlk\",\"fdajl;jkdsafjkljkadfjklf\",\"\"],\"indexed\":false},{\"name\":\"_bs\",\"type\":\"bytes[4]\",\"data\":[\"sadfljkjkljkl\",\"\",\"sadfljkjkljkl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"],\"indexed\":false}]]}"));
     }
+    
+    public static void main(String[] args) throws BaseException, IOException {
+
+        /*
+         	event TestEventDArrayParams(uint256[] _u,int256[] _i,bool[] _b,address[] _addr,bytes32[] _bs32, string[] _s,bytes[] _bs);
+        */
+
+        TransactionDecoder decode =
+                TransactionDecoderFactory.buildTransactionDecoder(
+                        "[{\"constant\":true,\"inputs\":[{\"name\":\"_u\",\"type\":\"uint256[4]\"},{\"name\":\"_i\",\"type\":\"int256[4]\"},{\"name\":\"_b\",\"type\":\"bool[4]\"},{\"name\":\"_addr\",\"type\":\"address[4]\"},{\"name\":\"_bs32\",\"type\":\"bytes32[4]\"},{\"name\":\"_s\",\"type\":\"string[4]\"},{\"name\":\"_bs\",\"type\":\"bytes[4]\"}],\"name\":\"test\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256[2]\"},{\"name\":\"\",\"type\":\"int256[2]\"},{\"name\":\"\",\"type\":\"bool[2]\"},{\"name\":\"\",\"type\":\"address[2]\"},{\"name\":\"\",\"type\":\"bytes32[2]\"},{\"name\":\"\",\"type\":\"string[2]\"},{\"name\":\"\",\"type\":\"bytes[2]\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"_u\",\"type\":\"uint256\"},{\"name\":\"_i\",\"type\":\"int256\"},{\"name\":\"_b\",\"type\":\"bool\"},{\"name\":\"_addr\",\"type\":\"address\"},{\"name\":\"_bs32\",\"type\":\"bytes32\"},{\"name\":\"_s\",\"type\":\"string\"},{\"name\":\"_bs\",\"type\":\"bytes\"}],\"name\":\"test\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"},{\"name\":\"\",\"type\":\"int256\"},{\"name\":\"\",\"type\":\"bool\"},{\"name\":\"\",\"type\":\"address\"},{\"name\":\"\",\"type\":\"bytes32\"},{\"name\":\"\",\"type\":\"string\"},{\"name\":\"\",\"type\":\"bytes\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"_u\",\"type\":\"uint256[]\"},{\"name\":\"_i\",\"type\":\"int256[]\"},{\"name\":\"_b\",\"type\":\"bool[]\"},{\"name\":\"_addr\",\"type\":\"address[]\"},{\"name\":\"_bs32\",\"type\":\"bytes32[]\"},{\"name\":\"_s\",\"type\":\"string[]\"},{\"name\":\"_bs\",\"type\":\"bytes[]\"}],\"name\":\"test\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256[]\"},{\"name\":\"\",\"type\":\"int256[]\"},{\"name\":\"\",\"type\":\"bool[]\"},{\"name\":\"\",\"type\":\"address[]\"},{\"name\":\"\",\"type\":\"bytes32[]\"},{\"name\":\"\",\"type\":\"string[]\"},{\"name\":\"\",\"type\":\"bytes[]\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"_u\",\"type\":\"uint256\"},{\"indexed\":false,\"name\":\"_i\",\"type\":\"int256\"},{\"indexed\":false,\"name\":\"_b\",\"type\":\"bool\"},{\"indexed\":false,\"name\":\"_addr\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"_bs32\",\"type\":\"bytes32\"},{\"indexed\":false,\"name\":\"_s\",\"type\":\"string\"},{\"indexed\":false,\"name\":\"_bs\",\"type\":\"bytes\"}],\"name\":\"TestEventSimpleParams\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"_u\",\"type\":\"uint256[]\"},{\"indexed\":false,\"name\":\"_i\",\"type\":\"int256[]\"},{\"indexed\":false,\"name\":\"_b\",\"type\":\"bool[]\"},{\"indexed\":false,\"name\":\"_addr\",\"type\":\"address[]\"},{\"indexed\":false,\"name\":\"_bs32\",\"type\":\"bytes32[]\"},{\"indexed\":false,\"name\":\"_s\",\"type\":\"string[]\"},{\"indexed\":false,\"name\":\"_bs\",\"type\":\"bytes[]\"}],\"name\":\"TestEventDArrayParams\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"_u\",\"type\":\"uint256[4]\"},{\"indexed\":false,\"name\":\"_i\",\"type\":\"int256[4]\"},{\"indexed\":false,\"name\":\"_b\",\"type\":\"bool[4]\"},{\"indexed\":false,\"name\":\"_addr\",\"type\":\"address[4]\"},{\"indexed\":false,\"name\":\"_bs32\",\"type\":\"bytes32[4]\"},{\"indexed\":false,\"name\":\"_s\",\"type\":\"string[4]\"},{\"indexed\":false,\"name\":\"_bs\",\"type\":\"bytes[4]\"}],\"name\":\"TestEventSArrayParams\",\"type\":\"event\"}]",
+                        "");
+
+        List<TypeReference<?>> eventTypeList =
+                Arrays.asList(
+                        new TypeReference<DynamicArray<Uint256>>() {},
+                        new TypeReference<DynamicArray<Int256>>() {},
+                        new TypeReference<DynamicArray<Bool>>() {},
+                        new TypeReference<DynamicArray<Address>>() {},
+                        new TypeReference<DynamicArray<Bytes32>>() {},
+                        new TypeReference<DynamicArray<Utf8String>>() {},
+                        new TypeReference<DynamicArray<DynamicBytes>>() {});
+
+        Event event = new Event("TestEventDArrayParams", eventTypeList);
+
+        List<Type> eventDataParams1 =
+                Arrays.asList(
+                        new DynamicArray<Uint256>(
+                                new Uint256(11111), new Uint256(22222), new Uint256(33333)),
+                        new DynamicArray<Int256>(
+                                new Int256(-1111111), new Int256(-3333333), new Int256(-2222222)),
+                        new DynamicArray<Bool>(new Bool(false), new Bool(true), new Bool(false)),
+                        new DynamicArray<Address>(
+                                new Address("0x692a70d2e424a56d2c6c27aa97d1a86395877b3a"),
+                                new Address("0x692a70d2e424a56d2c6c27aa97d1a86395877b3a")),
+                        new DynamicArray<Bytes32>(
+                                new Bytes32("abcdefghiabcdefghiabcdefghiabhji".getBytes()),
+                                new Bytes32("abcdefghiabcdefghiabcdefghiabhji".getBytes())),
+                        new DynamicArray<Utf8String>(
+                                new Utf8String(""),
+                                new Utf8String("章鱼小丸子ljjkl;adjsfkljlkjl"),
+                                new Utf8String("章鱼小丸子ljjkl;adjsfkljlkjl")),
+                        new DynamicArray<DynamicBytes>(
+                                new DynamicBytes("".getBytes()),
+                                new DynamicBytes("sadfljkjkljkl".getBytes()),
+                                new DynamicBytes("章鱼小丸子ljjkl;adjsfkljlkjl".getBytes())));
+
+        List<Type> eventDataParams2 =
+                Arrays.asList(
+                        new DynamicArray<Uint256>(new Uint256(0), new Uint256(0), new Uint256(0)),
+                        new DynamicArray<Int256>(new Int256(0), new Int256(0), new Int256(0)),
+                        new DynamicArray<Bool>(new Bool(false), new Bool(true), new Bool(false)),
+                        new DynamicArray<Address>(new Address("0x0"), new Address("0x0")),
+                        new DynamicArray<Bytes32>(
+                                new Bytes32("                                ".getBytes()),
+                                new Bytes32("                                ".getBytes())),
+                        new DynamicArray<Utf8String>(
+                                new Utf8String(""), new Utf8String(""), new Utf8String("")),
+                        new DynamicArray<DynamicBytes>(
+                                new DynamicBytes("".getBytes()),
+                                new DynamicBytes("".getBytes()),
+                                new DynamicBytes("".getBytes())));
+
+        List<Type> eventDataParams3 =
+                Arrays.asList(
+                        new DynamicArray<Uint256>(
+                                new Uint256(0),
+                                new Uint256(0),
+                                new Uint256(0),
+                                new Uint256(11111),
+                                new Uint256(22222),
+                                new Uint256(33333)),
+                        new DynamicArray<Int256>(
+                                new Int256(0),
+                                new Int256(0),
+                                new Int256(0),
+                                new Int256(-1111111),
+                                new Int256(-3333333),
+                                new Int256(-2222222)),
+                        new DynamicArray<Bool>(
+                                new Bool(false), new Bool(true), new Bool(false), new Bool(false)),
+                        new DynamicArray<Address>(
+                                new Address("0x0"),
+                                new Address("0x0"),
+                                new Address("0x692a70d2e424a56d2c6c27aa97d1a86395877b3a"),
+                                new Address("0x692a70d2e424a56d2c6c27aa97d1a86395877b3a")),
+                        new DynamicArray<Bytes32>(
+                                new Bytes32("abcdefghiabcdefghiabcdefghiabhji".getBytes()),
+                                new Bytes32("abcdefghiabcdefghiabcdefghiabhji".getBytes()),
+                                new Bytes32("                                ".getBytes()),
+                                new Bytes32("                                ".getBytes())),
+                        new DynamicArray<Utf8String>(
+                                new Utf8String(""),
+                                new Utf8String("章鱼小丸子ljjkl;adjsfkljlkjl"),
+                                new Utf8String("章鱼小丸子ljjkl;adjsfkljlkjl"),
+                                new Utf8String(""),
+                                new Utf8String(""),
+                                new Utf8String("")),
+                        new DynamicArray<DynamicBytes>(
+                                new DynamicBytes("".getBytes()),
+                                new DynamicBytes("sadfljkjkljkl".getBytes()),
+                                new DynamicBytes("章鱼小丸子ljjkl;adjsfkljlkjl".getBytes()),
+                                new DynamicBytes("".getBytes()),
+                                new DynamicBytes("".getBytes()),
+                                new DynamicBytes("".getBytes())));
+
+        List<String> topics = new ArrayList<String>();
+        topics.add(EventEncoder.encode(event));
+
+        Log log1 = new Log();
+        log1.setData(FunctionEncoder.encodeConstructor(eventDataParams1));
+        log1.setTopics(topics);
+
+        Log log2 = new Log();
+        log2.setData(FunctionEncoder.encodeConstructor(eventDataParams2));
+        log2.setTopics(topics);
+
+        Log log3 = new Log();
+        log3.setData(FunctionEncoder.encodeConstructor(eventDataParams3));
+        log3.setTopics(topics);
+
+        AbiDefinition abiDefinition = null;
+
+        Tuple2<AbiDefinition, List<EventResultEntity>> tupleResult1 =
+                decode.decodeEventReturnObject(log1);
+        assertThat(transEntitytoType0(tupleResult1.getValue2()), is(eventDataParams1));
+        abiDefinition = tupleResult1.getValue1();
+
+        Tuple2<AbiDefinition, List<EventResultEntity>> tupleResult2 =
+                decode.decodeEventReturnObject(log2);
+        assertThat(transEntitytoType0(tupleResult2.getValue2()), is(eventDataParams2));
+
+        Tuple2<AbiDefinition, List<EventResultEntity>> tupleResult3 =
+                decode.decodeEventReturnObject(log3);
+        assertThat(transEntitytoType0(tupleResult3.getValue2()), is(eventDataParams3));
+
+        List<Log> logList1 = new ArrayList<Log>();
+        logList1.add(log1);
+        Map<String, List<List<EventResultEntity>>> mapResult1 =
+                decode.decodeEventReturnObject(logList1);
+        assertThat(
+                transEntitytoType0(mapResult1.get(decodeMethodSign(abiDefinition)).get(0)),
+                is(eventDataParams1));
+        // System.out.println("111 => " + decode.decodeEventReturnJson(logList1));
+        assertThat(
+                decode.decodeEventReturnJson(logList1),
+                is(
+                        "{\"TestEventDArrayParams(uint256[],int256[],bool[],address[],bytes32[],string[],bytes[])\":[[{\"name\":\"_u\",\"type\":\"uint256[]\",\"data\":[11111,22222,33333],\"indexed\":false},{\"name\":\"_i\",\"type\":\"int256[]\",\"data\":[-1111111,-3333333,-2222222],\"indexed\":false},{\"name\":\"_b\",\"type\":\"bool[]\",\"data\":[false,true,false],\"indexed\":false},{\"name\":\"_addr\",\"type\":\"address[]\",\"data\":[\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"],\"indexed\":false},{\"name\":\"_bs32\",\"type\":\"bytes32[]\",\"data\":[\"abcdefghiabcdefghiabcdefghiabhji\",\"abcdefghiabcdefghiabcdefghiabhji\"],\"indexed\":false},{\"name\":\"_s\",\"type\":\"string[]\",\"data\":[\"\",\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"],\"indexed\":false},{\"name\":\"_bs\",\"type\":\"bytes[]\",\"data\":[\"\",\"sadfljkjkljkl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"],\"indexed\":false}]]}"));
+
+        List<Log> logList2 = new ArrayList<Log>();
+        logList2.add(log1);
+        logList2.add(log2);
+        Map<String, List<List<EventResultEntity>>> mapResult2 =
+                decode.decodeEventReturnObject(logList2);
+        assertThat(
+                transEntitytoType0(mapResult2.get(decodeMethodSign(abiDefinition)).get(0)),
+                is(eventDataParams1));
+        assertThat(
+                transEntitytoType0(mapResult2.get(decodeMethodSign(abiDefinition)).get(1)),
+                is(eventDataParams2));
+        // System.out.println("222 => " + decode.decodeEventReturnJson(logList2));
+        assertThat(
+                decode.decodeEventReturnJson(logList2),
+                is(
+                        "{\"TestEventDArrayParams(uint256[],int256[],bool[],address[],bytes32[],string[],bytes[])\":[[{\"name\":\"_u\",\"type\":\"uint256[]\",\"data\":[11111,22222,33333],\"indexed\":false},{\"name\":\"_i\",\"type\":\"int256[]\",\"data\":[-1111111,-3333333,-2222222],\"indexed\":false},{\"name\":\"_b\",\"type\":\"bool[]\",\"data\":[false,true,false],\"indexed\":false},{\"name\":\"_addr\",\"type\":\"address[]\",\"data\":[\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"],\"indexed\":false},{\"name\":\"_bs32\",\"type\":\"bytes32[]\",\"data\":[\"abcdefghiabcdefghiabcdefghiabhji\",\"abcdefghiabcdefghiabcdefghiabhji\"],\"indexed\":false},{\"name\":\"_s\",\"type\":\"string[]\",\"data\":[\"\",\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"],\"indexed\":false},{\"name\":\"_bs\",\"type\":\"bytes[]\",\"data\":[\"\",\"sadfljkjkljkl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"],\"indexed\":false}],[{\"name\":\"_u\",\"type\":\"uint256[]\",\"data\":[0,0,0],\"indexed\":false},{\"name\":\"_i\",\"type\":\"int256[]\",\"data\":[0,0,0],\"indexed\":false},{\"name\":\"_b\",\"type\":\"bool[]\",\"data\":[false,true,false],\"indexed\":false},{\"name\":\"_addr\",\"type\":\"address[]\",\"data\":[\"0x0000000000000000000000000000000000000000\",\"0x0000000000000000000000000000000000000000\"],\"indexed\":false},{\"name\":\"_bs32\",\"type\":\"bytes32[]\",\"data\":[\"\",\"\"],\"indexed\":false},{\"name\":\"_s\",\"type\":\"string[]\",\"data\":[\"\",\"\",\"\"],\"indexed\":false},{\"name\":\"_bs\",\"type\":\"bytes[]\",\"data\":[\"\",\"\",\"\"],\"indexed\":false}],[{\"name\":\"_u\",\"type\":\"uint256[]\",\"data\":[0,0,0],\"indexed\":false},{\"name\":\"_i\",\"type\":\"int256[]\",\"data\":[0,0,0],\"indexed\":false},{\"name\":\"_b\",\"type\":\"bool[]\",\"data\":[false,true,false],\"indexed\":false},{\"name\":\"_addr\",\"type\":\"address[]\",\"data\":[\"0x0000000000000000000000000000000000000000\",\"0x0000000000000000000000000000000000000000\"],\"indexed\":false},{\"name\":\"_bs32\",\"type\":\"bytes32[]\",\"data\":[\"\",\"\"],\"indexed\":false},{\"name\":\"_s\",\"type\":\"string[]\",\"data\":[\"\",\"\",\"\"],\"indexed\":false},{\"name\":\"_bs\",\"type\":\"bytes[]\",\"data\":[\"\",\"\",\"\"],\"indexed\":false}]]}"));
+
+        List<Log> logList3 = new ArrayList<Log>();
+        logList3.add(log1);
+        logList3.add(log2);
+        logList3.add(log3);
+        Map<String, List<List<EventResultEntity>>> mapResult3 =
+                decode.decodeEventReturnObject(logList3);
+        assertThat(
+                transEntitytoType0(mapResult3.get(decodeMethodSign(abiDefinition)).get(0)),
+                is(eventDataParams1));
+        assertThat(
+                transEntitytoType0(mapResult3.get(decodeMethodSign(abiDefinition)).get(1)),
+                is(eventDataParams2));
+        assertThat(
+                transEntitytoType0(mapResult3.get(decodeMethodSign(abiDefinition)).get(2)),
+                is(eventDataParams3));
+        // System.out.println("333 => " + decode.decodeEventReturnJson(logList3));
+        assertThat(
+                decode.decodeEventReturnJson(logList3),
+                is(
+                        "{\"TestEventDArrayParams(uint256[],int256[],bool[],address[],bytes32[],string[],bytes[])\":[[{\"name\":\"_u\",\"type\":\"uint256[]\",\"data\":[11111,22222,33333]},{\"name\":\"_i\",\"type\":\"int256[]\",\"data\":[-1111111,-3333333,-2222222]},{\"name\":\"_b\",\"type\":\"bool[]\",\"data\":[false,true,false]},{\"name\":\"_addr\",\"type\":\"address[]\",\"data\":[\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"]},{\"name\":\"_bs32\",\"type\":\"bytes32[]\",\"data\":[\"abcdefghiabcdefghiabcdefghiabhji\",\"abcdefghiabcdefghiabcdefghiabhji\"]},{\"name\":\"_s\",\"type\":\"string[]\",\"data\":[\"\",\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"]},{\"name\":\"_bs\",\"type\":\"bytes[]\",\"data\":[\"\",\"sadfljkjkljkl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"]}],[{\"name\":\"_u\",\"type\":\"uint256[]\",\"data\":[0,0,0]},{\"name\":\"_i\",\"type\":\"int256[]\",\"data\":[0,0,0]},{\"name\":\"_b\",\"type\":\"bool[]\",\"data\":[false,true,false]},{\"name\":\"_addr\",\"type\":\"address[]\",\"data\":[\"0x0000000000000000000000000000000000000000\",\"0x0000000000000000000000000000000000000000\"]},{\"name\":\"_bs32\",\"type\":\"bytes32[]\",\"data\":[\"\",\"\"]},{\"name\":\"_s\",\"type\":\"string[]\",\"data\":[\"\",\"\",\"\"]},{\"name\":\"_bs\",\"type\":\"bytes[]\",\"data\":[\"\",\"\",\"\"]}],[{\"name\":\"_u\",\"type\":\"uint256[]\",\"data\":[0,0,0,11111,22222,33333]},{\"name\":\"_i\",\"type\":\"int256[]\",\"data\":[0,0,0,-1111111,-3333333,-2222222]},{\"name\":\"_b\",\"type\":\"bool[]\",\"data\":[false,true,false,false]},{\"name\":\"_addr\",\"type\":\"address[]\",\"data\":[\"0x0000000000000000000000000000000000000000\",\"0x0000000000000000000000000000000000000000\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"]},{\"name\":\"_bs32\",\"type\":\"bytes32[]\",\"data\":[\"abcdefghiabcdefghiabcdefghiabhji\",\"abcdefghiabcdefghiabcdefghiabhji\",\"\",\"\"]},{\"name\":\"_s\",\"type\":\"string[]\",\"data\":[\"\",\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"\",\"\",\"\"]},{\"name\":\"_bs\",\"type\":\"bytes[]\",\"data\":[\"\",\"sadfljkjkljkl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"\",\"\",\"\"]}]]}"));
+    
+	}
 }
