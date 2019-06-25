@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Random;
 
 import org.fisco.bcos.TestBase;
-import org.fisco.bcos.web3j.precompile.crud.CRUDSerivce;
+import org.fisco.bcos.web3j.precompile.crud.CRUDService;
 import org.fisco.bcos.web3j.precompile.crud.Condition;
 import org.fisco.bcos.web3j.precompile.crud.Entry;
 import org.fisco.bcos.web3j.precompile.crud.Table;
@@ -16,7 +16,7 @@ import org.junit.Test;
 public class CRUDServiceTest extends TestBase {
 
 
-	private CRUDSerivce crudSerivce = new CRUDSerivce(web3j, credentials);
+	private CRUDService crudSerivce = new CRUDService(web3j, credentials);
 
 	@SuppressWarnings("unchecked")
 	@Test
