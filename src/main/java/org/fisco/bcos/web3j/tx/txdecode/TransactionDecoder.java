@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.type.CollectionType;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -30,7 +31,7 @@ public class TransactionDecoder {
     private Map<String, AbiDefinition> methodIDMap;
 
     public TransactionDecoder(String abi) {
-    	this(abi, "");
+        this(abi, "");
     }
 
     public TransactionDecoder(String abi, String bin) {
@@ -44,13 +45,13 @@ public class TransactionDecoder {
             methodIDMap.put(methodID, abiDefinition);
         }
     }
-    
+
     private String addHexPrefixToString(String s) {
-    	if(!s.startsWith("0x")) {
-    		return "0x" + s;
-    	}
-    	
-    	return s;
+        if (!s.startsWith("0x")) {
+            return "0x" + s;
+        }
+
+        return s;
     }
 
     /**
@@ -62,9 +63,7 @@ public class TransactionDecoder {
      */
     public String decodeInputReturnJson(String input)
             throws JsonProcessingException, TransactionException, BaseException {
-    	
-    	input = addHexPrefixToString(input);
-    	
+
         // select abi
         AbiDefinition abiFunc = selectAbiDefinition(input);
 
@@ -72,7 +71,7 @@ public class TransactionDecoder {
         List<ResultEntity> resultList = decodeInputReturnObject(input);
 
         // format result to json
-        Map<String, Object> resultMap = new HashMap<>();
+        Map<String, Object> resultMap = new LinkedHashMap<>();
         String methodSign = decodeMethodSign(abiFunc);
         resultMap.put("function", methodSign);
         resultMap.put("methodID", FunctionEncoder.buildMethodId(methodSign));
@@ -91,9 +90,9 @@ public class TransactionDecoder {
      */
     public List<ResultEntity> decodeInputReturnObject(String input)
             throws BaseException, TransactionException {
-    	
-    	input = addHexPrefixToString(input);
-    	
+
+        input = addHexPrefixToString(input);
+
         // select abi
         AbiDefinition abiDefinition = selectAbiDefinition(input);
 
@@ -142,7 +141,8 @@ public class TransactionDecoder {
     public List<ResultEntity> decodeOutputReturnObject(String input, String output)
             throws TransactionException, BaseException {
     	
-    	output = addHexPrefixToString(output);
+    	input = addHexPrefixToString(input);
+        output = addHexPrefixToString(output);
 
         // select abi
         AbiDefinition abiDefinition = selectAbiDefinition(input);
@@ -214,7 +214,7 @@ public class TransactionDecoder {
             throws BaseException, IOException {
 
         // set result to java bean
-        Map<String, List<List<EventResultEntity>>> resultEntityMap = new HashMap<>();
+        Map<String, List<List<EventResultEntity>>> resultEntityMap = new LinkedHashMap<>();
 
         for (Log log : logList) {
             Tuple2<AbiDefinition, List<EventResultEntity>> resultTuple2 =
@@ -272,7 +272,7 @@ public class TransactionDecoder {
                                     indexedInputs.get(i).getType(),
                                     true,
                                     eventValued.getIndexedValues().get(i));
-                    
+
                     resultEntityList.add(eventEntity);
                 }
 
@@ -283,7 +283,7 @@ public class TransactionDecoder {
                                     nonIndexedInputs.get(i).getType(),
                                     false,
                                     eventValued.getNonIndexedValues().get(i));
-                    
+
                     resultEntityList.add(eventEntity);
                 }
 
