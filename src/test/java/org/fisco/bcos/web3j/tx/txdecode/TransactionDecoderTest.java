@@ -28,6 +28,7 @@ import org.fisco.bcos.web3j.abi.datatypes.generated.StaticArray2;
 import org.fisco.bcos.web3j.abi.datatypes.generated.StaticArray4;
 import org.fisco.bcos.web3j.abi.datatypes.generated.Uint256;
 import org.fisco.bcos.web3j.protocol.core.methods.response.AbiDefinition;
+import org.fisco.bcos.web3j.protocol.core.methods.response.AbiDefinition.NamedType;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Log;
 import org.fisco.bcos.web3j.protocol.exceptions.TransactionException;
 import org.fisco.bcos.web3j.tuples.generated.Tuple2;
@@ -60,6 +61,14 @@ public class TransactionDecoderTest {
     public static List<Type> transEntitytoType(List<ResultEntity> entityList) {
         List<Type> listType = new ArrayList<>();
         for (ResultEntity resultEntity : entityList) {
+            listType.add(resultEntity.getTypeObject());
+        }
+        return listType;
+    }
+    
+    public static List<Type> transEntitytoType0(List<EventResultEntity> entityList) {
+        List<Type> listType = new ArrayList<>();
+        for (EventResultEntity resultEntity : entityList) {
             listType.add(resultEntity.getTypeObject());
         }
         return listType;
@@ -214,6 +223,7 @@ public class TransactionDecoderTest {
                 new Function("test", test1Params, Collections.<TypeReference<?>>emptyList());
 
         String resultInputJson = decode.decodeInputReturnJson(FunctionEncoder.encode(test1));
+        System.out.println(resultInputJson);
         List<ResultEntity> resultInputList =
                 decode.decodeInputReturnObject(FunctionEncoder.encode(test1));
         List<Type> resultInputListType = transEntitytoType(resultInputList);
@@ -625,11 +635,12 @@ public class TransactionDecoderTest {
     }
 
     private String decodeMethodSign(AbiDefinition abiDefinition) {
-        List<String> inputTypes = ContractAbiUtil.getFuncInputType(abiDefinition);
+        List<NamedType> inputTypes = abiDefinition.getInputs();
         StringBuilder methodSign = new StringBuilder();
         methodSign.append(abiDefinition.getName());
         methodSign.append("(");
-        String params = inputTypes.stream().map(String::toString).collect(Collectors.joining(","));
+        String params =
+                inputTypes.stream().map(NamedType::getType).collect(Collectors.joining(","));
         methodSign.append(params);
         methodSign.append(")");
         return methodSign.toString();
@@ -711,24 +722,24 @@ public class TransactionDecoderTest {
 
         AbiDefinition abiDefinition = null;
 
-        Tuple2<AbiDefinition, List<ResultEntity>> tupleResult1 =
+        Tuple2<AbiDefinition, List<EventResultEntity>> tupleResult1 =
                 decode.decodeEventReturnObject(log1);
-        assertThat(transEntitytoType(tupleResult1.getValue2()), is(eventDataParams1));
+        assertThat(transEntitytoType0(tupleResult1.getValue2()), is(eventDataParams1));
         abiDefinition = tupleResult1.getValue1();
 
-        Tuple2<AbiDefinition, List<ResultEntity>> tupleResult2 =
+        Tuple2<AbiDefinition, List<EventResultEntity>> tupleResult2 =
                 decode.decodeEventReturnObject(log2);
-        assertThat(transEntitytoType(tupleResult2.getValue2()), is(eventDataParams2));
+        assertThat(transEntitytoType0(tupleResult2.getValue2()), is(eventDataParams2));
 
-        Tuple2<AbiDefinition, List<ResultEntity>> tupleResult3 =
+        Tuple2<AbiDefinition, List<EventResultEntity>> tupleResult3 =
                 decode.decodeEventReturnObject(log3);
-        assertThat(transEntitytoType(tupleResult3.getValue2()), is(eventDataParams3));
+        assertThat(transEntitytoType0(tupleResult3.getValue2()), is(eventDataParams3));
 
         List<Log> logList1 = new ArrayList<Log>();
         logList1.add(log1);
-        Map<String, List<List<ResultEntity>>> mapResult1 = decode.decodeEventReturnObject(logList1);
+        Map<String, List<List<EventResultEntity>>> mapResult1 = decode.decodeEventReturnObject(logList1);
         assertThat(
-                transEntitytoType(mapResult1.get(decodeMethodSign(abiDefinition)).get(0)),
+                transEntitytoType0(mapResult1.get(decodeMethodSign(abiDefinition)).get(0)),
                 is(eventDataParams1));
         assertThat(
                 decode.decodeEventReturnJson(logList1),
@@ -738,12 +749,12 @@ public class TransactionDecoderTest {
         List<Log> logList2 = new ArrayList<Log>();
         logList2.add(log1);
         logList2.add(log2);
-        Map<String, List<List<ResultEntity>>> mapResult2 = decode.decodeEventReturnObject(logList2);
+        Map<String, List<List<EventResultEntity>>> mapResult2 = decode.decodeEventReturnObject(logList2);
         assertThat(
-                transEntitytoType(mapResult2.get(decodeMethodSign(abiDefinition)).get(0)),
+                transEntitytoType0(mapResult2.get(decodeMethodSign(abiDefinition)).get(0)),
                 is(eventDataParams1));
         assertThat(
-                transEntitytoType(mapResult2.get(decodeMethodSign(abiDefinition)).get(1)),
+                transEntitytoType0(mapResult2.get(decodeMethodSign(abiDefinition)).get(1)),
                 is(eventDataParams2));
         assertThat(
                 decode.decodeEventReturnJson(logList2),
@@ -754,15 +765,15 @@ public class TransactionDecoderTest {
         logList3.add(log1);
         logList3.add(log2);
         logList3.add(log3);
-        Map<String, List<List<ResultEntity>>> mapResult3 = decode.decodeEventReturnObject(logList3);
+        Map<String, List<List<EventResultEntity>>> mapResult3 = decode.decodeEventReturnObject(logList3);
         assertThat(
-                transEntitytoType(mapResult3.get(decodeMethodSign(abiDefinition)).get(0)),
+                transEntitytoType0(mapResult3.get(decodeMethodSign(abiDefinition)).get(0)),
                 is(eventDataParams1));
         assertThat(
-                transEntitytoType(mapResult3.get(decodeMethodSign(abiDefinition)).get(1)),
+                transEntitytoType0(mapResult3.get(decodeMethodSign(abiDefinition)).get(1)),
                 is(eventDataParams2));
         assertThat(
-                transEntitytoType(mapResult3.get(decodeMethodSign(abiDefinition)).get(2)),
+                transEntitytoType0(mapResult3.get(decodeMethodSign(abiDefinition)).get(2)),
                 is(eventDataParams3));
         assertThat(
                 decode.decodeEventReturnJson(logList3),
@@ -891,26 +902,26 @@ public class TransactionDecoderTest {
 
         AbiDefinition abiDefinition = null;
 
-        Tuple2<AbiDefinition, List<ResultEntity>> tupleResult1 =
+        Tuple2<AbiDefinition, List<EventResultEntity>> tupleResult1 =
                 decode.decodeEventReturnObject(log1);
-        assertThat(transEntitytoType(tupleResult1.getValue2()), is(eventDataParams1));
+        assertThat(transEntitytoType0(tupleResult1.getValue2()), is(eventDataParams1));
         abiDefinition = tupleResult1.getValue1();
 
-        Tuple2<AbiDefinition, List<ResultEntity>> tupleResult2 =
+        Tuple2<AbiDefinition, List<EventResultEntity>> tupleResult2 =
                 decode.decodeEventReturnObject(log2);
-        assertThat(transEntitytoType(tupleResult2.getValue2()), is(eventDataParams2));
+        assertThat(transEntitytoType0(tupleResult2.getValue2()), is(eventDataParams2));
 
-        Tuple2<AbiDefinition, List<ResultEntity>> tupleResult3 =
+        Tuple2<AbiDefinition, List<EventResultEntity>> tupleResult3 =
                 decode.decodeEventReturnObject(log3);
-        assertThat(transEntitytoType(tupleResult3.getValue2()), is(eventDataParams3));
+        assertThat(transEntitytoType0(tupleResult3.getValue2()), is(eventDataParams3));
 
         List<Log> logList1 = new ArrayList<Log>();
         logList1.add(log1);
-        Map<String, List<List<ResultEntity>>> mapResult1 = decode.decodeEventReturnObject(logList1);
+        Map<String, List<List<EventResultEntity>>> mapResult1 = decode.decodeEventReturnObject(logList1);
         assertThat(
-                transEntitytoType(mapResult1.get(decodeMethodSign(abiDefinition)).get(0)),
+                transEntitytoType0(mapResult1.get(decodeMethodSign(abiDefinition)).get(0)),
                 is(eventDataParams1));
-        // System.out.println("111 => " + decode.decodeEventReturnJson(logList1));
+        System.out.println("111 => " + decode.decodeEventReturnJson(logList1));
         assertThat(
                 decode.decodeEventReturnJson(logList1),
                 is(
@@ -919,12 +930,12 @@ public class TransactionDecoderTest {
         List<Log> logList2 = new ArrayList<Log>();
         logList2.add(log1);
         logList2.add(log2);
-        Map<String, List<List<ResultEntity>>> mapResult2 = decode.decodeEventReturnObject(logList2);
+        Map<String, List<List<EventResultEntity>>> mapResult2 = decode.decodeEventReturnObject(logList2);
         assertThat(
-                transEntitytoType(mapResult2.get(decodeMethodSign(abiDefinition)).get(0)),
+                transEntitytoType0(mapResult2.get(decodeMethodSign(abiDefinition)).get(0)),
                 is(eventDataParams1));
         assertThat(
-                transEntitytoType(mapResult2.get(decodeMethodSign(abiDefinition)).get(1)),
+                transEntitytoType0(mapResult2.get(decodeMethodSign(abiDefinition)).get(1)),
                 is(eventDataParams2));
         // System.out.println("222 => " + decode.decodeEventReturnJson(logList2));
         assertThat(
@@ -936,15 +947,15 @@ public class TransactionDecoderTest {
         logList3.add(log1);
         logList3.add(log2);
         logList3.add(log3);
-        Map<String, List<List<ResultEntity>>> mapResult3 = decode.decodeEventReturnObject(logList3);
+        Map<String, List<List<EventResultEntity>>> mapResult3 = decode.decodeEventReturnObject(logList3);
         assertThat(
-                transEntitytoType(mapResult3.get(decodeMethodSign(abiDefinition)).get(0)),
+                transEntitytoType0(mapResult3.get(decodeMethodSign(abiDefinition)).get(0)),
                 is(eventDataParams1));
         assertThat(
-                transEntitytoType(mapResult3.get(decodeMethodSign(abiDefinition)).get(1)),
+                transEntitytoType0(mapResult3.get(decodeMethodSign(abiDefinition)).get(1)),
                 is(eventDataParams2));
         assertThat(
-                transEntitytoType(mapResult3.get(decodeMethodSign(abiDefinition)).get(2)),
+                transEntitytoType0(mapResult3.get(decodeMethodSign(abiDefinition)).get(2)),
                 is(eventDataParams3));
         // System.out.println("333 => " + decode.decodeEventReturnJson(logList3));
         assertThat(
@@ -1053,20 +1064,20 @@ public class TransactionDecoderTest {
 
         AbiDefinition abiDefinition = null;
 
-        Tuple2<AbiDefinition, List<ResultEntity>> tupleResult1 =
+        Tuple2<AbiDefinition, List<EventResultEntity>> tupleResult1 =
                 decode.decodeEventReturnObject(log1);
-        assertThat(transEntitytoType(tupleResult1.getValue2()), is(eventDataParams1));
+        assertThat(transEntitytoType0(tupleResult1.getValue2()), is(eventDataParams1));
         abiDefinition = tupleResult1.getValue1();
 
-        Tuple2<AbiDefinition, List<ResultEntity>> tupleResult2 =
+        Tuple2<AbiDefinition, List<EventResultEntity>> tupleResult2 =
                 decode.decodeEventReturnObject(log2);
-        assertThat(transEntitytoType(tupleResult2.getValue2()), is(eventDataParams2));
+        assertThat(transEntitytoType0(tupleResult2.getValue2()), is(eventDataParams2));
 
         List<Log> logList1 = new ArrayList<Log>();
         logList1.add(log1);
-        Map<String, List<List<ResultEntity>>> mapResult1 = decode.decodeEventReturnObject(logList1);
+        Map<String, List<List<EventResultEntity>>> mapResult1 = decode.decodeEventReturnObject(logList1);
         assertThat(
-                transEntitytoType(mapResult1.get(decodeMethodSign(abiDefinition)).get(0)),
+                transEntitytoType0(mapResult1.get(decodeMethodSign(abiDefinition)).get(0)),
                 is(eventDataParams1));
         // System.out.println("111 => " + decode.decodeEventReturnJson(logList1));
         assertThat(
@@ -1077,12 +1088,12 @@ public class TransactionDecoderTest {
         List<Log> logList2 = new ArrayList<Log>();
         logList2.add(log1);
         logList2.add(log2);
-        Map<String, List<List<ResultEntity>>> mapResult2 = decode.decodeEventReturnObject(logList2);
+        Map<String, List<List<EventResultEntity>>> mapResult2 = decode.decodeEventReturnObject(logList2);
         assertThat(
-                transEntitytoType(mapResult2.get(decodeMethodSign(abiDefinition)).get(0)),
+                transEntitytoType0(mapResult2.get(decodeMethodSign(abiDefinition)).get(0)),
                 is(eventDataParams1));
         assertThat(
-                transEntitytoType(mapResult2.get(decodeMethodSign(abiDefinition)).get(1)),
+                transEntitytoType0(mapResult2.get(decodeMethodSign(abiDefinition)).get(1)),
                 is(eventDataParams2));
         // System.out.println("222 => " + decode.decodeEventReturnJson(logList2));
         assertThat(
