@@ -31,11 +31,11 @@ import org.springframework.core.io.Resource;
 public class TableTestClient {
 
     public static int modevalue = 100;
-    static Logger logger = LoggerFactory.getLogger(TableTestClient.class);
+    public static Logger logger = LoggerFactory.getLogger(TableTestClient.class);
     public static Web3j web3j;
 
-    public static java.math.BigInteger gasPrice = new BigInteger("1");
-    public static java.math.BigInteger gasLimit = new BigInteger("30000000");
+    public static BigInteger gasPrice = new BigInteger("30000000");
+    public static BigInteger gasLimit = new BigInteger("30000000");
     public static ECKeyPair keyPair;
     public static Credentials credentials;
     public static String contractAddress = "";
@@ -84,167 +84,180 @@ public class TableTestClient {
             deployTableTest();
         }
         ContractGasProvider contractGasProvider = new StaticGasProvider(gasPrice, gasLimit);
-        ;
         TableTest tabletest =
                 TableTest.load(contractAddress, web3j, credentials, contractGasProvider);
         // create table
         if ("create".equals(args[0])) {
-            TransactionReceipt receipt = tabletest.create().send();
-            List<CreateResultEventResponse> createResultEvents =
-                    tabletest.getCreateResultEvents(receipt);
-            if (createResultEvents.size() == 0) {
-                System.out.println("create t_test table failed.");
-                return;
-            }
-            CreateResultEventResponse createResultEventResponse = createResultEvents.get(0);
-            int createCount = createResultEventResponse.count.intValue();
-            System.out.println("create table ret:" + createCount);
-            switch (createCount) {
-                case PrecompiledCommon.PermissionDenied:
-                    System.out.println("non-authorized to create t_test table.");
-                    break;
-                case PrecompiledCommon.PermissionDenied_RC3:
-                    System.out.println("non-authorized to create t_test table.");
-                    break;
-                case PrecompiledCommon.TableExist:
-                    System.out.println("t_test table already exist.");
-                    break;
-                case PrecompiledCommon.Success:
-                    System.out.println("create t_test table success.");
-                    break;
-                default:
-                    System.out.println("unknown return value:" + createCount);
-            }
-
+            create(tabletest);
         }
         // insert
         else if ("insert".equals(args[0])) {
-            if (args.length == 4) {
-                try {
-                    String name = args[1];
-                    int item_id = Integer.parseInt(args[2]);
-                    String item_name = args[3];
-
-                    RemoteCall<TransactionReceipt> insert =
-                            tabletest.insert(name, BigInteger.valueOf(item_id), item_name);
-                    TransactionReceipt txReceipt = insert.send();
-                    List<InsertResultEventResponse> insertResultEvents =
-                            tabletest.getInsertResultEvents(txReceipt);
-                    if (insertResultEvents.size() > 0) {
-                        for (int i = 0; i < insertResultEvents.size(); i++) {
-                            InsertResultEventResponse insertResultEventResponse =
-                                    insertResultEvents.get(i);
-                            logger.info(
-                                    "insertCount = " + insertResultEventResponse.count.intValue());
-                            System.out.println(
-                                    "insertCount = " + insertResultEventResponse.count.intValue());
-                        }
-                    } else {
-                        System.out.println("t_test table does not exist.");
-                    }
-                } catch (Exception e) {
-                    System.out.println(
-                            "insert transaction is abnormal, please check the environment");
-                }
-            } else {
-                System.out.println("\nPlease enter as follow example:\n 1 1 insert fruit 1 apple");
-            }
+            insert(args, tabletest);
         }
         // select
         else if ("select".equals(args[0])) {
-            if (args.length == 2) {
-                try {
-                    String keyName = args[1];
-                    Tuple3<List<byte[]>, List<BigInteger>, List<byte[]>> lists =
-                            tabletest.select(keyName).send();
-                    List<byte[]> value1 = lists.getValue1();
-                    List<BigInteger> value2 = lists.getValue2();
-                    List<byte[]> value3 = lists.getValue3();
-                    logger.info("record numbers = " + value1.size());
-                    System.out.println("record numbers = " + value1.size());
-                    for (int i = 0; i < value1.size(); i++) {
-                        String name = new String(value1.get(i));
-                        logger.info("name = " + name);
-                        System.out.println("name = " + name);
-                        int item_id = value2.get(i).intValue();
-                        logger.info("item_id = " + item_id);
-                        System.out.println("item_id = " + item_id);
-                        String item_name = new String(value3.get(i));
-                        logger.info("item_name = " + item_name);
-                        System.out.println("item_name = " + item_name);
-                    }
-                } catch (Exception e) {
-                    logger.info("record numbers = 0");
-                    System.out.println("record numbers = 0");
-                }
-            } else {
-                System.out.println("\nPlease enter as follow example:\n 1 1 select fruit");
-            }
+            select(args, tabletest);
         }
         // update
         else if ("update".equals(args[0])) {
-            if (args.length == 4) {
-                try {
-                    String name = args[1];
-                    int item_id = Integer.parseInt(args[2]);
-                    String item_name = args[3];
-                    RemoteCall<TransactionReceipt> update =
-                            tabletest.update(name, BigInteger.valueOf(item_id), item_name);
-                    TransactionReceipt transactionReceipt = update.send();
-                    List<UpdateResultEventResponse> updateResultEvents =
-                            tabletest.getUpdateResultEvents(transactionReceipt);
-
-                    if (updateResultEvents.size() > 0) {
-                        for (int i = 0; i < updateResultEvents.size(); i++) {
-                            UpdateResultEventResponse updateResultEventResponse =
-                                    updateResultEvents.get(i);
-                            System.out.println(
-                                    "updateCount = " + updateResultEventResponse.count.intValue());
-                            logger.info(
-                                    "updateCount = " + updateResultEventResponse.count.intValue());
-                        }
-                    } else {
-                        System.out.println("t_test table does not exist.");
-                    }
-                } catch (Exception e) {
-                    System.out.println(
-                            "update transaction is abnormal, please check the environment");
-                }
-            } else {
-                System.out.println("\nPlease enter as follow example:\n 1 1 update fruit 1 orange");
-            }
+            update(args, tabletest);
         }
         // remove
         else if ("remove".equals(args[0])) {
-            if (args.length == 3) {
-                try {
-                    String name = args[1];
-                    int item_id = Integer.parseInt(args[2]);
-                    RemoteCall<TransactionReceipt> remove =
-                            tabletest.remove(name, BigInteger.valueOf(item_id));
-                    TransactionReceipt transactionReceipt = remove.send();
-                    List<RemoveResultEventResponse> removeResultEvents =
-                            tabletest.getRemoveResultEvents(transactionReceipt);
-
-                    if (removeResultEvents.size() > 0) {
-                        RemoveResultEventResponse reomveResultEventResponse =
-                                removeResultEvents.get(0);
-                        logger.info("removeCount = " + reomveResultEventResponse.count.intValue());
-                        System.out.println(
-                                "removeCount = " + reomveResultEventResponse.count.intValue());
-                    } else {
-                        System.out.println("t_test table does not exist.");
-                    }
-                } catch (Exception e) {
-                    System.out.println(
-                            "remove transaction is abnormal, please check the environment");
-                }
-            } else {
-                System.out.println("\nPlease enter as follow example:\n 1 1 remove fruit 1");
-            }
+            remove(args, tabletest);
         } else {
             System.out.println(
                     "\nPlease choose follow commands:\n deploy, create, insert, select, update or remove");
+        }
+    }
+
+    private static void create(TableTest tabletest) throws Exception {
+        TransactionReceipt receipt = tabletest.create().send();
+        List<CreateResultEventResponse> createResultEvents =
+                tabletest.getCreateResultEvents(receipt);
+        if (createResultEvents.size() == 0) {
+            System.out.println("create t_test table failed.");
+            return;
+        }
+        CreateResultEventResponse createResultEventResponse = createResultEvents.get(0);
+        int createCount = createResultEventResponse.count.intValue();
+        System.out.println("create table ret:" + createCount);
+        switch (createCount) {
+            case PrecompiledCommon.PermissionDenied:
+                System.out.println("non-authorized to create t_test table.");
+                break;
+            case PrecompiledCommon.PermissionDenied_RC3:
+                System.out.println("non-authorized to create t_test table.");
+                break;
+            case PrecompiledCommon.TableExist:
+                System.out.println("t_test table already exist.");
+                break;
+            case PrecompiledCommon.Success:
+                System.out.println("create t_test table success.");
+                break;
+            default:
+                System.out.println("unknown return value:" + createCount);
+                break;
+        }
+    }
+
+    private static void insert(String[] args, TableTest tabletest) {
+        if (args.length == 4) {
+            try {
+                String name = args[1];
+                int item_id = Integer.parseInt(args[2]);
+                String item_name = args[3];
+
+                RemoteCall<TransactionReceipt> insert =
+                        tabletest.insert(name, BigInteger.valueOf(item_id), item_name);
+                TransactionReceipt txReceipt = insert.send();
+                List<InsertResultEventResponse> insertResultEvents =
+                        tabletest.getInsertResultEvents(txReceipt);
+                if (insertResultEvents.size() > 0) {
+                    for (int i = 0; i < insertResultEvents.size(); i++) {
+                        InsertResultEventResponse insertResultEventResponse =
+                                insertResultEvents.get(i);
+                        logger.info("insertCount = " + insertResultEventResponse.count.intValue());
+                        System.out.println(
+                                "insertCount = " + insertResultEventResponse.count.intValue());
+                    }
+                } else {
+                    System.out.println("t_test table does not exist.");
+                }
+            } catch (Exception e) {
+                System.out.println("insert transaction is abnormal, please check the environment");
+            }
+        } else {
+            System.out.println("\nPlease enter as follow example:\n 1 1 insert fruit 1 apple");
+        }
+    }
+
+    private static void remove(String[] args, TableTest tabletest) {
+        if (args.length == 3) {
+            try {
+                String name = args[1];
+                int item_id = Integer.parseInt(args[2]);
+                RemoteCall<TransactionReceipt> remove =
+                        tabletest.remove(name, BigInteger.valueOf(item_id));
+                TransactionReceipt transactionReceipt = remove.send();
+                List<RemoveResultEventResponse> removeResultEvents =
+                        tabletest.getRemoveResultEvents(transactionReceipt);
+
+                if (removeResultEvents.size() > 0) {
+                    RemoveResultEventResponse reomveResultEventResponse = removeResultEvents.get(0);
+                    logger.info("removeCount = " + reomveResultEventResponse.count.intValue());
+                    System.out.println(
+                            "removeCount = " + reomveResultEventResponse.count.intValue());
+                } else {
+                    System.out.println("t_test table does not exist.");
+                }
+            } catch (Exception e) {
+                System.out.println("remove transaction is abnormal, please check the environment");
+            }
+        } else {
+            System.out.println("\nPlease enter as follow example:\n 1 1 remove fruit 1");
+        }
+    }
+
+    private static void update(String[] args, TableTest tabletest) {
+        if (args.length == 4) {
+            try {
+                String name = args[1];
+                int item_id = Integer.parseInt(args[2]);
+                String item_name = args[3];
+                RemoteCall<TransactionReceipt> update =
+                        tabletest.update(name, BigInteger.valueOf(item_id), item_name);
+                TransactionReceipt transactionReceipt = update.send();
+                List<UpdateResultEventResponse> updateResultEvents =
+                        tabletest.getUpdateResultEvents(transactionReceipt);
+
+                if (updateResultEvents.size() > 0) {
+                    for (int i = 0; i < updateResultEvents.size(); i++) {
+                        UpdateResultEventResponse updateResultEventResponse =
+                                updateResultEvents.get(i);
+                        System.out.println(
+                                "updateCount = " + updateResultEventResponse.count.intValue());
+                        logger.info("updateCount = " + updateResultEventResponse.count.intValue());
+                    }
+                } else {
+                    System.out.println("t_test table does not exist.");
+                }
+            } catch (Exception e) {
+                System.out.println("update transaction is abnormal, please check the environment");
+            }
+        } else {
+            System.out.println("\nPlease enter as follow example:\n 1 1 update fruit 1 orange");
+        }
+    }
+
+    private static void select(String[] args, TableTest tabletest) {
+        if (args.length == 2) {
+            try {
+                String keyName = args[1];
+                Tuple3<List<byte[]>, List<BigInteger>, List<byte[]>> lists =
+                        tabletest.select(keyName).send();
+                List<byte[]> value1 = lists.getValue1();
+                List<BigInteger> value2 = lists.getValue2();
+                List<byte[]> value3 = lists.getValue3();
+                logger.info("record numbers = " + value1.size());
+                System.out.println("record numbers = " + value1.size());
+                for (int i = 0; i < value1.size(); i++) {
+                    String name = new String(value1.get(i));
+                    logger.info("name = " + name);
+                    System.out.println("name = " + name);
+                    int item_id = value2.get(i).intValue();
+                    logger.info("item_id = " + item_id);
+                    System.out.println("item_id = " + item_id);
+                    String item_name = new String(value3.get(i));
+                    logger.info("item_name = " + item_name);
+                    System.out.println("item_name = " + item_name);
+                }
+            } catch (Exception e) {
+                logger.info("record numbers = 0");
+                System.out.println("record numbers = 0");
+            }
+        } else {
+            System.out.println("\nPlease enter as follow example:\n 1 1 select fruit");
         }
     }
 
