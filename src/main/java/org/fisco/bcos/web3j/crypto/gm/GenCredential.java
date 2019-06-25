@@ -111,4 +111,17 @@ public class GenCredential {
             return null;
         }
     }
+
+    public static Credentials create(ECKeyPair keyPair) {
+        try {
+            ECKeyPair newKeyPair = createKeyPair(keyPair.getPrivateKey().toString(16));
+            if (newKeyPair == null) return null;
+            Credentials credentials = Credentials.create(newKeyPair);
+            return credentials;
+        } catch (Exception e) {
+            System.out.println("init credential from private key failed ");
+            logger.error("init credential from private key failed, error msg:" + e.getMessage());
+            return null;
+        }
+    }
 }
