@@ -21,7 +21,6 @@ import java.util.List;
 import org.fisco.bcos.web3j.abi.EventValues;
 import org.fisco.bcos.web3j.abi.TypeReference;
 import org.fisco.bcos.web3j.abi.datatypes.Event;
-import org.fisco.bcos.web3j.abi.datatypes.Type;
 import org.fisco.bcos.web3j.protocol.core.methods.response.AbiDefinition;
 import org.fisco.bcos.web3j.protocol.core.methods.response.AbiDefinition.NamedType;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Log;
@@ -117,12 +116,13 @@ public class ContractAbiUtil {
      * @return
      * @throws BaseException
      */
-    public static List<TypeReference<?>> paramFormat(List<String> paramTypes) throws BaseException {
+    public static List<TypeReference<?>> paramFormat(List<NamedType> paramTypes)
+            throws BaseException {
         List<TypeReference<?>> finalOutputs = new ArrayList<>();
 
         for (int i = 0; i < paramTypes.size(); i++) {
 
-            AbiDefinition.NamedType.Type type = new AbiDefinition.NamedType.Type(paramTypes.get(i));
+            AbiDefinition.NamedType.Type type =  new AbiDefinition.NamedType.Type(paramTypes.get(i).getType());
             // nested array , not support now.
             if (type.getDepth() > 1) {
                 throw new BaseException(
@@ -132,12 +132,20 @@ public class ContractAbiUtil {
 
             TypeReference<?> typeReference = null;
             if (type.dynamicArray()) {
-                typeReference = DynamicArrayReference.create(type.getBaseName());
+                typeReference =
+                        DynamicArrayReference.create(
+                                type.getBaseName(), paramTypes.get(i).isIndexed());
             } else if (type.staticArray()) {
                 typeReference =
-                        StaticArrayReference.create(type.getBaseName(), type.getDimensions());
+                        StaticArrayReference.create(
+                                type.getBaseName(),
+                                type.getDimensions(),
+                                paramTypes.get(i).isIndexed());
             } else {
-                typeReference = TypeReference.create(ContractTypeUtil.getType(paramTypes.get(i)));
+                typeReference =
+                        TypeReference.create(
+                                ContractTypeUtil.getType(paramTypes.get(i).getType()),
+                                paramTypes.get(i).isIndexed());
             }
 
             finalOutputs.add(typeReference);
@@ -151,17 +159,13 @@ public class ContractAbiUtil {
      * @return
      * @throws BaseException
      */
-    public static List<Type> decodeEvent(Log log, AbiDefinition abiDefinition)
+    public static EventValues decodeEvent(Log log, AbiDefinition abiDefinition)
             throws BaseException {
 
-        List<Type> result = null;
-        List<TypeReference<?>> finalOutputs = paramFormat(getFuncInputType(abiDefinition));
+        List<TypeReference<?>> finalOutputs = paramFormat(abiDefinition.getInputs());
         Event event = new Event(abiDefinition.getName(), finalOutputs);
 
         EventValues eventValues = Contract.staticExtractEventParameters(event, log);
-        if (null != eventValues) {
-            result = eventValues.getNonIndexedValues();
-        }
-        return result;
+        return eventValues;
     }
 }
