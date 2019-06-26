@@ -82,17 +82,18 @@ public class TransactionDecoder {
     public InputAndOutputResult decodeInputReturnObject(String input)
             throws BaseException, TransactionException {
 
-        input = addHexPrefixToString(input);
+        String updatedInput = addHexPrefixToString(input);
 
         // select abi
-        AbiDefinition abiDefinition = selectAbiDefinition(input);
+        AbiDefinition abiDefinition = selectAbiDefinition(updatedInput);
 
         // decode input
         List<NamedType> inputTypes = abiDefinition.getInputs();
         List<TypeReference<?>> inputTypeReferences = ContractAbiUtil.paramFormat(inputTypes);
         Function function = new Function(abiDefinition.getName(), null, inputTypeReferences);
         List<Type> resultType =
-                FunctionReturnDecoder.decode(input.substring(10), function.getOutputParameters());
+                FunctionReturnDecoder.decode(
+                        updatedInput.substring(10), function.getOutputParameters());
 
         // set result to java bean
         List<ResultEntity> resultList = new ArrayList<ResultEntity>();
@@ -137,17 +138,17 @@ public class TransactionDecoder {
     public InputAndOutputResult decodeOutputReturnObject(String input, String output)
             throws TransactionException, BaseException {
 
-        input = addHexPrefixToString(input);
-        output = addHexPrefixToString(output);
+        String updatedInput = addHexPrefixToString(input);
+        String updatedOutput = addHexPrefixToString(output);
 
         // select abi
-        AbiDefinition abiDefinition = selectAbiDefinition(input);
+        AbiDefinition abiDefinition = selectAbiDefinition(updatedInput);
         // decode output
         List<NamedType> outputTypes = abiDefinition.getOutputs();
         List<TypeReference<?>> outputTypeReference = ContractAbiUtil.paramFormat(outputTypes);
         Function function = new Function(abiDefinition.getName(), null, outputTypeReference);
         List<Type> resultType =
-                FunctionReturnDecoder.decode(output, function.getOutputParameters());
+                FunctionReturnDecoder.decode(updatedOutput, function.getOutputParameters());
 
         // set result to java bean
         List<ResultEntity> resultList = new ArrayList<>();
