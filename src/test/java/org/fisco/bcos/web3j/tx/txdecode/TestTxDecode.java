@@ -29,20 +29,23 @@ public class TestTxDecode {
         System.out.println("===================decode input===================");
         String input = txReceipt.getInput();
         String inputResult1 = transactionDecoder.decodeInputReturnJson(input);
-        List<ResultEntity> inputResult2 = transactionDecoder.decodeInputReturnObject(input);
+        InputAndOutputResult inputResult2 = transactionDecoder.decodeInputReturnObject(input);
 
         System.out.println(inputResult1);
         System.out.println(inputResult2);
+        System.out.println();
 
         // decode output
         System.out.println("===================decode output===================");
         String output = txReceipt.getOutput();
         String outputResult1 = transactionDecoder.decodeOutputReturnJson(input, output);
-        List<ResultEntity> outputResult2 =
+
+        InputAndOutputResult outputResult2 =
                 transactionDecoder.decodeOutputReturnObject(input, output);
 
         System.out.println(outputResult1);
         System.out.println(outputResult2);
+        System.out.println();
 
         // decode event
         System.out.println("===================decode event===================");

@@ -64,20 +64,11 @@ public class TransactionDecoder {
     public String decodeInputReturnJson(String input)
             throws JsonProcessingException, TransactionException, BaseException {
 
-        // select abi
-        AbiDefinition abiFunc = selectAbiDefinition(input);
-
         // decode input
-        List<ResultEntity> resultList = decodeInputReturnObject(input);
-
+        InputAndOutputResult inputAndOutputResult = decodeInputReturnObject(input);
         // format result to json
-        Map<String, Object> resultMap = new LinkedHashMap<>();
-        String methodSign = decodeMethodSign(abiFunc);
-        resultMap.put("function", methodSign);
-        resultMap.put("methodID", FunctionEncoder.buildMethodId(methodSign));
-        resultMap.put("data", resultList);
-
-        String result = ObjectMapperFactory.getObjectMapper().writeValueAsString(resultMap);
+        String result =
+                ObjectMapperFactory.getObjectMapper().writeValueAsString(inputAndOutputResult);
 
         return result;
     }
@@ -88,20 +79,21 @@ public class TransactionDecoder {
      * @throws BaseException
      * @throws TransactionException
      */
-    public List<ResultEntity> decodeInputReturnObject(String input)
+    public InputAndOutputResult decodeInputReturnObject(String input)
             throws BaseException, TransactionException {
 
-        input = addHexPrefixToString(input);
+        String updatedInput = addHexPrefixToString(input);
 
         // select abi
-        AbiDefinition abiDefinition = selectAbiDefinition(input);
+        AbiDefinition abiDefinition = selectAbiDefinition(updatedInput);
 
         // decode input
         List<NamedType> inputTypes = abiDefinition.getInputs();
         List<TypeReference<?>> inputTypeReferences = ContractAbiUtil.paramFormat(inputTypes);
         Function function = new Function(abiDefinition.getName(), null, inputTypeReferences);
         List<Type> resultType =
-                FunctionReturnDecoder.decode(input.substring(10), function.getOutputParameters());
+                FunctionReturnDecoder.decode(
+                        updatedInput.substring(10), function.getOutputParameters());
 
         // set result to java bean
         List<ResultEntity> resultList = new ArrayList<ResultEntity>();
@@ -112,7 +104,10 @@ public class TransactionDecoder {
                             inputTypes.get(i).getType(),
                             resultType.get(i)));
         }
-        return resultList;
+        String methodSign = decodeMethodSign(abiDefinition);
+
+        return new InputAndOutputResult(
+                methodSign, FunctionEncoder.buildMethodId(methodSign), resultList);
     }
 
     /**
@@ -126,8 +121,10 @@ public class TransactionDecoder {
     public String decodeOutputReturnJson(String input, String output)
             throws JsonProcessingException, BaseException, TransactionException {
 
-        List<ResultEntity> resultList = decodeOutputReturnObject(input, output);
-        String result = ObjectMapperFactory.getObjectMapper().writeValueAsString(resultList);
+        InputAndOutputResult inputAndOutputResult = decodeOutputReturnObject(input, output);
+
+        String result =
+                ObjectMapperFactory.getObjectMapper().writeValueAsString(inputAndOutputResult);
         return result;
     }
 
@@ -138,20 +135,20 @@ public class TransactionDecoder {
      * @throws TransactionException
      * @throws BaseException
      */
-    public List<ResultEntity> decodeOutputReturnObject(String input, String output)
+    public InputAndOutputResult decodeOutputReturnObject(String input, String output)
             throws TransactionException, BaseException {
-    	
-    	input = addHexPrefixToString(input);
-        output = addHexPrefixToString(output);
+
+        String updatedInput = addHexPrefixToString(input);
+        String updatedOutput = addHexPrefixToString(output);
 
         // select abi
-        AbiDefinition abiDefinition = selectAbiDefinition(input);
+        AbiDefinition abiDefinition = selectAbiDefinition(updatedInput);
         // decode output
         List<NamedType> outputTypes = abiDefinition.getOutputs();
         List<TypeReference<?>> outputTypeReference = ContractAbiUtil.paramFormat(outputTypes);
         Function function = new Function(abiDefinition.getName(), null, outputTypeReference);
         List<Type> resultType =
-                FunctionReturnDecoder.decode(output, function.getOutputParameters());
+                FunctionReturnDecoder.decode(updatedOutput, function.getOutputParameters());
 
         // set result to java bean
         List<ResultEntity> resultList = new ArrayList<>();
@@ -162,7 +159,10 @@ public class TransactionDecoder {
                             outputTypes.get(i).getType(),
                             resultType.get(i)));
         }
-        return resultList;
+        String methodSign = decodeMethodSign(abiDefinition);
+
+        return new InputAndOutputResult(
+                methodSign, FunctionEncoder.buildMethodId(methodSign), resultList);
     }
 
     /**
