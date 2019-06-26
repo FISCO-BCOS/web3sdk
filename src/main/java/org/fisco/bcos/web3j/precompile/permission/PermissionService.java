@@ -5,7 +5,7 @@ import java.math.BigInteger;
 import java.util.List;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.precompile.common.PrecompiledCommon;
-import org.fisco.bcos.web3j.precompile.crud.CRUDSerivce;
+import org.fisco.bcos.web3j.precompile.crud.CRUDService;
 import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
@@ -31,7 +31,7 @@ public class PermissionService {
     }
 
     public String grantUserTableManager(String tableName, String grantress) throws Exception {
-        CRUDSerivce crudSerivce = new CRUDSerivce(web3j, credentials);
+        CRUDService crudSerivce = new CRUDService(web3j, credentials);
         crudSerivce.desc(tableName);
         return grant(tableName, grantress);
     }
