@@ -101,13 +101,14 @@ public class TransactionDecoderTest {
                 new Function("test", test1Params, Collections.<TypeReference<?>>emptyList());
 
         String resultInputJson = decode.decodeInputReturnJson(FunctionEncoder.encode(test1));
-        List<ResultEntity> resultInputList =
+        InputAndOutputResult inputAndOutputResult =
                 decode.decodeInputReturnObject(FunctionEncoder.encode(test1));
+        List<ResultEntity> resultInputList = inputAndOutputResult.getResult();
         List<Type> resultInputListType = transEntitytoType(resultInputList);
         assertThat(
                 resultInputJson,
                 is(
-                        "{\"function\":\"test(uint256,int256,bool,address,bytes32,string,bytes)\",\"methodID\":\"0x58a12c20\",\"data\":[{\"name\":\"_u\",\"type\":\"uint256\",\"data\":111111},{\"name\":\"_i\",\"type\":\"int256\",\"data\":-1111111},{\"name\":\"_b\",\"type\":\"bool\",\"data\":false},{\"name\":\"_addr\",\"type\":\"address\",\"data\":\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"},{\"name\":\"_bs32\",\"type\":\"bytes32\",\"data\":\"abcdefghiabcdefghiabcdefghiabhji\"},{\"name\":\"_s\",\"type\":\"string\",\"data\":\"章鱼小丸子ljjkl;adjsfkljlkjl\"},{\"name\":\"_bs\",\"type\":\"bytes\",\"data\":\"sadfljkjkljkl\"}]}"));
+                        "{\"function\":\"test(uint256,int256,bool,address,bytes32,string,bytes)\",\"methodID\":\"0x58a12c20\",\"result\":[{\"name\":\"_u\",\"type\":\"uint256\",\"data\":111111},{\"name\":\"_i\",\"type\":\"int256\",\"data\":-1111111},{\"name\":\"_b\",\"type\":\"bool\",\"data\":false},{\"name\":\"_addr\",\"type\":\"address\",\"data\":\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"},{\"name\":\"_bs32\",\"type\":\"bytes32\",\"data\":\"abcdefghiabcdefghiabcdefghiabhji\"},{\"name\":\"_s\",\"type\":\"string\",\"data\":\"章鱼小丸子ljjkl;adjsfkljlkjl\"},{\"name\":\"_bs\",\"type\":\"bytes\",\"data\":\"sadfljkjkljkl\"}]}"));
         assertThat(resultInputListType, is(test1Params));
 
         String resultOutputJson =
@@ -115,16 +116,17 @@ public class TransactionDecoderTest {
                         FunctionEncoder.encode(test1),
                         FunctionEncoder.encodeConstructor(test1Params));
 
-        List<ResultEntity> resultOutputList =
+        InputAndOutputResult inputAndOutputResult2 =
                 decode.decodeOutputReturnObject(
                         FunctionEncoder.encode(test1),
                         FunctionEncoder.encodeConstructor(test1Params));
+        List<ResultEntity> resultOutputList = inputAndOutputResult2.getResult();
 
         List<Type> resultOutputListType = transEntitytoType(resultOutputList);
         assertThat(
                 resultOutputJson,
                 is(
-                        "[{\"name\":\"\",\"type\":\"uint256\",\"data\":111111},{\"name\":\"\",\"type\":\"int256\",\"data\":-1111111},{\"name\":\"\",\"type\":\"bool\",\"data\":false},{\"name\":\"\",\"type\":\"address\",\"data\":\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"},{\"name\":\"\",\"type\":\"bytes32\",\"data\":\"abcdefghiabcdefghiabcdefghiabhji\"},{\"name\":\"\",\"type\":\"string\",\"data\":\"章鱼小丸子ljjkl;adjsfkljlkjl\"},{\"name\":\"\",\"type\":\"bytes\",\"data\":\"sadfljkjkljkl\"}]"));
+                        "{\"function\":\"test(uint256,int256,bool,address,bytes32,string,bytes)\",\"methodID\":\"0x58a12c20\",\"result\":[{\"name\":\"\",\"type\":\"uint256\",\"data\":111111},{\"name\":\"\",\"type\":\"int256\",\"data\":-1111111},{\"name\":\"\",\"type\":\"bool\",\"data\":false},{\"name\":\"\",\"type\":\"address\",\"data\":\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"},{\"name\":\"\",\"type\":\"bytes32\",\"data\":\"abcdefghiabcdefghiabcdefghiabhji\"},{\"name\":\"\",\"type\":\"string\",\"data\":\"章鱼小丸子ljjkl;adjsfkljlkjl\"},{\"name\":\"\",\"type\":\"bytes\",\"data\":\"sadfljkjkljkl\"}]}"));
         assertThat(resultOutputListType, is(test1Params));
     }
 
@@ -155,13 +157,14 @@ public class TransactionDecoderTest {
                 new Function("test", test1Params, Collections.<TypeReference<?>>emptyList());
 
         String resultInputJson = decode.decodeInputReturnJson(FunctionEncoder.encode(test1));
-        List<ResultEntity> resultInputList =
+        InputAndOutputResult inputAndOutputResult =
                 decode.decodeInputReturnObject(FunctionEncoder.encode(test1));
+        List<ResultEntity> resultInputList = inputAndOutputResult.getResult();
         List<Type> resultInputListType = transEntitytoType(resultInputList);
         assertThat(
                 resultInputJson,
                 is(
-                        "{\"function\":\"test(uint256,int256,bool,address,bytes32,string,bytes)\",\"methodID\":\"0x58a12c20\",\"data\":[{\"name\":\"_u\",\"type\":\"uint256\",\"data\":0},{\"name\":\"_i\",\"type\":\"int256\",\"data\":0},{\"name\":\"_b\",\"type\":\"bool\",\"data\":false},{\"name\":\"_addr\",\"type\":\"address\",\"data\":\"0x0000000000000000000000000000000000000000\"},{\"name\":\"_bs32\",\"type\":\"bytes32\",\"data\":\"\"},{\"name\":\"_s\",\"type\":\"string\",\"data\":\"\"},{\"name\":\"_bs\",\"type\":\"bytes\",\"data\":\"\"}]}"));
+                        "{\"function\":\"test(uint256,int256,bool,address,bytes32,string,bytes)\",\"methodID\":\"0x58a12c20\",\"result\":[{\"name\":\"_u\",\"type\":\"uint256\",\"data\":0},{\"name\":\"_i\",\"type\":\"int256\",\"data\":0},{\"name\":\"_b\",\"type\":\"bool\",\"data\":false},{\"name\":\"_addr\",\"type\":\"address\",\"data\":\"0x0000000000000000000000000000000000000000\"},{\"name\":\"_bs32\",\"type\":\"bytes32\",\"data\":\"\"},{\"name\":\"_s\",\"type\":\"string\",\"data\":\"\"},{\"name\":\"_bs\",\"type\":\"bytes\",\"data\":\"\"}]}"));
         assertThat(resultInputListType, is(test1Params));
 
         String resultOutputJson =
@@ -169,16 +172,17 @@ public class TransactionDecoderTest {
                         FunctionEncoder.encode(test1),
                         FunctionEncoder.encodeConstructor(test1Params));
 
-        List<ResultEntity> resultOutputList =
+        InputAndOutputResult inputAndOutputResult2 =
                 decode.decodeOutputReturnObject(
                         FunctionEncoder.encode(test1),
                         FunctionEncoder.encodeConstructor(test1Params));
+        List<ResultEntity> resultOutputList = inputAndOutputResult2.getResult();
 
         List<Type> resultOutputListType = transEntitytoType(resultOutputList);
         assertThat(
                 resultOutputJson,
                 is(
-                        "[{\"name\":\"\",\"type\":\"uint256\",\"data\":0},{\"name\":\"\",\"type\":\"int256\",\"data\":0},{\"name\":\"\",\"type\":\"bool\",\"data\":false},{\"name\":\"\",\"type\":\"address\",\"data\":\"0x0000000000000000000000000000000000000000\"},{\"name\":\"\",\"type\":\"bytes32\",\"data\":\"\"},{\"name\":\"\",\"type\":\"string\",\"data\":\"\"},{\"name\":\"\",\"type\":\"bytes\",\"data\":\"\"}]"));
+                        "{\"function\":\"test(uint256,int256,bool,address,bytes32,string,bytes)\",\"methodID\":\"0x58a12c20\",\"result\":[{\"name\":\"\",\"type\":\"uint256\",\"data\":0},{\"name\":\"\",\"type\":\"int256\",\"data\":0},{\"name\":\"\",\"type\":\"bool\",\"data\":false},{\"name\":\"\",\"type\":\"address\",\"data\":\"0x0000000000000000000000000000000000000000\"},{\"name\":\"\",\"type\":\"bytes32\",\"data\":\"\"},{\"name\":\"\",\"type\":\"string\",\"data\":\"\"},{\"name\":\"\",\"type\":\"bytes\",\"data\":\"\"}]}"));
         assertThat(resultOutputListType, is(test1Params));
     }
 
@@ -223,29 +227,30 @@ public class TransactionDecoderTest {
                 new Function("test", test1Params, Collections.<TypeReference<?>>emptyList());
 
         String resultInputJson = decode.decodeInputReturnJson(FunctionEncoder.encode(test1));
-        // System.out.println(resultInputJson);
-        List<ResultEntity> resultInputList =
+        InputAndOutputResult inputAndOutputResult =
                 decode.decodeInputReturnObject(FunctionEncoder.encode(test1));
+        List<ResultEntity> resultInputList = inputAndOutputResult.getResult();
         List<Type> resultInputListType = transEntitytoType(resultInputList);
         assertThat(
                 resultInputJson,
                 is(
-                        "{\"function\":\"test(uint256[],int256[],bool[],address[],bytes32[],string[],bytes[])\",\"methodID\":\"0x6dd9902a\",\"data\":[{\"name\":\"_u\",\"type\":\"uint256[]\",\"data\":[11111,22222,33333]},{\"name\":\"_i\",\"type\":\"int256[]\",\"data\":[-1111111,-3333333,-2222222]},{\"name\":\"_b\",\"type\":\"bool[]\",\"data\":[false,true,false]},{\"name\":\"_addr\",\"type\":\"address[]\",\"data\":[\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"]},{\"name\":\"_bs32\",\"type\":\"bytes32[]\",\"data\":[\"abcdefghiabcdefghiabcdefghiabhji\",\"abcdefghiabcdefghiabcdefghiabhji\"]},{\"name\":\"_s\",\"type\":\"string[]\",\"data\":[\"\",\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"]},{\"name\":\"_bs\",\"type\":\"bytes[]\",\"data\":[\"\",\"sadfljkjkljkl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"]}]}"));
+                        "{\"function\":\"test(uint256[],int256[],bool[],address[],bytes32[],string[],bytes[])\",\"methodID\":\"0x6dd9902a\",\"result\":[{\"name\":\"_u\",\"type\":\"uint256[]\",\"data\":[11111,22222,33333]},{\"name\":\"_i\",\"type\":\"int256[]\",\"data\":[-1111111,-3333333,-2222222]},{\"name\":\"_b\",\"type\":\"bool[]\",\"data\":[false,true,false]},{\"name\":\"_addr\",\"type\":\"address[]\",\"data\":[\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"]},{\"name\":\"_bs32\",\"type\":\"bytes32[]\",\"data\":[\"abcdefghiabcdefghiabcdefghiabhji\",\"abcdefghiabcdefghiabcdefghiabhji\"]},{\"name\":\"_s\",\"type\":\"string[]\",\"data\":[\"\",\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"]},{\"name\":\"_bs\",\"type\":\"bytes[]\",\"data\":[\"\",\"sadfljkjkljkl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"]}]}"));
         assertThat(resultInputListType, is(test1Params));
 
         String resultOutputJson =
                 decode.decodeOutputReturnJson(
                         FunctionEncoder.encode(test1),
                         FunctionEncoder.encodeConstructor(test1Params));
-        List<ResultEntity> lo =
+        InputAndOutputResult inputAndOutputResult2 =
                 decode.decodeOutputReturnObject(
                         FunctionEncoder.encode(test1),
                         FunctionEncoder.encodeConstructor(test1Params));
+        List<ResultEntity> resultOutputList = inputAndOutputResult2.getResult();
         assertThat(
                 resultOutputJson,
                 is(
-                        "[{\"name\":\"\",\"type\":\"uint256[]\",\"data\":[11111,22222,33333]},{\"name\":\"\",\"type\":\"int256[]\",\"data\":[-1111111,-3333333,-2222222]},{\"name\":\"\",\"type\":\"bool[]\",\"data\":[false,true,false]},{\"name\":\"\",\"type\":\"address[]\",\"data\":[\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"]},{\"name\":\"\",\"type\":\"bytes32[]\",\"data\":[\"abcdefghiabcdefghiabcdefghiabhji\",\"abcdefghiabcdefghiabcdefghiabhji\"]},{\"name\":\"\",\"type\":\"string[]\",\"data\":[\"\",\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"]},{\"name\":\"\",\"type\":\"bytes[]\",\"data\":[\"\",\"sadfljkjkljkl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"]}]"));
-        assertThat(transEntitytoType(lo), is(test1Params));
+                        "{\"function\":\"test(uint256[],int256[],bool[],address[],bytes32[],string[],bytes[])\",\"methodID\":\"0x6dd9902a\",\"result\":[{\"name\":\"\",\"type\":\"uint256[]\",\"data\":[11111,22222,33333]},{\"name\":\"\",\"type\":\"int256[]\",\"data\":[-1111111,-3333333,-2222222]},{\"name\":\"\",\"type\":\"bool[]\",\"data\":[false,true,false]},{\"name\":\"\",\"type\":\"address[]\",\"data\":[\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"]},{\"name\":\"\",\"type\":\"bytes32[]\",\"data\":[\"abcdefghiabcdefghiabcdefghiabhji\",\"abcdefghiabcdefghiabcdefghiabhji\"]},{\"name\":\"\",\"type\":\"string[]\",\"data\":[\"\",\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"]},{\"name\":\"\",\"type\":\"bytes[]\",\"data\":[\"\",\"sadfljkjkljkl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"]}]}"));
+        assertThat(transEntitytoType(resultOutputList), is(test1Params));
     }
 
     @Test
@@ -283,28 +288,31 @@ public class TransactionDecoderTest {
                 new Function("test", test1Params, Collections.<TypeReference<?>>emptyList());
 
         String resultInputJson = decode.decodeInputReturnJson(FunctionEncoder.encode(test1));
-        List<ResultEntity> resultInputList =
+        InputAndOutputResult inputAndOutputResult1 =
                 decode.decodeInputReturnObject(FunctionEncoder.encode(test1));
+        List<ResultEntity> resultInputList = inputAndOutputResult1.getResult();
         List<Type> resultInputListType = transEntitytoType(resultInputList);
+
         assertThat(
                 resultInputJson,
                 is(
-                        "{\"function\":\"test(uint256[],int256[],bool[],address[],bytes32[],string[],bytes[])\",\"methodID\":\"0x6dd9902a\",\"data\":[{\"name\":\"_u\",\"type\":\"uint256[]\",\"data\":[0,0,0]},{\"name\":\"_i\",\"type\":\"int256[]\",\"data\":[0,0,0]},{\"name\":\"_b\",\"type\":\"bool[]\",\"data\":[false,true,false]},{\"name\":\"_addr\",\"type\":\"address[]\",\"data\":[\"0x0000000000000000000000000000000000000000\",\"0x0000000000000000000000000000000000000000\"]},{\"name\":\"_bs32\",\"type\":\"bytes32[]\",\"data\":[\"\",\"\"]},{\"name\":\"_s\",\"type\":\"string[]\",\"data\":[\"\",\"\",\"\"]},{\"name\":\"_bs\",\"type\":\"bytes[]\",\"data\":[\"\",\"\",\"\"]}]}"));
+                        "{\"function\":\"test(uint256[],int256[],bool[],address[],bytes32[],string[],bytes[])\",\"methodID\":\"0x6dd9902a\",\"result\":[{\"name\":\"_u\",\"type\":\"uint256[]\",\"data\":[0,0,0]},{\"name\":\"_i\",\"type\":\"int256[]\",\"data\":[0,0,0]},{\"name\":\"_b\",\"type\":\"bool[]\",\"data\":[false,true,false]},{\"name\":\"_addr\",\"type\":\"address[]\",\"data\":[\"0x0000000000000000000000000000000000000000\",\"0x0000000000000000000000000000000000000000\"]},{\"name\":\"_bs32\",\"type\":\"bytes32[]\",\"data\":[\"\",\"\"]},{\"name\":\"_s\",\"type\":\"string[]\",\"data\":[\"\",\"\",\"\"]},{\"name\":\"_bs\",\"type\":\"bytes[]\",\"data\":[\"\",\"\",\"\"]}]}"));
         assertThat(resultInputListType, is(test1Params));
 
         String resultOutputJson =
                 decode.decodeOutputReturnJson(
                         FunctionEncoder.encode(test1),
                         FunctionEncoder.encodeConstructor(test1Params));
-        List<ResultEntity> lo =
+        InputAndOutputResult inputAndOutputResult =
                 decode.decodeOutputReturnObject(
                         FunctionEncoder.encode(test1),
                         FunctionEncoder.encodeConstructor(test1Params));
+        List<ResultEntity> resultOutputList = inputAndOutputResult.getResult();
         assertThat(
                 resultOutputJson,
                 is(
-                        "[{\"name\":\"\",\"type\":\"uint256[]\",\"data\":[0,0,0]},{\"name\":\"\",\"type\":\"int256[]\",\"data\":[0,0,0]},{\"name\":\"\",\"type\":\"bool[]\",\"data\":[false,true,false]},{\"name\":\"\",\"type\":\"address[]\",\"data\":[\"0x0000000000000000000000000000000000000000\",\"0x0000000000000000000000000000000000000000\"]},{\"name\":\"\",\"type\":\"bytes32[]\",\"data\":[\"\",\"\"]},{\"name\":\"\",\"type\":\"string[]\",\"data\":[\"\",\"\",\"\"]},{\"name\":\"\",\"type\":\"bytes[]\",\"data\":[\"\",\"\",\"\"]}]"));
-        assertThat(transEntitytoType(lo), is(test1Params));
+                        "{\"function\":\"test(uint256[],int256[],bool[],address[],bytes32[],string[],bytes[])\",\"methodID\":\"0x6dd9902a\",\"result\":[{\"name\":\"\",\"type\":\"uint256[]\",\"data\":[0,0,0]},{\"name\":\"\",\"type\":\"int256[]\",\"data\":[0,0,0]},{\"name\":\"\",\"type\":\"bool[]\",\"data\":[false,true,false]},{\"name\":\"\",\"type\":\"address[]\",\"data\":[\"0x0000000000000000000000000000000000000000\",\"0x0000000000000000000000000000000000000000\"]},{\"name\":\"\",\"type\":\"bytes32[]\",\"data\":[\"\",\"\"]},{\"name\":\"\",\"type\":\"string[]\",\"data\":[\"\",\"\",\"\"]},{\"name\":\"\",\"type\":\"bytes[]\",\"data\":[\"\",\"\",\"\"]}]}"));
+        assertThat(transEntitytoType(resultOutputList), is(test1Params));
     }
 
     @Test
@@ -368,15 +376,15 @@ public class TransactionDecoderTest {
                                 new TypeReference<Utf8String>() {},
                                 new TypeReference<DynamicBytes>() {},
                                 new TypeReference<Bytes32>() {}));
-
         assertThat(
                 decode.decodeInputReturnJson(FunctionEncoder.encode(test1)),
                 is(
-                        "{\"function\":\"test(uint256[4],int256[4],bool[4],address[4],bytes32[4],string[4],bytes[4])\",\"methodID\":\"0x5682504e\",\"data\":[{\"name\":\"_u\",\"type\":\"uint256[4]\",\"data\":[11111,22222,33333,44444]},{\"name\":\"_i\",\"type\":\"int256[4]\",\"data\":[-1111111,-2222222,-3333333,-4444444]},{\"name\":\"_b\",\"type\":\"bool[4]\",\"data\":[true,false,true,false]},{\"name\":\"_addr\",\"type\":\"address[4]\",\"data\":[\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x0000000000000000000000000000000000000000\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"]},{\"name\":\"_bs32\",\"type\":\"bytes32[4]\",\"data\":[\"abcdefghiabcdefghiabcdefghiabhji\",\"abcdefghiabcdefghiabcdefghiabhji\",\"00000000000000000000000000000000\",\"abcdefghiabcdefghiabcdefghiabhji\"]},{\"name\":\"_s\",\"type\":\"string[4]\",\"data\":[\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"xxxfjlk\",\"fdajl;jkdsafjkljkadfjklf\",\"\"]},{\"name\":\"_bs\",\"type\":\"bytes[4]\",\"data\":[\"sadfljkjkljkl\",\"\",\"sadfljkjkljkl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"]}]}"));
+                        "{\"function\":\"test(uint256[4],int256[4],bool[4],address[4],bytes32[4],string[4],bytes[4])\",\"methodID\":\"0x5682504e\",\"result\":[{\"name\":\"_u\",\"type\":\"uint256[4]\",\"data\":[11111,22222,33333,44444]},{\"name\":\"_i\",\"type\":\"int256[4]\",\"data\":[-1111111,-2222222,-3333333,-4444444]},{\"name\":\"_b\",\"type\":\"bool[4]\",\"data\":[true,false,true,false]},{\"name\":\"_addr\",\"type\":\"address[4]\",\"data\":[\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x0000000000000000000000000000000000000000\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"]},{\"name\":\"_bs32\",\"type\":\"bytes32[4]\",\"data\":[\"abcdefghiabcdefghiabcdefghiabhji\",\"abcdefghiabcdefghiabcdefghiabhji\",\"00000000000000000000000000000000\",\"abcdefghiabcdefghiabcdefghiabhji\"]},{\"name\":\"_s\",\"type\":\"string[4]\",\"data\":[\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"xxxfjlk\",\"fdajl;jkdsafjkljkadfjklf\",\"\"]},{\"name\":\"_bs\",\"type\":\"bytes[4]\",\"data\":[\"sadfljkjkljkl\",\"\",\"sadfljkjkljkl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"]}]}"));
 
-        assertThat(
-                transEntitytoType(decode.decodeInputReturnObject(FunctionEncoder.encode(test1))),
-                is(test1Params));
+        InputAndOutputResult inputAndOutputResult1 =
+                decode.decodeInputReturnObject(FunctionEncoder.encode(test1));
+        List<ResultEntity> resultInputList = inputAndOutputResult1.getResult();
+        assertThat(transEntitytoType(resultInputList), is(test1Params));
 
         List<Type> test1Output =
                 Arrays.asList(
@@ -395,19 +403,19 @@ public class TransactionDecoderTest {
                         new StaticArray2<DynamicBytes>(
                                 new DynamicBytes("章鱼小丸子ljjkl;adjsfkljlkjl".getBytes()),
                                 new DynamicBytes("dasfjklk;jlj".getBytes())));
-
         assertThat(
                 decode.decodeOutputReturnJson(
                         FunctionEncoder.encode(test1),
                         FunctionEncoder.encodeConstructor(test1Output)),
                 is(
-                        "[{\"name\":\"\",\"type\":\"uint256[2]\",\"data\":[11111,33333]},{\"name\":\"\",\"type\":\"int256[2]\",\"data\":[-1111111,-2222222]},{\"name\":\"\",\"type\":\"bool[2]\",\"data\":[true,false]},{\"name\":\"\",\"type\":\"address[2]\",\"data\":[\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"]},{\"name\":\"\",\"type\":\"bytes32[2]\",\"data\":[\"abcdefghiabcdefghiabcdefghiabhji\",\"01234567890123456789012345678901\"]},{\"name\":\"\",\"type\":\"string[2]\",\"data\":[\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"dasfjklk;jlj\"]},{\"name\":\"\",\"type\":\"bytes[2]\",\"data\":[\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"dasfjklk;jlj\"]}]"));
-        assertThat(
-                transEntitytoType(
-                        decode.decodeOutputReturnObject(
-                                FunctionEncoder.encode(test1),
-                                FunctionEncoder.encodeConstructor(test1Output))),
-                is(test1Output));
+                        "{\"function\":\"test(uint256[4],int256[4],bool[4],address[4],bytes32[4],string[4],bytes[4])\",\"methodID\":\"0x5682504e\",\"result\":[{\"name\":\"\",\"type\":\"uint256[2]\",\"data\":[11111,33333]},{\"name\":\"\",\"type\":\"int256[2]\",\"data\":[-1111111,-2222222]},{\"name\":\"\",\"type\":\"bool[2]\",\"data\":[true,false]},{\"name\":\"\",\"type\":\"address[2]\",\"data\":[\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"]},{\"name\":\"\",\"type\":\"bytes32[2]\",\"data\":[\"abcdefghiabcdefghiabcdefghiabhji\",\"01234567890123456789012345678901\"]},{\"name\":\"\",\"type\":\"string[2]\",\"data\":[\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"dasfjklk;jlj\"]},{\"name\":\"\",\"type\":\"bytes[2]\",\"data\":[\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"dasfjklk;jlj\"]}]}"));
+
+        InputAndOutputResult inputAndOutputResult =
+                decode.decodeOutputReturnObject(
+                        FunctionEncoder.encode(test1),
+                        FunctionEncoder.encodeConstructor(test1Output));
+        List<ResultEntity> resultOutputList = inputAndOutputResult.getResult();
+        assertThat(transEntitytoType(resultOutputList), is(test1Output));
     }
 
     @Test
@@ -465,15 +473,14 @@ public class TransactionDecoderTest {
                                 new TypeReference<Utf8String>() {},
                                 new TypeReference<DynamicBytes>() {},
                                 new TypeReference<Bytes32>() {}));
-
         assertThat(
                 decode.decodeInputReturnJson(FunctionEncoder.encode(test1)),
                 is(
-                        "{\"function\":\"test(uint256[4],int256[4],bool[4],address[4],bytes32[4],string[4],bytes[4])\",\"methodID\":\"0x5682504e\",\"data\":[{\"name\":\"_u\",\"type\":\"uint256[4]\",\"data\":[0,0,0,0]},{\"name\":\"_i\",\"type\":\"int256[4]\",\"data\":[0,0,0,0]},{\"name\":\"_b\",\"type\":\"bool[4]\",\"data\":[true,false,true,false]},{\"name\":\"_addr\",\"type\":\"address[4]\",\"data\":[\"0x0000000000000000000000000000000000000000\",\"0x0000000000000000000000000000000000000000\",\"0x0000000000000000000000000000000000000000\",\"0x0000000000000000000000000000000000000000\"]},{\"name\":\"_bs32\",\"type\":\"bytes32[4]\",\"data\":[\"\",\"\",\"\",\"\"]},{\"name\":\"_s\",\"type\":\"string[4]\",\"data\":[\"\",\"\",\"\",\"\"]},{\"name\":\"_bs\",\"type\":\"bytes[4]\",\"data\":[\"\",\"\",\"\",\"\"]}]}"));
-
-        assertThat(
-                transEntitytoType(decode.decodeInputReturnObject(FunctionEncoder.encode(test1))),
-                is(test1Params));
+                        "{\"function\":\"test(uint256[4],int256[4],bool[4],address[4],bytes32[4],string[4],bytes[4])\",\"methodID\":\"0x5682504e\",\"result\":[{\"name\":\"_u\",\"type\":\"uint256[4]\",\"data\":[0,0,0,0]},{\"name\":\"_i\",\"type\":\"int256[4]\",\"data\":[0,0,0,0]},{\"name\":\"_b\",\"type\":\"bool[4]\",\"data\":[true,false,true,false]},{\"name\":\"_addr\",\"type\":\"address[4]\",\"data\":[\"0x0000000000000000000000000000000000000000\",\"0x0000000000000000000000000000000000000000\",\"0x0000000000000000000000000000000000000000\",\"0x0000000000000000000000000000000000000000\"]},{\"name\":\"_bs32\",\"type\":\"bytes32[4]\",\"data\":[\"\",\"\",\"\",\"\"]},{\"name\":\"_s\",\"type\":\"string[4]\",\"data\":[\"\",\"\",\"\",\"\"]},{\"name\":\"_bs\",\"type\":\"bytes[4]\",\"data\":[\"\",\"\",\"\",\"\"]}]}"));
+        InputAndOutputResult inputAndOutputResult1 =
+                decode.decodeInputReturnObject(FunctionEncoder.encode(test1));
+        List<ResultEntity> resultInputList = inputAndOutputResult1.getResult();
+        assertThat(transEntitytoType(resultInputList), is(test1Params));
 
         List<Type> test1Output =
                 Arrays.asList(
@@ -493,13 +500,14 @@ public class TransactionDecoderTest {
                         FunctionEncoder.encode(test1),
                         FunctionEncoder.encodeConstructor(test1Output)),
                 is(
-                        "[{\"name\":\"\",\"type\":\"uint256[2]\",\"data\":[0,0]},{\"name\":\"\",\"type\":\"int256[2]\",\"data\":[0,0]},{\"name\":\"\",\"type\":\"bool[2]\",\"data\":[true,false]},{\"name\":\"\",\"type\":\"address[2]\",\"data\":[\"0x0000000000000000000000000000000000000000\",\"0x0000000000000000000000000000000000000000\"]},{\"name\":\"\",\"type\":\"bytes32[2]\",\"data\":[\"\",\"\"]},{\"name\":\"\",\"type\":\"string[2]\",\"data\":[\"\",\"\"]},{\"name\":\"\",\"type\":\"bytes[2]\",\"data\":[\"\",\"\"]}]"));
-        assertThat(
-                transEntitytoType(
-                        decode.decodeOutputReturnObject(
-                                FunctionEncoder.encode(test1),
-                                FunctionEncoder.encodeConstructor(test1Output))),
-                is(test1Output));
+                        "{\"function\":\"test(uint256[4],int256[4],bool[4],address[4],bytes32[4],string[4],bytes[4])\",\"methodID\":\"0x5682504e\",\"result\":[{\"name\":\"\",\"type\":\"uint256[2]\",\"data\":[0,0]},{\"name\":\"\",\"type\":\"int256[2]\",\"data\":[0,0]},{\"name\":\"\",\"type\":\"bool[2]\",\"data\":[true,false]},{\"name\":\"\",\"type\":\"address[2]\",\"data\":[\"0x0000000000000000000000000000000000000000\",\"0x0000000000000000000000000000000000000000\"]},{\"name\":\"\",\"type\":\"bytes32[2]\",\"data\":[\"\",\"\"]},{\"name\":\"\",\"type\":\"string[2]\",\"data\":[\"\",\"\"]},{\"name\":\"\",\"type\":\"bytes[2]\",\"data\":[\"\",\"\"]}]}"));
+
+        InputAndOutputResult inputAndOutputResult =
+                decode.decodeOutputReturnObject(
+                        FunctionEncoder.encode(test1),
+                        FunctionEncoder.encodeConstructor(test1Output));
+        List<ResultEntity> resultOutputList = inputAndOutputResult.getResult();
+        assertThat(transEntitytoType(resultOutputList), is(test1Output));
     }
 
     @Test
@@ -531,14 +539,14 @@ public class TransactionDecoderTest {
                                 new TypeReference<DynamicArray<Bytes32>>() {}));
 
         String selectSR = decode.decodeInputReturnJson(FunctionEncoder.encode(select));
-
         assertThat(
                 selectSR,
                 is(
-                        "{\"function\":\"select(string)\",\"methodID\":\"0xfcd7e3c1\",\"data\":[{\"name\":\"name\",\"type\":\"string\",\"data\":\"HelloWorld!\"}]}"));
+                        "{\"function\":\"select(string)\",\"methodID\":\"0xfcd7e3c1\",\"result\":[{\"name\":\"name\",\"type\":\"string\",\"data\":\"HelloWorld!\"}]}"));
 
-        List<ResultEntity> selectOR =
+        InputAndOutputResult inputAndOutputResult1 =
                 decode.decodeInputReturnObject(FunctionEncoder.encode(select));
+        List<ResultEntity> selectOR = inputAndOutputResult1.getResult();
         assertThat(transEntitytoType(selectOR), is(Arrays.asList(new Utf8String("HelloWorld!"))));
 
         String output =
@@ -559,12 +567,13 @@ public class TransactionDecoderTest {
                                                 "abcdefghijklmnopqrstuvwxyzadfljk".getBytes()))));
 
         String selectSOR = decode.decodeOutputReturnJson(FunctionEncoder.encode(select), output);
-        List<ResultEntity> selectOutOR =
+        InputAndOutputResult inputAndOutputResult =
                 decode.decodeOutputReturnObject(FunctionEncoder.encode(select), output);
+        List<ResultEntity> selectOutOR = inputAndOutputResult.getResult();
         assertThat(
                 selectSOR,
                 is(
-                        "[{\"name\":\"\",\"type\":\"bytes32[]\",\"data\":[\"01234567890123456789012345678912\",\"a123456789012345f7890f2345678d12\",\"abcdefghijklmnopqrstuvwxyzadfljk\"]},{\"name\":\"\",\"type\":\"int256[]\",\"data\":[1234567,-1234567,98877]},{\"name\":\"\",\"type\":\"bytes32[]\",\"data\":[\"01234567890123456789012345678912\",\"a123456789012345f7890f2345678d12\",\"abcdefghijklmnopqrstuvwxyzadfljk\"]}]"));
+                        "{\"function\":\"select(string)\",\"methodID\":\"0xfcd7e3c1\",\"result\":[{\"name\":\"\",\"type\":\"bytes32[]\",\"data\":[\"01234567890123456789012345678912\",\"a123456789012345f7890f2345678d12\",\"abcdefghijklmnopqrstuvwxyzadfljk\"]},{\"name\":\"\",\"type\":\"int256[]\",\"data\":[1234567,-1234567,98877]},{\"name\":\"\",\"type\":\"bytes32[]\",\"data\":[\"01234567890123456789012345678912\",\"a123456789012345f7890f2345678d12\",\"abcdefghijklmnopqrstuvwxyzadfljk\"]}]}"));
         assertThat(
                 transEntitytoType(selectOutOR),
                 is(
@@ -597,10 +606,11 @@ public class TransactionDecoderTest {
         assertThat(
                 updateSR,
                 is(
-                        "{\"function\":\"update(string,int256,string)\",\"methodID\":\"0x487a5a10\",\"data\":[{\"name\":\"name\",\"type\":\"string\",\"data\":\"HelloWorld! My First Hello.\"},{\"name\":\"item_id\",\"type\":\"int256\",\"data\":5555},{\"name\":\"item_name\",\"type\":\"string\",\"data\":\"Good afternoon\"}]}"));
+                        "{\"function\":\"update(string,int256,string)\",\"methodID\":\"0x487a5a10\",\"result\":[{\"name\":\"name\",\"type\":\"string\",\"data\":\"HelloWorld! My First Hello.\"},{\"name\":\"item_id\",\"type\":\"int256\",\"data\":5555},{\"name\":\"item_name\",\"type\":\"string\",\"data\":\"Good afternoon\"}]}"));
 
-        List<ResultEntity> updateOR =
+        InputAndOutputResult inputAndOutputResult2 =
                 decode.decodeInputReturnObject(FunctionEncoder.encode(update));
+        List<ResultEntity> updateOR = inputAndOutputResult2.getResult();
         assertThat(
                 transEntitytoType(updateOR),
                 is(
@@ -620,12 +630,13 @@ public class TransactionDecoderTest {
 
         String removeSR = decode.decodeInputReturnJson(FunctionEncoder.encode(remove));
 
-        List<ResultEntity> removeOR =
+        InputAndOutputResult inputAndOutputResult3 =
                 decode.decodeInputReturnObject(FunctionEncoder.encode(remove));
+        List<ResultEntity> removeOR = inputAndOutputResult3.getResult();
         assertThat(
                 removeSR,
                 is(
-                        "{\"function\":\"remove(string,int256)\",\"methodID\":\"0xc4f41ab3\",\"data\":[{\"name\":\"name\",\"type\":\"string\",\"data\":\"HelloWorld! My First Hello.\"},{\"name\":\"item_id\",\"type\":\"int256\",\"data\":-1111111}]}"));
+                        "{\"function\":\"remove(string,int256)\",\"methodID\":\"0xc4f41ab3\",\"result\":[{\"name\":\"name\",\"type\":\"string\",\"data\":\"HelloWorld! My First Hello.\"},{\"name\":\"item_id\",\"type\":\"int256\",\"data\":-1111111}]}"));
         assertThat(
                 transEntitytoType(removeOR),
                 is(
@@ -1258,7 +1269,7 @@ public class TransactionDecoderTest {
                 is(
                         "{\"TestEventSimpleParams(uint256,int256,bool,address,bytes32,string,bytes)\":[[{\"name\":\"_u\",\"type\":\"uint256\",\"data\":111111,\"indexed\":false},{\"name\":\"_i\",\"type\":\"int256\",\"data\":-1111111,\"indexed\":false},{\"name\":\"_b\",\"type\":\"bool\",\"data\":false,\"indexed\":false},{\"name\":\"_addr\",\"type\":\"address\",\"data\":\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"indexed\":false},{\"name\":\"_bs32\",\"type\":\"bytes32\",\"data\":\"abcdefghiabcdefghiabcdefghiabhji\",\"indexed\":false},{\"name\":\"_s\",\"type\":\"string\",\"data\":\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"indexed\":false},{\"name\":\"_bs\",\"type\":\"bytes\",\"data\":\"sadfljkjkljkl\",\"indexed\":false}]],\"TestEventDArrayParams(uint256[],int256[],bool[],address[],bytes32[],string[],bytes[])\":[[{\"name\":\"_u\",\"type\":\"uint256[]\",\"data\":[11111,22222,33333],\"indexed\":false},{\"name\":\"_i\",\"type\":\"int256[]\",\"data\":[-1111111,-3333333,-2222222],\"indexed\":false},{\"name\":\"_b\",\"type\":\"bool[]\",\"data\":[false,true,false],\"indexed\":false},{\"name\":\"_addr\",\"type\":\"address[]\",\"data\":[\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"],\"indexed\":false},{\"name\":\"_bs32\",\"type\":\"bytes32[]\",\"data\":[\"abcdefghiabcdefghiabcdefghiabhji\",\"abcdefghiabcdefghiabcdefghiabhji\"],\"indexed\":false},{\"name\":\"_s\",\"type\":\"string[]\",\"data\":[\"\",\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"],\"indexed\":false},{\"name\":\"_bs\",\"type\":\"bytes[]\",\"data\":[\"\",\"sadfljkjkljkl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"],\"indexed\":false}]],\"TestEventSArrayParams(uint256[4],int256[4],bool[4],address[4],bytes32[4],string[4],bytes[4])\":[[{\"name\":\"_u\",\"type\":\"uint256[4]\",\"data\":[11111,22222,33333,44444],\"indexed\":false},{\"name\":\"_i\",\"type\":\"int256[4]\",\"data\":[-1111111,-2222222,-3333333,-4444444],\"indexed\":false},{\"name\":\"_b\",\"type\":\"bool[4]\",\"data\":[true,false,true,false],\"indexed\":false},{\"name\":\"_addr\",\"type\":\"address[4]\",\"data\":[\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x0000000000000000000000000000000000000000\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"],\"indexed\":false},{\"name\":\"_bs32\",\"type\":\"bytes32[4]\",\"data\":[\"abcdefghiabcdefghiabcdefghiabhji\",\"abcdefghiabcdefghiabcdefghiabhji\",\"00000000000000000000000000000000\",\"abcdefghiabcdefghiabcdefghiabhji\"],\"indexed\":false},{\"name\":\"_s\",\"type\":\"string[4]\",\"data\":[\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"xxxfjlk\",\"fdajl;jkdsafjkljkadfjklf\",\"\"],\"indexed\":false},{\"name\":\"_bs\",\"type\":\"bytes[4]\",\"data\":[\"sadfljkjkljkl\",\"\",\"sadfljkjkljkl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"],\"indexed\":false}]]}"));
     }
-    
+
     public static void main(String[] args) throws BaseException, IOException {
 
         /*
@@ -1443,6 +1454,5 @@ public class TransactionDecoderTest {
                 decode.decodeEventReturnJson(logList3),
                 is(
                         "{\"TestEventDArrayParams(uint256[],int256[],bool[],address[],bytes32[],string[],bytes[])\":[[{\"name\":\"_u\",\"type\":\"uint256[]\",\"data\":[11111,22222,33333]},{\"name\":\"_i\",\"type\":\"int256[]\",\"data\":[-1111111,-3333333,-2222222]},{\"name\":\"_b\",\"type\":\"bool[]\",\"data\":[false,true,false]},{\"name\":\"_addr\",\"type\":\"address[]\",\"data\":[\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"]},{\"name\":\"_bs32\",\"type\":\"bytes32[]\",\"data\":[\"abcdefghiabcdefghiabcdefghiabhji\",\"abcdefghiabcdefghiabcdefghiabhji\"]},{\"name\":\"_s\",\"type\":\"string[]\",\"data\":[\"\",\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"]},{\"name\":\"_bs\",\"type\":\"bytes[]\",\"data\":[\"\",\"sadfljkjkljkl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\"]}],[{\"name\":\"_u\",\"type\":\"uint256[]\",\"data\":[0,0,0]},{\"name\":\"_i\",\"type\":\"int256[]\",\"data\":[0,0,0]},{\"name\":\"_b\",\"type\":\"bool[]\",\"data\":[false,true,false]},{\"name\":\"_addr\",\"type\":\"address[]\",\"data\":[\"0x0000000000000000000000000000000000000000\",\"0x0000000000000000000000000000000000000000\"]},{\"name\":\"_bs32\",\"type\":\"bytes32[]\",\"data\":[\"\",\"\"]},{\"name\":\"_s\",\"type\":\"string[]\",\"data\":[\"\",\"\",\"\"]},{\"name\":\"_bs\",\"type\":\"bytes[]\",\"data\":[\"\",\"\",\"\"]}],[{\"name\":\"_u\",\"type\":\"uint256[]\",\"data\":[0,0,0,11111,22222,33333]},{\"name\":\"_i\",\"type\":\"int256[]\",\"data\":[0,0,0,-1111111,-3333333,-2222222]},{\"name\":\"_b\",\"type\":\"bool[]\",\"data\":[false,true,false,false]},{\"name\":\"_addr\",\"type\":\"address[]\",\"data\":[\"0x0000000000000000000000000000000000000000\",\"0x0000000000000000000000000000000000000000\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\",\"0x692a70d2e424a56d2c6c27aa97d1a86395877b3a\"]},{\"name\":\"_bs32\",\"type\":\"bytes32[]\",\"data\":[\"abcdefghiabcdefghiabcdefghiabhji\",\"abcdefghiabcdefghiabcdefghiabhji\",\"\",\"\"]},{\"name\":\"_s\",\"type\":\"string[]\",\"data\":[\"\",\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"\",\"\",\"\"]},{\"name\":\"_bs\",\"type\":\"bytes[]\",\"data\":[\"\",\"sadfljkjkljkl\",\"章鱼小丸子ljjkl;adjsfkljlkjl\",\"\",\"\",\"\"]}]]}"));
-    
-	}
+    }
 }

@@ -13,7 +13,7 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.tx.gas.ContractGasProvider;
 import org.fisco.bcos.web3j.tx.gas.StaticGasProvider;
 
-public class CRUDSerivce {
+public class CRUDService {
     private static BigInteger gasPrice = new BigInteger("300000000");
     private static BigInteger gasLimit = new BigInteger("300000000");
     private static final String TableFactoryPrecompileAddress =
@@ -23,7 +23,7 @@ public class CRUDSerivce {
     private TableFactory tableFactory;
     private CRUD crud;
 
-    public CRUDSerivce(Web3j web3j, Credentials credentials) {
+    public CRUDService(Web3j web3j, Credentials credentials) {
 
         ContractGasProvider contractGasProvider = new StaticGasProvider(gasPrice, gasLimit);
         tableFactory =
