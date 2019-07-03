@@ -1,6 +1,23 @@
 package org.fisco.bcos.channel.dto;
 
+import java.nio.charset.StandardCharsets;
+
 public class ChannelRequest {
+
+    private String fromOrg; // 链ID
+    private String orgApp; // 来源标识
+    private String version; // 版本
+    private String bankNO; // 机构标识
+    private String appName; // 应用类型
+
+    private String messageID; // 消息的唯一标识id
+    private String toOrg; // 目标机构标识
+    private String toTopic; // 目标topic
+
+    private Integer timeout = 0; // 超时时间（毫秒）
+    private Integer ttl; // TTL 限制重试的次数
+
+    private byte[] content; // 请求包体
 
     public String getFromOrg() {
         return fromOrg;
@@ -83,25 +100,27 @@ public class ChannelRequest {
     }
 
     public String getContent() {
-        return content;
+
+        if (this.content == null) {
+            return null;
+        }
+        String _content = new String(this.content, StandardCharsets.UTF_8);
+        return _content;
+    }
+
+    public byte[] getContentByteArray() {
+        return this.content;
     }
 
     public void setContent(String content) {
-        this.content = content;
+        if (content == null) {
+            this.content = null;
+        } else {
+            this.content = content.getBytes();
+        }
     }
 
-    private String fromOrg; // 链ID
-    private String orgApp; // 来源标识
-    private String version; // 版本
-    private String bankNO; // 机构标识
-    private String appName; // 应用类型
-
-    private String messageID; // 消息的唯一标识id
-    private String toOrg; // 目标机构标识
-    private String toTopic; // 目标topic
-
-    private Integer timeout = 0; // 超时时间（毫秒）
-    private Integer ttl; // TTL 限制重试的次数
-
-    private String content; // 请求包体
+    public void setContent(byte[] content) {
+        this.content = content;
+    }
 }
