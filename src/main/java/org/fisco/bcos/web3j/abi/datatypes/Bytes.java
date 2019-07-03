@@ -17,4 +17,14 @@ public class Bytes extends BytesType {
         int length = value.length;
         return length > 0 && length <= 32 && length == byteSize;
     }
+
+    @Override
+    public boolean dynamicType() {
+        return false;
+    }
+
+    @Override
+    public int offset() {
+        return 1;
+    }
 }

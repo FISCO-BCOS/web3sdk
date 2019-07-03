@@ -77,4 +77,7 @@ public abstract class Array<T extends Type> implements Type<List<T>> {
         result = 31 * result + (value != null ? value.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public abstract boolean dynamicType();
 }
