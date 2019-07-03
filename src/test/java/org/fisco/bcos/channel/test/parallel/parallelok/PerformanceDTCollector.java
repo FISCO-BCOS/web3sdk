@@ -9,8 +9,8 @@ import org.slf4j.LoggerFactory;
 
 public class PerformanceDTCollector {
 
-    static Logger logger = LoggerFactory.getLogger(PerformanceDTCollector.class);
-    static HashMap<String, String> errorInfos = new HashMap<String, String>();
+    private static Logger logger = LoggerFactory.getLogger(PerformanceDTCollector.class);
+    private static HashMap<String, String> errorInfos = new HashMap<String, String>();
 
     private Integer total = 0;
     private DagUserMgr dagUserMrg;
@@ -83,12 +83,12 @@ public class PerformanceDTCollector {
                 error.addAndGet(1);
             }
 
-            received.incrementAndGet();
+            int count = received.incrementAndGet();
 
-            if ((received.get() + 1) % (total / 10) == 0) {
+            if (count % (total / 10) == 0) {
                 System.out.println(
                         "                                                       |received:"
-                                + String.valueOf((received.get() + 1) * 100 / total)
+                                + String.valueOf(count * 100 / total)
                                 + "%");
             }
 

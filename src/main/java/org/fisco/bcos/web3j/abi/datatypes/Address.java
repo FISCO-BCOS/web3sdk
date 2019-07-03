@@ -63,4 +63,14 @@ public class Address implements Type<String> {
     public int hashCode() {
         return value != null ? value.hashCode() : 0;
     }
+
+    @Override
+    public boolean dynamicType() {
+        return false;
+    }
+
+    @Override
+    public int offset() {
+        return 1;
+    }
 }

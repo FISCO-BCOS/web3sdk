@@ -45,11 +45,11 @@
 代码格式化gradle插件[google-java-format-gradle-plugin](https://github.com/sherter/google-java-format-gradle-plugin).
 
 执行任务 `googleJavaFormat`格式化java文件。
-```
+```bash
 ./gradlew goJF
 ```
 执行任务 `verifyGoogleJavaFormat`验证java文件是否格式化完成
-```          
+```bash         
 ./gradlew verGJF
 ```
 

@@ -155,7 +155,6 @@ public class PerformanceDTTest {
 
             while (verify_success.get() + verify_failed.get() < total_user) {
                 Thread.sleep(40);
-                ;
             }
 
             System.out.println("validation:");
@@ -309,14 +308,12 @@ public class PerformanceDTTest {
 
             List<DagTransferUser> allUser = dagUserMgr.getUserList();
 
-            int coreNum = Runtime.getRuntime().availableProcessors();
             ThreadPoolTaskExecutor threadPool = new ThreadPoolTaskExecutor();
             threadPool.setCorePoolSize(200);
             threadPool.setMaxPoolSize(500);
             threadPool.setQueueCapacity(Math.max(count.intValue(), allUser.size()));
             threadPool.initialize();
 
-            Lock lock = new ReentrantLock();
             final DagTransfer _dagTransfer = dagTransfer;
             AtomicInteger geted = new AtomicInteger(0);
             for (int i = 0; i < allUser.size(); ++i) {
@@ -473,6 +470,10 @@ public class PerformanceDTTest {
 
                     DagTransferUser from = dagUserMgr.getFrom(index);
                     DagTransferUser to = dagUserMgr.getTo(index);
+
+                    if ((deci.intValue() > 0) && (deci.intValue() >= (index % 10 + 1))) {
+                        to = dagUserMgr.getNext(index);
+                    }
 
                     PerformanceDTCallback callback = new PerformanceDTCallback();
                     callback.setCallBackType("transfer");

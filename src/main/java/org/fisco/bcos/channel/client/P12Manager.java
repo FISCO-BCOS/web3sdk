@@ -32,7 +32,7 @@ public class P12Manager {
     private final String NAME = "key";
     private String password;
     private KeyStore keyStore;
-    PKCS12KeyStoreSpi p12KeyStore;
+    private PKCS12KeyStoreSpi p12KeyStore;
 
     public P12Manager() {
         Security.setProperty("crypto.policy", "unlimited");
@@ -75,9 +75,7 @@ public class P12Manager {
                         bcW.getAffineXCoord().toBigInteger(), bcW.getAffineYCoord().toBigInteger());
         ECPublicKeySpec keySpec = new ECPublicKeySpec(w, tryFindNamedCurveSpec(params));
         return (PublicKey)
-                KeyFactory.getInstance(
-                                "EC",
-                                org.bouncycastle.jce.provider.BouncyCastleProvider.PROVIDER_NAME)
+                KeyFactory.getInstance("EC", BouncyCastleProvider.PROVIDER_NAME)
                         .generatePublic(keySpec);
     }
 
