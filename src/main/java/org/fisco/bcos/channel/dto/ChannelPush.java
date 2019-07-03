@@ -9,6 +9,20 @@ import org.slf4j.LoggerFactory;
 public class ChannelPush {
     static Logger logger = LoggerFactory.getLogger(ChannelPush.class);
 
+    private String keyID; // 链ID
+    private String orgApp; // 来源标识
+    private String version; // 版本
+    private String bankNO; // 机构标识
+    private String appName; // 应用类型
+
+    private String messageID; // 消息的唯一标识id
+    private String toOrg; // 目标机构标识
+
+    private Integer timeout; // 超时时间（毫秒）
+    private Integer ttl; // TTL
+
+    private byte[] content; // 请求包体
+
     public String getKeyID() {
         return keyID;
     }
@@ -81,11 +95,28 @@ public class ChannelPush {
         this.ttl = ttl;
     }
 
-    public String getContent() {
+    public byte[] getContent2() {
         return content;
     }
 
+    public String getContent() {
+        if (content == null) {
+            return null;
+        }
+
+        String _content = new String(content);
+        return _content;
+    }
+
     public void setContent(String content) {
+        if (content == null) {
+            this.content = null;
+            return;
+        }
+        this.content = content.getBytes();
+    }
+
+    public void setContent(byte[] content) {
         this.content = content;
     }
 
@@ -96,20 +127,6 @@ public class ChannelPush {
 
         service.sendResponseMessage(response, info, ctx, fromNode, toNode, seq);
     }
-
-    private String keyID; // 链ID
-    private String orgApp; // 来源标识
-    private String version; // 版本
-    private String bankNO; // 机构标识
-    private String appName; // 应用类型
-
-    private String messageID; // 消息的唯一标识id
-    private String toOrg; // 目标机构标识
-
-    private Integer timeout; // 超时时间（毫秒）
-    private Integer ttl; // TTL
-
-    private String content; // 请求包体
 
     // 回包用字段
 
