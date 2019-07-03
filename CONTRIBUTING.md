@@ -45,11 +45,11 @@ Go to [issues page](https://github.com/FISCO-BCOS/web3sdk/issues)
 The code formatting tool are described by the [google-java-format-gradle-plugin](https://github.com/sherter/google-java-format-gradle-plugin).
 
 Execute the task `googleJavaFormat` to format all *.java files in the project
-```
+```bash
 ./gradlew goJF
 ```
 Execute the task `verifyGoogleJavaFormat` to verify that all *.java files are formatted properly
-```          
+```bash          
 ./gradlew verGJF
 ```
 
