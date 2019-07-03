@@ -29,6 +29,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 public class PerformanceDTTest {
     private static Logger logger = LoggerFactory.getLogger(PerformanceDTTest.class);
+    private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     private static String groupId = "1";
 
@@ -93,7 +94,6 @@ public class PerformanceDTTest {
         allUser = dagUserMgr.getUserList();
 
         try {
-            final ParallelOk _parallelok = parallelok;
             final List<DagTransferUser> _allUser = allUser;
 
             for (int i = 0; i < allUser.size(); ++i) {
@@ -138,7 +138,6 @@ public class PerformanceDTTest {
 
             while (verify_success.get() + verify_failed.get() < total_user) {
                 Thread.sleep(40);
-                ;
             }
 
             System.out.println("validation:");
@@ -396,8 +395,6 @@ public class PerformanceDTTest {
         }
     }
 
-    private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
     public void userTransferTest(BigInteger count, BigInteger qps, BigInteger deci) {
         List<String> signedTransactions = new ArrayList<String>();
         List<PerformanceDTCallback> callbacks = new ArrayList<PerformanceDTCallback>();
@@ -423,7 +420,6 @@ public class PerformanceDTTest {
 
             List<DagTransferUser> allUser = dagUserMgr.getUserList();
 
-            int coreNum = Runtime.getRuntime().availableProcessors();
             ThreadPoolTaskExecutor threadPool = new ThreadPoolTaskExecutor();
             threadPool.setCorePoolSize(200);
             threadPool.setMaxPoolSize(500);
@@ -591,123 +587,6 @@ public class PerformanceDTTest {
             e.printStackTrace();
             System.exit(0);
         }
-        /*
-        try {
-
-            ThreadPoolTaskExecutor threadPool = new ThreadPoolTaskExecutor();
-            threadPool.setCorePoolSize(200);
-            threadPool.setMaxPoolSize(500);
-            threadPool.setQueueCapacity(count.intValue());
-
-            threadPool.initialize();
-
-            RateLimiter limiter = RateLimiter.create(qps.intValue());
-            Integer area = count.intValue() / 10;
-
-            parallelokAddr = dagUserMgr.getContractAddr();
-            parallelok =
-                    ParallelOk.load(
-                            parallelokAddr,
-                            web3,
-                            credentials,
-                            new StaticGasProvider(
-                                    new BigInteger("30000000"), new BigInteger("30000000")));
-
-            System.out.println("ParallelOk address: " + parallelokAddr);
-
-            // query all account balance info
-            List<DagTransferUser> allUser = dagUserMgr.getUserList();
-            for (int i = 0; i < allUser.size(); ++i) {
-                BigInteger result = parallelok.balanceOf(allUser.get(i).getUser()).send();
-
-                allUser.get(i).setAmount(result);
-
-                logger.debug(" query user " + allUser.get(i).getUser() + " amount " + result);
-            }
-
-            System.out.println("Start UserTransfer test...");
-            System.out.println(
-                    "===================================================================");
-
-            long startTime = System.currentTimeMillis();
-            this.collector.setStartTimestamp(startTime);
-
-            for (Integer i = 0; i < count.intValue(); ++i) {
-                final int index = i;
-                threadPool.execute(
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                boolean success = false;
-                                while (!success) {
-                                    limiter.acquire();
-                                    DagTransferUser from = dagUserMgr.getFrom(index);
-                                    DagTransferUser to = dagUserMgr.getTo(index);
-
-                                    if ((deci.intValue() > 0)
-                                            && (deci.intValue() >= (index % 10 + 1))) {
-                                        to = dagUserMgr.getNext(index);
-                                    }
-
-                                    Random random = new Random();
-                                    int r = random.nextInt(100);
-                                    BigInteger amount = BigInteger.valueOf(r);
-
-                                    PerformanceDTCallback callback = new PerformanceDTCallback();
-                                    callback.setCallBackType("transfer");
-                                    callback.setCollector(collector);
-                                    callback.setDagUserMgr(getDagUserMgr());
-                                    callback.setFromUser(from);
-                                    callback.setToUser(to);
-                                    callback.setAmount(amount);
-
-                                    try {
-                                        logger.debug(
-                                                " transfer from is "
-                                                        + from
-                                                        + " to is "
-                                                        + to
-                                                        + " amount is "
-                                                        + amount);
-                                        parallelok.transfer(
-                                                from.getUser(), to.getUser(), amount, callback);
-                                        success = true;
-                                    } catch (Exception e) {
-                                        success = false;
-                                        continue;
-                                    }
-                                }
-                                int current = sended.incrementAndGet();
-
-                                if (current >= area && ((current % area) == 0)) {
-                                    long elapsed = System.currentTimeMillis() - startTime;
-                                    double sendSpeed = current / ((double)elapsed / 1000);
-                                    System.out.println(
-                                            "Already sended: "
-                                                    + current
-                                                    + "/"
-                                                    + count
-                                                    + " transactions"
-                                                    + ",QPS="
-                                                    + sendSpeed);
-                                }
-                            }
-                        });
-            }
-
-            // end or not
-            while (!collector.isEnd()) {
-                Thread.sleep(3000);
-            }
-
-            veryTransferData();
-            System.exit(0);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(0);
-        }
-        */
     }
 
     public ParallelOk getDagTransfer() {

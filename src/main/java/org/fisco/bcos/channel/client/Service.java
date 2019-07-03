@@ -11,6 +11,7 @@ import io.netty.util.TimerTask;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +34,9 @@ import org.fisco.bcos.channel.handler.ConnectionCallback;
 import org.fisco.bcos.channel.handler.ConnectionInfo;
 import org.fisco.bcos.channel.handler.GroupChannelConnectionsConfig;
 import org.fisco.bcos.channel.handler.Message;
+import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.fisco.bcos.web3j.protocol.exceptions.TransactionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -244,6 +247,9 @@ public class Service {
 
     public BcosResponse sendEthereumMessage(BcosRequest request) {
         class Callback extends BcosResponseCallback {
+            public BcosResponse bcosResponse;
+            public Semaphore semaphore = new Semaphore(1, true);
+
             Callback() {
                 try {
                     semaphore.acquire(1);
@@ -256,19 +262,16 @@ public class Service {
 
             @Override
             public void onResponse(BcosResponse response) {
-                fiscoResponse = response;
+                bcosResponse = response;
 
-                if (fiscoResponse != null && fiscoResponse.getContent() != null) {
+                if (bcosResponse != null && bcosResponse.getContent() != null) {
                     logger.debug("response: {}", response.getContent());
                 } else {
-                    logger.error("fisco error");
+                    logger.error("response is null");
                 }
 
                 semaphore.release();
             }
-
-            public BcosResponse fiscoResponse;
-            public Semaphore semaphore = new Semaphore(1, true);
         };
 
         Callback callback = new Callback();
@@ -281,7 +284,7 @@ public class Service {
             Thread.currentThread().interrupt();
         }
 
-        return callback.fiscoResponse;
+        return callback.bcosResponse;
     }
 
     public BcosResponse sendEthereumMessage(
@@ -404,10 +407,10 @@ public class Service {
             if (channelConnections == null) {
                 if (orgID != null) {
                     logger.error("not found:{}", orgID);
-                    throw new Exception("not found orgID");
+                    throw new TransactionException("not found orgID");
                 } else {
                     logger.error("not found:{}", agencyName);
-                    throw new Exception("not found agencyName");
+                    throw new TransactionException("not found agencyName");
                 }
             }
             ChannelHandlerContext ctx =
@@ -467,6 +470,17 @@ public class Service {
     public void asyncSendChannelMessage2(
             ChannelRequest request, ChannelResponseCallback2 callback) {
         try {
+
+            if (request.getContentByteArray().length >= 32 * 1024 * 1024) {
+                logger.error(
+                        "send byte length should not greater than 32M now length:{}",
+                        request.getContentByteArray().length);
+                System.out.println(
+                        "send byte length should not greater than 32M now length:"
+                                + request.getContentByteArray().length);
+                throw new AmopException("send byte length should not greater than 32M");
+            }
+
             logger.debug("ChannelRequest: " + request.getMessageID());
             callback.setService(this);
 
@@ -475,7 +489,13 @@ public class Service {
             channelMessage.setSeq(request.getMessageID());
             channelMessage.setResult(0);
             channelMessage.setType((short) 0x30); // 链上链下请求0x30
-            channelMessage.setData(request.getContent().getBytes());
+            channelMessage.setData(request.getContentByteArray());
+
+            System.out.println(
+                    "value length:"
+                            + request.getContentByteArray().length
+                            + ":"
+                            + request.getContent().getBytes().length);
             channelMessage.setTopic(request.getToTopic());
 
             try {
@@ -542,6 +562,86 @@ public class Service {
                 response.setContent("");
 
                 callback.onResponse(response);
+                return;
+            }
+        } catch (Exception e) {
+            logger.error("system error", e);
+        }
+    }
+
+    public void asyncMulticastChannelMessage2(ChannelRequest request) {
+        try {
+            logger.debug("ChannelRequest: " + request.getMessageID());
+
+            ChannelMessage2 channelMessage = new ChannelMessage2();
+
+            channelMessage.setSeq(request.getMessageID());
+            channelMessage.setResult(0);
+            channelMessage.setType((short) 0x35); // 链上链下多播请求0x35
+            channelMessage.setData(request.getContentByteArray());
+            channelMessage.setTopic(request.getToTopic());
+
+            try {
+                // 设置发送节点
+                ChannelConnections fromChannelConnections =
+                        allChannelConnections
+                                .getAllChannelConnections()
+                                .stream()
+                                .filter(x -> x.getGroupId() == groupId)
+                                .findFirst()
+                                .get();
+                if (fromChannelConnections == null) {
+                    // 没有找到对应的链
+                    // 返回错误
+                    if (orgID != null) {
+                        logger.error("not found:{}", orgID);
+                        throw new Exception("not found orgID");
+                    } else {
+                        logger.error("not found:{}", agencyName);
+                        throw new Exception("not found agencyName");
+                    }
+                }
+
+                logger.debug(
+                        "FromOrg:{} nodes:{}",
+                        request.getFromOrg(),
+                        fromChannelConnections.getConnections().size());
+
+                for (ConnectionInfo connectionInfo : fromChannelConnections.getConnections()) {
+                    ChannelHandlerContext ctx =
+                            fromChannelConnections.getNetworkConnectionByHost(
+                                    connectionInfo.getHost(), connectionInfo.getPort());
+
+                    if (ctx != null && ctx.channel().isActive()) {
+                        ByteBuf out = ctx.alloc().buffer();
+                        channelMessage.writeHeader(out);
+                        channelMessage.writeExtra(out);
+
+                        ctx.writeAndFlush(out);
+
+                        logger.debug(
+                                "send message to  "
+                                        + connectionInfo.getHost()
+                                        + ":"
+                                        + String.valueOf(connectionInfo.getPort())
+                                        + " 成功");
+                    } else {
+                        logger.error(
+                                "sending node unavailable, {}",
+                                connectionInfo.getHost()
+                                        + ":"
+                                        + String.valueOf(connectionInfo.getPort()));
+                    }
+                }
+            } catch (Exception e) {
+                logger.error("send message fail:", e);
+
+                ChannelResponse response = new ChannelResponse();
+                response.setErrorCode(100);
+                response.setMessageID(request.getMessageID());
+                response.setErrorMessage(e.getMessage());
+                response.setContent("");
+
                 return;
             }
         } catch (Exception e) {
@@ -692,7 +792,7 @@ public class Service {
                 (ChannelResponseCallback2) seq2Callback.get(message.getSeq());
         logger.debug("ChannelResponse seq:{}", message.getSeq());
 
-        if (message.getType() == 0x30) { // 链上链下请求
+        if (message.getType() == 0x30 || message.getType() == 0x35) { // 链上链下请求
             logger.debug("channel PUSH");
             if (callback != null) {
                 // 清空callback再处理
@@ -712,8 +812,9 @@ public class Service {
 
                     push.setSeq(message.getSeq());
                     push.setMessageID(message.getSeq());
-                    push.setContent(new String(message.getData(), 0, message.getData().length));
-
+                    System.out.println("data length:" + message.getData().length);
+                    logger.info("msg:" + Arrays.toString(message.getData()));
+                    push.setContent(message.getData());
                     pushCallback.onPush(push);
                 } else {
                     logger.error("can not push，unset push callback");
@@ -796,8 +897,8 @@ public class Service {
 
             try {
                 TransactionReceipt receipt =
-                        objectMapper.readValue(message.getData(), TransactionReceipt.class);
-
+                        ObjectMapperFactory.getObjectMapper()
+                                .readValue(message.getData(), TransactionReceipt.class);
                 callback.onResponse(receipt);
             } catch (Exception e) {
                 TransactionReceipt receipt = new TransactionReceipt();
