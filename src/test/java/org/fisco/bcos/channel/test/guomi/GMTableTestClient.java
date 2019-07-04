@@ -278,7 +278,7 @@ public class GMTableTestClient {
         try {
             web3j = Web3j.build(channelEthereumService, service.getGroupId());
         } catch (Exception e) {
-            System.out.println("\nPlease provide groupID in the first paramters");
+            System.out.println("\nPlease provide groupID in the first parameters");
             System.exit(0);
         }
 
