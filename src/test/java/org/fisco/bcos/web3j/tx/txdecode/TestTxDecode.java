@@ -29,7 +29,7 @@ public class TestTxDecode {
         System.out.println("===================decode input===================");
         String input = txReceipt.getInput();
         String inputResult1 = transactionDecoder.decodeInputReturnJson(input);
-        List<ResultEntity> inputResult2 = transactionDecoder.decodeInputReturnObject(input);
+        Map<String, Object> inputResult2 = transactionDecoder.decodeInputReturnObject(input);
 
         System.out.println(inputResult1);
         System.out.println(inputResult2);
@@ -38,7 +38,8 @@ public class TestTxDecode {
         System.out.println("===================decode output===================");
         String output = txReceipt.getOutput();
         String outputResult1 = transactionDecoder.decodeOutputReturnJson(input, output);
-        List<ResultEntity> outputResult2 =
+
+        Map<String, Object> outputResult2 =
                 transactionDecoder.decodeOutputReturnObject(input, output);
 
         System.out.println(outputResult1);
