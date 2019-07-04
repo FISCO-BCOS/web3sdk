@@ -122,7 +122,8 @@ public class ContractAbiUtil {
 
         for (int i = 0; i < paramTypes.size(); i++) {
 
-            AbiDefinition.NamedType.Type type =  new AbiDefinition.NamedType.Type(paramTypes.get(i).getType());
+            AbiDefinition.NamedType.Type type =
+                    new AbiDefinition.NamedType.Type(paramTypes.get(i).getType());
             // nested array , not support now.
             if (type.getDepth() > 1) {
                 throw new BaseException(
