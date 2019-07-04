@@ -219,7 +219,7 @@ public class TransactionDecoder {
             throws BaseException, IOException {
 
         // set result to java bean
-        Map<String, List<List<ResultEntity>>> resultEntityMap = new LinkedHashMap<>();
+        Map<String, List<List<EventResultEntity>>> resultEntityMap = new LinkedHashMap<>();
 
         for (Log log : logList) {
             Tuple2<AbiDefinition, List<EventResultEntity>> resultTuple2 =
