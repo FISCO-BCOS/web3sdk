@@ -54,15 +54,15 @@ public class P12Manager {
         p12KeyStore.engineLoad(in, password.toCharArray());
     }
 
-    public PrivateKey getPrivateKey(String password)
+    public PrivateKey getPrivateKey()
             throws UnrecoverableKeyException, KeyStoreException, NoSuchAlgorithmException {
         return (PrivateKey) keyStore.getKey(NAME, password.toCharArray());
     }
 
-    public PublicKey getPublicKey(String password)
+    public PublicKey getPublicKey()
             throws UnrecoverableKeyException, KeyStoreException, NoSuchAlgorithmException,
                     InvalidKeySpecException, NoSuchProviderException {
-        ECPrivateKey privateKey = (ECPrivateKey) getPrivateKey(password);
+        ECPrivateKey privateKey = (ECPrivateKey) getPrivateKey();
 
         ECParameterSpec params = privateKey.getParams();
 
@@ -111,11 +111,11 @@ public class P12Manager {
         return certificate.getPublicKey();
     }
 
-    public ECKeyPair getECKeyPair(String password)
+    public ECKeyPair getECKeyPair()
             throws UnrecoverableKeyException, KeyStoreException, NoSuchAlgorithmException,
                     InvalidKeySpecException, NoSuchProviderException {
-        PrivateKey privateKey = getPrivateKey(password);
-        PublicKey publicKey = getPublicKey(password);
+        PrivateKey privateKey = getPrivateKey();
+        PublicKey publicKey = getPublicKey();
 
         KeyPair keyPair = new KeyPair(publicKey, privateKey);
 

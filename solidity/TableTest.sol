@@ -1,11 +1,12 @@
 pragma solidity ^0.4.24;
+pragma experimental ABIEncoderV2;
 
 import "./Table.sol";
 
 contract TableTest {
     event CreateResult(int count);
-    event InsertResult(int count, string name, bytes8 item_name, bytes32[] item_id);
-    event UpdateResult(int count, string name);
+    event InsertResult(int count);
+    event UpdateResult(int count);
     event RemoveResult(int count);
     
     //create table
@@ -18,29 +19,29 @@ contract TableTest {
     }
 
     //select records
-    function select(string name) public constant returns(bytes32[], int[], bytes32[]){
+    function select(string name) public constant returns(string[], int[], string[]){
         TableFactory tf = TableFactory(0x1001);
         Table table = tf.openTable("t_test");
         
         Condition condition = table.newCondition();
         
         Entries entries = table.select(name, condition);
-        bytes32[] memory user_name_bytes_list = new bytes32[](uint256(entries.size()));
+        string[] memory user_name_bytes_list = new string[](uint256(entries.size()));
         int[] memory item_id_list = new int[](uint256(entries.size()));
-        bytes32[] memory item_name_bytes_list = new bytes32[](uint256(entries.size()));
+        string[] memory item_name_bytes_list = new string[](uint256(entries.size()));
         
         for(int i=0; i<entries.size(); ++i) {
             Entry entry = entries.get(i);
             
-            user_name_bytes_list[uint256(i)] = entry.getBytes32("name");
+            user_name_bytes_list[uint256(i)] = entry.getString("name");
             item_id_list[uint256(i)] = entry.getInt("item_id");
-            item_name_bytes_list[uint256(i)] = entry.getBytes32("item_name");
+            item_name_bytes_list[uint256(i)] = entry.getString("item_name"); 
         }
  
         return (user_name_bytes_list, item_id_list, item_name_bytes_list);
     }
     //insert records
-    function insert(string name, int item_id, string item_name) public returns(int result, string result_name, bytes32, address addr, bytes32[]) {
+    function insert(string name, int item_id, string item_name) public returns(int) {
         TableFactory tf = TableFactory(0x1001);
         Table table = tf.openTable("t_test");
         
@@ -50,15 +51,9 @@ contract TableTest {
         entry.set("item_name", item_name);
         
         int count = table.insert(name, entry);
+        emit InsertResult(count);
         
-        bytes32[] memory bytes_list = new bytes32[](uint256(2));
-        bytes_list[0] = "fisco";
-        bytes_list[1] = "bcos";
-
-        emit InsertResult(count, "fruit", "apple", bytes_list);
-        emit UpdateResult(count, "fruit");
-
-        return (count, "hello", "world", 0x12, bytes_list);
+        return count;
     }
     //update records
     function update(string name, int item_id, string item_name) public returns(int) {
@@ -73,7 +68,7 @@ contract TableTest {
         condition.EQ("item_id", item_id);
         
         int count = table.update(name, entry, condition);
-         emit UpdateResult(count, "fruit");
+        emit UpdateResult(count);
         
         return count;
     }

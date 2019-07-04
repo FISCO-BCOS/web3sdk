@@ -1,13 +1,9 @@
-package org.fisco.bcos.channel.test.contract;
+package org.fisco.bcos.channel.test.guomi;
 
 import java.math.BigInteger;
 import java.util.List;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.fisco.bcos.channel.client.Service;
-import org.fisco.bcos.channel.test.contract.TableTest.CreateResultEventResponse;
-import org.fisco.bcos.channel.test.contract.TableTest.InsertResultEventResponse;
-import org.fisco.bcos.channel.test.contract.TableTest.RemoveResultEventResponse;
-import org.fisco.bcos.channel.test.contract.TableTest.UpdateResultEventResponse;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.crypto.ECKeyPair;
 import org.fisco.bcos.web3j.crypto.Keys;
@@ -28,10 +24,10 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
-public class TableTestClient {
+public class GMTableTestClient {
 
     public static int modevalue = 100;
-    public static Logger logger = LoggerFactory.getLogger(TableTestClient.class);
+    public static Logger logger = LoggerFactory.getLogger(GMTableTestClient.class);
     public static Web3j web3j;
 
     public static BigInteger gasPrice = new BigInteger("30000000");
@@ -111,67 +107,6 @@ public class TableTestClient {
         }
     }
 
-    private static void create(TableTest tabletest) throws Exception {
-        TransactionReceipt receipt = tabletest.create().send();
-        List<CreateResultEventResponse> createResultEvents =
-                tabletest.getCreateResultEvents(receipt);
-        if (createResultEvents.size() == 0) {
-            System.out.println("create t_test table failed.");
-            return;
-        }
-        CreateResultEventResponse createResultEventResponse = createResultEvents.get(0);
-        int createCount = createResultEventResponse.count.intValue();
-        System.out.println("create table ret:" + createCount);
-        switch (createCount) {
-            case PrecompiledCommon.PermissionDenied:
-                System.out.println("non-authorized to create t_test table.");
-                break;
-            case PrecompiledCommon.PermissionDenied_RC3:
-                System.out.println("non-authorized to create t_test table.");
-                break;
-            case PrecompiledCommon.TableExist:
-                System.out.println("t_test table already exist.");
-                break;
-            case PrecompiledCommon.Success:
-                System.out.println("create t_test table success.");
-                break;
-            default:
-                System.out.println("unknown return value:" + createCount);
-                break;
-        }
-    }
-
-    private static void insert(String[] args, TableTest tabletest) {
-        if (args.length == 4) {
-            try {
-                String name = args[1];
-                int item_id = Integer.parseInt(args[2]);
-                String item_name = args[3];
-
-                RemoteCall<TransactionReceipt> insert =
-                        tabletest.insert(name, BigInteger.valueOf(item_id), item_name);
-                TransactionReceipt txReceipt = insert.send();
-                List<InsertResultEventResponse> insertResultEvents =
-                        tabletest.getInsertResultEvents(txReceipt);
-                if (insertResultEvents.size() > 0) {
-                    for (int i = 0; i < insertResultEvents.size(); i++) {
-                        InsertResultEventResponse insertResultEventResponse =
-                                insertResultEvents.get(i);
-                        logger.info("insertCount = " + insertResultEventResponse.count.intValue());
-                        System.out.println(
-                                "insertCount = " + insertResultEventResponse.count.intValue());
-                    }
-                } else {
-                    System.out.println("t_test table does not exist.");
-                }
-            } catch (Exception e) {
-                System.out.println("insert transaction is abnormal, please check the environment");
-            }
-        } else {
-            System.out.println("\nPlease enter as follow example:\n 1 1 insert fruit 1 apple");
-        }
-    }
-
     private static void remove(String[] args, TableTest tabletest) {
         if (args.length == 3) {
             try {
@@ -180,11 +115,12 @@ public class TableTestClient {
                 RemoteCall<TransactionReceipt> remove =
                         tabletest.remove(name, BigInteger.valueOf(item_id));
                 TransactionReceipt transactionReceipt = remove.send();
-                List<RemoveResultEventResponse> removeResultEvents =
+                List<TableTest.RemoveResultEventResponse> removeResultEvents =
                         tabletest.getRemoveResultEvents(transactionReceipt);
 
                 if (removeResultEvents.size() > 0) {
-                    RemoveResultEventResponse reomveResultEventResponse = removeResultEvents.get(0);
+                    TableTest.RemoveResultEventResponse reomveResultEventResponse =
+                            removeResultEvents.get(0);
                     logger.info("removeCount = " + reomveResultEventResponse.count.intValue());
                     System.out.println(
                             "removeCount = " + reomveResultEventResponse.count.intValue());
@@ -208,12 +144,12 @@ public class TableTestClient {
                 RemoteCall<TransactionReceipt> update =
                         tabletest.update(name, BigInteger.valueOf(item_id), item_name);
                 TransactionReceipt transactionReceipt = update.send();
-                List<UpdateResultEventResponse> updateResultEvents =
+                List<TableTest.UpdateResultEventResponse> updateResultEvents =
                         tabletest.getUpdateResultEvents(transactionReceipt);
 
                 if (updateResultEvents.size() > 0) {
                     for (int i = 0; i < updateResultEvents.size(); i++) {
-                        UpdateResultEventResponse updateResultEventResponse =
+                        TableTest.UpdateResultEventResponse updateResultEventResponse =
                                 updateResultEvents.get(i);
                         System.out.println(
                                 "updateCount = " + updateResultEventResponse.count.intValue());
@@ -261,6 +197,67 @@ public class TableTestClient {
         }
     }
 
+    private static void insert(String[] args, TableTest tabletest) {
+        if (args.length == 4) {
+            try {
+                String name = args[1];
+                int item_id = Integer.parseInt(args[2]);
+                String item_name = args[3];
+
+                RemoteCall<TransactionReceipt> insert =
+                        tabletest.insert(name, BigInteger.valueOf(item_id), item_name);
+                TransactionReceipt txReceipt = insert.send();
+                List<TableTest.InsertResultEventResponse> insertResultEvents =
+                        tabletest.getInsertResultEvents(txReceipt);
+                if (insertResultEvents.size() > 0) {
+                    for (int i = 0; i < insertResultEvents.size(); i++) {
+                        TableTest.InsertResultEventResponse insertResultEventResponse =
+                                insertResultEvents.get(i);
+                        logger.info("insertCount = " + insertResultEventResponse.count.intValue());
+                        System.out.println(
+                                "insertCount = " + insertResultEventResponse.count.intValue());
+                    }
+                } else {
+                    System.out.println("t_test table does not exist.");
+                }
+            } catch (Exception e) {
+                System.out.println("insert transaction is abnormal, please check the environment");
+            }
+        } else {
+            System.out.println("\nPlease enter as follow example:\n 1 1 insert fruit 1 apple");
+        }
+    }
+
+    private static void create(TableTest tabletest) throws Exception {
+        TransactionReceipt receipt = tabletest.create().send();
+        List<TableTest.CreateResultEventResponse> createResultEvents =
+                tabletest.getCreateResultEvents(receipt);
+        if (createResultEvents.size() == 0) {
+            System.out.println("create t_test table failed.");
+            return;
+        }
+        TableTest.CreateResultEventResponse createResultEventResponse = createResultEvents.get(0);
+        int createCount = createResultEventResponse.count.intValue();
+        System.out.println("create table ret:" + createCount);
+        switch (createCount) {
+            case PrecompiledCommon.PermissionDenied:
+                System.out.println("non-authorized to create t_test table.");
+                break;
+            case PrecompiledCommon.PermissionDenied_RC3:
+                System.out.println("non-authorized to create t_test table.");
+                break;
+            case PrecompiledCommon.TableExist:
+                System.out.println("t_test table already exist.");
+                break;
+            case PrecompiledCommon.Success:
+                System.out.println("create t_test table success.");
+                break;
+            default:
+                System.out.println("unknown return value:" + createCount);
+                break;
+        }
+    }
+
     public static void main(String[] args) throws Exception {
 
         // init the Service
@@ -281,7 +278,7 @@ public class TableTestClient {
         try {
             web3j = Web3j.build(channelEthereumService, service.getGroupId());
         } catch (Exception e) {
-            System.out.println("\nPlease provide groupID in the first paramters");
+            System.out.println("\nPlease provide groupID in the first parameters");
             System.exit(0);
         }
 
