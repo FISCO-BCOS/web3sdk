@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.type.CollectionType;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -72,7 +73,7 @@ public class TransactionDecoder {
         List<ResultEntity> resultList = decodeInputReturnObject(input);
 
         // format result to json
-        Map<String, Object> resultMap = new HashMap<>();
+        Map<String, Object> resultMap = new LinkedHashMap<>();
         String methodSign = decodeMethodSign(abiFunc);
         resultMap.put("function", methodSign);
         resultMap.put("methodID", FunctionEncoder.buildMethodId(methodSign));
@@ -214,7 +215,7 @@ public class TransactionDecoder {
             throws BaseException, IOException {
 
         // set result to java bean
-        Map<String, List<List<EventResultEntity>>> resultEntityMap = new HashMap<>();
+        Map<String, List<List<ResultEntity>>> resultEntityMap = new LinkedHashMap<>();
 
         for (Log log : logList) {
             Tuple2<AbiDefinition, List<EventResultEntity>> resultTuple2 =
