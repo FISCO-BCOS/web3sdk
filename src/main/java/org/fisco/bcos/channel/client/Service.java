@@ -386,7 +386,9 @@ public class Service {
     }
 
     public void asyncSendEthereumMessage(BcosRequest request, BcosResponseCallback callback) {
-        Boolean sended = false;
+        
+	logger.info("fisco message: " + request.getMessageID()+" msg:"+request.getContent());
+	Boolean sended = false;
 
         BcosMessage bcosMessage = new BcosMessage();
 
@@ -812,7 +814,6 @@ public class Service {
 
                     push.setSeq(message.getSeq());
                     push.setMessageID(message.getSeq());
-                    System.out.println("data length:" + message.getData().length);
                     logger.info("msg:" + Arrays.toString(message.getData()));
                     push.setContent(message.getData());
                     pushCallback.onPush(push);
