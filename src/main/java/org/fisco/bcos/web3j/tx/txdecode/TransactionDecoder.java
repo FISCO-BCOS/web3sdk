@@ -64,6 +64,11 @@ public class TransactionDecoder {
     public String decodeInputReturnJson(String input)
             throws JsonProcessingException, TransactionException, BaseException {
 
+        input = addHexPrefixToString(input);
+
+        // select abi
+        AbiDefinition abiFunc = selectAbiDefinition(input);
+
         // decode input
         InputAndOutputResult inputAndOutputResult = decodeInputReturnObject(input);
         // format result to json
