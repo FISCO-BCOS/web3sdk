@@ -937,7 +937,7 @@ public class TransactionDecoderTest {
         assertThat(
                 transEntitytoType0(mapResult1.get(decodeMethodSign(abiDefinition)).get(0)),
                 is(eventDataParams1));
-        // System.out.println("111 => " + decode.decodeEventReturnJson(logList1));
+        System.out.println("111 => " + decode.decodeEventReturnJson(logList1));
         assertThat(
                 decode.decodeEventReturnJson(logList1),
                 is(
@@ -954,7 +954,7 @@ public class TransactionDecoderTest {
         assertThat(
                 transEntitytoType0(mapResult2.get(decodeMethodSign(abiDefinition)).get(1)),
                 is(eventDataParams2));
-        // System.out.println("222 => " + decode.decodeEventReturnJson(logList2));
+        System.out.println("222 => " + decode.decodeEventReturnJson(logList2));
         assertThat(
                 decode.decodeEventReturnJson(logList2),
                 is(
@@ -975,7 +975,7 @@ public class TransactionDecoderTest {
         assertThat(
                 transEntitytoType0(mapResult3.get(decodeMethodSign(abiDefinition)).get(2)),
                 is(eventDataParams3));
-        // System.out.println("333 => " + decode.decodeEventReturnJson(logList3));
+        System.out.println("333 => " + decode.decodeEventReturnJson(logList3));
         assertThat(
                 decode.decodeEventReturnJson(logList3),
                 is(
@@ -1098,7 +1098,7 @@ public class TransactionDecoderTest {
         assertThat(
                 transEntitytoType0(mapResult1.get(decodeMethodSign(abiDefinition)).get(0)),
                 is(eventDataParams1));
-        // System.out.println("111 => " + decode.decodeEventReturnJson(logList1));
+        System.out.println("111 => " + decode.decodeEventReturnJson(logList1));
         assertThat(
                 decode.decodeEventReturnJson(logList1),
                 is(
@@ -1115,7 +1115,7 @@ public class TransactionDecoderTest {
         assertThat(
                 transEntitytoType0(mapResult2.get(decodeMethodSign(abiDefinition)).get(1)),
                 is(eventDataParams2));
-        // System.out.println("222 => " + decode.decodeEventReturnJson(logList2));
+        System.out.println("222 => " + decode.decodeEventReturnJson(logList2));
         assertThat(
                 decode.decodeEventReturnJson(logList2),
                 is(
