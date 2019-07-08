@@ -780,7 +780,6 @@ public class TransactionDecoderTest {
         logList3.add(log3);
         Map<String, List<List<EventResultEntity>>> mapResult3 =
                 decode.decodeEventReturnObject(logList3);
-        // System.out.println("mapResult3 + " + mapResult3);
         assertThat(
                 transEntitytoType0(mapResult3.get(decodeMethodSign(abiDefinition)).get(0)),
                 is(eventDataParams1));
