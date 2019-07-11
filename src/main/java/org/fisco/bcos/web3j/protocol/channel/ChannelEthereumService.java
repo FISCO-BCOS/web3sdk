@@ -55,7 +55,7 @@ public class ChannelEthereumService extends org.fisco.bcos.web3j.protocol.Servic
                     channelService.sendEthereumMessage(
                             bcosRequest, request.getTransactionSucCallback());
         }
-        logger.info(
+        logger.debug(
                 "bcos request, seq:{}, method:{}", bcosRequest.getMessageID(), request.getMethod());
         logger.debug(
                 "bcos request:{} {}",
