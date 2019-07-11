@@ -4,15 +4,23 @@ import static org.fisco.bcos.web3j.utils.Web3AsyncThreadPoolSize.web3AsyncPoolSi
 
 import java.util.concurrent.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /** Async task facilitation. */
 public class Async {
-    private static final ExecutorService executor = Executors.newFixedThreadPool(web3AsyncPoolSize);
+	
+	static Logger logger = LoggerFactory.getLogger(Async.class);
+	
+    private static Executor executor;
 
-    static {
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> shutdown(executor)));
-    }
-
-    public static <T> CompletableFuture<T> run(Callable<T> callable) {
+    public static <T> CompletableFuture<T> run(Callable<T> callable) {  	
+    	
+    	if (null == executor) {
+    		logger.info(" default set setExeutor , pool size is {}", web3AsyncPoolSize);
+    		setExeutor(Executors.newFixedThreadPool(web3AsyncPoolSize), true);
+    	}
+    	
         CompletableFuture<T> result = new CompletableFuture<>();
         CompletableFuture.runAsync(
                 () -> {
@@ -66,5 +74,19 @@ public class Async {
             executorService.shutdownNow();
             Thread.currentThread().interrupt();
         }
+    }
+    
+    public static synchronized void setExeutor(Executor pool, boolean setIfNull) {
+    	if(null == Async.executor && setIfNull) {
+    		Async.executor = pool;
+    		logger.info(" set setExeutor because executor null, executor is {}", pool.toString());
+    	} else if(!setIfNull) {
+    		Async.executor = pool;
+    		logger.info(" set setExeutor even executor already exist, executor is {}", pool.toString());
+    	}
+    }
+    
+    public Async(Executor pool) {
+    	setExeutor(pool, true);
     }
 }
