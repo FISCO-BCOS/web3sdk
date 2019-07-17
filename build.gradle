@@ -69,7 +69,7 @@ dependencies {
 	compile 'commons-configuration:commons-configuration:1.10'
 	 // web3j
 	compile 'org.apache.httpcomponents:httpclient:4.5.5',
-            'org.bouncycastle:bcprov-jdk15on:1.54',
+            'org.bouncycastle:bcprov-jdk15on:1.62',
             'com.lambdaworks:scrypt:1.4.0',
             'com.squareup:javapoet:1.7.0',
             'io.reactivex:rxjava:1.2.4',
