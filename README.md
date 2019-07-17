@@ -21,6 +21,19 @@ Web3SDK provides the Java API for [FISCO-BCOS](https://github.com/FISCO-BCOS/FIS
 - Implement [AMOP](https://fisco-bcos-documentation.readthedocs.io/zh_CN/release-2.0/docs/manual/amop_protocol.html)(Advanced Messages Onchain Protocol) to provide a secure and efficient message channel for the consortium blockchain.
 - Provide [Guomi algorithms](https://fisco-bcos-documentation.readthedocs.io/zh_CN/release-2.0/docs/manual/guomi_crypto.html) to send transactions.
 
+## Compile
+
+First the following is required:
+  - JDK8 or above
+  - Gradle 5.0 or above
+
+Now you can compile web3sdk using the following command:
+```shell
+./gradlew build
+```
+
+For more detailed instructions on using Web3SDK, please refer to our technical document .
+
 ## Quickstart
 A [spring boot starter](https://github.com/FISCO-BCOS/spring-boot-starter) for SDK is available that demonstrates a number of core features, including:
 
@@ -31,7 +44,8 @@ A [spring boot starter](https://github.com/FISCO-BCOS/spring-boot-starter) for S
 - Providing integration tests demonstrating for the above features.
 
 ## Documentation
-- [**中文**](https://fisco-bcos-documentation.readthedocs.io/zh_CN/release-2.0/docs/sdk/sdk.html)
+- [**English**](https://fisco-bcos-documentation.readthedocs.io/en/latest/docs/sdk/sdk.html)
+- [**中文**](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/sdk/sdk.html)
 
 ## Developing & Contributing
 - Star our Github.
