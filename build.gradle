@@ -78,7 +78,7 @@ dependencies {
             'info.picocli:picocli:3.6.0',
             'org.java-websocket:Java-WebSocket:1.3.8',
             'org.apache.commons:commons-collections4:4.0',
-            'commons-io:commons-io:2.4',
+            'commons-io:commons-io:2.6',
             'com.github.stefanbirkner:system-rules:1.18.0',
             'junit:junit:4.12',
             'org.mockito:mockito-core:2.23.0'
