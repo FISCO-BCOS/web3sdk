@@ -63,7 +63,7 @@ dependencies {
 	compile 'org.apache.commons:commons-lang3:3.1'
 	compile 'com.fasterxml.jackson.core:jackson-databind:2.9.6'
 	compile 'io.netty:netty-all:4.1.32.Final'
-	compile 'io.netty:netty-tcnative:2.0.20.Final'
+	compile 'io.netty:netty-tcnative:2.0.25.Final'
 	compile 'io.netty:netty-tcnative-boringssl-static:2.0.20.Final'
 	compile 'com.google.guava:guava:19.0'
 	compile 'commons-configuration:commons-configuration:1.10'
