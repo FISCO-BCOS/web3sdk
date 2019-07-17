@@ -60,7 +60,7 @@ dependencies {
    // compile 'org.ethereum:solcJ-all:0.5.2'
 	compile 'org.ethereum:solcJ-all:0.4.25'
 	compile logger,spring,alibaba
-	compile 'org.apache.commons:commons-lang3:3.1'
+	compile 'org.apache.commons:commons-lang3:3.9'
 	compile 'com.fasterxml.jackson.core:jackson-databind:2.9.6'
 	compile 'io.netty:netty-all:4.1.32.Final'
 	compile 'io.netty:netty-tcnative:2.0.20.Final'
