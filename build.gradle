@@ -72,7 +72,7 @@ dependencies {
             'org.bouncycastle:bcprov-jdk15on:1.54',
             'com.lambdaworks:scrypt:1.4.0',
             'com.squareup:javapoet:1.7.0',
-            'io.reactivex:rxjava:1.2.4',
+            'io.reactivex:rxjava:1.3.8',
             'io.reactivex.rxjava2:rxjava:2.2.2',
             'com.github.jnr:jnr-unixsocket:0.15',
             'info.picocli:picocli:3.6.0',
