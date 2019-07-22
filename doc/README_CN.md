@@ -52,6 +52,7 @@ web3sdk/dist/apps/web3sdk.jar
 ```
 
 ## 文档
+- [**English**](https://fisco-bcos-documentation.readthedocs.io/en/latest/docs/sdk/sdk.html)
 - [**中文**](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/sdk/sdk.html)
 
 ## 贡献代码
