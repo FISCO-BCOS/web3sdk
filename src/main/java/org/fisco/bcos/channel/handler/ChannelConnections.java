@@ -20,6 +20,7 @@ import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.SslProvider;
 import io.netty.handler.timeout.IdleStateHandler;
 import java.io.InputStream;
+import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -148,7 +149,7 @@ public class ChannelConnections {
     }
 
     public ChannelHandlerContext randomNetworkConnection(
-            ConcurrentHashMap<String, Integer> nodeToBlockNumberMap) throws Exception {
+            ConcurrentHashMap<String, BigInteger> nodeToBlockNumberMap) throws Exception {
         List<ChannelHandlerContext> activeConnections = new ArrayList<ChannelHandlerContext>();
 
         for (String key : networkConnections.keySet()) {
@@ -165,12 +166,12 @@ public class ChannelConnections {
         // select maxBlockNumber node
         List<ChannelHandlerContext> maxBlockNumberConnections =
                 new ArrayList<ChannelHandlerContext>();
-        long maxBlockNumber = 0;
+        BigInteger maxBlockNumber = new BigInteger("0");
         if (nodeToBlockNumberMap != null) {
             for (String key : nodeToBlockNumberMap.keySet()) {
-                int blockNumber = nodeToBlockNumberMap.get(key);
-                if (blockNumber >= maxBlockNumber) {
-                    if (blockNumber > maxBlockNumber) {
+                BigInteger blockNumber = nodeToBlockNumberMap.get(key);
+                if (blockNumber.compareTo(maxBlockNumber) >= 0) {
+                    if (blockNumber.compareTo(maxBlockNumber) > 0) {
                         maxBlockNumberConnections.clear();
                     }
 

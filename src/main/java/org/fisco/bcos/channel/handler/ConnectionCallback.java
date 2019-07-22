@@ -122,14 +122,14 @@ public class ConnectionCallback implements ChannelConnections.Callback {
                                             .put(
                                                     socketAddress.getAddress().getHostAddress()
                                                             + socketAddress.getPort(),
-                                                    blockNumber.getBlockNumber().intValue());
+                                                    blockNumber.getBlockNumber());
                                 } catch (Exception e) {
                                     throw new MessageDecodingException(response.getContent());
                                 }
                             }
                         });
     }
-
+    
     @Override
     public void onDisconnect(ChannelHandlerContext ctx) {}
 
