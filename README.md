@@ -27,8 +27,8 @@ Web3SDK provides the Java API for [FISCO-BCOS](https://github.com/FISCO-BCOS/FIS
 ## Compile
 
 **Environmental requirements**:
-  - [JDK8 or above](https://fisco-bcos-documentation.readthedocs.io/en/latest/docs/sdk/sdk.html#environment-requirements)
-  - Gradle 5.0 or above
+- [JDK8 or above](https://fisco-bcos-documentation.readthedocs.io/en/latest/docs/sdk/sdk.html#environment-requirements)
+- Gradle 5.0 or above
 
 **Compile web3sdk using the following command**:
 ```shell
@@ -42,8 +42,8 @@ web3sdk/dist/apps/web3sdk.jar
 ```
 
 ## Documentation
-- [**English**](https://fisco-bcos-documentation.readthedocs.io/en/latest/docs/sdk/sdk.html)
-- [**Chinese**](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/sdk/sdk.html)
+  - [**English**](https://fisco-bcos-documentation.readthedocs.io/en/latest/docs/sdk/sdk.html)
+  - [**Chinese**](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/sdk/sdk.html)
 
 ## Quickstart
 [spring boot starter](https://github.com/FISCO-BCOS/spring-boot-starter) for Web3SDK is available that demonstrates a number of core features, including:
@@ -55,12 +55,11 @@ web3sdk/dist/apps/web3sdk.jar
 - Providing integration tests demonstrating for the above features.
 
 ## Developing & Contributing
-- If this project is useful to you, please star us on GitHub project page.
-- Pull requests. See [CONTRIBUTING](CONTRIBUTING.md).
-- Report bugs, issues or feature requests. Using [GitHub issues](https://github.com/FISCO-BCOS/web3sdk/issues/new).
-- If you find any security vulnerabilities, please [report them](https://security.webank.com) here!
-- Discuss in [WeChat group](https://github.com/FISCO-BCOS/FISCO-BCOS-DOC/blob/release-2.0/images/community/WeChatQR.jpg) or [Gitter](https://gitter.im/fisco-bcos/Lobby).
-
+  - If this project is useful to you, please star us on GitHub project page.
+  - Pull requests. See [CONTRIBUTING](CONTRIBUTING.md).
+  - Report bugs, issues or feature requests. Using [GitHub issues](https://github.com/FISCO-BCOS/web3sdk/issues/new).
+  - If you find any security vulnerabilities, please [report them](https://security.webank.com) here!
+  - Discuss in [WeChat group](https://github.com/FISCO-BCOS/FISCO-BCOS-DOC/blob/release-2.0/images/community/WeChatQR.jpg) or [Gitter](https://gitter.im/fisco-bcos/Lobby).
 
 ## Join Our Community
 [![](https://img.shields.io/twitter/url/http/shields.io.svg?style=social&label=Follow@FiscoBcos)](https://twitter.com/FiscoBcos)
