@@ -50,8 +50,10 @@ public class P12Manager {
     }
 
     public void load(InputStream in, String password)
-            throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
-        p12KeyStore.engineLoad(in, password.toCharArray());
+            throws NoSuchAlgorithmException, CertificateException, IOException, KeyStoreException,
+                    NoSuchProviderException {
+        keyStore = KeyStore.getInstance("PKCS12", "BC");
+        keyStore.load(in, password.toCharArray());
     }
 
     public PrivateKey getPrivateKey()
