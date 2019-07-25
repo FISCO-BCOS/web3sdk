@@ -53,14 +53,23 @@ public class Service {
     private int groupId;
     private static ObjectMapper objectMapper = new ObjectMapper();
     private BigInteger number = BigInteger.valueOf(0);
-    private ConcurrentHashMap<String, Integer> nodeToBlockNumberMap = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, BigInteger> nodeToBlockNumberMap = new ConcurrentHashMap<>();
     /** add transaction seq callback */
     private Map<String, Object> seq2TransactionCallback = new ConcurrentHashMap<String, Object>();
 
     private Timer timeoutHandler = new HashedWheelTimer();
     private ThreadPoolTaskExecutor threadPool;
+    private BlockNotifyCallBack blockNotifyCallBack = new DefaultBlockNotifyCallBack();
 
     private Set<String> topics = new HashSet<String>();
+
+    public BlockNotifyCallBack getBlockNotifyCallBack() {
+        return blockNotifyCallBack;
+    }
+
+    public void setBlockNotifyCallBack(BlockNotifyCallBack blockNotifyCallBack) {
+        this.blockNotifyCallBack = blockNotifyCallBack;
+    }
 
     public void setTopics(Set<String> topics) {
         try {
@@ -70,11 +79,12 @@ public class Service {
         }
     }
 
-    public ConcurrentHashMap<String, Integer> getNodeToBlockNumberMap() {
+    public ConcurrentHashMap<String, BigInteger> getNodeToBlockNumberMap() {
         return nodeToBlockNumberMap;
     }
 
-    public void setNodeToBlockNumberMap(ConcurrentHashMap<String, Integer> nodeToBlockNumberMap) {
+    public void setNodeToBlockNumberMap(
+            ConcurrentHashMap<String, BigInteger> nodeToBlockNumberMap) {
         this.nodeToBlockNumberMap = nodeToBlockNumberMap;
     }
 
@@ -866,19 +876,39 @@ public class Service {
             SocketChannel socketChannel = (SocketChannel) ctx.channel();
             String hostAddress = socketChannel.remoteAddress().getAddress().getHostAddress();
             int port = socketChannel.remoteAddress().getPort();
-            Integer number = Integer.parseInt(split[1]);
+            BigInteger number = new BigInteger(split[1]);
 
             nodeToBlockNumberMap.put(hostAddress + port, number);
             // get max blockNumber to set blocklimit
-            Integer maxBlockNumber = number;
+            BigInteger maxBlockNumber = number;
             for (String key : nodeToBlockNumberMap.keySet()) {
-                int blockNumber = nodeToBlockNumberMap.get(key);
-                if (blockNumber >= maxBlockNumber) {
+                BigInteger blockNumber = nodeToBlockNumberMap.get(key);
+                if (blockNumber.compareTo(maxBlockNumber) >= 0) {
                     maxBlockNumber = blockNumber;
                 }
             }
-            if (maxBlockNumber > getNumber().intValue()) {
-                setNumber(BigInteger.valueOf((long) maxBlockNumber));
+            if (maxBlockNumber.compareTo(getNumber()) > 0) {
+                setNumber(maxBlockNumber);
+
+                if (null != getBlockNotifyCallBack()) {
+                    if (null == getThreadPool()) {
+                        // Thread pool does not exist, the current thread executes the callback
+                        // function directly
+                        getBlockNotifyCallBack().onBlockNotify(getGroupId(), maxBlockNumber);
+                    } else {
+                        // Execute the callback function in the thread pool
+                        final BigInteger maxBlkNumber = maxBlockNumber;
+                        getThreadPool()
+                                .execute(
+                                        new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                getBlockNotifyCallBack()
+                                                        .onBlockNotify(getGroupId(), maxBlkNumber);
+                                            }
+                                        });
+                    }
+                }
             }
         } catch (Exception e) {
             logger.error("Block notify error", e);
