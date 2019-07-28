@@ -85,7 +85,7 @@ public class TestTxDecode {
 
         String name = "fruit";
         int item_id = 1;
-        String item_name = "kk";
+        String item_name = "apple";
 
         RemoteCall<TransactionReceipt> insert =
                 tableTest.insert(name, BigInteger.valueOf(item_id), item_name);
