@@ -3,24 +3,23 @@ package org.fisco.bcos.web3j.utils;
 import static org.fisco.bcos.web3j.utils.Web3AsyncThreadPoolSize.web3AsyncPoolSize;
 
 import java.util.concurrent.*;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** Async task facilitation. */
 public class Async {
-	
-	static Logger logger = LoggerFactory.getLogger(Async.class);
-	
+
+    static Logger logger = LoggerFactory.getLogger(Async.class);
+
     private static Executor executor;
 
-    public static <T> CompletableFuture<T> run(Callable<T> callable) {  	
-    	
-    	if (null == executor) {
-    		logger.info(" default set setExeutor , pool size is {}", web3AsyncPoolSize);
-    		setExeutor(Executors.newFixedThreadPool(web3AsyncPoolSize), true);
-    	}
-    	
+    public static <T> CompletableFuture<T> run(Callable<T> callable) {
+
+        if (null == executor) {
+            logger.info(" default set setExeutor , pool size is {}", web3AsyncPoolSize);
+            setExeutor(Executors.newFixedThreadPool(web3AsyncPoolSize), true);
+        }
+
         CompletableFuture<T> result = new CompletableFuture<>();
         CompletableFuture.runAsync(
                 () -> {
@@ -75,18 +74,19 @@ public class Async {
             Thread.currentThread().interrupt();
         }
     }
-    
+
     public static synchronized void setExeutor(Executor pool, boolean setIfNull) {
-    	if(null == Async.executor && setIfNull) {
-    		Async.executor = pool;
-    		logger.info(" set setExeutor because executor null, executor is {}", pool.toString());
-    	} else if(!setIfNull) {
-    		Async.executor = pool;
-    		logger.info(" set setExeutor even executor already exist, executor is {}", pool.toString());
-    	}
+        if (null == Async.executor && setIfNull) {
+            Async.executor = pool;
+            logger.info(" set setExeutor because executor null, executor is {}", pool.toString());
+        } else if (!setIfNull) {
+            Async.executor = pool;
+            logger.info(
+                    " set setExeutor even executor already exist, executor is {}", pool.toString());
+        }
     }
-    
+
     public Async(Executor pool) {
-    	setExeutor(pool, true);
+        setExeutor(pool, true);
     }
 }
