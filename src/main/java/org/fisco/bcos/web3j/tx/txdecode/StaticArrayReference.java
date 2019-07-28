@@ -2875,7 +2875,7 @@ public class StaticArrayReference {
                         201201, String.format(" %s[32] unsupported encoding array type ", type));
         }
     }
-    
+
     private static TypeReference<?> create128(String type, boolean indexed) throws BaseException {
 
         if (ContractTypeUtil.invalidInt(type)) {
