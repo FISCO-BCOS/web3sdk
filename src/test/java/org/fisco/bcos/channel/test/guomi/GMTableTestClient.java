@@ -274,9 +274,8 @@ public class GMTableTestClient {
         ChannelEthereumService channelEthereumService = new ChannelEthereumService();
         channelEthereumService.setChannelService(service);
         channelEthereumService.setTimeout(5 * 1000);
-        service.setGroupId(Integer.parseInt(args[0]));
         try {
-            web3j = Web3j.build(channelEthereumService, service.getGroupId());
+            web3j = Web3j.build(channelEthereumService, Integer.parseInt(args[0]));
         } catch (Exception e) {
             System.out.println("\nPlease provide groupID in the first parameters");
             System.exit(0);
