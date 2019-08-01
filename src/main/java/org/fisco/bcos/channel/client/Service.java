@@ -1,13 +1,17 @@
 package org.fisco.bcos.channel.client;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.util.AttributeKey;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import io.netty.util.Timer;
 import io.netty.util.TimerTask;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
@@ -20,6 +24,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+import org.fisco.bcos.channel.dto.BcosBlkNotify;
 import org.fisco.bcos.channel.dto.BcosMessage;
 import org.fisco.bcos.channel.dto.BcosRequest;
 import org.fisco.bcos.channel.dto.BcosResponse;
@@ -34,6 +39,10 @@ import org.fisco.bcos.channel.handler.ConnectionCallback;
 import org.fisco.bcos.channel.handler.ConnectionInfo;
 import org.fisco.bcos.channel.handler.GroupChannelConnectionsConfig;
 import org.fisco.bcos.channel.handler.Message;
+import org.fisco.bcos.channel.protocol.NodeVersion;
+import org.fisco.bcos.channel.protocol.SDKVersion;
+import org.fisco.bcos.channel.protocol.parser.BlkNotifyParser;
+import org.fisco.bcos.channel.protocol.parser.HeartBeatParser;
 import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.protocol.exceptions.TransactionException;
@@ -43,7 +52,16 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 public class Service {
     private static Logger logger = LoggerFactory.getLogger(Service.class);
-    private Integer connectSeconds = 30;
+    private Integer connectMillis = 30000;
+
+    public Integer getConnectMillis() {
+        return connectMillis;
+    }
+
+    public void setConnectMillis(Integer connectMillis) {
+        this.connectMillis = connectMillis;
+    }
+
     private Integer connectSleepPerMillis = 1;
     private String orgID;
     private String agencyName;
@@ -148,14 +166,6 @@ public class Service {
         return this.topics;
     }
 
-    public Integer getConnectSeconds() {
-        return connectSeconds;
-    }
-
-    public void setConnectSeconds(Integer connectSeconds) {
-        this.connectSeconds = connectSeconds;
-    }
-
     public Integer getConnectSleepPerMillis() {
         return connectSleepPerMillis;
     }
@@ -226,7 +236,7 @@ public class Service {
                             }
                         }
 
-                        if (running || sleepTime > connectSeconds * 1000) {
+                        if (running || sleepTime > connectMillis) {
                             break;
                         } else {
                             Thread.sleep(connectSleepPerMillis);
@@ -235,7 +245,7 @@ public class Service {
                     }
 
                     if (!running) {
-                        logger.error("connectSeconds = " + connectSeconds);
+                        logger.error("connectMillis = " + connectMillis);
                         logger.error(
                                 "can not connect to nodes success, please checkout the node status and the sdk config!");
                         throw new Exception(
@@ -859,28 +869,35 @@ public class Service {
 
     public void onReceiveBlockNotify(ChannelHandlerContext ctx, ChannelMessage2 message) {
         try {
+
+            BlkNotifyParser blkNotifyParser = new BlkNotifyParser(getUsageChlVersion(ctx));
+
             String data = new String(message.getData());
             logger.info("Receive block notify: {}", data);
-            String[] split = data.split(",");
-            if (split.length != 2) {
-                logger.error("Block notify format error: {}", data);
+            BcosBlkNotify bcosBlkNotify = null;
+
+            try {
+                bcosBlkNotify = blkNotifyParser.decode(message.getData());
+            } catch (Exception e) {
+                logger.error(" Decode block notify message failed, message is {}", e.getMessage());
                 return;
             }
-            Integer groupID = Integer.parseInt(split[0]);
 
+            Integer groupID = Integer.parseInt(bcosBlkNotify.getGroupID());
+            BigInteger blkNumber = bcosBlkNotify.getBlockNumber();
             if (!groupID.equals(getGroupId())) {
                 logger.error("Received groupID[{}] not match groupID[{}]", groupID, getGroupId());
 
                 return;
             }
+
             SocketChannel socketChannel = (SocketChannel) ctx.channel();
             String hostAddress = socketChannel.remoteAddress().getAddress().getHostAddress();
             int port = socketChannel.remoteAddress().getPort();
-            BigInteger number = new BigInteger(split[1]);
 
-            nodeToBlockNumberMap.put(hostAddress + port, number);
+            nodeToBlockNumberMap.put(hostAddress + port, blkNumber);
             // get max blockNumber to set blocklimit
-            BigInteger maxBlockNumber = number;
+            BigInteger maxBlockNumber = blkNumber;
             for (String key : nodeToBlockNumberMap.keySet()) {
                 BigInteger blockNumber = nodeToBlockNumberMap.get(key);
                 if (blockNumber.compareTo(maxBlockNumber) >= 0) {
@@ -912,6 +929,162 @@ public class Service {
             }
         } catch (Exception e) {
             logger.error("Block notify error", e);
+        }
+    }
+
+    public void sendSDKChannelHighestSupportedMessage(ChannelHandlerContext ctx)
+            throws JsonProcessingException {
+        // Exchange channel protocol with the underlying node
+        Message message = new Message();
+        message.setResult(0);
+        message.setType((short) 0x14);
+        message.setSeq(UUID.randomUUID().toString().replaceAll("-", ""));
+
+        SDKVersion version = new SDKVersion();
+        message.setData(objectMapper.writeValueAsBytes(version));
+
+        logger.debug(
+                "connection established，send sdk channel supported highest protocol to the connection , seq:{}, protocol version:{}",
+                message.getSeq(),
+                version);
+
+        ByteBuf out = ctx.alloc().buffer();
+        message.writeHeader(out);
+        message.writeExtra(out);
+
+        ctx.writeAndFlush(out);
+    }
+
+    public void sendHeartbeatMessage(ChannelHandlerContext ctx) {
+
+        Message message = new BcosMessage();
+        message.setSeq(UUID.randomUUID().toString().replaceAll("-", ""));
+        message.setResult(0);
+        message.setType((short) 0x13);
+
+        HeartBeatParser heartBeatParser = new HeartBeatParser(getUsageChlVersion(ctx));
+
+        try {
+            message.setData(heartBeatParser.encode("0"));
+        } catch (JsonProcessingException e) {
+            logger.error(" write json failed, message is {}", e.getMessage());
+            return;
+        }
+
+        ByteBuf out = ctx.alloc().buffer();
+        message.writeHeader(out);
+        message.writeExtra(out);
+
+        ctx.writeAndFlush(out);
+    }
+
+    public void onReceiveHeartbeat(ChannelHandlerContext ctx, Message msg) {
+
+        String content = "";
+
+        HeartBeatParser heartBeatParser = new HeartBeatParser(getUsageChlVersion(ctx));
+
+        try {
+            content = heartBeatParser.decode(msg.getData()).getHeartbeat();
+        } catch (UnsupportedEncodingException e) {
+            logger.error("heartbeat packet cannot be parsed");
+        } catch (Exception e) {
+            logger.error("heartbeat packet Exception");
+        }
+
+        if ("0".equals(content)) {
+            logger.trace("heartbeat packet，send heartbeat packet back");
+            Message response = new Message();
+
+            response.setSeq(msg.getSeq());
+            response.setResult(0);
+            response.setType((short) 0x13);
+
+            try {
+                response.setData(heartBeatParser.encode("1"));
+            } catch (JsonProcessingException e) {
+                logger.error(" write json failed, message is {} ", e.getMessage());
+                return;
+            }
+
+            ByteBuf out = ctx.alloc().buffer();
+            response.writeHeader(out);
+            response.writeExtra(out);
+
+            ctx.writeAndFlush(out);
+        } else if ("1".equals(content)) {
+            logger.trace("heartbeat response");
+        }
+    }
+
+    public org.fisco.bcos.channel.protocol.Version getUsageChlVersion(ChannelHandlerContext ctx) {
+        SocketChannel socketChannel = (SocketChannel) ctx.channel();
+        String hostAddress = socketChannel.remoteAddress().getAddress().getHostAddress();
+        int port = socketChannel.remoteAddress().getPort();
+
+        String remoteEndPoint = hostAddress + ":" + port;
+        AttributeKey<NodeVersion> attributeKey = AttributeKey.valueOf(remoteEndPoint);
+
+        org.fisco.bcos.channel.protocol.Version version =
+                org.fisco.bcos.channel.protocol.Version.VERSION_1;
+
+        if (ctx.channel().hasAttr(attributeKey)) {
+            NodeVersion nodeVersion = ctx.channel().attr(attributeKey).get();
+            logger.trace(
+                    " from socket channel get fisco channel protocol version : {} ", nodeVersion);
+            version =
+                    org.fisco.bcos.channel.protocol.Version.convert(
+                            nodeVersion.getHighestSupported());
+        }
+
+        org.fisco.bcos.channel.protocol.Version highestVersion =
+                org.fisco.bcos.channel.protocol.Version.getHighestSupported();
+
+        logger.trace(
+                " channel version is {}, highestVersion is {}",
+                version.getVersionNumber(),
+                highestVersion.getVersionNumber());
+
+        if (version.getVersionNumber() > highestVersion.getVersionNumber()) {
+            return highestVersion; //
+        }
+
+        return version;
+    }
+
+    public void onReceiveNodeChannelProtocolVersion(
+            ChannelHandlerContext ctx, BcosMessage message) {
+        String data = new String(message.getData());
+
+        SocketChannel socketChannel = (SocketChannel) ctx.channel();
+        String hostAddress = socketChannel.remoteAddress().getAddress().getHostAddress();
+        int port = socketChannel.remoteAddress().getPort();
+
+        String remoteEndPoint = hostAddress + ":" + port;
+
+        logger.info(
+                "Receive node from host: {} ,channel protocol version: {}", remoteEndPoint, data);
+
+        try {
+            NodeVersion nodeVersion =
+                    ObjectMapperFactory.getObjectMapper().readValue(data, NodeVersion.class);
+
+            AttributeKey<NodeVersion> attributeKey = AttributeKey.valueOf(remoteEndPoint);
+
+            if (!ctx.channel().hasAttr(attributeKey)) {
+                ctx.channel().attr(attributeKey).set(nodeVersion);
+            } else {
+                NodeVersion oldNodeChannelVersion = ctx.channel().attr(attributeKey).get();
+                logger.warn(
+                        " sdk receive channel protocol version info from node again, value is {}",
+                        oldNodeChannelVersion);
+            }
+
+        } catch (IOException e) {
+            logger.error(
+                    " receive node protocol version failed, remoteEndPoint is {}, error is {} ",
+                    remoteEndPoint,
+                    e.getMessage());
         }
     }
 

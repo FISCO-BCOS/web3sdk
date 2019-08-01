@@ -111,6 +111,11 @@ public class Server {
 
         private Server server;
         private Boolean fromRemote = false;
+		@Override
+		public void sendHeartbeat(ChannelHandlerContext ctx) {
+			// TODO Auto-generated method stub
+			
+		}
     }
 
     public ChannelConnections getLocalConnections() {

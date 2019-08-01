@@ -29,11 +29,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Random;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLException;
-import org.fisco.bcos.channel.dto.BcosMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -90,6 +88,8 @@ public class ChannelConnections {
         void onDisconnect(ChannelHandlerContext ctx);
 
         void onMessage(ChannelHandlerContext ctx, ByteBuf message);
+        
+        void sendHeartbeat(ChannelHandlerContext ctx);
     }
 
     public Callback getCallback() {
@@ -453,19 +453,7 @@ public class ChannelConnections {
                 logger.debug("connect to: {}:{} success", host, port);
             } else {
                 logger.trace("send heart beat to {}", ctx.getKey());
-                // 连接还在，发送心跳
-                BcosMessage fiscoMessage = new BcosMessage();
-
-                fiscoMessage.setSeq(UUID.randomUUID().toString().replaceAll("-", ""));
-                fiscoMessage.setResult(0);
-                fiscoMessage.setType((short) 0x13);
-                fiscoMessage.setData("0".getBytes());
-
-                ByteBuf out = ctx.getValue().alloc().buffer();
-                fiscoMessage.writeHeader(out);
-                fiscoMessage.writeExtra(out);
-
-                ctx.getValue().writeAndFlush(out);
+                callback.sendHeartbeat(ctx.getValue());
             }
         }
     }

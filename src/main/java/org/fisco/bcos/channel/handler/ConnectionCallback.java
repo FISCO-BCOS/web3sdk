@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.SocketChannel;
-import java.io.UnsupportedEncodingException;
+
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.util.Arrays;
@@ -55,6 +55,9 @@ public class ConnectionCallback implements ChannelConnections.Callback {
     public void onConnect(ChannelHandlerContext ctx) {
         try {
             channelService.setNumber(BigInteger.ONE);
+            
+            // Exchange channel protocol with the underlying node
+            channelService.sendSDKChannelHighestSupportedMessage(ctx);
 
             Message message = new Message();
             message.setResult(0);
@@ -129,7 +132,7 @@ public class ConnectionCallback implements ChannelConnections.Callback {
                             }
                         });
     }
-    
+
     @Override
     public void onDisconnect(ChannelHandlerContext ctx) {}
 
@@ -138,51 +141,29 @@ public class ConnectionCallback implements ChannelConnections.Callback {
         try {
             Message msg = new Message();
             msg.readHeader(message);
+            
+            // Get the version of the channel protocol
+            // NodeChlProVersion nodeChannelVersion = channelService.getNodeChlProVersion(ctx);
 
             if (msg.getType() == 0x20 || msg.getType() == 0x21) {
                 ChannelMessage channelMessage = new ChannelMessage(msg);
                 channelMessage.readExtra(message);
-
                 channelService.onReceiveChannelMessage(ctx, channelMessage);
             } else if (msg.getType() == 0x30 || msg.getType() == 0x31 || msg.getType() == 0x35) {
                 ChannelMessage2 channelMessage = new ChannelMessage2(msg);
                 channelMessage.readExtra(message);
-
                 channelService.onReceiveChannelMessage2(ctx, channelMessage);
             } else if (msg.getType() == 0x12) {
                 BcosMessage fiscoMessage = new BcosMessage(msg);
                 fiscoMessage.readExtra(message);
-
                 channelService.onReceiveEthereumMessage(ctx, fiscoMessage);
             } else if (msg.getType() == 0x13) {
                 msg.readExtra(message);
-
-                String content = "1";
-                try {
-                    content = new String(msg.getData(), "utf-8");
-                } catch (UnsupportedEncodingException e) {
-                    logger.error("heartbeat packet cannot be parsed");
-                } catch (Exception e) {
-                    logger.error("heartbeat packet Exception");
-                }
-
-                if ("0".equals(content)) {
-                    logger.trace("heartbeat packet，send heartbeat packet back");
-                    Message response = new Message();
-
-                    response.setSeq(msg.getSeq());
-                    response.setResult(0);
-                    response.setType((short) 0x13);
-                    response.setData("1".getBytes());
-
-                    ByteBuf out = ctx.alloc().buffer();
-                    response.writeHeader(out);
-                    response.writeExtra(out);
-
-                    ctx.writeAndFlush(out);
-                } else if ("1".equals(content)) {
-                    logger.trace("heartbeat response");
-                }
+                channelService.onReceiveHeartbeat(ctx, msg);
+            } else if (msg.getType() == 0x14) {
+                BcosMessage fiscoMessage = new BcosMessage(msg);
+                fiscoMessage.readExtra(message);
+                channelService.onReceiveNodeChannelProtocolVersion(ctx, fiscoMessage);
             } else if (msg.getType() == 0x1000) {
                 BcosMessage fiscoMessage = new BcosMessage(msg);
                 fiscoMessage.readExtra(message);
@@ -200,4 +181,9 @@ public class ConnectionCallback implements ChannelConnections.Callback {
             message.release();
         }
     }
+
+	@Override
+	public void sendHeartbeat(ChannelHandlerContext ctx) {
+		channelService.sendHeartbeatMessage(ctx);
+	}
 }
