@@ -54,28 +54,18 @@ web3sdk/dist/apps/web3sdk.jar
 - Updating a value in the deployed smart contract.
 - Providing integration tests demonstrating for the above features.
 
-## Developing & Contributing
+## Code Contribution
   - If this project is useful to you, please star us on GitHub project page.
   - Pull requests. See [CONTRIBUTING](CONTRIBUTING.md).
   - Report bugs, issues or feature requests. Using [GitHub issues](https://github.com/FISCO-BCOS/web3sdk/issues/new).
   - If you find any security vulnerabilities, please [report them](https://security.webank.com) here!
-  - Discuss in [WeChat group](https://github.com/FISCO-BCOS/FISCO-BCOS-DOC/blob/release-2.0/images/community/WeChatQR.jpg) or [Gitter](https://gitter.im/fisco-bcos/Lobby).
 
 ## Join Our Community
-[![](https://img.shields.io/twitter/url/http/shields.io.svg?style=social&label=Follow@FiscoBcos)](https://twitter.com/FiscoBcos)
-[![Gitter](https://img.shields.io/badge/style-on_gitter-green.svg?logo=gitter&longCache=false&style=social&label=Chat)](https://gitter.im/fisco-bcos/Lobby)
-[![](https://img.shields.io/twitter/url/http/shields.io.svg?logo=Gmail&style=social&label=service@fisco.com.cn)](mailto:service@fisco.com.cn)
 
 The FISCO BCOS community is one of the most active open-source blockchain communities in China. It provides long-term technical support for both institutional and individual developers and users of FISCO BCOS. Thousands of technical enthusiasts from numerous industry sectors have joined this community, studying and using FISCO BCOS platform. If you are also interested, you are most welcome to join us for more support and fun.
 
 ![](https://media.githubusercontent.com/media/FISCO-BCOS/LargeFiles/master/images/QR_image_en.png)
  
-
-- Discuss in [![Gitter](https://img.shields.io/badge/style-on_gitter-green.svg?logo=gitter&longCache=false&style=social&label=Chat)](https://gitter.im/fisco-bcos/Lobby) 
-
-- Read news by [![](https://img.shields.io/twitter/url/http/shields.io.svg?style=social&label=Follow@FiscoBcos)](https://twitter.com/FiscoBcos)
-
-- Mail us at [![](https://img.shields.io/twitter/url/http/shields.io.svg?logo=Gmail&style=social&label=service@fisco.com.cn)](mailto:service@fisco.com.cn)
 
 ## License
 ![license](http://img.shields.io/badge/license-Apache%20v2-blue.svg)
