@@ -129,7 +129,7 @@ public class ConnectionCallback implements ChannelConnections.Callback {
                             }
                         });
     }
-    
+
     @Override
     public void onDisconnect(ChannelHandlerContext ctx) {}
 
