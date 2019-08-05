@@ -63,7 +63,7 @@ import org.slf4j.LoggerFactory;
 
 /** Generate Java Classes based on generated Solidity bin and abi files. */
 public class SolidityFunctionWrapper extends Generator {
-
+	private static final int maxSolidityBinSize = 0x40000;
     private static final String BINARY = "BINARY";
     private static final String WEB3J = "web3j";
     private static final String CREDENTIALS = "credentials";
@@ -134,7 +134,7 @@ public class SolidityFunctionWrapper extends Generator {
             throws IOException, ClassNotFoundException, UnsupportedOperationException {
         String className = Strings.capitaliseFirstLetter(contractName);
 
-        if (bin.length() > 0x40000) {
+        if (bin.length() > maxSolidityBinSize) {
             throw new UnsupportedOperationException(
                     " contract binary too long, max support is 256k, now is "
                             + Integer.valueOf(bin.length()));

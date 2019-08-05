@@ -162,7 +162,7 @@ public class ConnectionCallback implements ChannelConnections.Callback {
             } else if (msg.getType() == 0x14) {
                 BcosMessage fiscoMessage = new BcosMessage(msg);
                 fiscoMessage.readExtra(message);
-                channelService.onReceiveNodeChannelProtocolVersion(ctx, fiscoMessage);
+                channelService.onReceiveChannelProtocolVersion(ctx, fiscoMessage);
             } else if (msg.getType() == 0x1000) {
                 BcosMessage fiscoMessage = new BcosMessage(msg);
                 fiscoMessage.readExtra(message);

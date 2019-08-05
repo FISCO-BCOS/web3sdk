@@ -114,8 +114,13 @@ public class Server {
 
         @Override
         public void sendHeartbeat(ChannelHandlerContext ctx) {
-            // TODO Auto-generated method stub
+            SocketChannel socketChannel = (SocketChannel) ctx.channel();
+            String hostAddress = socketChannel.remoteAddress().getAddress().getHostAddress();
+            int port = socketChannel.remoteAddress().getPort();
 
+            String remoteEndPoint = hostAddress + ":" + port;
+
+            logger.trace("proxy server send heart beat message, remote host is {}", remoteEndPoint);
         }
     }
 

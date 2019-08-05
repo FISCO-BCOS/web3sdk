@@ -3,6 +3,7 @@ package org.fisco.bcos.channel.client;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.util.AttributeKey;
@@ -24,7 +25,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
-import org.fisco.bcos.channel.dto.BcosBlkNotify;
+import org.fisco.bcos.channel.dto.BcosBlockNotification;
 import org.fisco.bcos.channel.dto.BcosHeartbeat;
 import org.fisco.bcos.channel.dto.BcosMessage;
 import org.fisco.bcos.channel.dto.BcosRequest;
@@ -40,9 +41,11 @@ import org.fisco.bcos.channel.handler.ConnectionCallback;
 import org.fisco.bcos.channel.handler.ConnectionInfo;
 import org.fisco.bcos.channel.handler.GroupChannelConnectionsConfig;
 import org.fisco.bcos.channel.handler.Message;
-import org.fisco.bcos.channel.protocol.NodeVersion;
-import org.fisco.bcos.channel.protocol.SDKVersion;
-import org.fisco.bcos.channel.protocol.parser.BlkNotifyParser;
+import org.fisco.bcos.channel.protocol.ChannelHandshake;
+import org.fisco.bcos.channel.protocol.ChannelPrococolExceiption;
+import org.fisco.bcos.channel.protocol.ChannelProtocol;
+import org.fisco.bcos.channel.protocol.EnumChannelProtocolVersion;
+import org.fisco.bcos.channel.protocol.parser.BlockNotificationParser;
 import org.fisco.bcos.channel.protocol.parser.HeartBeatParser;
 import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
@@ -871,20 +874,21 @@ public class Service {
     public void onReceiveBlockNotify(ChannelHandlerContext ctx, ChannelMessage2 message) {
         try {
 
-            BlkNotifyParser blkNotifyParser = new BlkNotifyParser(getUsageChlVersion(ctx));
+            BlockNotificationParser blkNotifyParser =
+                    new BlockNotificationParser(getChannelProtocolVersion(ctx));
 
             String data = new String(message.getData());
             logger.info("Receive block notify: {}", data);
-            BcosBlkNotify bcosBlkNotify = null;
+            BcosBlockNotification bcosBlkNotify = null;
 
             try {
-                bcosBlkNotify = blkNotifyParser.decode(message.getData());
+                bcosBlkNotify = blkNotifyParser.decode(data);
             } catch (Exception e) {
-                logger.error(" block notify parse message exception, message is {}", e.getMessage());
+                logger.error(" block notify parse message exception, message: {}", e.getMessage());
                 return;
             }
 
-            logger.trace(" BcosBlkNotify is {}  ", bcosBlkNotify);
+            logger.trace(" BcosBlkNotify: {}  ", bcosBlkNotify);
 
             Integer groupID = Integer.parseInt(bcosBlkNotify.getGroupID());
             BigInteger blkNumber = bcosBlkNotify.getBlockNumber();
@@ -943,13 +947,13 @@ public class Service {
         message.setType((short) 0x14);
         message.setSeq(UUID.randomUUID().toString().replaceAll("-", ""));
 
-        SDKVersion version = new SDKVersion();
-        message.setData(objectMapper.writeValueAsBytes(version));
+        ChannelHandshake channelHandshake = new ChannelHandshake();
+        message.setData(objectMapper.writeValueAsBytes(channelHandshake));
 
         logger.info(
-                "connection established，send sdk channel supported highest protocol to the connection , seq:{}, sdk channel protocol version:{}",
+                "connection established，send sdk channel supported highest protocol to the connection , seq: {}, channel handshake: {}",
                 message.getSeq(),
-                version);
+                channelHandshake);
 
         ByteBuf out = ctx.alloc().buffer();
         message.writeHeader(out);
@@ -965,12 +969,12 @@ public class Service {
         message.setResult(0);
         message.setType((short) 0x13);
 
-        HeartBeatParser heartBeatParser = new HeartBeatParser(getUsageChlVersion(ctx));
+        HeartBeatParser heartBeatParser = new HeartBeatParser(getChannelProtocolVersion(ctx));
 
         try {
             message.setData(heartBeatParser.encode("0"));
         } catch (JsonProcessingException e) {
-            logger.error(" write json failed, message is {}", e.getMessage());
+            logger.error(" write json failed, message: {}", e.getMessage());
             return;
         }
 
@@ -985,16 +989,17 @@ public class Service {
 
         String content = "";
 
-        HeartBeatParser heartBeatParser = new HeartBeatParser(getUsageChlVersion(ctx));
-
+        HeartBeatParser heartBeatParser = new HeartBeatParser(getChannelProtocolVersion(ctx));
+        String data = new String(msg.getData());
         try {
-            BcosHeartbeat bcosHeartbeat = heartBeatParser.decode(msg.getData());
+            BcosHeartbeat bcosHeartbeat = heartBeatParser.decode(data);
             // logger.trace(" heartbeat packet, heartbeat is {} ", bcosHeartbeat);
-            content = bcosHeartbeat.getHeartbeat();
+            int heartBeat = bcosHeartbeat.getHeartBeat();
+            content = String.valueOf(heartBeat);
         } catch (UnsupportedEncodingException e) {
-            logger.error("heartbeat packet cannot be parsed, data is {}", new String(msg.getData()));
+            logger.error("heartbeat packet cannot be parsed, data: {}", data);
         } catch (Exception e) {
-            logger.error("heartbeat packet exception, data is {}", new String(msg.getData()));
+            logger.error("heartbeat packet exception, data: {}", data);
         }
 
         if ("0".equals(content)) {
@@ -1019,81 +1024,74 @@ public class Service {
             ctx.writeAndFlush(out);
         } else if ("1".equals(content)) {
             logger.trace("heartbeat response");
+        } else {
+        	logger.trace(" unkown heartbeat message , do nothing, data: {}", data);
         }
     }
 
-    public org.fisco.bcos.channel.protocol.Version getUsageChlVersion(ChannelHandlerContext ctx) {
+    public EnumChannelProtocolVersion getChannelProtocolVersion(ChannelHandlerContext ctx) {
         SocketChannel socketChannel = (SocketChannel) ctx.channel();
         String hostAddress = socketChannel.remoteAddress().getAddress().getHostAddress();
         int port = socketChannel.remoteAddress().getPort();
 
-        String remoteEndPoint = hostAddress + ":" + port;
-        AttributeKey<NodeVersion> attributeKey = AttributeKey.valueOf(remoteEndPoint);
+        String host = hostAddress + ":" + port;
+        AttributeKey<ChannelProtocol> attributeKey = AttributeKey.valueOf(host);
 
         if (ctx.channel().hasAttr(attributeKey)) {
-            NodeVersion nodeVersion = ctx.channel().attr(attributeKey).get();
-            org.fisco.bcos.channel.protocol.Version nodeHightestChlVersion =
-                    org.fisco.bcos.channel.protocol.Version.convert(
-                            nodeVersion.getHighestSupported());
-            
-            org.fisco.bcos.channel.protocol.Version SDKHighestVersion =
-                    org.fisco.bcos.channel.protocol.Version.getHighestSupported();
-            
-            logger.trace(
-                    " remote host is {}, node channel version info is {}, node highest version is {}, sdk highest version is {}",
-                    remoteEndPoint,
-                    nodeVersion,
-                    nodeHightestChlVersion.getVersionNumber(),
-                    SDKHighestVersion.getVersionNumber()
-                    );
+            ChannelProtocol channelProtocol = ctx.channel().attr(attributeKey).get();
 
-            if (nodeHightestChlVersion.getVersionNumber() > SDKHighestVersion.getVersionNumber()) {
-                return SDKHighestVersion; //
-            }
+            logger.trace(" host: {}, channel protocol: {}", host, channelProtocol);
 
-            return nodeHightestChlVersion;
-            
+            return channelProtocol.getEnumProtocol();
+
         } else { // default channel version
-        	return org.fisco.bcos.channel.protocol.Version.VERSION_1;
+            return EnumChannelProtocolVersion.VERSION_1;
         }
     }
 
-    public void onReceiveNodeChannelProtocolVersion(
-            ChannelHandlerContext ctx, BcosMessage message) {
+    public void onReceiveChannelProtocolVersion(ChannelHandlerContext ctx, BcosMessage message) {
         String data = new String(message.getData());
 
         SocketChannel socketChannel = (SocketChannel) ctx.channel();
         String hostAddress = socketChannel.remoteAddress().getAddress().getHostAddress();
         int port = socketChannel.remoteAddress().getPort();
 
-        String remoteEndPoint = hostAddress + ":" + port;
+        String host = hostAddress + ":" + port;
 
-        logger.info(
-                "Receive node from host: {} , data: {}", remoteEndPoint, data);
+        logger.info("Receive message from host: {} , data: {}", host, data);
 
         try {
-            NodeVersion nodeVersion =
-                    ObjectMapperFactory.getObjectMapper().readValue(data, NodeVersion.class);
-            
-            logger.info(
-                    " host: {} , node channel protocol version: {}", remoteEndPoint, nodeVersion);
+            ChannelProtocol channelProtocol =
+                    ObjectMapperFactory.getObjectMapper().readValue(data, ChannelProtocol.class);
 
-            AttributeKey<NodeVersion> attributeKey = AttributeKey.valueOf(remoteEndPoint);
+            logger.info(" ChannelProtocol: {}", host, channelProtocol);
+            EnumChannelProtocolVersion enumChannelProtocolVersion =
+                    EnumChannelProtocolVersion.toEnum(channelProtocol.getProtocol());
+            channelProtocol.setEnumProtocol(enumChannelProtocolVersion);
+
+            AttributeKey<ChannelProtocol> attributeKey = AttributeKey.valueOf(host);
 
             if (!ctx.channel().hasAttr(attributeKey)) {
-                ctx.channel().attr(attributeKey).set(nodeVersion);
+                ctx.channel().attr(attributeKey).set(channelProtocol);
             } else {
-                NodeVersion oldNodeChannelVersion = ctx.channel().attr(attributeKey).get();
-                logger.warn(
-                        " Receive node channel protocol version again, old value is {}",
-                        oldNodeChannelVersion);
+                ChannelProtocol oldChannelProtocol = ctx.channel().attr(attributeKey).get();
+                logger.warn(" Receive channel protocol again, old value: {}", oldChannelProtocol);
             }
 
         } catch (IOException e) {
             logger.error(
-                    " receive node protocol version failed, remoteEndPoint is {}, error is {} ",
-                    remoteEndPoint,
+                    " receive node protocol version parser json failed, host: {}, error: {} ",
+                    host,
                     e.getMessage());
+
+            ctx.writeAndFlush("").addListener(ChannelFutureListener.CLOSE);
+        } catch (ChannelPrococolExceiption e) {
+            logger.error(
+                    " receive not support channel protocol, host: {}, error: {} ",
+                    host,
+                    e.getMessage());
+
+            ctx.writeAndFlush("").addListener(ChannelFutureListener.CLOSE);
         }
     }
 

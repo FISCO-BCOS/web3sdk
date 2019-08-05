@@ -5,22 +5,22 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import java.io.IOException;
 import org.fisco.bcos.channel.dto.BcosHeartbeat;
-import org.fisco.bcos.channel.protocol.Version;
+import org.fisco.bcos.channel.protocol.EnumChannelProtocolVersion;
 import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 
 public class HeartBeatParser {
 
-    public Version version;
+    public EnumChannelProtocolVersion version;
 
-    public HeartBeatParser(Version version) {
+    public HeartBeatParser(EnumChannelProtocolVersion version) {
         this.version = version;
     }
 
-    public Version getVersion() {
+    public EnumChannelProtocolVersion getVersion() {
         return version;
     }
 
-    public void setVersion(Version version) {
+    public void setVersion(EnumChannelProtocolVersion version) {
         this.version = version;
     }
 
@@ -32,7 +32,7 @@ public class HeartBeatParser {
             case VERSION_2:
                 {
                     BcosHeartbeat bcosHeartbeat = new BcosHeartbeat();
-                    bcosHeartbeat.setHeartbeat(value);
+                    bcosHeartbeat.setHeartBeat(Integer.parseInt(value));
                     result = ObjectMapperFactory.getObjectMapper().writeValueAsBytes(bcosHeartbeat);
                 }
                 break;
@@ -47,7 +47,7 @@ public class HeartBeatParser {
         return result;
     }
 
-    public BcosHeartbeat decode(byte[] data)
+    public BcosHeartbeat decode(String data)
             throws JsonParseException, JsonMappingException, IOException {
         BcosHeartbeat bcosHeartbeat = new BcosHeartbeat();
 
@@ -63,7 +63,7 @@ public class HeartBeatParser {
                 {
                 } // break;
             default:
-                bcosHeartbeat.setHeartbeat(new String(data, "utf-8"));
+                bcosHeartbeat.setHeartBeat(Integer.parseInt(data));
                 break;
         }
 

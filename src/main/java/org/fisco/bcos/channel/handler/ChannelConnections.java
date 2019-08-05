@@ -88,7 +88,7 @@ public class ChannelConnections {
         void onDisconnect(ChannelHandlerContext ctx);
 
         void onMessage(ChannelHandlerContext ctx, ByteBuf message);
-        
+
         void sendHeartbeat(ChannelHandlerContext ctx);
     }
 

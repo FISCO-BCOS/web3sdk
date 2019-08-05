@@ -4,46 +4,44 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import java.io.IOException;
 import java.math.BigInteger;
-import org.fisco.bcos.channel.dto.BcosBlkNotify;
-import org.fisco.bcos.channel.protocol.Version;
+import org.fisco.bcos.channel.dto.BcosBlockNotification;
+import org.fisco.bcos.channel.protocol.EnumChannelProtocolVersion;
 import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 
-public class BlkNotifyParser {
+public class BlockNotificationParser {
 
-    public Version version;
+    public EnumChannelProtocolVersion version;
 
-    public BlkNotifyParser(Version version) {
+    public BlockNotificationParser(EnumChannelProtocolVersion version) {
         this.version = version;
     }
 
-    public Version getVersion() {
+    public EnumChannelProtocolVersion getVersion() {
         return version;
     }
 
-    public void setVersion(Version version) {
+    public void setVersion(EnumChannelProtocolVersion version) {
         this.version = version;
     }
 
-    public BcosBlkNotify decode(byte[] data)
+    public BcosBlockNotification decode(String data)
             throws JsonParseException, JsonMappingException, IOException {
-        BcosBlkNotify bcosBlkNotify = new BcosBlkNotify();
+        BcosBlockNotification bcosBlkNotify = new BcosBlockNotification();
 
         switch (getVersion()) {
             case VERSION_2:
                 {
                     bcosBlkNotify =
                             ObjectMapperFactory.getObjectMapper()
-                                    .readValue(data, BcosBlkNotify.class);
+                                    .readValue(data, BcosBlockNotification.class);
                 }
                 break;
             case VERSION_1:
                 {
-                    String data0 = new String(data);
-
-                    String[] split = data0.split(",");
+                    String[] split = data.split(",");
                     if (split.length != 2) {
                         throw new IllegalArgumentException(
-                                " invalid block notify message , data is " + data0);
+                                " invalid block notify message, data: " + data);
                     }
 
                     bcosBlkNotify.setGroupID(split[0]);
