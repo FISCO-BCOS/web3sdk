@@ -133,9 +133,11 @@ public class SolidityFunctionWrapper extends Generator {
             Map<String, String> addresses)
             throws IOException, ClassNotFoundException, UnsupportedOperationException {
         String className = Strings.capitaliseFirstLetter(contractName);
-        
-        if(bin.length() > 0x40000) {
-        	throw new UnsupportedOperationException(" contract binary too long, max support is 256k, now is " + Integer.valueOf(bin.length()));
+
+        if (bin.length() > 0x40000) {
+            throw new UnsupportedOperationException(
+                    " contract binary too long, max support is 256k, now is "
+                            + Integer.valueOf(bin.length()));
         }
 
         TypeSpec.Builder classBuilder = createClassBuilder(className, bin, abi);
@@ -246,10 +248,10 @@ public class SolidityFunctionWrapper extends Generator {
     }
 
     private FieldSpec createBinaryDefinition(String binary) {
-    	
+
         return FieldSpec.builder(String.class, BINARY)
                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
-                //.addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC)
+                // .addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC)
                 .initializer("$S", binary)
                 .build();
     }

@@ -1,30 +1,32 @@
 package org.fisco.bcos.channel.protocol;
 
 public class NodeVersion {
-	
-	private int HighestSupported;
-	private String NodeVersion;
 
-	public String getNodeVersion() {
-		return NodeVersion;
-	}
+    private int HighestSupported;
+    private String NodeVersion;
 
-	public void setNodeVersion(String nodeVersion) {
-		NodeVersion = nodeVersion;
-	}
+    public String getNodeVersion() {
+        return NodeVersion;
+    }
 
-	public int getHighestSupported() {
-		return HighestSupported;
-	}
+    public void setNodeVersion(String nodeVersion) {
+        NodeVersion = nodeVersion;
+    }
 
-	public void setHighestSupported(int highestSupported) {
-		HighestSupported = highestSupported;
-	}
-	
-	@Override
-	public String toString() {
-		return "NodeVersion [HighestSupported=" + HighestSupported + ", NodeVersion=" + NodeVersion + "]";
-	}
+    public int getHighestSupported() {
+        return HighestSupported;
+    }
+
+    public void setHighestSupported(int highestSupported) {
+        HighestSupported = highestSupported;
+    }
+
+    @Override
+    public String toString() {
+        return "NodeVersion [HighestSupported="
+                + HighestSupported
+                + ", NodeVersion="
+                + NodeVersion
+                + "]";
+    }
 }
-
-

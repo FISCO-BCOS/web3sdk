@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.SocketChannel;
-
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.util.Arrays;
@@ -55,7 +54,7 @@ public class ConnectionCallback implements ChannelConnections.Callback {
     public void onConnect(ChannelHandlerContext ctx) {
         try {
             channelService.setNumber(BigInteger.ONE);
-            
+
             // Exchange channel protocol with the underlying node
             channelService.sendSDKChannelHighestSupportedMessage(ctx);
 
@@ -141,7 +140,7 @@ public class ConnectionCallback implements ChannelConnections.Callback {
         try {
             Message msg = new Message();
             msg.readHeader(message);
-            
+
             // Get the version of the channel protocol
             // NodeChlProVersion nodeChannelVersion = channelService.getNodeChlProVersion(ctx);
 
@@ -182,8 +181,8 @@ public class ConnectionCallback implements ChannelConnections.Callback {
         }
     }
 
-	@Override
-	public void sendHeartbeat(ChannelHandlerContext ctx) {
-		channelService.sendHeartbeatMessage(ctx);
-	}
+    @Override
+    public void sendHeartbeat(ChannelHandlerContext ctx) {
+        channelService.sendHeartbeatMessage(ctx);
+    }
 }
