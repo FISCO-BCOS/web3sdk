@@ -1,8 +1,13 @@
 package org.fisco.bcos.channel.test.amop;
 
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.channel.dto.ChannelRequest;
 import org.fisco.bcos.channel.dto.ChannelResponse;
@@ -26,11 +31,22 @@ public class Channel2Client {
 
         logger.debug("init client");
 
-        ApplicationContext context =
-                new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
+		String currentPath = System.getProperty("user.dir");
+		String pukPath = currentPath + "/conf/" + "puk.properties";
+		String prkPath = currentPath + "/conf/" + "prk.properties";
+		logger.info("pukPath:{} prkPath:{}", pukPath, prkPath);
+		ConcurrentHashMap<String, Set<String>> topic2PublicKey = AmopCertCfgUtil.loadPukFromCfg(pukPath);
+		ConcurrentHashMap<String, String> topic2PrivateKey = AmopCertCfgUtil.loadPrkFromCfg(prkPath);
 
-        Service service = context.getBean(Service.class);
-        service.run();
+		ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
+
+		Service service = context.getBean(Service.class);
+		service.initPrivateAndPublicKey(topic2PublicKey, topic2PrivateKey);
+
+		Set<String> topics = AmopCertCfgUtil.getTopicNeed2Send(topic2PrivateKey, topic2PublicKey);
+		service.setTopics(topics);
+
+		service.run();
 
         System.out.println("3s ...");
         Thread.sleep(1000);
@@ -53,25 +69,15 @@ public class Channel2Client {
 
             request.setContent(content.getBytes());
 
-            System.out.println(
-                    df.format(LocalDateTime.now())
-                            + " request seq:"
-                            + String.valueOf(request.getMessageID())
-                            + ", Content:"
-                            + request.getContent()
-                            + " content:"
-                            + Arrays.toString(request.getContentByteArray()));
+			System.out.println(df.format(LocalDateTime.now()) + " request seq:" + String.valueOf(request.getMessageID())
+					+ ", Content:" + request.getContent() + " content:"
+					+ Arrays.toString(request.getContentByteArray()));
 
             ChannelResponse response = service.sendChannelMessage2(request);
 
-            System.out.println(
-                    df.format(LocalDateTime.now())
-                            + "response seq:"
-                            + String.valueOf(response.getMessageID())
-                            + ", ErrorCode:"
-                            + response.getErrorCode()
-                            + ", Content:"
-                            + response.getContent());
-        }
-    }
+			System.out
+					.println(df.format(LocalDateTime.now()) + "response seq:" + String.valueOf(response.getMessageID())
+							+ ", ErrorCode:" + response.getErrorCode() + ", Content:" + response.getContent());
+		}
+	}
 }

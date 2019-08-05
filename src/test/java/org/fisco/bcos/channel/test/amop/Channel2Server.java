@@ -1,7 +1,8 @@
 package org.fisco.bcos.channel.test.amop;
 
-import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.fisco.bcos.channel.client.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,14 +22,21 @@ public class Channel2Server {
 
         logger.debug("init Server");
 
-        ApplicationContext context =
-                new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
+		String currentPath = System.getProperty("user.dir");
+		String pukPath = currentPath + "/conf/" + "puk.properties";
+		String prkPath = currentPath + "/conf/" + "prk.properties";
+		logger.info("pukPath:{} prkPath:{}", pukPath, prkPath);
+		ConcurrentHashMap<String, Set<String>> topic2PublicKey = AmopCertCfgUtil.loadPukFromCfg(pukPath);
+		ConcurrentHashMap<String, String> topic2PrivateKey = AmopCertCfgUtil.loadPrkFromCfg(prkPath);
+			
+		ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
 
-        Service service = context.getBean(Service.class);
-
-        Set<String> topics = new HashSet<String>();
-        topics.add(topic);
-        service.setTopics(topics);
+		Service service = context.getBean(Service.class);
+		service.initPrivateAndPublicKey(topic2PublicKey, topic2PrivateKey);
+		
+		Set<String> topics = AmopCertCfgUtil.getTopicNeed2Send(topic2PrivateKey, topic2PublicKey);
+		topics.add(topic);
+		service.setTopics(topics);
 
         PushCallback cb = new PushCallback();
 

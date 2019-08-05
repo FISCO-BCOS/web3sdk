@@ -132,6 +132,47 @@ public class ConnectionCallback implements ChannelConnections.Callback {
 
     @Override
     public void onDisconnect(ChannelHandlerContext ctx) {}
+    
+    
+    private void dealMessage(ChannelHandlerContext ctx,Message msg,ByteBuf message)
+    {
+    	if (msg.getType() == 0x1000) {
+            BcosMessage fiscoMessage = new BcosMessage(msg);
+            fiscoMessage.readExtra(message);
+            channelService.onReceiveTransactionMessage(ctx, fiscoMessage);
+        } 
+    	else if (msg.getType() == 0x1001) {
+            // new block notify
+            ChannelMessage2 channelMessage = new ChannelMessage2(msg);
+            channelMessage.readExtra(message);
+
+			channelService.onReceiveBlockNotify(ctx, channelMessage);
+		}
+		else if(msg.getType() == 0x37)
+		{
+			logger.info("get generate rand value request data");
+			ChannelMessage2 channelMessage = new ChannelMessage2(msg);
+			channelMessage.readExtra(message);
+			channelService.onReceiveChannelMessage3(ctx, channelMessage);
+		}
+		else if(msg.getType() == 0x38)
+		{
+			logger.info("get sign  request data");
+			ChannelMessage2 channelMessage = new ChannelMessage2(msg);
+			channelMessage.readExtra(message);
+			channelService.onReceiveChannelMessage4(ctx, channelMessage);
+		}
+		else if(msg.getType() == 0x39)
+		{
+			logger.info("get check sign request data");
+			ChannelMessage2 channelMessage = new ChannelMessage2(msg);
+			channelMessage.readExtra(message);
+			channelService.onReceiveChannelMessage5(ctx, channelMessage);
+		}
+		else {
+			logger.error("unknown message type:{}", msg.getType());
+		}
+    }
 
     @Override
     public void onMessage(ChannelHandlerContext ctx, ByteBuf message) {
@@ -183,21 +224,14 @@ public class ConnectionCallback implements ChannelConnections.Callback {
                 } else if ("1".equals(content)) {
                     logger.trace("heartbeat response");
                 }
-            } else if (msg.getType() == 0x1000) {
-                BcosMessage fiscoMessage = new BcosMessage(msg);
-                fiscoMessage.readExtra(message);
-                channelService.onReceiveTransactionMessage(ctx, fiscoMessage);
-            } else if (msg.getType() == 0x1001) {
-                // new block notify
-                ChannelMessage2 channelMessage = new ChannelMessage2(msg);
-                channelMessage.readExtra(message);
-
-                channelService.onReceiveBlockNotify(ctx, channelMessage);
-            } else {
-                logger.error("unknown message type:{}", msg.getType());
             }
-        } finally {
-            message.release();
-        }
-    }
+            else
+            {
+            	dealMessage(ctx,msg,message);
+            }
+            
+		} finally {
+			message.release();
+		}
+	}
 }
