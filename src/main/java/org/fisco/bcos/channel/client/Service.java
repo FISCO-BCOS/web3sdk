@@ -25,6 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import org.fisco.bcos.channel.dto.BcosBlkNotify;
+import org.fisco.bcos.channel.dto.BcosHeartbeat;
 import org.fisco.bcos.channel.dto.BcosMessage;
 import org.fisco.bcos.channel.dto.BcosRequest;
 import org.fisco.bcos.channel.dto.BcosResponse;
@@ -879,9 +880,11 @@ public class Service {
             try {
                 bcosBlkNotify = blkNotifyParser.decode(message.getData());
             } catch (Exception e) {
-                logger.error(" Decode block notify message failed, message is {}", e.getMessage());
+                logger.error(" block notify parse message exception, message is {}", e.getMessage());
                 return;
             }
+
+            logger.trace(" BcosBlkNotify is {}  ", bcosBlkNotify);
 
             Integer groupID = Integer.parseInt(bcosBlkNotify.getGroupID());
             BigInteger blkNumber = bcosBlkNotify.getBlockNumber();
@@ -943,8 +946,8 @@ public class Service {
         SDKVersion version = new SDKVersion();
         message.setData(objectMapper.writeValueAsBytes(version));
 
-        logger.debug(
-                "connection established，send sdk channel supported highest protocol to the connection , seq:{}, protocol version:{}",
+        logger.info(
+                "connection established，send sdk channel supported highest protocol to the connection , seq:{}, sdk channel protocol version:{}",
                 message.getSeq(),
                 version);
 
@@ -985,11 +988,13 @@ public class Service {
         HeartBeatParser heartBeatParser = new HeartBeatParser(getUsageChlVersion(ctx));
 
         try {
-            content = heartBeatParser.decode(msg.getData()).getHeartbeat();
+            BcosHeartbeat bcosHeartbeat = heartBeatParser.decode(msg.getData());
+            // logger.trace(" heartbeat packet, heartbeat is {} ", bcosHeartbeat);
+            content = bcosHeartbeat.getHeartbeat();
         } catch (UnsupportedEncodingException e) {
-            logger.error("heartbeat packet cannot be parsed");
+            logger.error("heartbeat packet cannot be parsed, data is {}", new String(msg.getData()));
         } catch (Exception e) {
-            logger.error("heartbeat packet Exception");
+            logger.error("heartbeat packet exception, data is {}", new String(msg.getData()));
         }
 
         if ("0".equals(content)) {
@@ -1025,31 +1030,32 @@ public class Service {
         String remoteEndPoint = hostAddress + ":" + port;
         AttributeKey<NodeVersion> attributeKey = AttributeKey.valueOf(remoteEndPoint);
 
-        org.fisco.bcos.channel.protocol.Version version =
-                org.fisco.bcos.channel.protocol.Version.VERSION_1;
-
         if (ctx.channel().hasAttr(attributeKey)) {
             NodeVersion nodeVersion = ctx.channel().attr(attributeKey).get();
-            logger.trace(
-                    " from socket channel get fisco channel protocol version : {} ", nodeVersion);
-            version =
+            org.fisco.bcos.channel.protocol.Version nodeHightestChlVersion =
                     org.fisco.bcos.channel.protocol.Version.convert(
                             nodeVersion.getHighestSupported());
+            
+            org.fisco.bcos.channel.protocol.Version SDKHighestVersion =
+                    org.fisco.bcos.channel.protocol.Version.getHighestSupported();
+            
+            logger.trace(
+                    " remote host is {}, node channel version info is {}, node highest version is {}, sdk highest version is {}",
+                    remoteEndPoint,
+                    nodeVersion,
+                    nodeHightestChlVersion.getVersionNumber(),
+                    SDKHighestVersion.getVersionNumber()
+                    );
+
+            if (nodeHightestChlVersion.getVersionNumber() > SDKHighestVersion.getVersionNumber()) {
+                return SDKHighestVersion; //
+            }
+
+            return nodeHightestChlVersion;
+            
+        } else { // default channel version
+        	return org.fisco.bcos.channel.protocol.Version.VERSION_1;
         }
-
-        org.fisco.bcos.channel.protocol.Version highestVersion =
-                org.fisco.bcos.channel.protocol.Version.getHighestSupported();
-
-        logger.trace(
-                " channel version is {}, highestVersion is {}",
-                version.getVersionNumber(),
-                highestVersion.getVersionNumber());
-
-        if (version.getVersionNumber() > highestVersion.getVersionNumber()) {
-            return highestVersion; //
-        }
-
-        return version;
     }
 
     public void onReceiveNodeChannelProtocolVersion(
@@ -1063,11 +1069,14 @@ public class Service {
         String remoteEndPoint = hostAddress + ":" + port;
 
         logger.info(
-                "Receive node from host: {} ,channel protocol version: {}", remoteEndPoint, data);
+                "Receive node from host: {} , data: {}", remoteEndPoint, data);
 
         try {
             NodeVersion nodeVersion =
                     ObjectMapperFactory.getObjectMapper().readValue(data, NodeVersion.class);
+            
+            logger.info(
+                    " host: {} , node channel protocol version: {}", remoteEndPoint, nodeVersion);
 
             AttributeKey<NodeVersion> attributeKey = AttributeKey.valueOf(remoteEndPoint);
 
@@ -1076,7 +1085,7 @@ public class Service {
             } else {
                 NodeVersion oldNodeChannelVersion = ctx.channel().attr(attributeKey).get();
                 logger.warn(
-                        " sdk receive channel protocol version info from node again, value is {}",
+                        " Receive node channel protocol version again, old value is {}",
                         oldNodeChannelVersion);
             }
 

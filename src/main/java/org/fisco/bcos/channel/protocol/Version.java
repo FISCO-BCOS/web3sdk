@@ -28,12 +28,13 @@ public enum Version {
         return versions[versions.length - 1];
     }
 
-    public static Version convert(int v) throws ArrayIndexOutOfBoundsException {
-        try {
-            Version version = Version.values()[v];
-            return version;
-        } catch (ArrayIndexOutOfBoundsException e) {
-            throw e;
-        }
+    public static Version convert(int v) {
+    	for(Version ver:Version.values()) {
+    		if(ver.getVersionNumber() == v) {
+    			return ver;
+    		}
+    	}
+    	
+    	return Version.VERSION_1;
     }
 }

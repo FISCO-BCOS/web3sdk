@@ -1,10 +1,16 @@
 package org.fisco.bcos.channel.protocol;
 
-public class NodeVersion {
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
+public class NodeVersion {
+    @JsonProperty("HighestSupported")
     private int HighestSupported;
+
+    @JsonProperty("NodeVersion")
     private String NodeVersion;
 
+    @JsonIgnore
     public String getNodeVersion() {
         return NodeVersion;
     }
@@ -13,6 +19,7 @@ public class NodeVersion {
         NodeVersion = nodeVersion;
     }
 
+    @JsonIgnore
     public int getHighestSupported() {
         return HighestSupported;
     }
