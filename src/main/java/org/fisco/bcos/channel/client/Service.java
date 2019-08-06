@@ -3,15 +3,12 @@ package org.fisco.bcos.channel.client;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.util.AttributeKey;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import io.netty.util.Timer;
 import io.netty.util.TimerTask;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
@@ -37,14 +34,11 @@ import org.fisco.bcos.channel.dto.ChannelPush2;
 import org.fisco.bcos.channel.dto.ChannelRequest;
 import org.fisco.bcos.channel.dto.ChannelResponse;
 import org.fisco.bcos.channel.handler.ChannelConnections;
+import org.fisco.bcos.channel.handler.ChannelHandlerContextHelper;
 import org.fisco.bcos.channel.handler.ConnectionCallback;
 import org.fisco.bcos.channel.handler.ConnectionInfo;
 import org.fisco.bcos.channel.handler.GroupChannelConnectionsConfig;
 import org.fisco.bcos.channel.handler.Message;
-import org.fisco.bcos.channel.protocol.ChannelHandshake;
-import org.fisco.bcos.channel.protocol.ChannelPrococolExceiption;
-import org.fisco.bcos.channel.protocol.ChannelProtocol;
-import org.fisco.bcos.channel.protocol.EnumChannelProtocolVersion;
 import org.fisco.bcos.channel.protocol.parser.BlockNotificationParser;
 import org.fisco.bcos.channel.protocol.parser.HeartBeatParser;
 import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
@@ -56,14 +50,15 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 public class Service {
     private static Logger logger = LoggerFactory.getLogger(Service.class);
-    private Integer connectMillis = 30000;
 
-    public Integer getConnectMillis() {
-        return connectMillis;
+    private Integer connectSeconds = 30;
+
+    public Integer getConnectSeconds() {
+        return connectSeconds;
     }
 
-    public void setConnectMillis(Integer connectMillis) {
-        this.connectMillis = connectMillis;
+    public void setConnectSeconds(Integer connectSeconds) {
+        this.connectSeconds = connectSeconds;
     }
 
     private Integer connectSleepPerMillis = 1;
@@ -136,7 +131,7 @@ public class Service {
             for (String key : fromChannelConnections.getNetworkConnections().keySet()) {
                 ChannelHandlerContext ctx = fromChannelConnections.getNetworkConnections().get(key);
 
-                if (ctx != null && ctx.channel().isActive()) {
+                if (ctx != null && ChannelHandlerContextHelper.isChannelAvailable(ctx)) {
                     ByteBuf out = ctx.alloc().buffer();
                     message.writeHeader(out);
                     message.writeExtra(out);
@@ -234,13 +229,14 @@ public class Service {
                                 channelConnections.getNetworkConnections();
                         for (String key : networkConnection.keySet()) {
                             if (networkConnection.get(key) != null
-                                    && networkConnection.get(key).channel().isActive()) {
+                                    && ChannelHandlerContextHelper.isChannelAvailable(
+                                            networkConnection.get(key))) {
                                 running = true;
                                 break;
                             }
                         }
 
-                        if (running || sleepTime > connectMillis) {
+                        if (running || sleepTime > connectSeconds * 1000) {
                             break;
                         } else {
                             Thread.sleep(connectSleepPerMillis);
@@ -249,7 +245,7 @@ public class Service {
                     }
 
                     if (!running) {
-                        logger.error("connectMillis = " + connectMillis);
+                        logger.error("connectSeconds = " + connectSeconds);
                         logger.error(
                                 "can not connect to nodes success, please checkout the node status and the sdk config!");
                         throw new Exception(
@@ -636,7 +632,7 @@ public class Service {
                             fromChannelConnections.getNetworkConnectionByHost(
                                     connectionInfo.getHost(), connectionInfo.getPort());
 
-                    if (ctx != null && ctx.channel().isActive()) {
+                    if (ctx != null && ChannelHandlerContextHelper.isChannelAvailable(ctx)) {
                         ByteBuf out = ctx.alloc().buffer();
                         channelMessage.writeHeader(out);
                         channelMessage.writeExtra(out);
@@ -875,7 +871,8 @@ public class Service {
         try {
 
             BlockNotificationParser blkNotifyParser =
-                    new BlockNotificationParser(getChannelProtocolVersion(ctx));
+                    new BlockNotificationParser(
+                            ChannelHandlerContextHelper.getProtocolVersion(ctx));
 
             String data = new String(message.getData());
             logger.info("Receive block notify: {}", data);
@@ -939,29 +936,6 @@ public class Service {
         }
     }
 
-    public void sendSDKChannelHighestSupportedMessage(ChannelHandlerContext ctx)
-            throws JsonProcessingException {
-        // Exchange channel protocol with the underlying node
-        Message message = new Message();
-        message.setResult(0);
-        message.setType((short) 0x14);
-        message.setSeq(UUID.randomUUID().toString().replaceAll("-", ""));
-
-        ChannelHandshake channelHandshake = new ChannelHandshake();
-        message.setData(objectMapper.writeValueAsBytes(channelHandshake));
-
-        logger.info(
-                "connection established，send sdk channel supported highest protocol to the connection , seq: {}, channel handshake: {}",
-                message.getSeq(),
-                channelHandshake);
-
-        ByteBuf out = ctx.alloc().buffer();
-        message.writeHeader(out);
-        message.writeExtra(out);
-
-        ctx.writeAndFlush(out);
-    }
-
     public void sendHeartbeatMessage(ChannelHandlerContext ctx) {
 
         Message message = new BcosMessage();
@@ -969,7 +943,8 @@ public class Service {
         message.setResult(0);
         message.setType((short) 0x13);
 
-        HeartBeatParser heartBeatParser = new HeartBeatParser(getChannelProtocolVersion(ctx));
+        HeartBeatParser heartBeatParser =
+                new HeartBeatParser(ChannelHandlerContextHelper.getProtocolVersion(ctx));
 
         try {
             message.setData(heartBeatParser.encode("0"));
@@ -989,7 +964,8 @@ public class Service {
 
         String content = "";
 
-        HeartBeatParser heartBeatParser = new HeartBeatParser(getChannelProtocolVersion(ctx));
+        HeartBeatParser heartBeatParser =
+                new HeartBeatParser(ChannelHandlerContextHelper.getProtocolVersion(ctx));
         String data = new String(msg.getData());
         try {
             BcosHeartbeat bcosHeartbeat = heartBeatParser.decode(data);
@@ -1025,73 +1001,7 @@ public class Service {
         } else if ("1".equals(content)) {
             logger.trace("heartbeat response");
         } else {
-        	logger.trace(" unkown heartbeat message , do nothing, data: {}", data);
-        }
-    }
-
-    public EnumChannelProtocolVersion getChannelProtocolVersion(ChannelHandlerContext ctx) {
-        SocketChannel socketChannel = (SocketChannel) ctx.channel();
-        String hostAddress = socketChannel.remoteAddress().getAddress().getHostAddress();
-        int port = socketChannel.remoteAddress().getPort();
-
-        String host = hostAddress + ":" + port;
-        AttributeKey<ChannelProtocol> attributeKey = AttributeKey.valueOf(host);
-
-        if (ctx.channel().hasAttr(attributeKey)) {
-            ChannelProtocol channelProtocol = ctx.channel().attr(attributeKey).get();
-
-            logger.trace(" host: {}, channel protocol: {}", host, channelProtocol);
-
-            return channelProtocol.getEnumProtocol();
-
-        } else { // default channel version
-            return EnumChannelProtocolVersion.VERSION_1;
-        }
-    }
-
-    public void onReceiveChannelProtocolVersion(ChannelHandlerContext ctx, BcosMessage message) {
-        String data = new String(message.getData());
-
-        SocketChannel socketChannel = (SocketChannel) ctx.channel();
-        String hostAddress = socketChannel.remoteAddress().getAddress().getHostAddress();
-        int port = socketChannel.remoteAddress().getPort();
-
-        String host = hostAddress + ":" + port;
-
-        logger.info("Receive message from host: {} , data: {}", host, data);
-
-        try {
-            ChannelProtocol channelProtocol =
-                    ObjectMapperFactory.getObjectMapper().readValue(data, ChannelProtocol.class);
-
-            logger.info(" ChannelProtocol: {}", host, channelProtocol);
-            EnumChannelProtocolVersion enumChannelProtocolVersion =
-                    EnumChannelProtocolVersion.toEnum(channelProtocol.getProtocol());
-            channelProtocol.setEnumProtocol(enumChannelProtocolVersion);
-
-            AttributeKey<ChannelProtocol> attributeKey = AttributeKey.valueOf(host);
-
-            if (!ctx.channel().hasAttr(attributeKey)) {
-                ctx.channel().attr(attributeKey).set(channelProtocol);
-            } else {
-                ChannelProtocol oldChannelProtocol = ctx.channel().attr(attributeKey).get();
-                logger.warn(" Receive channel protocol again, old value: {}", oldChannelProtocol);
-            }
-
-        } catch (IOException e) {
-            logger.error(
-                    " receive node protocol version parser json failed, host: {}, error: {} ",
-                    host,
-                    e.getMessage());
-
-            ctx.writeAndFlush("").addListener(ChannelFutureListener.CLOSE);
-        } catch (ChannelPrococolExceiption e) {
-            logger.error(
-                    " receive not support channel protocol, host: {}, error: {} ",
-                    host,
-                    e.getMessage());
-
-            ctx.writeAndFlush("").addListener(ChannelFutureListener.CLOSE);
+            logger.trace(" unkown heartbeat message , do nothing, data: {}", data);
         }
     }
 

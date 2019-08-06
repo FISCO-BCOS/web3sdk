@@ -19,6 +19,7 @@ import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.SslProvider;
 import io.netty.handler.timeout.IdleStateHandler;
+import io.netty.util.AttributeKey;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.SecureRandom;
@@ -154,7 +155,8 @@ public class ChannelConnections {
 
         for (String key : networkConnections.keySet()) {
             if (networkConnections.get(key) != null
-                    && networkConnections.get(key).channel().isActive()) {
+                    && ChannelHandlerContextHelper.isChannelAvailable(
+                            networkConnections.get(key))) {
                 activeConnections.add(networkConnections.get(key));
             }
         }
@@ -452,8 +454,24 @@ public class ChannelConnections {
                 bootstrap.connect(host, port);
                 logger.debug("connect to: {}:{} success", host, port);
             } else {
-                logger.trace("send heart beat to {}", ctx.getKey());
-                callback.sendHeartbeat(ctx.getValue());
+                if (ChannelHandlerContextHelper.isChannelAvailable(ctx.getValue())) {
+                    logger.trace("send heart beat to {}", ctx.getKey());
+                    callback.sendHeartbeat(ctx.getValue());
+                } else {
+                    SocketChannel socketChannel = (SocketChannel) ctx.getValue().channel();
+                    String hostAddress =
+                            socketChannel.remoteAddress().getAddress().getHostAddress();
+                    int port = socketChannel.remoteAddress().getPort();
+
+                    AttributeKey<String> attributeKey = AttributeKey.valueOf("CONNECT_TIME");
+                    String connectTimePoint = ctx.getValue().channel().attr(attributeKey).get();
+
+                    String host = hostAddress + ":" + port;
+                    logger.debug(
+                            " socket channel active, channel protocol handshake not finished, host: {}, connect time: {}",
+                            host,
+                            connectTimePoint);
+                }
             }
         }
     }

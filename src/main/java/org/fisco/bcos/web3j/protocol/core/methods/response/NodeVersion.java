@@ -109,5 +109,24 @@ public class NodeVersion extends Response<NodeVersion.Version> {
         public void setGitCommit(String gitCommit) {
             this.gitCommit = gitCommit;
         }
+
+        @Override
+        public String toString() {
+            return "Version [buildTime="
+                    + buildTime
+                    + ", buildType="
+                    + buildType
+                    + ", chainID="
+                    + chainID
+                    + ", version="
+                    + version
+                    + ", gitBranch="
+                    + gitBranch
+                    + ", gitCommit="
+                    + gitCommit
+                    + ", supportedVersion="
+                    + supportedVersion
+                    + "]";
+        }
     }
 }
