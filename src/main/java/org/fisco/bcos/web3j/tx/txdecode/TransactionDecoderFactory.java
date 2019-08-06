@@ -72,8 +72,6 @@ public class TransactionDecoderFactory {
             String name = solFile.getName().split("\\.")[0];
             CompilationResult.ContractMetadata contractMetadata = result.getContract(name);
             if (contractName.equals(name)) {
-                System.out.println(contractMetadata.abi);
-                System.out.println(contractMetadata.bin);
                 abi = contractMetadata.abi;
                 bin = contractMetadata.bin;
                 break;
