@@ -3,11 +3,15 @@ package org.fisco.bcos.channel.handler;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.SocketChannel;
-import java.math.BigInteger;
+import io.netty.util.AttributeKey;
+import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Set;
 import java.util.UUID;
 import org.fisco.bcos.channel.client.BcosResponseCallback;
@@ -16,15 +20,32 @@ import org.fisco.bcos.channel.dto.BcosMessage;
 import org.fisco.bcos.channel.dto.BcosResponse;
 import org.fisco.bcos.channel.dto.ChannelMessage;
 import org.fisco.bcos.channel.dto.ChannelMessage2;
+import org.fisco.bcos.channel.protocol.ChannelHandshake;
+import org.fisco.bcos.channel.protocol.ChannelPrococolExceiption;
+import org.fisco.bcos.channel.protocol.ChannelProtocol;
+import org.fisco.bcos.channel.protocol.EnumChannelProtocolVersion;
+import org.fisco.bcos.channel.protocol.EnumNodeVersion;
 import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
 import org.fisco.bcos.web3j.protocol.core.Request;
+import org.fisco.bcos.web3j.protocol.core.Response;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BlockNumber;
+import org.fisco.bcos.web3j.protocol.core.methods.response.NodeVersion;
 import org.fisco.bcos.web3j.protocol.exceptions.MessageDecodingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ConnectionCallback implements ChannelConnections.Callback {
     private static Logger logger = LoggerFactory.getLogger(ConnectionCallback.class);
+
+    private Integer connectTimeoutMS = 10000;
+
+    public Integer getConnectTimeoutMS() {
+        return connectTimeoutMS;
+    }
+
+    public void setConnectTimeoutMS(Integer connectTimeoutMS) {
+        this.connectTimeoutMS = connectTimeoutMS;
+    }
 
     private ObjectMapper objectMapper = new ObjectMapper();
     private Service channelService;
@@ -53,52 +74,46 @@ public class ConnectionCallback implements ChannelConnections.Callback {
     @Override
     public void onConnect(ChannelHandlerContext ctx) {
         try {
-            channelService.setNumber(BigInteger.ONE);
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            AttributeKey<String> attributeKey = AttributeKey.valueOf("INSERT_TIME");
+            ctx.channel().attr(attributeKey).set(format.format(new Date()));
 
-            // Exchange channel protocol with the underlying node
-            channelService.sendSDKChannelHighestSupportedMessage(ctx);
+            // query connected node version for deciding if send channel protocol handshake packet
+            queryNodeVersion(ctx);
+        } catch (JsonProcessingException e) {
+            logger.error(" query node version exception, message: {} ", e.getMessage());
 
-            Message message = new Message();
-            message.setResult(0);
-            message.setType((short) 0x32);
-            message.setSeq(UUID.randomUUID().toString().replaceAll("-", ""));
-
-            logger.debug(
-                    "connection established，send topic to the connection:{}", message.getSeq());
-
-            topics.add("_block_notify_" + String.valueOf(channelService.getGroupId()));
-            message.setData(objectMapper.writeValueAsBytes(topics.toArray()));
-
-            logger.debug("topics: {}", new String(message.getData()));
-
-            ByteBuf out = ctx.alloc().buffer();
-            message.writeHeader(out);
-            message.writeExtra(out);
-
-            ctx.writeAndFlush(out);
-
-            queryBlockNumberForSelectNodes(ctx);
-        } catch (Exception e) {
-            logger.error("error:", e);
+            ctx.writeAndFlush("").addListener(ChannelFutureListener.CLOSE);
         }
     }
 
-    private void queryBlockNumberForSelectNodes(ChannelHandlerContext ctx)
-            throws JsonProcessingException {
-        BcosMessage bcosMessage = new BcosMessage();
-        bcosMessage.setType((short) 0x12);
+    private void queryChannelProtocolVersion(ChannelHandlerContext ctx)
+            throws ChannelPrococolExceiption, IOException {
+
+        SocketChannel socketChannel = (SocketChannel) ctx.channel();
+        String hostAddress = socketChannel.remoteAddress().getAddress().getHostAddress();
+        int port = socketChannel.remoteAddress().getPort();
+
+        ChannelHandshake channelHandshake = new ChannelHandshake();
         String seq = UUID.randomUUID().toString().replaceAll("-", "");
-        bcosMessage.setSeq(seq);
-        ChannelEthereumService channelEthereumService = new ChannelEthereumService();
-        channelEthereumService.setChannelService(channelService);
-        Request<Integer, BlockNumber> request =
-                new Request<>(
-                        "getBlockNumber",
-                        Arrays.asList(channelService.getGroupId()),
-                        channelEthereumService,
-                        BlockNumber.class);
+
         ObjectMapper objectMapper = new ObjectMapper();
-        bcosMessage.setData(objectMapper.writeValueAsBytes(request));
+        byte[] payload = objectMapper.writeValueAsBytes(channelHandshake);
+        String content = new String(payload);
+
+        logger.debug(
+                " channel protocol handshake, host: {}, port: {}, seq: {}, content: {}",
+                hostAddress,
+                port,
+                seq,
+                content);
+
+        BcosMessage bcosMessage = new BcosMessage();
+        bcosMessage.setType((short) 0x14);
+        bcosMessage.setSeq(seq);
+        bcosMessage.setResult(0);
+        bcosMessage.setData(payload);
+
         ByteBuf byteBuf = ctx.alloc().buffer();
         bcosMessage.writeHeader(byteBuf);
         bcosMessage.writeExtra(byteBuf);
@@ -113,10 +128,239 @@ public class ConnectionCallback implements ChannelConnections.Callback {
                             @Override
                             public void onResponse(BcosResponse response) {
                                 try {
+                                    if (response.getErrorCode() != 0) {
+
+                                        logger.error(
+                                                " channel protocol handshake request failed, code: {}, message: {}",
+                                                response.getErrorCode(),
+                                                response.getErrorMessage());
+
+                                        throw new ChannelPrococolExceiption(
+                                                " channel protocol handshake request failed, code: "
+                                                        + response.getErrorCode()
+                                                        + ", message: "
+                                                        + response.getErrorMessage());
+                                    }
+
+                                    ObjectMapper objectMapper = new ObjectMapper();
+                                    ChannelProtocol channelProtocol =
+                                            objectMapper.readValue(
+                                                    response.getContent(), ChannelProtocol.class);
+
+                                    EnumChannelProtocolVersion enumChannelProtocolVersion =
+                                            EnumChannelProtocolVersion.toEnum(
+                                                    channelProtocol.getProtocol());
+                                    channelProtocol.setEnumProtocol(enumChannelProtocolVersion);
+
+                                    logger.info(
+                                            " channel protocol handshake success, set socket channel protocol, host: {}, channel protocol: {}",
+                                            hostAddress + ":" + port,
+                                            channelProtocol);
+
+                                    ctx.channel()
+                                            .attr(AttributeKey.valueOf(hostAddress + ":" + port))
+                                            .set(channelProtocol);
+
+                                    //
+                                    subBlockNotification(ctx);
+                                    queryBlockNumber(ctx);
+
+                                } catch (Exception e) {
+                                    logger.error(
+                                            " channel protocol handshake failed, exception: {}",
+                                            e.getMessage());
+
+                                    ctx.writeAndFlush("").addListener(ChannelFutureListener.CLOSE);
+                                }
+                            }
+                        });
+    }
+
+    private void queryNodeVersion(ChannelHandlerContext ctx) throws JsonProcessingException {
+
+        SocketChannel socketChannel = (SocketChannel) ctx.channel();
+        String hostAddress = socketChannel.remoteAddress().getAddress().getHostAddress();
+        int port = socketChannel.remoteAddress().getPort();
+
+        String seq = UUID.randomUUID().toString().replaceAll("-", "");
+
+        Request<?, NodeVersion> request =
+                new Request<>("getClientVersion", Arrays.asList(), null, NodeVersion.class);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        byte[] payload = objectMapper.writeValueAsBytes(request);
+        String content = new String(payload);
+
+        logger.info(
+                " query node version host: {}, port: {}, seq: {}, content: {}",
+                hostAddress,
+                port,
+                seq,
+                content);
+
+        BcosMessage bcosMessage = new BcosMessage();
+        bcosMessage.setType((short) 0x12);
+        bcosMessage.setSeq(seq);
+        bcosMessage.setResult(0);
+        bcosMessage.setData(payload);
+
+        ByteBuf byteBuf = ctx.alloc().buffer();
+        bcosMessage.writeHeader(byteBuf);
+        bcosMessage.writeExtra(byteBuf);
+        ctx.writeAndFlush(byteBuf);
+
+        channelService
+                .getSeq2Callback()
+                .put(
+                        seq,
+                        new BcosResponseCallback() {
+
+                            @Override
+                            public void onResponse(BcosResponse response) {
+                                try {
+                                    if (response.getErrorCode() != 0) {
+
+                                        logger.error(
+                                                " fisco node version response, code: {}, message: {}",
+                                                response.getErrorCode(),
+                                                response.getErrorMessage());
+
+                                        throw new ChannelPrococolExceiption(
+                                                " query node version failed, code: "
+                                                        + response.getErrorCode()
+                                                        + ", message: "
+                                                        + response.getErrorMessage());
+                                    }
+
+                                    Response<NodeVersion.Version> nodeVersion =
+                                            objectMapper.readValue(
+                                                    response.getContent(), NodeVersion.class);
+
+                                    logger.info(
+                                            " node: {}, content: {}",
+                                            nodeVersion.getResult(),
+                                            response.getContent());
+
+                                    if (EnumNodeVersion.channelProtocolHandleShakeSupport(
+                                            nodeVersion.getResult().getSupportedVersion())) {
+                                        // fisco node support channel protocol handshake, start it
+
+                                        logger.info(
+                                                " support channel handshake node: {}, content: {}",
+                                                nodeVersion.getResult(),
+                                                response.getContent());
+
+                                        queryChannelProtocolVersion(ctx);
+                                    } else { // default channel protocol
+                                        ChannelProtocol channelProtocol = new ChannelProtocol();
+                                        channelProtocol.setProtocol(
+                                                EnumChannelProtocolVersion.VERSION_1
+                                                        .getVersionNumber());
+                                        channelProtocol.setNodeVersion(
+                                                nodeVersion.getResult().getSupportedVersion());
+                                        channelProtocol.setEnumProtocol(
+                                                EnumChannelProtocolVersion.VERSION_1);
+                                        ctx.channel()
+                                                .attr(
+                                                        AttributeKey.valueOf(
+                                                                hostAddress + ":" + port))
+                                                .set(channelProtocol);
+
+                                        logger.info(
+                                                " not support channel handshake set default ,node: {}, content: {}",
+                                                nodeVersion.getResult(),
+                                                response.getContent());
+
+                                        subBlockNotification(ctx);
+                                        queryBlockNumber(ctx);
+                                    }
+
+                                } catch (Exception e) {
+                                    logger.error(
+                                            " query node version failed, message: {}",
+                                            e.getMessage());
+
+                                    ctx.writeAndFlush("").addListener(ChannelFutureListener.CLOSE);
+                                }
+                            }
+                        });
+    }
+
+    private void subBlockNotification(ChannelHandlerContext ctx) throws JsonProcessingException {
+
+        Message message = new Message();
+        message.setResult(0);
+        message.setType((short) 0x32);
+        message.setSeq(UUID.randomUUID().toString().replaceAll("-", ""));
+
+        topics.add("_block_notify_" + String.valueOf(channelService.getGroupId()));
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        message.setData(objectMapper.writeValueAsBytes(topics.toArray()));
+
+        String content = new String(message.getData());
+
+        ByteBuf out = ctx.alloc().buffer();
+        message.writeHeader(out);
+        message.writeExtra(out);
+
+        ctx.writeAndFlush(out);
+
+        logger.info(
+                " send sub block notification request, seq: {}, content: {}",
+                message.getSeq(),
+                content);
+    }
+
+    private void queryBlockNumber(ChannelHandlerContext ctx) throws JsonProcessingException {
+
+        SocketChannel socketChannel = (SocketChannel) ctx.channel();
+        String hostAddress = socketChannel.remoteAddress().getAddress().getHostAddress();
+        int port = socketChannel.remoteAddress().getPort();
+
+        String seq = UUID.randomUUID().toString().replaceAll("-", "");
+
+        BcosMessage bcosMessage = new BcosMessage();
+        bcosMessage.setType((short) 0x12);
+        bcosMessage.setSeq(seq);
+        ChannelEthereumService channelEthereumService = new ChannelEthereumService();
+        channelEthereumService.setChannelService(channelService);
+
+        Request<Integer, BlockNumber> request =
+                new Request<>(
+                        "getBlockNumber",
+                        Arrays.asList(channelService.getGroupId()),
+                        channelEthereumService,
+                        BlockNumber.class);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        bcosMessage.setData(objectMapper.writeValueAsBytes(request));
+        ByteBuf byteBuf = ctx.alloc().buffer();
+        bcosMessage.writeHeader(byteBuf);
+        bcosMessage.writeExtra(byteBuf);
+        ctx.writeAndFlush(byteBuf);
+
+        String content = new String(bcosMessage.getData());
+        logger.info(
+                " query block number host: {}, port: {}, seq: {}, content: {}",
+                hostAddress,
+                port,
+                seq,
+                content);
+
+        channelService
+                .getSeq2Callback()
+                .put(
+                        seq,
+                        new BcosResponseCallback() {
+                            @Override
+                            public void onResponse(BcosResponse response) {
+                                try {
                                     ObjectMapper objectMapper = new ObjectMapper();
                                     BlockNumber blockNumber =
                                             objectMapper.readValue(
                                                     response.getContent(), BlockNumber.class);
+
                                     SocketChannel socketChannel = (SocketChannel) ctx.channel();
                                     InetSocketAddress socketAddress = socketChannel.remoteAddress();
                                     channelService
@@ -125,7 +369,17 @@ public class ConnectionCallback implements ChannelConnections.Callback {
                                                     socketAddress.getAddress().getHostAddress()
                                                             + socketAddress.getPort(),
                                                     blockNumber.getBlockNumber());
+
+                                    logger.info(
+                                            " query blocknumer, host:{}, port:{}, blockNumber: {} ",
+                                            socketAddress.getAddress().getHostAddress(),
+                                            socketAddress.getPort(),
+                                            blockNumber.getBlockNumber());
                                 } catch (Exception e) {
+                                    logger.error(
+                                            " query blocknumer failed, message: {} ",
+                                            e.getMessage());
+
                                     throw new MessageDecodingException(response.getContent());
                                 }
                             }
@@ -141,8 +395,11 @@ public class ConnectionCallback implements ChannelConnections.Callback {
             Message msg = new Message();
             msg.readHeader(message);
 
-            // Get the version of the channel protocol
-            // NodeChlProVersion nodeChannelVersion = channelService.getNodeChlProVersion(ctx);
+            logger.trace(
+                    "onMessage, seq:{}, type: {}, result: {}",
+                    msg.getSeq(),
+                    msg.getType(),
+                    msg.getResult());
 
             if (msg.getType() == 0x20 || msg.getType() == 0x21) {
                 ChannelMessage channelMessage = new ChannelMessage(msg);
@@ -162,7 +419,7 @@ public class ConnectionCallback implements ChannelConnections.Callback {
             } else if (msg.getType() == 0x14) {
                 BcosMessage fiscoMessage = new BcosMessage(msg);
                 fiscoMessage.readExtra(message);
-                channelService.onReceiveChannelProtocolVersion(ctx, fiscoMessage);
+                channelService.onReceiveEthereumMessage(ctx, fiscoMessage);
             } else if (msg.getType() == 0x1000) {
                 BcosMessage fiscoMessage = new BcosMessage(msg);
                 fiscoMessage.readExtra(message);
@@ -171,7 +428,6 @@ public class ConnectionCallback implements ChannelConnections.Callback {
                 // new block notify
                 ChannelMessage2 channelMessage = new ChannelMessage2(msg);
                 channelMessage.readExtra(message);
-
                 channelService.onReceiveBlockNotify(ctx, channelMessage);
             } else {
                 logger.error("unknown message type:{}", msg.getType());

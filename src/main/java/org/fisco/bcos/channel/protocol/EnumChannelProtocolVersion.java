@@ -47,6 +47,7 @@ public enum EnumChannelProtocolVersion {
             }
         }
 
-        throw new ChannelPrococolExceiption(v);
+        throw new ChannelPrococolExceiption(
+                " not support channel protocol, version " + String.valueOf(v));
     }
 }
