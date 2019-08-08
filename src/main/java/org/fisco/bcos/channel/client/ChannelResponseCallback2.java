@@ -9,6 +9,7 @@ import java.util.Random;
 import org.fisco.bcos.channel.dto.ChannelMessage2;
 import org.fisco.bcos.channel.dto.ChannelResponse;
 import org.fisco.bcos.channel.handler.ChannelConnections;
+import org.fisco.bcos.channel.handler.ChannelHandlerContextHelper;
 import org.fisco.bcos.channel.handler.ConnectionInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,7 +96,7 @@ public abstract class ChannelResponseCallback2 {
                     fromChannelConnections.getNetworkConnectionByHost(
                             getFromConnection().getHost(), getFromConnection().getPort());
 
-            if (ctx != null && ctx.channel().isActive()) {
+            if (ctx != null && ChannelHandlerContextHelper.isChannelAvailable(ctx)) {
                 ByteBuf out = ctx.alloc().buffer();
                 message.writeHeader(out);
                 message.writeExtra(out);
