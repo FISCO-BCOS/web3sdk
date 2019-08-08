@@ -111,6 +111,17 @@ public class Server {
 
         private Server server;
         private Boolean fromRemote = false;
+
+        @Override
+        public void sendHeartbeat(ChannelHandlerContext ctx) {
+            SocketChannel socketChannel = (SocketChannel) ctx.channel();
+            String hostAddress = socketChannel.remoteAddress().getAddress().getHostAddress();
+            int port = socketChannel.remoteAddress().getPort();
+
+            String remoteEndPoint = hostAddress + ":" + port;
+
+            logger.trace("proxy server send heart beat message, remote host is {}", remoteEndPoint);
+        }
     }
 
     public ChannelConnections getLocalConnections() {

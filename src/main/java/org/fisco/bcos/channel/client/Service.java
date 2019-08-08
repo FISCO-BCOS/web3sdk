@@ -1,5 +1,6 @@
 package org.fisco.bcos.channel.client;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -8,6 +9,7 @@ import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import io.netty.util.Timer;
 import io.netty.util.TimerTask;
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
@@ -20,6 +22,8 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+import org.fisco.bcos.channel.dto.BcosBlockNotification;
+import org.fisco.bcos.channel.dto.BcosHeartbeat;
 import org.fisco.bcos.channel.dto.BcosMessage;
 import org.fisco.bcos.channel.dto.BcosRequest;
 import org.fisco.bcos.channel.dto.BcosResponse;
@@ -30,10 +34,13 @@ import org.fisco.bcos.channel.dto.ChannelPush2;
 import org.fisco.bcos.channel.dto.ChannelRequest;
 import org.fisco.bcos.channel.dto.ChannelResponse;
 import org.fisco.bcos.channel.handler.ChannelConnections;
+import org.fisco.bcos.channel.handler.ChannelHandlerContextHelper;
 import org.fisco.bcos.channel.handler.ConnectionCallback;
 import org.fisco.bcos.channel.handler.ConnectionInfo;
 import org.fisco.bcos.channel.handler.GroupChannelConnectionsConfig;
 import org.fisco.bcos.channel.handler.Message;
+import org.fisco.bcos.channel.protocol.parser.BlockNotificationParser;
+import org.fisco.bcos.channel.protocol.parser.HeartBeatParser;
 import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.protocol.exceptions.TransactionException;
@@ -43,7 +50,17 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 public class Service {
     private static Logger logger = LoggerFactory.getLogger(Service.class);
+
     private Integer connectSeconds = 30;
+
+    public Integer getConnectSeconds() {
+        return connectSeconds;
+    }
+
+    public void setConnectSeconds(Integer connectSeconds) {
+        this.connectSeconds = connectSeconds;
+    }
+
     private Integer connectSleepPerMillis = 1;
     private String orgID;
     private String agencyName;
@@ -114,7 +131,7 @@ public class Service {
             for (String key : fromChannelConnections.getNetworkConnections().keySet()) {
                 ChannelHandlerContext ctx = fromChannelConnections.getNetworkConnections().get(key);
 
-                if (ctx != null && ctx.channel().isActive()) {
+                if (ctx != null && ChannelHandlerContextHelper.isChannelAvailable(ctx)) {
                     ByteBuf out = ctx.alloc().buffer();
                     message.writeHeader(out);
                     message.writeExtra(out);
@@ -146,14 +163,6 @@ public class Service {
 
     public Set<String> getTopics() {
         return this.topics;
-    }
-
-    public Integer getConnectSeconds() {
-        return connectSeconds;
-    }
-
-    public void setConnectSeconds(Integer connectSeconds) {
-        this.connectSeconds = connectSeconds;
     }
 
     public Integer getConnectSleepPerMillis() {
@@ -220,7 +229,8 @@ public class Service {
                                 channelConnections.getNetworkConnections();
                         for (String key : networkConnection.keySet()) {
                             if (networkConnection.get(key) != null
-                                    && networkConnection.get(key).channel().isActive()) {
+                                    && ChannelHandlerContextHelper.isChannelAvailable(
+                                            networkConnection.get(key))) {
                                 running = true;
                                 break;
                             }
@@ -622,7 +632,7 @@ public class Service {
                             fromChannelConnections.getNetworkConnectionByHost(
                                     connectionInfo.getHost(), connectionInfo.getPort());
 
-                    if (ctx != null && ctx.channel().isActive()) {
+                    if (ctx != null && ChannelHandlerContextHelper.isChannelAvailable(ctx)) {
                         ByteBuf out = ctx.alloc().buffer();
                         channelMessage.writeHeader(out);
                         channelMessage.writeExtra(out);
@@ -859,28 +869,39 @@ public class Service {
 
     public void onReceiveBlockNotify(ChannelHandlerContext ctx, ChannelMessage2 message) {
         try {
+
+            BlockNotificationParser blkNotifyParser =
+                    new BlockNotificationParser(
+                            ChannelHandlerContextHelper.getProtocolVersion(ctx));
+
             String data = new String(message.getData());
             logger.info("Receive block notify: {}", data);
-            String[] split = data.split(",");
-            if (split.length != 2) {
-                logger.error("Block notify format error: {}", data);
+            BcosBlockNotification bcosBlkNotify = null;
+
+            try {
+                bcosBlkNotify = blkNotifyParser.decode(data);
+            } catch (Exception e) {
+                logger.error(" block notify parse message exception, message: {}", e.getMessage());
                 return;
             }
-            Integer groupID = Integer.parseInt(split[0]);
 
+            logger.trace(" BcosBlkNotify: {}  ", bcosBlkNotify);
+
+            Integer groupID = Integer.parseInt(bcosBlkNotify.getGroupID());
+            BigInteger blkNumber = bcosBlkNotify.getBlockNumber();
             if (!groupID.equals(getGroupId())) {
                 logger.error("Received groupID[{}] not match groupID[{}]", groupID, getGroupId());
 
                 return;
             }
+
             SocketChannel socketChannel = (SocketChannel) ctx.channel();
             String hostAddress = socketChannel.remoteAddress().getAddress().getHostAddress();
             int port = socketChannel.remoteAddress().getPort();
-            BigInteger number = new BigInteger(split[1]);
 
-            nodeToBlockNumberMap.put(hostAddress + port, number);
+            nodeToBlockNumberMap.put(hostAddress + port, blkNumber);
             // get max blockNumber to set blocklimit
-            BigInteger maxBlockNumber = number;
+            BigInteger maxBlockNumber = blkNumber;
             for (String key : nodeToBlockNumberMap.keySet()) {
                 BigInteger blockNumber = nodeToBlockNumberMap.get(key);
                 if (blockNumber.compareTo(maxBlockNumber) >= 0) {
@@ -912,6 +933,75 @@ public class Service {
             }
         } catch (Exception e) {
             logger.error("Block notify error", e);
+        }
+    }
+
+    public void sendHeartbeatMessage(ChannelHandlerContext ctx) {
+
+        Message message = new BcosMessage();
+        message.setSeq(UUID.randomUUID().toString().replaceAll("-", ""));
+        message.setResult(0);
+        message.setType((short) 0x13);
+
+        HeartBeatParser heartBeatParser =
+                new HeartBeatParser(ChannelHandlerContextHelper.getProtocolVersion(ctx));
+
+        try {
+            message.setData(heartBeatParser.encode("0"));
+        } catch (JsonProcessingException e) {
+            logger.error(" write json failed, message: {}", e.getMessage());
+            return;
+        }
+
+        ByteBuf out = ctx.alloc().buffer();
+        message.writeHeader(out);
+        message.writeExtra(out);
+
+        ctx.writeAndFlush(out);
+    }
+
+    public void onReceiveHeartbeat(ChannelHandlerContext ctx, Message msg) {
+
+        String content = "";
+
+        HeartBeatParser heartBeatParser =
+                new HeartBeatParser(ChannelHandlerContextHelper.getProtocolVersion(ctx));
+        String data = new String(msg.getData());
+        try {
+            BcosHeartbeat bcosHeartbeat = heartBeatParser.decode(data);
+            // logger.trace(" heartbeat packet, heartbeat is {} ", bcosHeartbeat);
+            int heartBeat = bcosHeartbeat.getHeartBeat();
+            content = String.valueOf(heartBeat);
+        } catch (UnsupportedEncodingException e) {
+            logger.error("heartbeat packet cannot be parsed, data: {}", data);
+        } catch (Exception e) {
+            logger.error("heartbeat packet exception, data: {}", data);
+        }
+
+        if ("0".equals(content)) {
+            logger.trace("heartbeat packet，send heartbeat packet back");
+            Message response = new Message();
+
+            response.setSeq(msg.getSeq());
+            response.setResult(0);
+            response.setType((short) 0x13);
+
+            try {
+                response.setData(heartBeatParser.encode("1"));
+            } catch (JsonProcessingException e) {
+                logger.error(" write json failed, message is {} ", e.getMessage());
+                return;
+            }
+
+            ByteBuf out = ctx.alloc().buffer();
+            response.writeHeader(out);
+            response.writeExtra(out);
+
+            ctx.writeAndFlush(out);
+        } else if ("1".equals(content)) {
+            logger.trace("heartbeat response");
+        } else {
+            logger.trace(" unkown heartbeat message , do nothing, data: {}", data);
         }
     }
 

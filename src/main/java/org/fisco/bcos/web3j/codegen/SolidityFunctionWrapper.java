@@ -63,7 +63,7 @@ import org.slf4j.LoggerFactory;
 
 /** Generate Java Classes based on generated Solidity bin and abi files. */
 public class SolidityFunctionWrapper extends Generator {
-
+    private static final int maxSolidityBinSize = 0x40000;
     private static final String BINARY = "BINARY";
     private static final String WEB3J = "web3j";
     private static final String CREDENTIALS = "credentials";
@@ -131,8 +131,14 @@ public class SolidityFunctionWrapper extends Generator {
             String destinationDir,
             String basePackageName,
             Map<String, String> addresses)
-            throws IOException, ClassNotFoundException {
+            throws IOException, ClassNotFoundException, UnsupportedOperationException {
         String className = Strings.capitaliseFirstLetter(contractName);
+
+        if (bin.length() > maxSolidityBinSize) {
+            throw new UnsupportedOperationException(
+                    " contract binary too long, max support is 256k, now is "
+                            + Integer.valueOf(bin.length()));
+        }
 
         TypeSpec.Builder classBuilder = createClassBuilder(className, bin, abi);
 
@@ -242,8 +248,10 @@ public class SolidityFunctionWrapper extends Generator {
     }
 
     private FieldSpec createBinaryDefinition(String binary) {
+
         return FieldSpec.builder(String.class, BINARY)
-                .addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC)
+                .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+                // .addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC)
                 .initializer("$S", binary)
                 .build();
     }
@@ -652,7 +660,7 @@ public class SolidityFunctionWrapper extends Generator {
 
         if (useNativeJavaTypes) {
             return Collection.join(
-                    inputParameterTypes,
+                    namedTypes,
                     ", \n",
                     // this results in fully qualified names being generated
                     this::createMappedParameterTypes);
@@ -661,7 +669,14 @@ public class SolidityFunctionWrapper extends Generator {
         }
     }
 
-    private String createMappedParameterTypes(ParameterSpec parameterSpec) {
+    private String createMappedParameterTypes(AbiDefinition.NamedType namedType) {
+
+        String name = namedType.getName();
+        String type = namedType.getType();
+        AbiDefinition.NamedType.Type innerType = new AbiDefinition.NamedType.Type(type);
+
+        ParameterSpec parameterSpec = ParameterSpec.builder(buildTypeName(type), name).build();
+
         if (parameterSpec.type instanceof ParameterizedTypeName) {
             List<TypeName> typeNames = ((ParameterizedTypeName) parameterSpec.type).typeArguments;
             if (typeNames.size() != 1) {
@@ -671,29 +686,49 @@ public class SolidityFunctionWrapper extends Generator {
                 String parameterSpecType = parameterSpec.type.toString();
                 TypeName typeName = typeNames.get(0);
                 String typeMapInput = typeName + ".class";
+
                 if (typeName instanceof ParameterizedTypeName) {
                     List<TypeName> typeArguments = ((ParameterizedTypeName) typeName).typeArguments;
                     if (typeArguments.size() != 1) {
                         throw new UnsupportedOperationException(
                                 "Only a single parameterized type is supported");
                     }
+
                     TypeName innerTypeName = typeArguments.get(0);
                     parameterSpecType =
                             ((ParameterizedTypeName) parameterSpec.type).rawType.toString();
+
                     typeMapInput =
                             ((ParameterizedTypeName) typeName).rawType
                                     + ".class, "
                                     + innerTypeName
                                     + ".class";
                 }
-                return "new "
-                        + parameterSpecType
-                        + "(\n"
-                        + "        org.fisco.bcos.web3j.abi.Utils.typeMap("
-                        + parameterSpec.name
-                        + ", "
-                        + typeMapInput
-                        + "))";
+
+                if (innerType.dynamicArray()) { // dynamic array
+                    return parameterSpec.name
+                            + ".isEmpty()?DynamicArray.empty"
+                            + "(\""
+                            + type
+                            + "\"):"
+                            + "new "
+                            + parameterSpecType
+                            + "(\n"
+                            + "        org.fisco.bcos.web3j.abi.Utils.typeMap("
+                            + parameterSpec.name
+                            + ", "
+                            + typeMapInput
+                            + "))";
+                } else { // static array
+                    return "new "
+                            + parameterSpecType
+                            + "(\n"
+                            + "        org.fisco.bcos.web3j.abi.Utils.typeMap("
+                            + parameterSpec.name
+                            + ", "
+                            + typeMapInput
+                            + "))";
+                }
             }
         } else {
             return "new " + parameterSpec.type + "(" + parameterSpec.name + ")";
@@ -786,6 +821,7 @@ public class SolidityFunctionWrapper extends Generator {
 
             String name = createValidParamName(namedType.getName(), i);
             String type = namedTypes.get(i).getType();
+            namedType.setName(name);
 
             result.add(ParameterSpec.builder(buildTypeName(type), name).build());
         }
@@ -1299,10 +1335,11 @@ public class SolidityFunctionWrapper extends Generator {
                 buildEventTransactionReceiptFunction(
                         responseClassName, functionName, indexedParameters, nonIndexedParameters));
 
-        methods.add(
-                buildEventFlowableFunction(
-                        responseClassName, functionName, indexedParameters, nonIndexedParameters));
-        methods.add(buildDefaultEventFlowableFunction(responseClassName, functionName));
+        // methods.add(
+        //        buildEventFlowableFunction(
+        //                responseClassName, functionName, indexedParameters,
+        // nonIndexedParameters));
+        // methods.add(buildDefaultEventFlowableFunction(responseClassName, functionName));
         return methods;
     }
 
