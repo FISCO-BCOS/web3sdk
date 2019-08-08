@@ -33,6 +33,8 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLException;
+
+import org.fisco.bcos.channel.protocol.EnumSocketChannelAttributeKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -463,7 +465,7 @@ public class ChannelConnections {
                             socketChannel.remoteAddress().getAddress().getHostAddress();
                     int port = socketChannel.remoteAddress().getPort();
 
-                    AttributeKey<String> attributeKey = AttributeKey.valueOf("CONNECT_TIME");
+                    AttributeKey<String> attributeKey = AttributeKey.valueOf(EnumSocketChannelAttributeKey.CHANNEL_CONNECTED_KEY.getKey());
                     String connectTimePoint = ctx.getValue().channel().attr(attributeKey).get();
 
                     String host = hostAddress + ":" + port;
