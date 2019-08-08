@@ -25,6 +25,7 @@ import org.fisco.bcos.channel.protocol.ChannelPrococolExceiption;
 import org.fisco.bcos.channel.protocol.ChannelProtocol;
 import org.fisco.bcos.channel.protocol.EnumChannelProtocolVersion;
 import org.fisco.bcos.channel.protocol.EnumNodeVersion;
+import org.fisco.bcos.channel.protocol.EnumSocketChannelAttributeKey;
 import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
 import org.fisco.bcos.web3j.protocol.core.Request;
 import org.fisco.bcos.web3j.protocol.core.Response;
@@ -75,7 +76,7 @@ public class ConnectionCallback implements ChannelConnections.Callback {
     public void onConnect(ChannelHandlerContext ctx) {
         try {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-            AttributeKey<String> attributeKey = AttributeKey.valueOf("INSERT_TIME");
+            AttributeKey<String> attributeKey = AttributeKey.valueOf(EnumSocketChannelAttributeKey.CHANNEL_CONNECTED_KEY.getKey());
             ctx.channel().attr(attributeKey).set(format.format(new Date()));
 
             // query connected node version for deciding if send channel protocol handshake packet
@@ -158,7 +159,7 @@ public class ConnectionCallback implements ChannelConnections.Callback {
                                             channelProtocol);
 
                                     ctx.channel()
-                                            .attr(AttributeKey.valueOf(hostAddress + ":" + port))
+                                            .attr(AttributeKey.valueOf(EnumSocketChannelAttributeKey.CHANNEL_PROTOCOL_KEY.getKey()))
                                             .set(channelProtocol);
 
                                     //
@@ -262,8 +263,7 @@ public class ConnectionCallback implements ChannelConnections.Callback {
                                                 EnumChannelProtocolVersion.VERSION_1);
                                         ctx.channel()
                                                 .attr(
-                                                        AttributeKey.valueOf(
-                                                                hostAddress + ":" + port))
+                                                        AttributeKey.valueOf(EnumSocketChannelAttributeKey.CHANNEL_PROTOCOL_KEY.getKey()))
                                                 .set(channelProtocol);
 
                                         logger.info(

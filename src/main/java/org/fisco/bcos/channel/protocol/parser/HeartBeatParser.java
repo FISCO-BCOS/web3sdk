@@ -42,7 +42,6 @@ public class HeartBeatParser {
                 }
                 break; 
             default:
-                result = value.getBytes();
                 break;
         }
 

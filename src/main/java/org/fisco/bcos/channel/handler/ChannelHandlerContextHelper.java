@@ -5,6 +5,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.util.AttributeKey;
 import org.fisco.bcos.channel.protocol.ChannelProtocol;
 import org.fisco.bcos.channel.protocol.EnumChannelProtocolVersion;
+import org.fisco.bcos.channel.protocol.EnumSocketChannelAttributeKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +20,7 @@ public class ChannelHandlerContextHelper {
         int port = socketChannel.remoteAddress().getPort();
 
         String host = hostAddress + ":" + port;
-        AttributeKey<ChannelProtocol> attributeKey = AttributeKey.valueOf(host);
+        AttributeKey<ChannelProtocol> attributeKey = AttributeKey.valueOf(EnumSocketChannelAttributeKey.CHANNEL_PROTOCOL_KEY.getKey());
 
         if (ctx.channel().hasAttr(attributeKey)) {
             ChannelProtocol channelProtocol = ctx.channel().attr(attributeKey).get();
