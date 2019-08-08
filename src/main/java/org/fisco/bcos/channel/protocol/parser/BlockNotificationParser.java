@@ -46,7 +46,8 @@ public class BlockNotificationParser {
 
                     bcosBlkNotify.setGroupID(split[0]);
                     bcosBlkNotify.setBlockNumber(new BigInteger(split[1]));
-                } // break;
+                }
+                break;
             default:
                 break;
         }
