@@ -1,7 +1,4 @@
 package org.fisco.bcos.channel.test.parallel.precompile;
-
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigInteger;
 import org.fisco.bcos.channel.client.TransactionSucCallback;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
@@ -9,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class PerformanceDTCallback extends TransactionSucCallback {
-    private static ObjectMapper objectMapper = new ObjectMapper();
+
     private Long startTime = System.currentTimeMillis();
 
     private PerformanceDTCollector collector = null;
@@ -57,7 +54,6 @@ public class PerformanceDTCallback extends TransactionSucCallback {
     static Logger logger = LoggerFactory.getLogger(PerformanceDTCallback.class);
 
     public PerformanceDTCallback() {
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
     @Override

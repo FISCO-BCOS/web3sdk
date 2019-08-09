@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
+import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 import org.fisco.bcos.web3j.utils.ByteUtil;
 
 public class Abi extends ArrayList<Abi.Entry> {
@@ -56,7 +57,7 @@ public class Abi extends ArrayList<Abi.Entry> {
 
     public String toJson() {
         try {
-            return new ObjectMapper().writeValueAsString(this);
+            return ObjectMapperFactory.getObjectMapper().writeValueAsString(this);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
