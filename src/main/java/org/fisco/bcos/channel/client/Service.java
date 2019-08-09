@@ -1,7 +1,6 @@
 package org.fisco.bcos.channel.client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.SocketChannel;
@@ -68,7 +67,6 @@ public class Service {
     private ChannelPushCallback pushCallback;
     private Map<String, Object> seq2Callback = new ConcurrentHashMap<String, Object>();
     private int groupId;
-    private static ObjectMapper objectMapper = new ObjectMapper();
     private BigInteger number = BigInteger.valueOf(0);
     private ConcurrentHashMap<String, BigInteger> nodeToBlockNumberMap = new ConcurrentHashMap<>();
     /** add transaction seq callback */
@@ -113,7 +111,8 @@ public class Service {
             message.setType((short) 0x32); // topic设置topic消息0x32
             message.setSeq(UUID.randomUUID().toString().replaceAll("-", ""));
 
-            message.setData(objectMapper.writeValueAsBytes(topics.toArray()));
+            message.setData(
+                    ObjectMapperFactory.getObjectMapper().writeValueAsBytes(topics.toArray()));
 
             ChannelConnections fromChannelConnections =
                     allChannelConnections
