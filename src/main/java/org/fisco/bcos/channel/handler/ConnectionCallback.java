@@ -1,7 +1,6 @@
 package org.fisco.bcos.channel.handler;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -26,6 +25,7 @@ import org.fisco.bcos.channel.protocol.ChannelProtocol;
 import org.fisco.bcos.channel.protocol.EnumChannelProtocolVersion;
 import org.fisco.bcos.channel.protocol.EnumNodeVersion;
 import org.fisco.bcos.channel.protocol.EnumSocketChannelAttributeKey;
+import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
 import org.fisco.bcos.web3j.protocol.core.Request;
 import org.fisco.bcos.web3j.protocol.core.Response;
@@ -48,7 +48,6 @@ public class ConnectionCallback implements ChannelConnections.Callback {
         this.connectTimeoutMS = connectTimeoutMS;
     }
 
-    private ObjectMapper objectMapper = new ObjectMapper();
     private Service channelService;
     private Set<String> topics;
 
@@ -76,7 +75,9 @@ public class ConnectionCallback implements ChannelConnections.Callback {
     public void onConnect(ChannelHandlerContext ctx) {
         try {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-            AttributeKey<String> attributeKey = AttributeKey.valueOf(EnumSocketChannelAttributeKey.CHANNEL_CONNECTED_KEY.getKey());
+            AttributeKey<String> attributeKey =
+                    AttributeKey.valueOf(
+                            EnumSocketChannelAttributeKey.CHANNEL_CONNECTED_KEY.getKey());
             ctx.channel().attr(attributeKey).set(format.format(new Date()));
 
             // query connected node version for deciding if send channel protocol handshake packet
@@ -98,8 +99,7 @@ public class ConnectionCallback implements ChannelConnections.Callback {
         ChannelHandshake channelHandshake = new ChannelHandshake();
         String seq = UUID.randomUUID().toString().replaceAll("-", "");
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        byte[] payload = objectMapper.writeValueAsBytes(channelHandshake);
+        byte[] payload = ObjectMapperFactory.getObjectMapper().writeValueAsBytes(channelHandshake);
         String content = new String(payload);
 
         logger.debug(
@@ -143,10 +143,11 @@ public class ConnectionCallback implements ChannelConnections.Callback {
                                                         + response.getErrorMessage());
                                     }
 
-                                    ObjectMapper objectMapper = new ObjectMapper();
                                     ChannelProtocol channelProtocol =
-                                            objectMapper.readValue(
-                                                    response.getContent(), ChannelProtocol.class);
+                                            ObjectMapperFactory.getObjectMapper()
+                                                    .readValue(
+                                                            response.getContent(),
+                                                            ChannelProtocol.class);
 
                                     EnumChannelProtocolVersion enumChannelProtocolVersion =
                                             EnumChannelProtocolVersion.toEnum(
@@ -159,7 +160,10 @@ public class ConnectionCallback implements ChannelConnections.Callback {
                                             channelProtocol);
 
                                     ctx.channel()
-                                            .attr(AttributeKey.valueOf(EnumSocketChannelAttributeKey.CHANNEL_PROTOCOL_KEY.getKey()))
+                                            .attr(
+                                                    AttributeKey.valueOf(
+                                                            EnumSocketChannelAttributeKey
+                                                                    .CHANNEL_PROTOCOL_KEY.getKey()))
                                             .set(channelProtocol);
 
                                     //
@@ -188,8 +192,7 @@ public class ConnectionCallback implements ChannelConnections.Callback {
         Request<?, NodeVersion> request =
                 new Request<>("getClientVersion", Arrays.asList(), null, NodeVersion.class);
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        byte[] payload = objectMapper.writeValueAsBytes(request);
+        byte[] payload = ObjectMapperFactory.getObjectMapper().writeValueAsBytes(request);
         String content = new String(payload);
 
         logger.info(
@@ -234,8 +237,10 @@ public class ConnectionCallback implements ChannelConnections.Callback {
                                     }
 
                                     Response<NodeVersion.Version> nodeVersion =
-                                            objectMapper.readValue(
-                                                    response.getContent(), NodeVersion.class);
+                                            ObjectMapperFactory.getObjectMapper()
+                                                    .readValue(
+                                                            response.getContent(),
+                                                            NodeVersion.class);
 
                                     logger.info(
                                             " node: {}, content: {}",
@@ -263,7 +268,10 @@ public class ConnectionCallback implements ChannelConnections.Callback {
                                                 EnumChannelProtocolVersion.VERSION_1);
                                         ctx.channel()
                                                 .attr(
-                                                        AttributeKey.valueOf(EnumSocketChannelAttributeKey.CHANNEL_PROTOCOL_KEY.getKey()))
+                                                        AttributeKey.valueOf(
+                                                                EnumSocketChannelAttributeKey
+                                                                        .CHANNEL_PROTOCOL_KEY
+                                                                        .getKey()))
                                                 .set(channelProtocol);
 
                                         logger.info(
@@ -295,8 +303,7 @@ public class ConnectionCallback implements ChannelConnections.Callback {
 
         topics.add("_block_notify_" + String.valueOf(channelService.getGroupId()));
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        message.setData(objectMapper.writeValueAsBytes(topics.toArray()));
+        message.setData(ObjectMapperFactory.getObjectMapper().writeValueAsBytes(topics.toArray()));
 
         String content = new String(message.getData());
 
@@ -333,8 +340,7 @@ public class ConnectionCallback implements ChannelConnections.Callback {
                         channelEthereumService,
                         BlockNumber.class);
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        bcosMessage.setData(objectMapper.writeValueAsBytes(request));
+        bcosMessage.setData(ObjectMapperFactory.getObjectMapper().writeValueAsBytes(request));
         ByteBuf byteBuf = ctx.alloc().buffer();
         bcosMessage.writeHeader(byteBuf);
         bcosMessage.writeExtra(byteBuf);
@@ -356,10 +362,11 @@ public class ConnectionCallback implements ChannelConnections.Callback {
                             @Override
                             public void onResponse(BcosResponse response) {
                                 try {
-                                    ObjectMapper objectMapper = new ObjectMapper();
                                     BlockNumber blockNumber =
-                                            objectMapper.readValue(
-                                                    response.getContent(), BlockNumber.class);
+                                            ObjectMapperFactory.getObjectMapper()
+                                                    .readValue(
+                                                            response.getContent(),
+                                                            BlockNumber.class);
 
                                     SocketChannel socketChannel = (SocketChannel) ctx.channel();
                                     InetSocketAddress socketAddress = socketChannel.remoteAddress();
