@@ -19,6 +19,7 @@ import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.SslProvider;
 import io.netty.handler.timeout.IdleStateHandler;
+import io.netty.util.AttributeKey;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.SecureRandom;
@@ -29,11 +30,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Random;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLException;
-import org.fisco.bcos.channel.dto.BcosMessage;
+
+import org.fisco.bcos.channel.protocol.EnumSocketChannelAttributeKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -90,6 +91,8 @@ public class ChannelConnections {
         void onDisconnect(ChannelHandlerContext ctx);
 
         void onMessage(ChannelHandlerContext ctx, ByteBuf message);
+
+        void sendHeartbeat(ChannelHandlerContext ctx);
     }
 
     public Callback getCallback() {
@@ -154,7 +157,8 @@ public class ChannelConnections {
 
         for (String key : networkConnections.keySet()) {
             if (networkConnections.get(key) != null
-                    && networkConnections.get(key).channel().isActive()) {
+                    && ChannelHandlerContextHelper.isChannelAvailable(
+                            networkConnections.get(key))) {
                 activeConnections.add(networkConnections.get(key));
             }
         }
@@ -452,20 +456,24 @@ public class ChannelConnections {
                 bootstrap.connect(host, port);
                 logger.debug("connect to: {}:{} success", host, port);
             } else {
-                logger.trace("send heart beat to {}", ctx.getKey());
-                // 连接还在，发送心跳
-                BcosMessage fiscoMessage = new BcosMessage();
+                if (ChannelHandlerContextHelper.isChannelAvailable(ctx.getValue())) {
+                    logger.trace("send heart beat to {}", ctx.getKey());
+                    callback.sendHeartbeat(ctx.getValue());
+                } else {
+                    SocketChannel socketChannel = (SocketChannel) ctx.getValue().channel();
+                    String hostAddress =
+                            socketChannel.remoteAddress().getAddress().getHostAddress();
+                    int port = socketChannel.remoteAddress().getPort();
 
-                fiscoMessage.setSeq(UUID.randomUUID().toString().replaceAll("-", ""));
-                fiscoMessage.setResult(0);
-                fiscoMessage.setType((short) 0x13);
-                fiscoMessage.setData("0".getBytes());
+                    AttributeKey<String> attributeKey = AttributeKey.valueOf(EnumSocketChannelAttributeKey.CHANNEL_CONNECTED_KEY.getKey());
+                    String connectTimePoint = ctx.getValue().channel().attr(attributeKey).get();
 
-                ByteBuf out = ctx.getValue().alloc().buffer();
-                fiscoMessage.writeHeader(out);
-                fiscoMessage.writeExtra(out);
-
-                ctx.getValue().writeAndFlush(out);
+                    String host = hostAddress + ":" + port;
+                    logger.debug(
+                            " socket channel active, channel protocol handshake not finished, host: {}, connect time: {}",
+                            host,
+                            connectTimePoint);
+                }
             }
         }
     }
