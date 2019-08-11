@@ -392,7 +392,7 @@ public class ConnectionCallback implements ChannelConnections.Callback {
     
     private void dealMessage(ChannelHandlerContext ctx,Message msg,ByteBuf message)
     {
-		else if(msg.getType() == 0x37)
+		if(msg.getType() == 0x37)
 		{
 			logger.info("get generate rand value request data");
 			ChannelMessage2 channelMessage = new ChannelMessage2(msg);

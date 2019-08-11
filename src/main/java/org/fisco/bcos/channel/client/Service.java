@@ -155,74 +155,13 @@ public class Service {
     public ConcurrentHashMap<String, BigInteger> getNodeToBlockNumberMap() {
         return nodeToBlockNumberMap;
     }
-
-<<<<<<< HEAD
-	public void setNodeToBlockNumberMap(ConcurrentHashMap<String, BigInteger> nodeToBlockNumberMap) {
-		this.nodeToBlockNumberMap = nodeToBlockNumberMap;
-	}
-=======
+    
     public void setNodeToBlockNumberMap(
             ConcurrentHashMap<String, BigInteger> nodeToBlockNumberMap) {
         this.nodeToBlockNumberMap = nodeToBlockNumberMap;
     }
 
-    public boolean flushTopics(List<String> topics) {
-
-        try {
-            Message message = new Message();
-            message.setResult(0);
-            message.setType((short) 0x32); // topic设置topic消息0x32
-            message.setSeq(UUID.randomUUID().toString().replaceAll("-", ""));
-
-            message.setData(objectMapper.writeValueAsBytes(topics.toArray()));
-
-            ChannelConnections fromChannelConnections =
-                    allChannelConnections
-                            .getAllChannelConnections()
-                            .stream()
-                            .filter(x -> x.getGroupId() == groupId)
-                            .findFirst()
-                            .get();
-
-            if (fromChannelConnections == null) {
-                logger.error("not found and connections which orgId is:{}", orgID);
-                return false;
-            }
-
-            for (String key : fromChannelConnections.getNetworkConnections().keySet()) {
-                ChannelHandlerContext ctx = fromChannelConnections.getNetworkConnections().get(key);
-
-                if (ctx != null && ChannelHandlerContextHelper.isChannelAvailable(ctx)) {
-                    ByteBuf out = ctx.alloc().buffer();
-                    message.writeHeader(out);
-                    message.writeExtra(out);
-                    ctx.writeAndFlush(out);
-
-                    String host =
-                            ((SocketChannel) ctx.channel())
-                                    .remoteAddress()
-                                    .getAddress()
-                                    .getHostAddress();
-                    Integer port = ((SocketChannel) ctx.channel()).remoteAddress().getPort();
-
-                    logger.info(
-                            "try to flush seq:{} topics:{} to host:{} port :{}",
-                            message.getSeq(),
-                            topics,
-                            host,
-                            port);
-                }
-            }
-
-            return true;
-        } catch (Exception e) {
-            logger.error("flushTopics exception", e);
-        }
-
-        return false;
-    }
->>>>>>> d535f637acdc8ed73ba4ae516f34cbbbea05b9e0
-
+    
     public Set<String> getTopics() {
         return this.topics;
     }
@@ -293,19 +232,6 @@ public class Service {
                     channelConnections.setThreadPool(threadPool);
                     channelConnections.startConnect();
 
-<<<<<<< HEAD
-					int sleepTime = 0;
-					boolean running = false;
-					while (true) {
-						Map<String, ChannelHandlerContext> networkConnection = channelConnections
-								.getNetworkConnections();
-						for (String key : networkConnection.keySet()) {
-							if (networkConnection.get(key) != null && networkConnection.get(key).channel().isActive()) {
-								running = true;
-								break;
-							}
-						}
-=======
                     int sleepTime = 0;
                     boolean running = false;
                     while (true) {
@@ -319,7 +245,6 @@ public class Service {
                                 break;
                             }
                         }
->>>>>>> d535f637acdc8ed73ba4ae516f34cbbbea05b9e0
 
                         if (running || sleepTime > connectSeconds * 1000) {
                             break;
@@ -646,8 +571,6 @@ public class Service {
             channelMessage.setType((short) 0x35); // 链上链下多播请求0x35
             channelMessage.setData(request.getContentByteArray());
             channelMessage.setTopic(request.getToTopic());
-
-<<<<<<< HEAD
 			try {
 				// 设置发送节点
 				ChannelConnections fromChannelConnections = allChannelConnections.getAllChannelConnections().stream()
@@ -701,79 +624,7 @@ public class Service {
 		}
 	}
 
-	public void sendResponseMessage(ChannelResponse response, ConnectionInfo info, ChannelHandlerContext ctx,
-			String fromNode, String toNode, String seq) {
-		try {
-			ChannelMessage responseMessage = new ChannelMessage();
-=======
-            try {
-                // 设置发送节点
-                ChannelConnections fromChannelConnections =
-                        allChannelConnections
-                                .getAllChannelConnections()
-                                .stream()
-                                .filter(x -> x.getGroupId() == groupId)
-                                .findFirst()
-                                .get();
-                if (fromChannelConnections == null) {
-                    // 没有找到对应的链
-                    // 返回错误
-                    if (orgID != null) {
-                        logger.error("not found:{}", orgID);
-                        throw new Exception("not found orgID");
-                    } else {
-                        logger.error("not found:{}", agencyName);
-                        throw new Exception("not found agencyName");
-                    }
-                }
-
-                logger.debug(
-                        "FromOrg:{} nodes:{}",
-                        request.getFromOrg(),
-                        fromChannelConnections.getConnections().size());
-
-                for (ConnectionInfo connectionInfo : fromChannelConnections.getConnections()) {
-                    ChannelHandlerContext ctx =
-                            fromChannelConnections.getNetworkConnectionByHost(
-                                    connectionInfo.getHost(), connectionInfo.getPort());
-
-                    if (ctx != null && ChannelHandlerContextHelper.isChannelAvailable(ctx)) {
-                        ByteBuf out = ctx.alloc().buffer();
-                        channelMessage.writeHeader(out);
-                        channelMessage.writeExtra(out);
-
-                        ctx.writeAndFlush(out);
-
-                        logger.debug(
-                                "send message to  "
-                                        + connectionInfo.getHost()
-                                        + ":"
-                                        + String.valueOf(connectionInfo.getPort())
-                                        + " 成功");
-                    } else {
-                        logger.error(
-                                "sending node unavailable, {}",
-                                connectionInfo.getHost()
-                                        + ":"
-                                        + String.valueOf(connectionInfo.getPort()));
-                    }
-                }
-            } catch (Exception e) {
-                logger.error("send message fail:", e);
-
-                ChannelResponse response = new ChannelResponse();
-                response.setErrorCode(100);
-                response.setMessageID(request.getMessageID());
-                response.setErrorMessage(e.getMessage());
-                response.setContent("");
-
-                return;
-            }
-        } catch (Exception e) {
-            logger.error("system error", e);
-        }
-    }
-
+    
     public void sendResponseMessage(
             ChannelResponse response,
             ConnectionInfo info,
@@ -783,7 +634,6 @@ public class Service {
             String seq) {
         try {
             ChannelMessage responseMessage = new ChannelMessage();
->>>>>>> d535f637acdc8ed73ba4ae516f34cbbbea05b9e0
 
             responseMessage.setData(response.getContent().getBytes());
             responseMessage.setResult(response.getErrorCode());
@@ -993,7 +843,6 @@ public class Service {
         }
     }
 
-<<<<<<< HEAD
 	private	byte[] getByteBuffByString(String topic, String content) {
 		ByteBuf outBuf = PooledByteBufAllocator.DEFAULT.buffer();
 
@@ -1228,17 +1077,7 @@ public class Service {
 		sendResponseMessage3(request, ctx, message.getType());
 	}
 
-	public void onReceiveBlockNotify(ChannelHandlerContext ctx, ChannelMessage2 message) {
-		try {
-			String data = new String(message.getData());
-			logger.info("Receive block notify: {}", data);
-			String[] split = data.split(",");
-			if (split.length != 2) {
-				logger.error("Block notify format error: {}", data);
-				return;
-			}
-			Integer groupID = Integer.parseInt(split[0]);
-=======
+
     public void onReceiveBlockNotify(ChannelHandlerContext ctx, ChannelMessage2 message) {
         try {
 
@@ -1256,8 +1095,6 @@ public class Service {
                 logger.error(" block notify parse message exception, message: {}", e.getMessage());
                 return;
             }
->>>>>>> d535f637acdc8ed73ba4ae516f34cbbbea05b9e0
-
             logger.trace(" BcosBlkNotify: {}  ", bcosBlkNotify);
 
             Integer groupID = Integer.parseInt(bcosBlkNotify.getGroupID());
