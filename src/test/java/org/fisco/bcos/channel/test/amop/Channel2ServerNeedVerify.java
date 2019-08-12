@@ -1,15 +1,12 @@
 package org.fisco.bcos.channel.test.amop;
-
-import java.util.HashSet;
-import java.util.Set;
 import org.fisco.bcos.channel.client.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-public class Channel2Server {
-    private final static Logger logger = LoggerFactory.getLogger(Channel2Server.class);
+public class Channel2ServerNeedVerify {
+    final private static Logger logger = LoggerFactory.getLogger(Channel2ServerNeedVerify.class);
 
     public static void main(String[] args) throws Exception {
 	if (args.length < 1) {
@@ -19,10 +16,10 @@ public class Channel2Server {
 	String topic = args[0];
 	logger.debug("init Server");
 	ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
+
 	Service service = context.getBean(Service.class);
-	Set<String> topics = new HashSet<String>();
-	topics.add(topic);
-	service.setTopics(topics);
+	service.setNeedVerifyTopics(topic);
+
 	PushCallback cb = new PushCallback();
 	service.setPushCallback(cb);
 	System.out.println("3s...");

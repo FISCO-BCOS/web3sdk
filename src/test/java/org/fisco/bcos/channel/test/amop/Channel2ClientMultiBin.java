@@ -11,9 +11,10 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class Channel2ClientMultiBin {
     private static Logger logger = LoggerFactory.getLogger(Channel2ClientMulti.class);
-
+    private final static int parameterNum = 2;
+    
     public static void main(String[] args) throws Exception {
-        if (args.length < 2) {
+        if (args.length < parameterNum) {
             System.out.println("param: target topic total number of request");
             return;
         }
