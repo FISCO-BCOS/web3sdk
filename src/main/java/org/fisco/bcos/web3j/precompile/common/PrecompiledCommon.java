@@ -3,6 +3,7 @@ package org.fisco.bcos.web3j.precompile.common;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.math.BigInteger;
+import org.fisco.bcos.fisco.EnumNodeVersion;
 import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.channel.StatusCode;
@@ -57,7 +58,8 @@ public class PrecompiledCommon {
     public static String transferToJson(int code) throws IOException {
         // adapt fisco-bcos rc1 || rc2 || rc3
         String msg = "";
-        if (BCOS_VERSION == null || BCOS_RC1.equals(BCOS_VERSION)) {
+        if (BCOS_VERSION == null
+                || EnumNodeVersion.BCOS_2_0_0_RC1.getVersion().equals(BCOS_VERSION)) {
             if (code == PermissionDenied_RC1) {
                 msg = "permission denied";
             } else if (code == TableNameAndAddressExist_RC1) {
@@ -69,7 +71,7 @@ public class PrecompiledCommon {
             } else if (code == InvalidKey_RC1) {
                 msg = "invalid configuration entry";
             }
-        } else if (BCOS_RC2.equals(BCOS_VERSION)) {
+        } else if (EnumNodeVersion.BCOS_2_0_0_RC2.getVersion().equals(BCOS_VERSION)) {
             if (code == PermissionDenied) {
                 msg = "permission denied";
             } else if (code == TableNameAndAddressExist) {
