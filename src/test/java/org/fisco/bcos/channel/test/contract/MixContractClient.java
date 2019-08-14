@@ -225,6 +225,7 @@ public class MixContractClient {
         ApplicationContext context =
                 new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
         Service service = context.getBean(Service.class);
+        service.setGroupId(Integer.parseInt(args[0]));
         service.run(); // run the daemon service
         // init the client keys
         keyPair = Keys.createEcKeyPair();
