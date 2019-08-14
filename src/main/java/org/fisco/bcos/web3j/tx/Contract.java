@@ -7,6 +7,7 @@ import java.util.*;
 import java.util.concurrent.Semaphore;
 import java.util.stream.Collectors;
 import org.fisco.bcos.channel.client.TransactionSucCallback;
+import org.fisco.bcos.fisco.EnumNodeVersion;
 import org.fisco.bcos.web3j.abi.EventEncoder;
 import org.fisco.bcos.web3j.abi.EventValues;
 import org.fisco.bcos.web3j.abi.FunctionEncoder;
@@ -48,7 +49,7 @@ public abstract class Contract extends ManagedTransaction {
 
     public static final String BIN_NOT_PROVIDED = "Bin file was not provided";
     public static final String FUNC_DEPLOY = "deploy";
-    public static final String BCOS_RC1 = "2.0.0-rc1";
+
     protected final String contractBinary;
     protected String contractAddress;
     protected ContractGasProvider gasProvider;
@@ -94,8 +95,9 @@ public abstract class Contract extends ManagedTransaction {
             NodeVersion.Version nodeVersion = web3j.getNodeVersion().send().getNodeVersion();
             version = nodeVersion.getVersion();
             supportedVersion = nodeVersion.getSupportedVersion();
-            if (BCOS_RC1.equals(version) || BCOS_RC1.equals(supportedVersion)) {
-                version = BCOS_RC1;
+            
+            if (EnumNodeVersion.BCOS_2_0_0_RC1.getVersion().equals(version) || EnumNodeVersion.BCOS_2_0_0_RC1.getVersion().equals(supportedVersion)) {
+                version = EnumNodeVersion.BCOS_2_0_0_RC1.getVersion();
                 logger.info("fisco-bcos version:{}", version);
             } else {
                 chainId = nodeVersion.getChainID();
@@ -106,7 +108,7 @@ public abstract class Contract extends ManagedTransaction {
             logger.error("Query fisco-bcos version failed", e);
         }
 
-        return BCOS_RC1.equals(version)
+        return EnumNodeVersion.BCOS_2_0_0_RC1.getVersion().equals(version)
                 ? new RawTransactionManager(web3j, credentials)
                 : new ExtendedRawTransactionManager(
                         web3j, credentials, BigInteger.valueOf(groupId), new BigInteger(chainId));
