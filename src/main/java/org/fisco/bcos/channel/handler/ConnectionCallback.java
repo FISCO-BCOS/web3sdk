@@ -394,7 +394,13 @@ public class ConnectionCallback implements ChannelConnections.Callback {
     }
 
     @Override
-    public void onDisconnect(ChannelHandlerContext ctx) {}
+    public void onDisconnect(ChannelHandlerContext ctx) {
+        SocketChannel socketChannel = (SocketChannel) ctx.channel();
+        String hostAddress = socketChannel.remoteAddress().getAddress().getHostAddress();
+        int port = socketChannel.remoteAddress().getPort();
+
+        logger.info(" disconnect , host: {}, port: {}", hostAddress, port);
+    }
 
     @Override
     public void onMessage(ChannelHandlerContext ctx, ByteBuf message) {
@@ -427,6 +433,11 @@ public class ConnectionCallback implements ChannelConnections.Callback {
                 BcosMessage fiscoMessage = new BcosMessage(msg);
                 fiscoMessage.readExtra(message);
                 channelService.onReceiveEthereumMessage(ctx, fiscoMessage);
+            } else if(msg.getType() == 0x15) {
+            	// new block notify
+            	BcosMessage bcosMessage = new BcosMessage(msg);
+            	bcosMessage.readExtra(message);
+                channelService.onReceiveEventLogResponseMessage(ctx, bcosMessage);
             } else if (msg.getType() == 0x1000) {
                 BcosMessage fiscoMessage = new BcosMessage(msg);
                 fiscoMessage.readExtra(message);

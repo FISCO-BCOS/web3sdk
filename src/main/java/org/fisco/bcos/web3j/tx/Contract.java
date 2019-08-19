@@ -6,7 +6,12 @@ import java.math.BigInteger;
 import java.util.*;
 import java.util.concurrent.Semaphore;
 import java.util.stream.Collectors;
+
 import org.fisco.bcos.channel.client.TransactionSucCallback;
+import org.fisco.bcos.channel.event.BcosEventFilter;
+import org.fisco.bcos.channel.event.EventFilterException;
+import org.fisco.bcos.channel.event.EventFilterStatus;
+import org.fisco.bcos.channel.event.EventLogCallback;
 import org.fisco.bcos.fisco.EnumNodeVersion;
 import org.fisco.bcos.web3j.abi.EventEncoder;
 import org.fisco.bcos.web3j.abi.EventValues;
@@ -18,7 +23,10 @@ import org.fisco.bcos.web3j.abi.datatypes.Event;
 import org.fisco.bcos.web3j.abi.datatypes.Function;
 import org.fisco.bcos.web3j.abi.datatypes.Type;
 import org.fisco.bcos.web3j.crypto.Credentials;
+import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 import org.fisco.bcos.web3j.protocol.Web3j;
+import org.fisco.bcos.web3j.protocol.Web3jService;
+import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameterName;
 import org.fisco.bcos.web3j.protocol.core.JsonRpc2_0Web3j;
@@ -33,6 +41,8 @@ import org.fisco.bcos.web3j.tx.gas.StaticGasProvider;
 import org.fisco.bcos.web3j.utils.Numeric;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 /**
  * Solidity contract type abstraction for interacting with smart contracts via native Java types.
@@ -95,8 +105,9 @@ public abstract class Contract extends ManagedTransaction {
             NodeVersion.Version nodeVersion = web3j.getNodeVersion().send().getNodeVersion();
             version = nodeVersion.getVersion();
             supportedVersion = nodeVersion.getSupportedVersion();
-            
-            if (EnumNodeVersion.BCOS_2_0_0_RC1.getVersion().equals(version) || EnumNodeVersion.BCOS_2_0_0_RC1.getVersion().equals(supportedVersion)) {
+
+            if (EnumNodeVersion.BCOS_2_0_0_RC1.getVersion().equals(version)
+                    || EnumNodeVersion.BCOS_2_0_0_RC1.getVersion().equals(supportedVersion)) {
                 version = EnumNodeVersion.BCOS_2_0_0_RC1.getVersion();
                 logger.info("fisco-bcos version:{}", version);
             } else {
@@ -727,6 +738,55 @@ public abstract class Contract extends ManagedTransaction {
                                 BigInteger.ZERO));
     }
 
+	public void getEventLog(BcosEventFilter filter, EventLogCallback callback) throws JsonProcessingException, EventFilterException {
+
+		Web3jService service = ((JsonRpc2_0Web3j) web3j).web3jService();
+		if (!(service instanceof ChannelEthereumService)) {
+			throw new EventFilterException(EventFilterStatus.NOT_SUPPORT_SERVICE.getStatus(), EventFilterStatus.getDescMessage(EventFilterStatus.NOT_SUPPORT_SERVICE));
+		}
+
+		if (service instanceof ChannelEthereumService) {
+
+			String request = ObjectMapperFactory.getObjectMapper().writeValueAsString(filter);
+
+			((ChannelEthereumService) service).getChannelService().asyncSendEventLogRequestMessage(request, callback);
+			;
+		}
+
+    }
+
+    public void getEventLog(String eventTopic, EventLogCallback callback) throws JsonProcessingException, EventFilterException {
+    	
+        getEventLog(
+                eventTopic,
+                DefaultBlockParameterName.LATEST,
+                DefaultBlockParameterName.LATEST,
+                null,
+                callback);
+    }
+
+    public void getEventLog(
+            String eventTopic,
+            DefaultBlockParameter startBlock,
+            DefaultBlockParameter endBlock,
+            List<String> additionalTopics,
+            EventLogCallback callback) throws JsonProcessingException, EventFilterException {
+
+    	BcosEventFilter filter = new BcosEventFilter();
+    	filter.setFromBlock(startBlock.getValue());
+    	filter.setToBlock(endBlock.getValue());
+    	
+    	List<String> addresses = new ArrayList<String>();
+    	addresses.add(getContractAddress());
+    	filter.setAddress(addresses);
+    	
+    	List<Object> topics = new ArrayList<Object>();
+    	topics.add(eventTopic);
+        filter.setTopics(topics);
+
+        this.getEventLog(filter, callback);
+    }
+
     public static EventValues staticExtractEventParameters(Event event, Log log) {
 
         List<String> topics = log.getTopics();
@@ -768,14 +828,16 @@ public abstract class Contract extends ManagedTransaction {
         return (eventValues == null) ? null : new EventValuesWithLog(eventValues, log);
     }
 
-    protected List<EventValuesWithLog> extractEventParametersWithLog(
-            Event event, TransactionReceipt transactionReceipt) {
-        return transactionReceipt
-                .getLogs()
-                .stream()
+    protected List<EventValuesWithLog> extractEventParametersWithLog(Event event, List<Log> logs) {
+        return logs.stream()
                 .map(log -> extractEventParametersWithLog(event, log))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
+    }
+
+    protected List<EventValuesWithLog> extractEventParametersWithLog(
+            Event event, TransactionReceipt transactionReceipt) {
+        return extractEventParametersWithLog(event, transactionReceipt.getLogs());
     }
 
     /**

@@ -20,7 +20,8 @@ public class ChannelHandlerContextHelper {
         int port = socketChannel.remoteAddress().getPort();
 
         String host = hostAddress + ":" + port;
-        AttributeKey<ChannelProtocol> attributeKey = AttributeKey.valueOf(EnumSocketChannelAttributeKey.CHANNEL_PROTOCOL_KEY.getKey());
+        AttributeKey<ChannelProtocol> attributeKey =
+                AttributeKey.valueOf(EnumSocketChannelAttributeKey.CHANNEL_PROTOCOL_KEY.getKey());
 
         if (ctx.channel().hasAttr(attributeKey)) {
             ChannelProtocol channelProtocol = ctx.channel().attr(attributeKey).get();
@@ -33,6 +34,15 @@ public class ChannelHandlerContextHelper {
             return null;
         }
     }
+    
+	public static String getPeerHost(ChannelHandlerContext ctx) {
+
+		SocketChannel socketChannel = (SocketChannel) ctx.channel();
+		String hostAddress = socketChannel.remoteAddress().getAddress().getHostAddress();
+		int port = socketChannel.remoteAddress().getPort();
+
+		return hostAddress + ":" + port;
+	}
 
     public static boolean isChannelAvailable(ChannelHandlerContext ctx) {
 

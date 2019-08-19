@@ -8,6 +8,8 @@ import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import io.netty.util.Timer;
 import io.netty.util.TimerTask;
+
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
@@ -32,6 +34,8 @@ import org.fisco.bcos.channel.dto.ChannelPush;
 import org.fisco.bcos.channel.dto.ChannelPush2;
 import org.fisco.bcos.channel.dto.ChannelRequest;
 import org.fisco.bcos.channel.dto.ChannelResponse;
+import org.fisco.bcos.channel.event.EventFilterStatus;
+import org.fisco.bcos.channel.event.EventLogCallback;
 import org.fisco.bcos.channel.handler.ChannelConnections;
 import org.fisco.bcos.channel.handler.ChannelHandlerContextHelper;
 import org.fisco.bcos.channel.handler.ConnectionCallback;
@@ -41,8 +45,11 @@ import org.fisco.bcos.channel.handler.Message;
 import org.fisco.bcos.channel.protocol.parser.BlockNotificationParser;
 import org.fisco.bcos.channel.protocol.parser.HeartBeatParser;
 import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
+import org.fisco.bcos.web3j.protocol.core.methods.response.Log;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.protocol.exceptions.TransactionException;
+import org.fisco.bcos.web3j.tx.txdecode.BaseException;
+import org.fisco.bcos.web3j.tx.txdecode.EventResultEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -720,6 +727,85 @@ public class Service {
             logger.error("system error:", e);
         }
     }
+    
+    public void asyncSendEventLogRequestMessage(String request, EventLogCallback callback) {
+
+		BcosMessage bcosMessage = new BcosMessage();
+
+		bcosMessage.setSeq(newSeq());
+		bcosMessage.setResult(0);
+		bcosMessage.setType((short) 0x15);
+		bcosMessage.setData(request.getBytes());
+
+		try {
+			ChannelConnections channelConnections = allChannelConnections.getAllChannelConnections().stream()
+					.filter(x -> x.getGroupId() == groupId).findFirst().get();
+
+			if (channelConnections == null) {
+				if (orgID != null) {
+					logger.error("not found:{}", orgID);
+					throw new TransactionException("not found orgID");
+				} else {
+					logger.error("not found:{}", agencyName);
+					throw new TransactionException("not found agencyName");
+				}
+			}
+			ChannelHandlerContext ctx = channelConnections.randomNetworkConnection(nodeToBlockNumberMap);
+
+			ByteBuf out = ctx.alloc().buffer();
+			bcosMessage.writeHeader(out);
+			bcosMessage.writeExtra(out);
+
+			seq2Callback.put(bcosMessage.getSeq(), callback);
+
+			ctx.writeAndFlush(out);
+
+			SocketChannel socketChannel = (SocketChannel) ctx.channel();
+			InetSocketAddress socketAddress = socketChannel.remoteAddress();
+
+			logger.debug("selected node {}:{} bcos request, seq:{}, content:{}",
+					socketAddress.getAddress().getHostAddress(), socketAddress.getPort(), bcosMessage.getSeq(),
+					request);
+
+		} catch (Exception e) {
+			logger.error("system error: " + e);
+			callback.onResponse(null, null, EventFilterStatus.UNKOWN_ERROR.getStatus());
+		}
+	}
+
+	public void onReceiveEventLogResponseMessage(ChannelHandlerContext ctx, BcosMessage message) {
+
+		EventLogCallback callback = (EventLogCallback) seq2Callback.get(message.getSeq());
+		String content = new String(message.getData());
+		if (callback == null) {
+			logger.error("can not found response callback，seq: {}", message.getSeq());
+			return;
+		}
+
+		int code = message.getResult();
+		if (code == 0) {
+			try {
+				List<Log> logs = callback.toLogList(content);
+				List<List<List<EventResultEntity>>> eventDecodeResult = callback.decode(logs);
+				callback.onResponse(logs, eventDecodeResult, 0);
+				logger.trace(" event log filter response , seq: {}, content: {}", message.getSeq(),
+						new String(message.getData()));
+			} catch (BaseException | IOException e) { // invalid response format
+				callback.onResponse(null, null, EventFilterStatus.INVALID_RESPONSE.getStatus());
+
+				logger.error("invalid response format, json parser failed, seq: {}, content: {}", message.getSeq(),
+						content);
+			}
+		} else {
+			logger.info(" event log filter response , seq: {}, result: {}, content: {}", message.getSeq(),
+					message.getResult(), new String(message.getData()));
+
+			callback.onResponse(null, null, code);
+		}
+
+		logger.info("Receive event log notify, result: {}, content: {}", message.getResult(), content);
+
+	}
 
     public void onReceiveChannelMessage(ChannelHandlerContext ctx, ChannelMessage message) {
         ChannelResponseCallback callback =

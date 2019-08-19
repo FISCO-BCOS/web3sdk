@@ -77,6 +77,8 @@ public class SolidityFunctionWrapper extends Generator {
     private static final String START_BLOCK = "startBlock";
     private static final String END_BLOCK = "endBlock";
     private static final String WEI_VALUE = "weiValue";
+    private static final String CALLBACK_VALUE = "callback";
+    private static final String ADDTIONAL_TOPICS = "additionalTopics";
     private static final String FUNC_NAME_PREFIX = "FUNC_";
     private String abiContent;
     private static final ClassName LOG = ClassName.get(Log.class);
@@ -644,6 +646,20 @@ public class SolidityFunctionWrapper extends Generator {
         return toReturn.build();
     }
 
+    private MethodSpec.Builder addParameter(
+            MethodSpec.Builder methodBuilder, String type, String name) {
+
+        ParameterSpec parameterSpec = buildParameterType(type, name);
+
+        TypeName typeName = getWrapperType(parameterSpec.type);
+
+        ParameterSpec inputParameter = ParameterSpec.builder(typeName, parameterSpec.name).build();
+
+        methodBuilder.addParameter(inputParameter);
+
+        return methodBuilder;
+    }
+
     private String addParameters(
             MethodSpec.Builder methodBuilder, List<AbiDefinition.NamedType> namedTypes) {
 
@@ -812,6 +828,19 @@ public class SolidityFunctionWrapper extends Generator {
         } else {
             return getNativeType(typeName);
         }
+    }
+
+    static ParameterSpec buildParameterType(String type, String name) {
+
+        return ParameterSpec.builder(buildTypeName(type), name).build();
+    }
+
+    static ParameterSpec buildParameterType(AbiDefinition.NamedType namedType) {
+
+        String name = namedType.getName();
+        String type = namedType.getType();
+
+        return buildParameterType(type, name);
     }
 
     static List<ParameterSpec> buildParameterTypes(List<AbiDefinition.NamedType> namedTypes) {
@@ -1256,6 +1285,66 @@ public class SolidityFunctionWrapper extends Generator {
         return flowableMethodBuilder.build();
     }
 
+    MethodSpec buildGetEventLogFunction(
+            String functionName,
+            List<SolidityFunctionWrapper.NamedTypeName> indexedParameters,
+            List<SolidityFunctionWrapper.NamedTypeName> nonIndexedParameters)
+            throws ClassNotFoundException {
+
+        String generatedFunctionName =
+                "get" + Strings.lowercaseFirstLetter(functionName) + "EventLog";
+
+        MethodSpec.Builder getEventMethodBuilder =
+                MethodSpec.methodBuilder(generatedFunctionName)
+                        .addModifiers(Modifier.PUBLIC)
+                        .addParameter(DefaultBlockParameter.class, START_BLOCK)
+                        .addParameter(DefaultBlockParameter.class, END_BLOCK);
+
+        addParameter(getEventMethodBuilder, "string[]", ADDTIONAL_TOPICS)
+                .addParameter(AbiTypes.getType("EventLogCallback"), CALLBACK_VALUE);
+
+        getEventMethodBuilder.addStatement(
+                "String eventTopic = $T.encode(" + buildEventDefinitionName(functionName) + ")",
+                EventEncoder.class);
+
+        getEventMethodBuilder.addStatement(
+                "getEventLog(eventTopic"
+                        + ","
+                        + START_BLOCK
+                        + ","
+                        + END_BLOCK
+                        + ","
+                        + ADDTIONAL_TOPICS
+                        + ","
+                        + CALLBACK_VALUE
+                        + ")");
+
+        return getEventMethodBuilder.build();
+    }
+
+    MethodSpec buildDefaultGetEventLogFunction(
+            String functionName,
+            List<SolidityFunctionWrapper.NamedTypeName> indexedParameters,
+            List<SolidityFunctionWrapper.NamedTypeName> nonIndexedParameters)
+            throws ClassNotFoundException {
+
+        String generatedFunctionName =
+                "get" + Strings.lowercaseFirstLetter(functionName) + "EventLog";
+
+        MethodSpec.Builder getEventMethodBuilder =
+                MethodSpec.methodBuilder(generatedFunctionName)
+                        .addModifiers(Modifier.PUBLIC)
+                        .addParameter(AbiTypes.getType("EventLogCallback"), CALLBACK_VALUE);
+
+        getEventMethodBuilder.addStatement(
+                "String eventTopic = $T.encode(" + buildEventDefinitionName(functionName) + ")",
+                EventEncoder.class);
+
+        getEventMethodBuilder.addStatement("getEventLog(eventTopic" + "," + CALLBACK_VALUE + ")");
+
+        return getEventMethodBuilder.build();
+    }
+
     MethodSpec buildEventTransactionReceiptFunction(
             String responseClassName,
             String functionName,
@@ -1334,6 +1423,12 @@ public class SolidityFunctionWrapper extends Generator {
         methods.add(
                 buildEventTransactionReceiptFunction(
                         responseClassName, functionName, indexedParameters, nonIndexedParameters));
+
+        methods.add(
+                buildGetEventLogFunction(functionName, indexedParameters, nonIndexedParameters));
+        methods.add(
+                buildDefaultGetEventLogFunction(
+                        functionName, indexedParameters, nonIndexedParameters));
 
         // methods.add(
         //        buildEventFlowableFunction(
