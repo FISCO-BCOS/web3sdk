@@ -38,9 +38,9 @@ public class HeartBeatParser {
                 break;
             case VERSION_1:
                 {
-                	result = value.getBytes();
+                    result = value.getBytes();
                 }
-                break; 
+                break;
             default:
                 break;
         }
@@ -62,7 +62,7 @@ public class HeartBeatParser {
                 break;
             case VERSION_1:
                 {
-                	bcosHeartbeat.setHeartBeat(Integer.parseInt(data));
+                    bcosHeartbeat.setHeartBeat(Integer.parseInt(data));
                 }
                 break;
             default:
