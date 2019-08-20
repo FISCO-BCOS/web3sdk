@@ -106,7 +106,7 @@ public class Request<S, T extends Response> {
     public Flowable<T> flowable() {
         return new RemoteCall<>(this::send).flowable();
     }
-    
+
     @JsonIgnore
     public TransactionSucCallback getCallback() {
         return callback;
