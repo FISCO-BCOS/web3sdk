@@ -20,7 +20,8 @@ public class ChannelHandlerContextHelper {
         int port = socketChannel.remoteAddress().getPort();
 
         String host = hostAddress + ":" + port;
-        AttributeKey<ChannelProtocol> attributeKey = AttributeKey.valueOf(EnumSocketChannelAttributeKey.CHANNEL_PROTOCOL_KEY.getKey());
+        AttributeKey<ChannelProtocol> attributeKey =
+                AttributeKey.valueOf(EnumSocketChannelAttributeKey.CHANNEL_PROTOCOL_KEY.getKey());
 
         if (ctx.channel().hasAttr(attributeKey)) {
             ChannelProtocol channelProtocol = ctx.channel().attr(attributeKey).get();
