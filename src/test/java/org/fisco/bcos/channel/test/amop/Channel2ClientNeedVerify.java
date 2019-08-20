@@ -12,8 +12,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class Channel2ClientNeedVerify {
-    private final static Logger logger = LoggerFactory.getLogger(Channel2ClientNeedVerify.class);
-    private final static int parameterNum = 2;
+    private static final Logger logger = LoggerFactory.getLogger(Channel2ClientNeedVerify.class);
+    private static final int parameterNum = 2;
 
     public static void main(String[] args) throws Exception {
         if (args.length < parameterNum) {
@@ -52,15 +52,25 @@ public class Channel2ClientNeedVerify {
 
             request.setContent(content.getBytes());
 
-            System.out.println(df.format(LocalDateTime.now()) + " request seq:"
-                    + request.getMessageID() + ", Content:" + request.getContent() + " content:"
-                    + Arrays.toString(request.getContentByteArray()));
+            System.out.println(
+                    df.format(LocalDateTime.now())
+                            + " request seq:"
+                            + request.getMessageID()
+                            + ", Content:"
+                            + request.getContent()
+                            + " content:"
+                            + Arrays.toString(request.getContentByteArray()));
 
             ChannelResponse response = service.sendChannelMessageForVerifyTopic(request);
 
-            System.out.println(df.format(LocalDateTime.now()) + "response seq:"
-                    + response.getMessageID() + ", ErrorCode:" + response.getErrorCode()
-                    + ", Content:" + response.getContent());
+            System.out.println(
+                    df.format(LocalDateTime.now())
+                            + "response seq:"
+                            + response.getMessageID()
+                            + ", ErrorCode:"
+                            + response.getErrorCode()
+                            + ", Content:"
+                            + response.getContent());
         }
     }
 }

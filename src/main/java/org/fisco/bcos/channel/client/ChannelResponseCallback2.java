@@ -70,7 +70,7 @@ public abstract class ChannelResponseCallback2 {
         Integer errorCode = 0;
         try {
             // 选取客户端节点
-            logger.info("Number of local nodes:{}", fromConnectionInfos.size());
+            logger.debug("Number of local nodes:{}", fromConnectionInfos.size());
 
             setFromConnection(null);
             if (fromConnectionInfos.size() > 0) {
@@ -103,8 +103,10 @@ public abstract class ChannelResponseCallback2 {
 
                 ctx.writeAndFlush(out);
 
-                logger.info("send message to  {}:{} success ",
-                		fromConnection.getHost(),fromConnection.getPort());
+                logger.debug(
+                        "send message to  {}:{} success ",
+                        fromConnection.getHost(),
+                        fromConnection.getPort());
             } else {
                 logger.error("sending node unavailable");
 

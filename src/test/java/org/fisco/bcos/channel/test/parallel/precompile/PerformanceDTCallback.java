@@ -1,4 +1,5 @@
 package org.fisco.bcos.channel.test.parallel.precompile;
+
 import java.math.BigInteger;
 import org.fisco.bcos.channel.client.TransactionSucCallback;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
@@ -53,8 +54,7 @@ public class PerformanceDTCallback extends TransactionSucCallback {
 
     static Logger logger = LoggerFactory.getLogger(PerformanceDTCallback.class);
 
-    public PerformanceDTCallback() {
-    }
+    public PerformanceDTCallback() {}
 
     @Override
     public void onResponse(TransactionReceipt receipt) {

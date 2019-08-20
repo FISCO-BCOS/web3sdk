@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class TopicVerifyMessage extends Message {
-    private final static Logger logger = LoggerFactory.getLogger(TopicVerifyMessage.class);
+    private static final Logger logger = LoggerFactory.getLogger(TopicVerifyMessage.class);
 
     private static final long serialVersionUID = -7276897518418560354L;
 
@@ -25,7 +25,7 @@ public class TopicVerifyMessage extends Message {
         if (result == 0) {
             data = new byte[length - Message.HEADER_LENGTH];
             in.readBytes(data, 0, length - Message.HEADER_LENGTH);
-            logger.info("data: {} {}", data.length, data);
+            logger.debug("data: {} {}", data.length, data);
         }
     }
 

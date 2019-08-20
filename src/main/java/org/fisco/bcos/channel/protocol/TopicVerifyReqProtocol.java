@@ -1,7 +1,10 @@
 package org.fisco.bcos.channel.protocol;
 
 public class TopicVerifyReqProtocol {
+
+    // sdk->node->node->sdk
     private String randValue;
+    private String topic;
 
     public String getRandValue() {
         return randValue;
@@ -10,8 +13,6 @@ public class TopicVerifyReqProtocol {
     public void setRandValue(String randValue) {
         this.randValue = randValue;
     }
-
-    private String topic;
 
     public String getTopic() {
         return topic;

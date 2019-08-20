@@ -11,5 +11,4 @@ public class TopicVerifyRespProtocol {
     public void setSignature(String signature) {
         this.signature = signature;
     }
-
 }

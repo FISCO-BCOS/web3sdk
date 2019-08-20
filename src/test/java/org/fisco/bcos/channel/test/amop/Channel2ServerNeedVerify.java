@@ -7,7 +7,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class Channel2ServerNeedVerify {
-    final private static Logger logger = LoggerFactory.getLogger(Channel2ServerNeedVerify.class);
+    private static final Logger logger = LoggerFactory.getLogger(Channel2ServerNeedVerify.class);
 
     public static void main(String[] args) throws Exception {
         if (args.length < 1) {

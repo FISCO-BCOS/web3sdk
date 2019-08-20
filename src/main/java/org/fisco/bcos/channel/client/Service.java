@@ -1,7 +1,6 @@
 package org.fisco.bcos.channel.client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.SocketChannel;
@@ -68,11 +67,11 @@ import org.springframework.core.io.Resource;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 public class Service {
-    private final static Logger logger = LoggerFactory.getLogger(Service.class);
+    private static final Logger logger = LoggerFactory.getLogger(Service.class);
 
-    public final static String verifyChannelPrefix = "#!$VerifyChannel_";
-    public final static String pushChannelPrefix = "#!$PushChannel_";
-    public final static String topicNeedVerifyPrefix = "#!$TopicNeedVerify_";
+    public static final String verifyChannelPrefix = "#!$VerifyChannel_";
+    public static final String pushChannelPrefix = "#!$PushChannel_";
+    public static final String topicNeedVerifyPrefix = "#!$TopicNeedVerify_";
 
     private Integer connectSeconds = 30;
 
@@ -95,7 +94,7 @@ public class Service {
     private Set<String> topics = new HashSet<String>();
     private transient AMOPVerifyUtil topicVerify = new AMOPVerifyUtil();
 
-    AMOPVerifyTopicToKeyInfo topic2KeyInfo = new AMOPVerifyTopicToKeyInfo();
+    private AMOPVerifyTopicToKeyInfo topic2KeyInfo = new AMOPVerifyTopicToKeyInfo();
 
     public AMOPVerifyTopicToKeyInfo getTopic2KeyInfo() {
         return topic2KeyInfo;
@@ -215,7 +214,7 @@ public class Service {
 
     private void parseFromTopic2KeyInfo()
             throws IOException, KeyStoreException, NoSuchAlgorithmException, CertificateException,
-            InvalidKeySpecException, NoSuchProviderException {
+                    InvalidKeySpecException, NoSuchProviderException {
         ConcurrentHashMap<String, AMOPVerifyKeyInfo> topic2VerifyKeyInfo =
                 topic2KeyInfo.getTopicToKeyInfo();
         Iterator<Entry<String, AMOPVerifyKeyInfo>> entries =
@@ -244,8 +243,10 @@ public class Service {
                 input.close();
 
                 stringBuilder.delete(0, stringBuilder.length());
-                stringBuilder.append(Service.verifyChannelPrefix)
-                        .append(getNeedVerifyTopics(topicName)).append('_');
+                stringBuilder
+                        .append(Service.verifyChannelPrefix)
+                        .append(getNeedVerifyTopics(topicName))
+                        .append('_');
                 stringBuilder.append(UUID.randomUUID().toString().replaceAll("-", ""));
                 set.add(stringBuilder.toString());
             }
@@ -253,7 +254,7 @@ public class Service {
             List<Resource> publicKeyPathList = item.getPublicKey();
             if (publicKeyPathList != null) {
                 publicKeyList.clear();
-                for (Iterator<Resource> it = publicKeyPathList.iterator(); it.hasNext();) {
+                for (Iterator<Resource> it = publicKeyPathList.iterator(); it.hasNext(); ) {
                     Resource publicKeyPath = it.next();
                     InputStream input = publicKeyPath.getInputStream();
                     pemManager.load(input);
@@ -277,8 +278,8 @@ public class Service {
         logger.debug("init ChannelService");
         parseFromTopic2KeyInfo();
         int flag = 0;
-        for (ChannelConnections channelConnections : allChannelConnections
-                .getAllChannelConnections()) {
+        for (ChannelConnections channelConnections :
+                allChannelConnections.getAllChannelConnections()) {
 
             if (channelConnections.getGroupId() == groupId) {
                 flag = 1;
@@ -297,8 +298,9 @@ public class Service {
                         Map<String, ChannelHandlerContext> networkConnection =
                                 channelConnections.getNetworkConnections();
                         for (String key : networkConnection.keySet()) {
-                            if (networkConnection.get(key) != null && ChannelHandlerContextHelper
-                                    .isChannelAvailable(networkConnection.get(key))) {
+                            if (networkConnection.get(key) != null
+                                    && ChannelHandlerContextHelper.isChannelAvailable(
+                                            networkConnection.get(key))) {
                                 running = true;
                                 break;
                             }
@@ -375,8 +377,8 @@ public class Service {
         return callback.bcosResponse;
     }
 
-    public BcosResponse sendEthereumMessage(BcosRequest request,
-            TransactionSucCallback transactionSucCallback) {
+    public BcosResponse sendEthereumMessage(
+            BcosRequest request, TransactionSucCallback transactionSucCallback) {
         class Callback extends BcosResponseCallback {
             private transient BcosResponse ethereumResponse;
             private transient Semaphore semaphore = new Semaphore(1, true);
@@ -409,21 +411,26 @@ public class Service {
         return callback.ethereumResponse;
     }
 
-    public void asyncSendEthereumMessage(BcosRequest request,
+    public void asyncSendEthereumMessage(
+            BcosRequest request,
             BcosResponseCallback fiscoResponseCallback,
             TransactionSucCallback transactionSucCallback) {
         this.asyncSendEthereumMessage(request, fiscoResponseCallback);
         if (request.getTimeout() > 0) {
             final TransactionSucCallback callbackInner = transactionSucCallback;
-            callbackInner.setTimeout(timeoutHandler.newTimeout(new TimerTask() {
-                @Override
-                public void run(Timeout timeout) throws Exception {
-                    // 处理超时逻辑
-                    callbackInner.onTimeout();
-                    // timeout时清除map的数据,所以尽管后面有回包数据，也会找不到seq->callback的关系
-                    seq2TransactionCallback.remove(request.getMessageID());
-                }
-            }, request.getTimeout(), TimeUnit.MILLISECONDS));
+            callbackInner.setTimeout(
+                    timeoutHandler.newTimeout(
+                            new TimerTask() {
+                                @Override
+                                public void run(Timeout timeout) throws Exception {
+                                    // 处理超时逻辑
+                                    callbackInner.onTimeout();
+                                    // timeout时清除map的数据,所以尽管后面有回包数据，也会找不到seq->callback的关系
+                                    seq2TransactionCallback.remove(request.getMessageID());
+                                }
+                            },
+                            request.getTimeout(),
+                            TimeUnit.MILLISECONDS));
             this.seq2TransactionCallback.put(request.getMessageID(), callbackInner);
         } else {
             this.seq2TransactionCallback.put(request.getMessageID(), transactionSucCallback);
@@ -438,6 +445,9 @@ public class Service {
 
     public ChannelResponse sendChannelMessage2(ChannelRequest request) {
         class Callback extends ChannelResponseCallback2 {
+            public transient ChannelResponse channelResponse;
+            public transient Semaphore semaphore = new Semaphore(1, true);
+
             Callback() {
                 try {
                     semaphore.acquire(1);
@@ -456,9 +466,6 @@ public class Service {
 
                 semaphore.release();
             }
-
-            public transient ChannelResponse channelResponse;
-            public transient Semaphore semaphore = new Semaphore(1, true);
         };
 
         Callback callback = new Callback();
@@ -483,8 +490,13 @@ public class Service {
         bcosMessage.setData(request.getContent().getBytes());
         // select node
         try {
-            ChannelConnections channelConnections = allChannelConnections.getAllChannelConnections()
-                    .stream().filter(x -> x.getGroupId() == groupId).findFirst().get();
+            ChannelConnections channelConnections =
+                    allChannelConnections
+                            .getAllChannelConnections()
+                            .stream()
+                            .filter(x -> x.getGroupId() == groupId)
+                            .findFirst()
+                            .get();
 
             if (channelConnections == null) {
                 if (orgID != null) {
@@ -506,22 +518,28 @@ public class Service {
 
             if (request.getTimeout() > 0) {
                 final BcosResponseCallback callbackInner = callback;
-                callback.setTimeout(timeoutHandler.newTimeout(new TimerTask() {
-                    BcosResponseCallback _callback = callbackInner;
+                callback.setTimeout(
+                        timeoutHandler.newTimeout(
+                                new TimerTask() {
+                                    BcosResponseCallback _callback = callbackInner;
 
-                    @Override
-                    public void run(Timeout timeout) throws Exception {
-                        // handle timer
-                        _callback.onTimeout();
-                    }
-                }, request.getTimeout(), TimeUnit.MILLISECONDS));
+                                    @Override
+                                    public void run(Timeout timeout) throws Exception {
+                                        // handle timer
+                                        _callback.onTimeout();
+                                    }
+                                },
+                                request.getTimeout(),
+                                TimeUnit.MILLISECONDS));
             }
 
             ctx.writeAndFlush(out);
             SocketChannel socketChannel = (SocketChannel) ctx.channel();
             InetSocketAddress socketAddress = socketChannel.remoteAddress();
-            logger.debug("selected node {}:{} bcos request, seq:{}",
-                    socketAddress.getAddress().getHostAddress(), socketAddress.getPort(),
+            logger.debug(
+                    "selected node {}:{} bcos request, seq:{}",
+                    socketAddress.getAddress().getHostAddress(),
+                    socketAddress.getPort(),
                     bcosMessage.getSeq());
 
         } catch (Exception e) {
@@ -529,8 +547,9 @@ public class Service {
 
             BcosResponse response = new BcosResponse();
             response.setErrorCode(-1);
-            response.setErrorMessage(e.getMessage()
-                    + " Requset send failed! Can not connect to nodes success, please checkout the node status and the sdk config!");
+            response.setErrorMessage(
+                    e.getMessage()
+                            + " Requset send failed! Can not connect to nodes success, please checkout the node status and the sdk config!");
             response.setContent("");
             response.setMessageID(request.getMessageID());
 
@@ -541,12 +560,13 @@ public class Service {
         }
     }
 
-    public void asyncSendChannelMessage2(ChannelRequest request,
-            ChannelResponseCallback2 callback) {
+    public void asyncSendChannelMessage2(
+            ChannelRequest request, ChannelResponseCallback2 callback) {
         try {
 
             if (request.getContentByteArray().length >= 32 * 1024 * 1024) {
-                logger.error("send byte length should not greater than 32M now length:{}",
+                logger.error(
+                        "send byte length should not greater than 32M now length:{}",
                         request.getContentByteArray().length);
                 throw new AmopException("send byte length should not greater than 32M");
             }
@@ -562,16 +582,23 @@ public class Service {
             channelMessage.setData(request.getContentByteArray());
             channelMessage.setTopic(request.getToTopic());
 
-            logger.info("msgid:{} type:{} topic:{}", request.getMessageID(),
-                    channelMessage.getType(), request.getToTopic());
+            logger.info(
+                    "msgid:{} type:{} topic:{}",
+                    request.getMessageID(),
+                    channelMessage.getType(),
+                    request.getToTopic());
 
             try {
                 List<ConnectionInfo> fromConnectionInfos = new ArrayList<ConnectionInfo>();
 
                 // 设置发送节点
                 ChannelConnections fromChannelConnections =
-                        allChannelConnections.getAllChannelConnections().stream()
-                                .filter(x -> x.getGroupId() == groupId).findFirst().get();
+                        allChannelConnections
+                                .getAllChannelConnections()
+                                .stream()
+                                .filter(x -> x.getGroupId() == groupId)
+                                .findFirst()
+                                .get();
                 if (fromChannelConnections == null) {
                     // 没有找到对应的链
                     // 返回错误
@@ -584,7 +611,9 @@ public class Service {
                     }
                 }
                 fromConnectionInfos.addAll(fromChannelConnections.getConnections());
-                logger.debug("FromOrg:{} nodes:{}", request.getFromOrg(),
+                logger.debug(
+                        "FromOrg:{} nodes:{}",
+                        request.getFromOrg(),
                         fromChannelConnections.getConnections().size());
 
                 callback.setFromChannelConnections(fromChannelConnections);
@@ -599,15 +628,19 @@ public class Service {
                 if (request.getTimeout() > 0) {
                     logger.info("timeoutms:{}", request.getTimeout());
                     final ChannelResponseCallback2 callbackInner = callback;
-                    callback.setTimeout(timeoutHandler.newTimeout(new TimerTask() {
-                        ChannelResponseCallback2 _callback = callbackInner;
+                    callback.setTimeout(
+                            timeoutHandler.newTimeout(
+                                    new TimerTask() {
+                                        ChannelResponseCallback2 _callback = callbackInner;
 
-                        @Override
-                        public void run(Timeout timeout) throws Exception {
-                            // 处理超时逻辑
-                            _callback.onTimeout();
-                        }
-                    }, request.getTimeout(), TimeUnit.MILLISECONDS));
+                                        @Override
+                                        public void run(Timeout timeout) throws Exception {
+                                            // 处理超时逻辑
+                                            _callback.onTimeout();
+                                        }
+                                    },
+                                    request.getTimeout(),
+                                    TimeUnit.MILLISECONDS));
                 }
 
                 callback.retrySendMessage();
@@ -642,8 +675,12 @@ public class Service {
             try {
                 // 设置发送节点
                 ChannelConnections fromChannelConnections =
-                        allChannelConnections.getAllChannelConnections().stream()
-                                .filter(x -> x.getGroupId() == groupId).findFirst().get();
+                        allChannelConnections
+                                .getAllChannelConnections()
+                                .stream()
+                                .filter(x -> x.getGroupId() == groupId)
+                                .findFirst()
+                                .get();
                 if (fromChannelConnections == null) {
                     // 没有找到对应的链
                     // 返回错误
@@ -656,12 +693,15 @@ public class Service {
                     }
                 }
 
-                logger.debug("FromOrg:{} nodes:{}", request.getFromOrg(),
+                logger.debug(
+                        "FromOrg:{} nodes:{}",
+                        request.getFromOrg(),
                         fromChannelConnections.getConnections().size());
 
                 for (ConnectionInfo connectionInfo : fromChannelConnections.getConnections()) {
-                    ChannelHandlerContext ctx = fromChannelConnections.getNetworkConnectionByHost(
-                            connectionInfo.getHost(), connectionInfo.getPort());
+                    ChannelHandlerContext ctx =
+                            fromChannelConnections.getNetworkConnectionByHost(
+                                    connectionInfo.getHost(), connectionInfo.getPort());
 
                     if (ctx != null && ctx.channel().isActive()) {
                         ByteBuf out = ctx.alloc().buffer();
@@ -670,10 +710,14 @@ public class Service {
 
                         ctx.writeAndFlush(out);
 
-                        logger.debug("send message to{}:{} success ", connectionInfo.getHost(),
+                        logger.debug(
+                                "send message to{}:{} success ",
+                                connectionInfo.getHost(),
                                 connectionInfo.getPort());
                     } else {
-                        logger.error("sending node unavailable, {}:{}", connectionInfo.getHost(),
+                        logger.error(
+                                "sending node unavailable, {}:{}",
+                                connectionInfo.getHost(),
                                 connectionInfo.getPort());
                     }
                 }
@@ -693,8 +737,13 @@ public class Service {
         }
     }
 
-    public void sendResponseMessage(ChannelResponse response, ConnectionInfo info,
-            ChannelHandlerContext ctx, String fromNode, String toNode, String seq) {
+    public void sendResponseMessage(
+            ChannelResponse response,
+            ConnectionInfo info,
+            ChannelHandlerContext ctx,
+            String fromNode,
+            String toNode,
+            String seq) {
         try {
             ChannelMessage responseMessage = new ChannelMessage();
 
@@ -718,8 +767,8 @@ public class Service {
     }
 
     // 链上链下二期回包
-    public void sendResponseMessage2(ChannelResponse response, ChannelHandlerContext ctx,
-            String seq, String topic) {
+    public void sendResponseMessage2(
+            ChannelResponse response, ChannelHandlerContext ctx, String seq, String topic) {
         try {
             ChannelMessage2 responseMessage = new ChannelMessage2();
 
@@ -741,9 +790,8 @@ public class Service {
         }
     }
 
-    // amop带认证回包消息
-    public void sendResponseMessage3(ChannelRequest request, ChannelHandlerContext ctx,
-            short msgtype) {
+    public void sendCheckResultToNode(
+            ChannelRequest request, ChannelHandlerContext ctx, short msgtype) {
         try {
             Message msg = new Message();
             msg.setData(request.getContentByteArray());
@@ -850,8 +898,6 @@ public class Service {
 
     public void onReceiveChannelMessage2(ChannelHandlerContext ctx, ChannelMessage2 message) {
 
-        logger.info("ChannelResponse seq:{} msgtype:{} topicname:{} result:{}", message.getSeq(),
-                message.getType(), message.getTopic(), message.getResult());
         ChannelResponseCallback2 callback =
                 (ChannelResponseCallback2) seq2Callback.get(message.getSeq());
 
@@ -861,8 +907,9 @@ public class Service {
                 logger.debug("seq already existed，clear:{}", message.getSeq());
                 seq2Callback.remove(message.getSeq());
             }
-            if (message.getTopic().length() > verifyChannelPrefix.length() && verifyChannelPrefix
-                    .equals(message.getTopic().substring(0, verifyChannelPrefix.length()))) {
+            if (message.getTopic().length() > verifyChannelPrefix.length()
+                    && verifyChannelPrefix.equals(
+                            message.getTopic().substring(0, verifyChannelPrefix.length()))) {
                 try {
                     signForAmop(ctx, message);
                 } catch (IOException e) {
@@ -921,19 +968,23 @@ public class Service {
             throws IOException {
         SocketChannel socketChannel = (SocketChannel) ctx.channel();
 
-        logger.info("get rand value request ChannelResponse seq:{} msgtype:{} address:{} port:{}",
-                message.getSeq(), message.getType(),
+        logger.info(
+                "get rand value request ChannelResponse seq:{} msgtype:{} address:{} port:{}",
+                message.getSeq(),
+                message.getType(),
                 socketChannel.remoteAddress().getAddress().getHostAddress(),
                 socketChannel.remoteAddress().getPort());
-        logger.info("get rand value request :{} length:{}", Arrays.toString(message.getData()),
+        logger.info(
+                "get rand value request :{} length:{}",
+                Arrays.toString(message.getData()),
                 message.getLength());
 
         String content = new String(message.getData());
         logger.info("content:{} content:{}", content, Arrays.toString(content.getBytes()));
 
-        ObjectMapper mapper = new ObjectMapper();
         NodeRequestSdkVerifyTopic nodeRequestSdkVerifyTopic =
-                mapper.readValue(content, NodeRequestSdkVerifyTopic.class);
+                ObjectMapperFactory.getObjectMapper()
+                        .readValue(content, NodeRequestSdkVerifyTopic.class);
         String topic = nodeRequestSdkVerifyTopic.getTopic();
         String topicForCert = nodeRequestSdkVerifyTopic.getTopicForCert();
         String nodeid = nodeRequestSdkVerifyTopic.getNodeId();
@@ -948,38 +999,49 @@ public class Service {
         TopicVerifyReqProtocol topicVerifyProtocol = new TopicVerifyReqProtocol();
         topicVerifyProtocol.setRandValue(randValue);
         topicVerifyProtocol.setTopic(topic);
-        String jsonStr = mapper.writeValueAsString(topicVerifyProtocol);
-        logger.info("generate rand value jsonStr:{} topic:{} messageid:{}", jsonStr,
-                request.getToTopic(), message.getSeq());
+        String jsonStr =
+                ObjectMapperFactory.getObjectMapper().writeValueAsString(topicVerifyProtocol);
+        logger.info(
+                "generate rand value jsonStr:{} topic:{} messageid:{}",
+                jsonStr,
+                request.getToTopic(),
+                message.getSeq());
         byte[] bytes = topicVerify.getByteBuffByString(request.getToTopic(), jsonStr);
         request.setContent(bytes);
-        asyncSendChannelMessage2(request, new ChannelResponseCallback2() {
-            @Override
-            public void onResponseMessage(ChannelResponse response) {
-                logger.info("get response messageid:{}", response.getMessageID());
-                try {
-                    checkSignForAmop(topic, String.valueOf(randValue), nodeid, ctx, response);
-                } catch (IOException e) {
-                    logger.error("check sign for amop failed:{}", e);
-                }
-            }
-
-        });
+        asyncSendChannelMessage2(
+                request,
+                new ChannelResponseCallback2() {
+                    @Override
+                    public void onResponseMessage(ChannelResponse response) {
+                        logger.info("get response messageid:{}", response.getMessageID());
+                        try {
+                            checkSignForAmop(
+                                    topic, String.valueOf(randValue), nodeid, ctx, response);
+                        } catch (IOException e) {
+                            logger.error("check sign for amop failed:{}", e);
+                        }
+                    }
+                });
     }
 
     public void signForAmop(ChannelHandlerContext ctx, ChannelMessage2 message) throws IOException {
         SocketChannel socketChannel = (SocketChannel) ctx.channel();
-        logger.info("sign ChannelResponse seq:{} msgtype:{} address:{} port:{}", message.getSeq(),
-                message.getType(), socketChannel.remoteAddress().getAddress().getHostAddress(),
+        logger.info(
+                "sign ChannelResponse seq:{} msgtype:{} address:{} port:{}",
+                message.getSeq(),
+                message.getType(),
+                socketChannel.remoteAddress().getAddress().getHostAddress(),
                 socketChannel.remoteAddress().getPort());
-        logger.info("sign request :{} length:{}", Arrays.toString(message.getData()),
+        logger.info(
+                "sign request :{} length:{}",
+                Arrays.toString(message.getData()),
                 message.getLength());
 
         String content = topicVerify.parseDataFromPush(message.getLength(), message.getData());
         logger.info("content:{} content:{}", content, Arrays.toString(content.getBytes()));
-        ObjectMapper mapper = new ObjectMapper();
         TopicVerifyReqProtocol topicVerifyProtocol =
-                mapper.readValue(content, TopicVerifyReqProtocol.class);
+                ObjectMapperFactory.getObjectMapper()
+                        .readValue(content, TopicVerifyReqProtocol.class);
         String randValue = topicVerifyProtocol.getRandValue();
         String topic = topicVerifyProtocol.getTopic();
         logger.info("sign rand_value:{} sign topic:{}", randValue, topic);
@@ -988,7 +1050,8 @@ public class Service {
 
         TopicVerifyRespProtocol topicVerifyRespProtocol = new TopicVerifyRespProtocol();
         topicVerifyRespProtocol.setSignature(signature);
-        String jsonStr = mapper.writeValueAsString(topicVerifyRespProtocol);
+        String jsonStr =
+                ObjectMapperFactory.getObjectMapper().writeValueAsString(topicVerifyRespProtocol);
         logger.info("signature jsonStr result:{}", jsonStr);
         byte[] bytes = topicVerify.getByteBuffByString(message.getTopic(), jsonStr);
 
@@ -999,22 +1062,32 @@ public class Service {
         sendResponseMessage2(response, ctx, message.getSeq(), message.getTopic());
     }
 
-    public void checkSignForAmop(String topic, String randValue, String nodeid,
-            ChannelHandlerContext ctx, ChannelResponse response) throws IOException {
+    public void checkSignForAmop(
+            String topic,
+            String randValue,
+            String nodeid,
+            ChannelHandlerContext ctx,
+            ChannelResponse response)
+            throws IOException {
 
         if (response.getErrorCode() != 0) {
-            logger.error("get signature failed :{}:{}", response.getErrorCode(),
+            logger.error(
+                    "get signature failed :{}:{}",
+                    response.getErrorCode(),
                     response.getErrorMessage());
             return;
         }
-        logger.info("check signature:{} length:{}", Arrays.toString(response.getContentByteArray()),
+        logger.info(
+                "check signature:{} length:{}",
+                Arrays.toString(response.getContentByteArray()),
                 response.getContentByteArray().length);
-        String content = topicVerify.parseDataFromPush(response.getContentByteArray().length,
-                response.getContentByteArray());
+        String content =
+                topicVerify.parseDataFromPush(
+                        response.getContentByteArray().length, response.getContentByteArray());
         logger.info("content:{} content:{}", content, Arrays.toString(content.getBytes()));
-        ObjectMapper mapper = new ObjectMapper();
         TopicVerifyRespProtocol topicVerifyRespProtocol =
-                mapper.readValue(content, TopicVerifyRespProtocol.class);
+                ObjectMapperFactory.getObjectMapper()
+                        .readValue(content, TopicVerifyRespProtocol.class);
         String signature = topicVerifyRespProtocol.getSignature();
         logger.info("signature:{} ", signature);
         int checkResult = topicVerify.checkSignatureValidate(topic, signature, randValue);
@@ -1024,21 +1097,24 @@ public class Service {
         sdkRequestNodeUpdateTopicStatus.setCheckResult(checkResult);
         sdkRequestNodeUpdateTopicStatus.setNodeId(nodeid);
         sdkRequestNodeUpdateTopicStatus.setTopic(topic);
-        String jsonStr = mapper.writeValueAsString(sdkRequestNodeUpdateTopicStatus);
+        String jsonStr =
+                ObjectMapperFactory.getObjectMapper()
+                        .writeValueAsString(sdkRequestNodeUpdateTopicStatus);
         logger.info("check signature result:{}", jsonStr);
         ChannelRequest request = new ChannelRequest();
         request.setMessageID(newSeq());
         request.setToTopic(topic);
         request.setTimeout(5000);
         request.setContent(jsonStr.getBytes());
-        sendResponseMessage3(request, ctx, (short) 0x38);
+        sendCheckResultToNode(request, ctx, (short) 0x38);
     }
 
     public void onReceiveBlockNotify(ChannelHandlerContext ctx, ChannelMessage2 message) {
         try {
 
-            BlockNotificationParser blkNotifyParser = new BlockNotificationParser(
-                    ChannelHandlerContextHelper.getProtocolVersion(ctx));
+            BlockNotificationParser blkNotifyParser =
+                    new BlockNotificationParser(
+                            ChannelHandlerContextHelper.getProtocolVersion(ctx));
 
             String data = new String(message.getData());
             logger.info("Receive block notify: {}", data);
@@ -1084,12 +1160,15 @@ public class Service {
                     } else {
                         // Execute the callback function in the thread pool
                         final BigInteger maxBlkNumber = maxBlockNumber;
-                        getThreadPool().execute(new Runnable() {
-                            @Override
-                            public void run() {
-                                getBlockNotifyCallBack().onBlockNotify(getGroupId(), maxBlkNumber);
-                            }
-                        });
+                        getThreadPool()
+                                .execute(
+                                        new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                getBlockNotifyCallBack()
+                                                        .onBlockNotify(getGroupId(), maxBlkNumber);
+                                            }
+                                        });
                     }
                 }
             }
@@ -1178,8 +1257,9 @@ public class Service {
             }
 
             try {
-                TransactionReceipt receipt = ObjectMapperFactory.getObjectMapper()
-                        .readValue(message.getData(), TransactionReceipt.class);
+                TransactionReceipt receipt =
+                        ObjectMapperFactory.getObjectMapper()
+                                .readValue(message.getData(), TransactionReceipt.class);
                 callback.onResponse(receipt);
             } catch (Exception e) {
                 TransactionReceipt receipt = new TransactionReceipt();

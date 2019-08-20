@@ -1,5 +1,7 @@
 package org.fisco.bcos.channel.client;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.PooledByteBufAllocator;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Arrays;
@@ -8,17 +10,14 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.PooledByteBufAllocator;
 
 public class AMOPVerifyUtil {
-    private final static Logger logger = LoggerFactory.getLogger(Service.class);
+    private static final Logger logger = LoggerFactory.getLogger(Service.class);
     private ConcurrentHashMap<String, PrivateKey> topic2PrivateKey =
             new ConcurrentHashMap<String, PrivateKey>();
     private ConcurrentHashMap<String, List<PublicKey>> topic2PublicKey =
             new ConcurrentHashMap<String, List<PublicKey>>();
     private transient ECDSAUtil ecdsaUtil = new ECDSAUtil();
-
 
     public ConcurrentHashMap<String, PrivateKey> getTopic2PrivateKey() {
         return topic2PrivateKey;
@@ -107,32 +106,40 @@ public class AMOPVerifyUtil {
         String content = new String(contentBytes);
         logger.info("content len:{} topic:{}", contentLen, content);
         return content;
-
     }
 
     public byte[] getByteBuffByString(String topic, String content) {
+
         ByteBuf outBuf = PooledByteBufAllocator.DEFAULT.buffer();
-        byte topicLen = (byte) (topic.length());
-        outBuf.writeByte(topicLen + 1);
-        outBuf.writeBytes(topic.getBytes());
+        try {
+            byte topicLen = (byte) (topic.length());
+            outBuf.writeByte(topicLen + 1);
+            outBuf.writeBytes(topic.getBytes());
 
-        logger.info("topic to send:{}", topic);
-        int jsonLen = content.length();
-        outBuf.writeShort(jsonLen);
-        outBuf.writeBytes(content.getBytes());
-        logger.info("write buf len:{} msg:{}", jsonLen, content);
+            logger.info("topic to send:{}", topic);
+            int jsonLen = content.length();
+            outBuf.writeShort(jsonLen);
+            outBuf.writeBytes(content.getBytes());
+            logger.info("write buf len:{} msg:{}", jsonLen, content);
 
-        byte[] bytes;
+            byte[] bytes;
 
-        if (outBuf.hasArray()) {
-            bytes = outBuf.array();
-        } else {
-            int length = outBuf.readableBytes();
-            bytes = new byte[length];
-            outBuf.getBytes(outBuf.readerIndex(), bytes);
+            if (outBuf.hasArray()) {
+                bytes = outBuf.array();
+            } else {
+                int length = outBuf.readableBytes();
+                bytes = new byte[length];
+                outBuf.getBytes(outBuf.readerIndex(), bytes);
+            }
+            logger.info(
+                    "write buf len:{} total len:{} msg:{} bytes:{}",
+                    jsonLen,
+                    bytes.length,
+                    content,
+                    Arrays.toString(bytes));
+            return bytes;
+        } finally {
+            outBuf.release();
         }
-        logger.info("write buf len:{} total len:{} msg:{} bytes:{}", jsonLen, bytes.length, content,
-                Arrays.toString(bytes));
-        return bytes;
     }
 }

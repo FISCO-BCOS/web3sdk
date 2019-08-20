@@ -54,8 +54,7 @@ public class PerformanceDTCallback extends TransactionSucCallback {
 
     static Logger logger = LoggerFactory.getLogger(PerformanceDTCallback.class);
 
-    public PerformanceDTCallback() {
-    }
+    public PerformanceDTCallback() {}
 
     @Override
     public void onResponse(TransactionReceipt receipt) {
