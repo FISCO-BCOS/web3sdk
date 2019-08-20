@@ -1,6 +1,5 @@
 package org.fisco.bcos.channel.proxy;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.SocketChannel;
@@ -20,6 +19,7 @@ import javax.net.ssl.SSLException;
 import org.fisco.bcos.channel.handler.ChannelConnections;
 import org.fisco.bcos.channel.handler.ConnectionInfo;
 import org.fisco.bcos.channel.handler.Message;
+import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -219,7 +219,8 @@ public class Server {
                 }
             }
 
-            message.setData(objectMapper.writeValueAsBytes(allTopics.toArray()));
+            message.setData(
+                    ObjectMapperFactory.getObjectMapper().writeValueAsBytes(allTopics.toArray()));
 
             logger.debug("all topics: {}", new String(message.getData()));
 
@@ -556,7 +557,9 @@ public class Server {
 
         if (info != null) {
             try {
-                List<String> topics = objectMapper.readValue(message.getData(), List.class);
+                List<String> topics =
+                        ObjectMapperFactory.getObjectMapper()
+                                .readValue(message.getData(), List.class);
 
                 info.setTopics(topics);
 
@@ -581,7 +584,7 @@ public class Server {
     private Map<String, ConnectionPair> seq2Connections =
             new ConcurrentHashMap<String, ConnectionPair>();
     private Integer bindPort = 8830;
-    private ObjectMapper objectMapper = new ObjectMapper();
+
     private Timer timeoutHandler = new HashedWheelTimer();
 
     private ThreadPoolTaskExecutor threadPool;

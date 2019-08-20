@@ -2,7 +2,7 @@ package org.fisco.bcos.channel.client;
 
 import java.math.BigInteger;
 
-public abstract class BlockNotifyCallBack {
+public interface BlockNotifyCallBack {
 
-    public abstract void onBlockNotify(int groupID, BigInteger blockNumber);
+    public void onBlockNotify(int groupID, BigInteger blockNumber);
 }

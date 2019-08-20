@@ -12,7 +12,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class Channel2ClientMultiBin {
     private static Logger logger = LoggerFactory.getLogger(Channel2ClientMulti.class);
     private final static int parameterNum = 2;
-    
+
     public static void main(String[] args) throws Exception {
         if (args.length < parameterNum) {
             System.out.println("param: target topic total number of request");
@@ -28,11 +28,8 @@ public class Channel2ClientMultiBin {
         byte[] bytelength = Channel2ClientBin.intToByteArray(filelength);
         byte[] bytefilename = filename.getBytes();
         byte[] contentfile = Channel2ClientBin.toByteArrFromFile(filename);
-        byte[] content =
-                Channel2ClientBin.byteCat(
-                        Channel2ClientBin.byteCat(
-                                Channel2ClientBin.byteCat(byteflag, bytelength), bytefilename),
-                        contentfile);
+        byte[] content = Channel2ClientBin.byteCat(Channel2ClientBin.byteCat(
+                Channel2ClientBin.byteCat(byteflag, bytelength), bytefilename), contentfile);
 
         DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -62,12 +59,8 @@ public class Channel2ClientMultiBin {
             request.setTimeout(5000);
             request.setContent(content);
 
-            System.out.println(
-                    df.format(LocalDateTime.now())
-                            + " multicast request seq:"
-                            + String.valueOf(request.getMessageID())
-                            + ", filename:"
-                            + filename);
+            System.out.println(df.format(LocalDateTime.now()) + " multicast request seq:"
+                    + String.valueOf(request.getMessageID()) + ", filename:" + filename);
             service.asyncMulticastChannelMessage2(request);
         }
     }

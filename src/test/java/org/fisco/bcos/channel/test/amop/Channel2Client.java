@@ -16,49 +16,52 @@ public class Channel2Client {
     private final static int parameterNum = 2;
 
     public static void main(String[] args) throws Exception {
-	if (args.length < parameterNum) {
-	    System.out.println("param: target topic total number of request");
-	    return;
-	}
-	String topic = args[0];
-	Integer count = Integer.parseInt(args[1]);
+        if (args.length < parameterNum) {
+            System.out.println("param: target topic total number of request");
+            return;
+        }
+        String topic = args[0];
+        Integer count = Integer.parseInt(args[1]);
 
-	DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-	logger.debug("init client");
-	ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
-	Service service = context.getBean(Service.class);
+        logger.debug("init client");
+        ApplicationContext context =
+                new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
+        Service service = context.getBean(Service.class);
 
-	service.run();
+        service.run();
 
-	System.out.println("3s ...");
-	Thread.sleep(1000);
-	System.out.println("2s ...");
-	Thread.sleep(1000);
-	System.out.println("1s ...");
-	Thread.sleep(1000);
+        System.out.println("3s ...");
+        Thread.sleep(1000);
+        System.out.println("2s ...");
+        Thread.sleep(1000);
+        System.out.println("1s ...");
+        Thread.sleep(1000);
 
-	System.out.println("start test");
-	System.out.println("===================================================================");
+        System.out.println("start test");
+        System.out.println("===================================================================");
 
-	ChannelRequest request = new ChannelRequest();
-	for (Integer i = 0; i < count; ++i) {
-	    Thread.sleep(2000);
-	    request.setToTopic(topic);
-	    request.setMessageID(service.newSeq());
-	    request.setTimeout(5000);
+        ChannelRequest request = new ChannelRequest();
+        for (Integer i = 0; i < count; ++i) {
+            Thread.sleep(2000);
+            request.setToTopic(topic);
+            request.setMessageID(service.newSeq());
+            request.setTimeout(5000);
 
-	    String content = "request seq:" + request.getMessageID();
+            String content = "request seq:" + request.getMessageID();
 
-	    request.setContent(content.getBytes());
+            request.setContent(content.getBytes());
 
-	    System.out.println(df.format(LocalDateTime.now()) + " request seq:" + request.getMessageID() + ", Content:"
-		    + request.getContent() + " content:" + Arrays.toString(request.getContentByteArray()));
+            System.out.println(df.format(LocalDateTime.now()) + " request seq:"
+                    + request.getMessageID() + ", Content:" + request.getContent() + " content:"
+                    + Arrays.toString(request.getContentByteArray()));
 
-	    ChannelResponse response = service.sendChannelMessage2(request);
+            ChannelResponse response = service.sendChannelMessage2(request);
 
-	    System.out.println(df.format(LocalDateTime.now()) + "response seq:" + response.getMessageID()
-		    + ", ErrorCode:" + response.getErrorCode() + ", Content:" + response.getContent());
-	}
+            System.out.println(df.format(LocalDateTime.now()) + "response seq:"
+                    + response.getMessageID() + ", ErrorCode:" + response.getErrorCode()
+                    + ", Content:" + response.getContent());
+        }
     }
 }

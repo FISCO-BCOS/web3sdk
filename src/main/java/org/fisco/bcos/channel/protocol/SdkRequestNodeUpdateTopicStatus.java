@@ -6,26 +6,26 @@ public class SdkRequestNodeUpdateTopicStatus {
     private String topic;
 
     public int getCheckResult() {
-	return checkResult;
+        return checkResult;
     }
 
     public void setCheckResult(int checkResult) {
-	this.checkResult = checkResult;
+        this.checkResult = checkResult;
     }
 
     public String getNodeId() {
-	return nodeId;
+        return nodeId;
     }
 
     public void setNodeId(String nodeId) {
-	this.nodeId = nodeId;
+        this.nodeId = nodeId;
     }
 
     public String getTopic() {
-	return topic;
+        return topic;
     }
 
     public void setTopic(String topic) {
-	this.topic = topic;
+        this.topic = topic;
     }
 }

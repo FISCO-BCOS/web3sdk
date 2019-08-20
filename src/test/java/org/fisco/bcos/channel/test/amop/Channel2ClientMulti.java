@@ -12,7 +12,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class Channel2ClientMulti {
     private static Logger logger = LoggerFactory.getLogger(Channel2ClientMulti.class);
     private final static int parameterNum = 2;
-    
+
     public static void main(String[] args) throws Exception {
         if (args.length < parameterNum) {
             System.out.println("param: target topic total number of request");
@@ -50,12 +50,8 @@ public class Channel2ClientMulti {
 
             request.setContent("request seq:" + request.getMessageID());
 
-            System.out.println(
-                    df.format(LocalDateTime.now())
-                            + " multicast request seq:"
-                            + String.valueOf(request.getMessageID())
-                            + ", Content:"
-                            + request.getContent());
+            System.out.println(df.format(LocalDateTime.now()) + " multicast request seq:"
+                    + String.valueOf(request.getMessageID()) + ", Content:" + request.getContent());
 
             service.asyncMulticastChannelMessage2(request);
         }

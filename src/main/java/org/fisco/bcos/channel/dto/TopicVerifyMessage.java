@@ -32,7 +32,7 @@ public class TopicVerifyMessage extends Message {
     @Override
     public void writeHeader(ByteBuf out) {
         // 先计算总长度
-        length = Message.HEADER_LENGTH  + data.length;
+        length = Message.HEADER_LENGTH + data.length;
         super.writeHeader(out);
     }
 }

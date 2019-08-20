@@ -1,4 +1,4 @@
-package org.fisco.bcos.channel.protocol;
+package org.fisco.bcos.fisco;
 
 public enum EnumNodeVersion {
     BCOS_2_0_0_RC1("2.0.0-rc1"),
@@ -25,6 +25,6 @@ public enum EnumNodeVersion {
         return !(version.equals(BCOS_2_0_0_RC1.getVersion())
                 || version.equals(BCOS_2_0_0_RC2.getVersion())
                 || version.equals(BCOS_2_0_0_RC3.getVersion())
-                || version .equals(BCOS_2_0_0.getVersion()));
+                || version.equals(BCOS_2_0_0.getVersion()));
     }
 }

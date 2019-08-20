@@ -38,18 +38,16 @@ public class PEMManager {
         Security.addProvider(new BouncyCastleProvider());
     }
 
-    public void load()
-            throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException,
-                    NoSuchProviderException, InvalidKeySpecException {
+    public void load() throws KeyStoreException, NoSuchAlgorithmException, CertificateException,
+            IOException, NoSuchProviderException, InvalidKeySpecException {
         ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
         Resource pemResources = resolver.getResource(pemFile);
 
         load(pemResources.getInputStream());
     }
 
-    public void load(InputStream in)
-            throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException,
-                    InvalidKeySpecException, NoSuchProviderException {
+    public void load(InputStream in) throws KeyStoreException, NoSuchAlgorithmException,
+            CertificateException, IOException, InvalidKeySpecException, NoSuchProviderException {
         PemReader pemReader = new PemReader(new InputStreamReader(in));
 
         pem = pemReader.readPemObject();
@@ -63,13 +61,13 @@ public class PEMManager {
             throws InvalidKeySpecException, NoSuchAlgorithmException, NoSuchProviderException {
         PKCS8EncodedKeySpec encodedKeySpec = new PKCS8EncodedKeySpec(pem.getContent());
         KeyFactory keyFacotry = KeyFactory.getInstance("EC", BouncyCastleProvider.PROVIDER_NAME);
-        
+
         return keyFacotry.generatePrivate(encodedKeySpec);
     }
-    
+
     public PublicKey getPublicKeyFromPublicPem()
             throws InvalidKeySpecException, NoSuchAlgorithmException, NoSuchProviderException {
-	X509EncodedKeySpec encodedKeySpec = new X509EncodedKeySpec(pem.getContent());
+        X509EncodedKeySpec encodedKeySpec = new X509EncodedKeySpec(pem.getContent());
         KeyFactory keyFacotry = KeyFactory.getInstance("EC", BouncyCastleProvider.PROVIDER_NAME);
         return keyFacotry.generatePublic(encodedKeySpec);
     }
@@ -84,18 +82,15 @@ public class PEMManager {
                 org.bouncycastle.jcajce.provider.asymmetric.util.EC5Util.convertSpec(params, false);
         org.bouncycastle.math.ec.ECPoint q = bcSpec.getG().multiply(privateKey.getS());
         org.bouncycastle.math.ec.ECPoint bcW = bcSpec.getCurve().decodePoint(q.getEncoded(false));
-        ECPoint w =
-                new ECPoint(
-                        bcW.getAffineXCoord().toBigInteger(), bcW.getAffineYCoord().toBigInteger());
+        ECPoint w = new ECPoint(bcW.getAffineXCoord().toBigInteger(),
+                bcW.getAffineYCoord().toBigInteger());
         ECPublicKeySpec keySpec = new ECPublicKeySpec(w, tryFindNamedCurveSpec(params));
-        return (PublicKey)
-                KeyFactory.getInstance("EC", BouncyCastleProvider.PROVIDER_NAME)
-                        .generatePublic(keySpec);
+        return (PublicKey) KeyFactory.getInstance("EC", BouncyCastleProvider.PROVIDER_NAME)
+                .generatePublic(keySpec);
     }
 
-    public ECKeyPair getECKeyPair()
-            throws UnrecoverableKeyException, KeyStoreException, NoSuchAlgorithmException,
-                    InvalidKeySpecException, NoSuchProviderException {
+    public ECKeyPair getECKeyPair() throws UnrecoverableKeyException, KeyStoreException,
+            NoSuchAlgorithmException, InvalidKeySpecException, NoSuchProviderException {
         PrivateKey privateKey = getPrivateKey();
         PublicKey publicKey = getPublicKey();
 
@@ -111,17 +106,12 @@ public class PEMManager {
         for (Object name : Collections.list(org.bouncycastle.jce.ECNamedCurveTable.getNames())) {
             org.bouncycastle.jce.spec.ECNamedCurveParameterSpec bcNamedSpec =
                     org.bouncycastle.jce.ECNamedCurveTable.getParameterSpec((String) name);
-            if (bcNamedSpec.getN().equals(bcSpec.getN())
-                    && bcNamedSpec.getH().equals(bcSpec.getH())
+            if (bcNamedSpec.getN().equals(bcSpec.getN()) && bcNamedSpec.getH().equals(bcSpec.getH())
                     && bcNamedSpec.getCurve().equals(bcSpec.getCurve())
                     && bcNamedSpec.getG().equals(bcSpec.getG())) {
-                return new org.bouncycastle.jce.spec.ECNamedCurveSpec(
-                        bcNamedSpec.getName(),
-                        bcNamedSpec.getCurve(),
-                        bcNamedSpec.getG(),
-                        bcNamedSpec.getN(),
-                        bcNamedSpec.getH(),
-                        bcNamedSpec.getSeed());
+                return new org.bouncycastle.jce.spec.ECNamedCurveSpec(bcNamedSpec.getName(),
+                        bcNamedSpec.getCurve(), bcNamedSpec.getG(), bcNamedSpec.getN(),
+                        bcNamedSpec.getH(), bcNamedSpec.getSeed());
             }
         }
         return params;
