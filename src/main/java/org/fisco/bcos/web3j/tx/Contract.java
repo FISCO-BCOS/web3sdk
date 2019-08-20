@@ -95,8 +95,9 @@ public abstract class Contract extends ManagedTransaction {
             NodeVersion.Version nodeVersion = web3j.getNodeVersion().send().getNodeVersion();
             version = nodeVersion.getVersion();
             supportedVersion = nodeVersion.getSupportedVersion();
-            
-            if (EnumNodeVersion.BCOS_2_0_0_RC1.getVersion().equals(version) || EnumNodeVersion.BCOS_2_0_0_RC1.getVersion().equals(supportedVersion)) {
+
+            if (EnumNodeVersion.BCOS_2_0_0_RC1.getVersion().equals(version)
+                    || EnumNodeVersion.BCOS_2_0_0_RC1.getVersion().equals(supportedVersion)) {
                 version = EnumNodeVersion.BCOS_2_0_0_RC1.getVersion();
                 logger.info("fisco-bcos version:{}", version);
             } else {
@@ -406,9 +407,11 @@ public abstract class Contract extends ManagedTransaction {
                     gasProvider.getGasLimit(function.getName()),
                     callback);
         } catch (IOException e) {
-            e.printStackTrace();
+            // e.print_Stack_Trace();
+            logger.error(" IOException, message:{}", e.getMessage());
         } catch (TransactionException e) {
-            e.printStackTrace();
+            // e.print_Stack_Trace();
+            logger.error(" TransactionException, message:{}", e.getMessage());
         }
     }
 
@@ -423,7 +426,8 @@ public abstract class Contract extends ManagedTransaction {
                             gasProvider.getGasLimit(function.getName()));
             return signedTransaction;
         } catch (IOException e) {
-            e.printStackTrace();
+            // e.print_Stack_Trace();
+            logger.error(" IOException, message:{}", e.getMessage());
             return "";
         }
     }
