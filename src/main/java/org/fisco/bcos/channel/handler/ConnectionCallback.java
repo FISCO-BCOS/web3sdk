@@ -19,6 +19,7 @@ import org.fisco.bcos.channel.dto.BcosMessage;
 import org.fisco.bcos.channel.dto.BcosResponse;
 import org.fisco.bcos.channel.dto.ChannelMessage;
 import org.fisco.bcos.channel.dto.ChannelMessage2;
+import org.fisco.bcos.channel.dto.TopicVerifyMessage;
 import org.fisco.bcos.channel.protocol.ChannelHandshake;
 import org.fisco.bcos.channel.protocol.ChannelPrococolExceiption;
 import org.fisco.bcos.channel.protocol.ChannelProtocol;
@@ -301,7 +302,7 @@ public class ConnectionCallback implements ChannelConnections.Callback {
         message.setType((short) 0x32);
         message.setSeq(UUID.randomUUID().toString().replaceAll("-", ""));
 
-        topics.add("_block_notify_" + String.valueOf(channelService.getGroupId()));
+        topics.add("_block_notify_" + channelService.getGroupId());
 
         message.setData(ObjectMapperFactory.getObjectMapper().writeValueAsBytes(topics.toArray()));
 
@@ -436,6 +437,15 @@ public class ConnectionCallback implements ChannelConnections.Callback {
                 ChannelMessage2 channelMessage = new ChannelMessage2(msg);
                 channelMessage.readExtra(message);
                 channelService.onReceiveBlockNotify(ctx, channelMessage);
+            } else if (msg.getType() == 0x37) {
+                logger.info("get generate rand value request data");
+                TopicVerifyMessage channelMessage = new TopicVerifyMessage(msg);
+                channelMessage.readExtra(message);
+                try {
+                    channelService.checkTopicVerify(ctx, channelMessage);
+                } catch (IOException e) {
+                    logger.error("on receive channel failed");
+                }
             } else {
                 logger.error("unknown message type:{}", msg.getType());
             }
