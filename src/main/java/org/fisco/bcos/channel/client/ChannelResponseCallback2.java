@@ -104,18 +104,16 @@ public abstract class ChannelResponseCallback2 {
                 ctx.writeAndFlush(out);
 
                 logger.debug(
-                        "send message to  "
-                                + fromConnection.getHost()
-                                + ":"
-                                + String.valueOf(fromConnection.getPort())
-                                + " 成功");
+                        "send message to  {}:{} success ",
+                        fromConnection.getHost(),
+                        fromConnection.getPort());
             } else {
                 logger.error("sending node unavailable");
 
                 retrySendMessage();
             }
         } catch (Exception e) {
-            logger.error("send message exception ", e);
+            logger.error("send message exception {}", e);
 
             ChannelResponse response = new ChannelResponse();
             response.setErrorCode(errorCode);
@@ -124,7 +122,7 @@ public abstract class ChannelResponseCallback2 {
             try {
                 onResponseMessage(response);
             } catch (Exception ee) {
-                logger.error("onResponseMessage error:", ee);
+                logger.error("onResponseMessage error:{}", ee);
             }
 
             // 彻底失败后，删掉这个seq
