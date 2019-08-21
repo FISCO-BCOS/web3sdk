@@ -7,6 +7,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.util.AttributeKey;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -75,6 +76,10 @@ public class ConnectionCallback implements ChannelConnections.Callback {
     @Override
     public void onConnect(ChannelHandlerContext ctx) {
         try {
+            // must set to BigInteger.ONE
+            // since sdk only get and initialize blockNumber when the init blockNumber is
+            // BigInteger.ONE
+            channelService.setNumber(BigInteger.ONE);
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             AttributeKey<String> attributeKey =
                     AttributeKey.valueOf(
