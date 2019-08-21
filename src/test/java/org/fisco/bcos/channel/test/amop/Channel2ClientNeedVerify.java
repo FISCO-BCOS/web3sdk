@@ -2,15 +2,17 @@ package org.fisco.bcos.channel.test.amop;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.channel.dto.ChannelRequest;
+import org.fisco.bcos.channel.dto.ChannelResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-public class Channel2ClientMulti {
-    private static Logger logger = LoggerFactory.getLogger(Channel2ClientMulti.class);
+public class Channel2ClientNeedVerify {
+    private static final Logger logger = LoggerFactory.getLogger(Channel2ClientNeedVerify.class);
     private static final int parameterNum = 2;
 
     public static void main(String[] args) throws Exception {
@@ -22,12 +24,9 @@ public class Channel2ClientMulti {
         Integer count = Integer.parseInt(args[1]);
 
         DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
         logger.debug("init client");
-
         ApplicationContext context =
                 new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
-
         Service service = context.getBean(Service.class);
         service.run();
 
@@ -41,23 +40,37 @@ public class Channel2ClientMulti {
         System.out.println("start test");
         System.out.println("===================================================================");
 
+        ChannelRequest request = new ChannelRequest();
         for (Integer i = 0; i < count; ++i) {
             Thread.sleep(2000);
-            ChannelRequest request = new ChannelRequest();
+
             request.setToTopic(topic);
             request.setMessageID(service.newSeq());
             request.setTimeout(5000);
 
-            request.setContent("request seq:" + request.getMessageID());
+            String content = "request seq:" + request.getMessageID();
+
+            request.setContent(content.getBytes());
 
             System.out.println(
                     df.format(LocalDateTime.now())
-                            + " multicast request seq:"
-                            + String.valueOf(request.getMessageID())
+                            + " request seq:"
+                            + request.getMessageID()
                             + ", Content:"
-                            + request.getContent());
+                            + request.getContent()
+                            + " content:"
+                            + Arrays.toString(request.getContentByteArray()));
 
-            service.asyncMulticastChannelMessage2(request);
+            ChannelResponse response = service.sendChannelMessageForVerifyTopic(request);
+
+            System.out.println(
+                    df.format(LocalDateTime.now())
+                            + "response seq:"
+                            + response.getMessageID()
+                            + ", ErrorCode:"
+                            + response.getErrorCode()
+                            + ", Content:"
+                            + response.getContent());
         }
     }
 }
