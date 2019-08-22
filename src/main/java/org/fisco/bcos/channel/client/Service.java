@@ -1,6 +1,7 @@
 package org.fisco.bcos.channel.client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.SocketChannel;
@@ -37,13 +38,14 @@ import org.fisco.bcos.channel.dto.BcosHeartbeat;
 import org.fisco.bcos.channel.dto.BcosMessage;
 import org.fisco.bcos.channel.dto.BcosRequest;
 import org.fisco.bcos.channel.dto.BcosResponse;
-import org.fisco.bcos.channel.dto.ChannelMessage;
 import org.fisco.bcos.channel.dto.ChannelMessage2;
-import org.fisco.bcos.channel.dto.ChannelPush;
 import org.fisco.bcos.channel.dto.ChannelPush2;
 import org.fisco.bcos.channel.dto.ChannelRequest;
 import org.fisco.bcos.channel.dto.ChannelResponse;
 import org.fisco.bcos.channel.dto.TopicVerifyMessage;
+import org.fisco.bcos.channel.event.filter.EventLogFilterParams;
+import org.fisco.bcos.channel.event.filter.EventLogFilterPushStatus;
+import org.fisco.bcos.channel.event.filter.EventLogPushCallback;
 import org.fisco.bcos.channel.handler.AMOPVerifyKeyInfo;
 import org.fisco.bcos.channel.handler.AMOPVerifyTopicToKeyInfo;
 import org.fisco.bcos.channel.handler.ChannelConnections;
@@ -52,6 +54,7 @@ import org.fisco.bcos.channel.handler.ConnectionCallback;
 import org.fisco.bcos.channel.handler.ConnectionInfo;
 import org.fisco.bcos.channel.handler.GroupChannelConnectionsConfig;
 import org.fisco.bcos.channel.handler.Message;
+import org.fisco.bcos.channel.protocol.ChannelMessageType;
 import org.fisco.bcos.channel.protocol.NodeRequestSdkVerifyTopic;
 import org.fisco.bcos.channel.protocol.SdkRequestNodeUpdateTopicStatus;
 import org.fisco.bcos.channel.protocol.TopicVerifyReqProtocol;
@@ -59,8 +62,10 @@ import org.fisco.bcos.channel.protocol.TopicVerifyRespProtocol;
 import org.fisco.bcos.channel.protocol.parser.BlockNotificationParser;
 import org.fisco.bcos.channel.protocol.parser.HeartBeatParser;
 import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
+import org.fisco.bcos.web3j.protocol.core.methods.response.Log;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.protocol.exceptions.TransactionException;
+import org.fisco.bcos.web3j.tx.txdecode.LogResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -87,6 +92,11 @@ public class Service {
     private ConcurrentHashMap<String, BigInteger> nodeToBlockNumberMap = new ConcurrentHashMap<>();
     /** add transaction seq callback */
     private Map<String, Object> seq2TransactionCallback = new ConcurrentHashMap<String, Object>();
+    // add filterID to callback map
+    private transient Map<String, Object> filterIDToEventLogPushCallBack =
+            new ConcurrentHashMap<String, Object>();
+    // seqID => filterID map
+    private transient Map<String, String> seqToFilterID = new ConcurrentHashMap<String, String>();
 
     private Timer timeoutHandler = new HashedWheelTimer();
     private ThreadPoolTaskExecutor threadPool;
@@ -578,7 +588,7 @@ public class Service {
 
             channelMessage.setSeq(request.getMessageID());
             channelMessage.setResult(0);
-            channelMessage.setType((short) 0x30); // 链上链下请求0x30
+            channelMessage.setType((short) ChannelMessageType.AMOP_REQUEST.getType());
             channelMessage.setData(request.getContentByteArray());
             channelMessage.setTopic(request.getToTopic());
 
@@ -703,7 +713,7 @@ public class Service {
                             fromChannelConnections.getNetworkConnectionByHost(
                                     connectionInfo.getHost(), connectionInfo.getPort());
 
-                    if (ctx != null && ctx.channel().isActive()) {
+                    if (ctx != null && ChannelHandlerContextHelper.isChannelAvailable(ctx)) {
                         ByteBuf out = ctx.alloc().buffer();
                         channelMessage.writeHeader(out);
                         channelMessage.writeExtra(out);
@@ -737,36 +747,6 @@ public class Service {
         }
     }
 
-    public void sendResponseMessage(
-            ChannelResponse response,
-            ConnectionInfo info,
-            ChannelHandlerContext ctx,
-            String fromNode,
-            String toNode,
-            String seq) {
-        try {
-            ChannelMessage responseMessage = new ChannelMessage();
-
-            responseMessage.setData(response.getContent().getBytes());
-            responseMessage.setResult(response.getErrorCode());
-            responseMessage.setSeq(seq);
-            responseMessage.setType((short) 0x21); // 链上链下回包0x21
-            responseMessage.setToNode(fromNode);
-            responseMessage.setFromNode(toNode);
-
-            ByteBuf out = ctx.alloc().buffer();
-            responseMessage.writeHeader(out);
-            responseMessage.writeExtra(out);
-
-            ctx.writeAndFlush(out);
-
-            logger.debug("response seq:{} length:{}", response.getMessageID(), out.readableBytes());
-        } catch (Exception e) {
-            logger.error("system error:{}", e);
-        }
-    }
-
-    // 链上链下二期回包
     public void sendResponseMessage2(
             ChannelResponse response, ChannelHandlerContext ctx, String seq, String topic) {
         try {
@@ -775,7 +755,7 @@ public class Service {
             responseMessage.setData(response.getContentByteArray());
             responseMessage.setResult(response.getErrorCode());
             responseMessage.setSeq(seq);
-            responseMessage.setType((short) 0x31); // 链上链下二期回包0x31
+            responseMessage.setType((short) ChannelMessageType.AMOP_RESPONSE.getType());
             responseMessage.setTopic(topic);
 
             ByteBuf out = ctx.alloc().buffer();
@@ -812,61 +792,196 @@ public class Service {
         }
     }
 
-    public void onReceiveChannelMessage(ChannelHandlerContext ctx, ChannelMessage message) {
-        logger.debug("onReceiveChannelMessage seq:{}", message.getSeq());
-        ChannelResponseCallback callback =
-                (ChannelResponseCallback) seq2Callback.get(message.getSeq());
-        if (message.getType() == 0x20) { // 链上链下请求
-            logger.debug("channel Message PUSH");
-            if (callback != null) {
-                // 清空callback再处理
-                logger.debug("seq already existed，clean:{}", message.getSeq());
-                seq2Callback.remove(message.getSeq());
-            }
+    public void asyncSendRegisterEventLogFilterMessage(
+            EventLogFilterParams filter, EventLogPushCallback callback) {
 
-            try {
-                ChannelPush push = new ChannelPush();
+        try {
+            // set FilterID, it used as event log push seq ID.
+            filter.setFilterID(newSeq());
+            filter.setGroupID(String.valueOf(getGroupId()));
+            callback.setParams(filter);
 
-                if (pushCallback != null) {
-                    push.setService(this);
-                    push.setCtx(ctx);
-                    push.setMessageID(message.getSeq());
-                    push.setFromNode(message.getFromNode());
-                    push.setToNode(message.getToNode());
-                    push.setSeq(message.getSeq());
-                    push.setMessageID(message.getSeq());
+            String request = ObjectMapperFactory.getObjectMapper().writeValueAsString(filter);
 
-                    push.setContent(new String(message.getData(), 0, message.getData().length));
+            BcosMessage bcosMessage = new BcosMessage();
 
-                    pushCallback.onPush(push);
+            bcosMessage.setSeq(newSeq());
+            bcosMessage.setResult(0);
+            bcosMessage.setType((short) ChannelMessageType.CLIENT_REGISTER_EVENT_LOG.getType());
+            bcosMessage.setData(request.getBytes());
+
+            ChannelConnections channelConnections =
+                    allChannelConnections
+                            .getAllChannelConnections()
+                            .stream()
+                            .filter(x -> x.getGroupId() == groupId)
+                            .findFirst()
+                            .get();
+
+            if (channelConnections == null) {
+                if (orgID != null) {
+                    logger.error("not found:{}", orgID);
+                    throw new TransactionException("not found orgID");
                 } else {
-                    logger.error("can not push，unset push callback");
+                    logger.error("not found:{}", agencyName);
+                    throw new TransactionException("not found agencyName");
                 }
+            }
+            ChannelHandlerContext ctx =
+                    channelConnections.randomNetworkConnection(nodeToBlockNumberMap);
+
+            ByteBuf out = ctx.alloc().buffer();
+            bcosMessage.writeHeader(out);
+            bcosMessage.writeExtra(out);
+
+            filterIDToEventLogPushCallBack.put(filter.getFilterID(), callback);
+            seqToFilterID.put(bcosMessage.getSeq(), filter.getFilterID());
+
+            if (filter.getTimeout() > 0) {
+                final EventLogPushCallback callbackInner = callback;
+                final String seqInner = bcosMessage.getSeq();
+                final String filterIDInner = filter.getFilterID();
+                callback.setTimeout(
+                        timeoutHandler.newTimeout(
+                                new TimerTask() {
+                                    EventLogPushCallback _callback = callbackInner;
+
+                                    @Override
+                                    public void run(Timeout timeout) throws Exception {
+                                        seqToFilterID.remove(seqInner);
+                                        filterIDToEventLogPushCallBack.remove(filterIDInner);
+                                        _callback.onPushEventLog(
+                                                EventLogFilterPushStatus.REQUEST_TIMEOUT
+                                                        .getStatus(),
+                                                null);
+                                        if (_callback.getTimeout() != null) {
+                                            _callback.getTimeout().cancel();
+                                        }
+
+                                        logger.warn(
+                                                " register event filter message timeout, seq:{}, filterID:{}",
+                                                seqInner,
+                                                filterIDInner);
+                                    }
+                                },
+                                filter.getTimeout(),
+                                TimeUnit.MILLISECONDS));
+            }
+
+            ctx.writeAndFlush(out);
+
+            SocketChannel socketChannel = (SocketChannel) ctx.channel();
+            InetSocketAddress socketAddress = socketChannel.remoteAddress();
+
+            logger.info(
+                    " register event log filter request, selected node {}:{}, seq:{}, filterID:{}, content:{}",
+                    socketAddress.getAddress().getHostAddress(),
+                    socketAddress.getPort(),
+                    bcosMessage.getSeq(),
+                    filter.getFilterID(),
+                    request);
+
+        } catch (Exception e) {
+
+            logger.warn(
+                    " register event log filter request send failed, message: {}", e.getMessage());
+            callback.onPushEventLog(EventLogFilterPushStatus.OTHER_ERROR.getStatus(), null);
+        }
+    }
+
+    public void onReceiveEventLogFilterResponse(ChannelHandlerContext ctx, BcosMessage message) {
+
+        String content = new String(message.getData());
+        String filterID = seqToFilterID.get(message.getSeq());
+        if (filterID == null) {
+            logger.error(
+                    " event log filter response filterID null, seq: {}, filterID: {}, content: {}",
+                    message.getSeq(),
+                    filterID,
+                    content);
+            return;
+        }
+
+        seqToFilterID.remove(message.getSeq());
+
+        EventLogPushCallback eventLogPushCallback =
+                (EventLogPushCallback) filterIDToEventLogPushCallBack.get(filterID);
+        if (eventLogPushCallback == null) {
+            logger.error(
+                    " event log filter response callback null maybe timeout, seq: {}, filterID: {}, content: {}",
+                    message.getSeq(),
+                    filterID,
+                    content);
+            return;
+        }
+
+        int result = message.getResult();
+        if (result == 0) { // requests are processed normally and data will push soon
+            // donothing
+            logger.info(
+                    " register event log filter response ok, seq: {}, filterID: {}, content: {}",
+                    message.getSeq(),
+                    filterID,
+                    content);
+        } else {
+            eventLogPushCallback.onPushEventLog(result, null);
+            logger.warn(
+                    " register event log filter response invalid status, seq: {}, filterID: {}, status: {}, content: {}",
+                    message.getSeq(),
+                    filterID,
+                    result,
+                    content);
+        }
+    }
+
+    public void onReceiveEventLogPush(ChannelHandlerContext ctx, BcosMessage message) {
+
+        String filterID = message.getSeq();
+        String content = new String(message.getData());
+
+        EventLogPushCallback eventLogPushCallback =
+                (EventLogPushCallback) filterIDToEventLogPushCallBack.get(filterID);
+
+        if (eventLogPushCallback == null) {
+            logger.error(
+                    " event log filter callback null, maybe response timeout, filterID: {}, content: {}",
+                    message.getSeq(),
+                    content);
+            return;
+        }
+
+        int result = message.getResult();
+        if (result == 0) {
+            logger.trace(" event log filter push ok, filterID: {}, content: {}", filterID, content);
+
+            // transfer string response to List<Log> first
+            ObjectMapper objectMapper = ObjectMapperFactory.getObjectMapper();
+            try {
+                List<Log> logs =
+                        objectMapper.readValue(
+                                content,
+                                objectMapper
+                                        .getTypeFactory()
+                                        .constructCollectionType(List.class, Log.class));
+                List<LogResult> logResults = new ArrayList<LogResult>();
+                for (Log log : logs) {
+                    LogResult logResult = eventLogPushCallback.transferLogToLogResult(log);
+                    if (logResult != null) {
+                        logResults.add(logResult);
+                    }
+                }
+                eventLogPushCallback.onPushEventLog(result, logResults);
             } catch (Exception e) {
-                logger.error("pushCallback error:", e);
+                logger.error(" process event filter push exception, message: {} ", e.getMessage());
             }
-        } else if (message.getType() == 0x21) { // 链上链下回包
-            logger.debug("channel response:{}", message.getSeq());
-            if (callback != null) {
-                logger.debug("found callback response");
 
-                ChannelResponse response = new ChannelResponse();
-                if (message.getResult() != 0) {
-                    response.setErrorCode(message.getResult());
-                    response.setErrorMessage("response error");
-                }
-
-                response.setErrorCode(message.getResult());
-                response.setMessageID(message.getSeq());
-                if (message.getData() != null) {
-                    response.setContent(new String(message.getData()));
-                }
-
-                callback.onResponse(response);
-            } else {
-                logger.error("can not found response callback，timeout:{}", message.getData());
-                return;
-            }
+        } else {
+            logger.trace(
+                    " event log filter push invalid status, filterID: {}, status: {}, content: {}",
+                    filterID,
+                    result,
+                    content);
+            eventLogPushCallback.onPushEventLog(result, null);
         }
     }
 
@@ -901,7 +1016,8 @@ public class Service {
         ChannelResponseCallback2 callback =
                 (ChannelResponseCallback2) seq2Callback.get(message.getSeq());
 
-        if (message.getType() == 0x30 || message.getType() == 0x35) {
+        if (message.getType() == ChannelMessageType.AMOP_REQUEST.getType()
+                || message.getType() == ChannelMessageType.AMOP_MULBROADCAST.getType()) {
             logger.debug("channel PUSH");
             if (callback != null) {
                 logger.debug("seq already existed，clear:{}", message.getSeq());
@@ -939,7 +1055,7 @@ public class Service {
                 }
             }
 
-        } else if (message.getType() == 0x31) {
+        } else if (message.getType() == ChannelMessageType.AMOP_RESPONSE.getType()) {
             logger.info("channel message:{}", message.getSeq());
             if (callback != null) {
                 logger.debug("found callback response");
@@ -1182,7 +1298,7 @@ public class Service {
         Message message = new BcosMessage();
         message.setSeq(UUID.randomUUID().toString().replaceAll("-", ""));
         message.setResult(0);
-        message.setType((short) 0x13);
+        message.setType((short) ChannelMessageType.CLIENT_HEARTBEAT.getType());
 
         HeartBeatParser heartBeatParser =
                 new HeartBeatParser(ChannelHandlerContextHelper.getProtocolVersion(ctx));
@@ -1225,7 +1341,7 @@ public class Service {
 
             response.setSeq(msg.getSeq());
             response.setResult(0);
-            response.setType((short) 0x13);
+            response.setType((short) ChannelMessageType.CLIENT_HEARTBEAT.getType());
 
             try {
                 response.setData(heartBeatParser.encode("1"));

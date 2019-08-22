@@ -12,6 +12,7 @@ import org.fisco.bcos.channel.dto.ChannelResponse;
 import org.fisco.bcos.channel.handler.ChannelConnections;
 import org.fisco.bcos.channel.handler.ConnectionInfo;
 import org.fisco.bcos.channel.handler.Message;
+import org.fisco.bcos.channel.protocol.ChannelMessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -149,10 +150,9 @@ class ConnectionPair {
             // 找不到连接，错误
             logger.error("connection error 99");
 
-            if (message.getType() == 0x20 || message.getType() == 0x21) {
-                message.setType((short) 0x21);
-            } else if (message.getType() == 0x30 || message.getType() == 0x31) {
-                message.setType((short) 0x31);
+            if (message.getType() == (short) ChannelMessageType.AMOP_REQUEST.getType()
+                    || message.getType() == ChannelMessageType.AMOP_RESPONSE.getType()) {
+                message.setType((short) ChannelMessageType.AMOP_RESPONSE.getType());
             } else {
                 // ethereum消息，不用改类型
             }
