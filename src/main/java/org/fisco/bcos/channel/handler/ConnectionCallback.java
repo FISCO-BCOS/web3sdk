@@ -18,10 +18,10 @@ import org.fisco.bcos.channel.client.BcosResponseCallback;
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.channel.dto.BcosMessage;
 import org.fisco.bcos.channel.dto.BcosResponse;
-import org.fisco.bcos.channel.dto.ChannelMessage;
 import org.fisco.bcos.channel.dto.ChannelMessage2;
 import org.fisco.bcos.channel.dto.TopicVerifyMessage;
 import org.fisco.bcos.channel.protocol.ChannelHandshake;
+import org.fisco.bcos.channel.protocol.ChannelMessageType;
 import org.fisco.bcos.channel.protocol.ChannelPrococolExceiption;
 import org.fisco.bcos.channel.protocol.ChannelProtocol;
 import org.fisco.bcos.channel.protocol.EnumChannelProtocolVersion;
@@ -116,7 +116,7 @@ public class ConnectionCallback implements ChannelConnections.Callback {
                 content);
 
         BcosMessage bcosMessage = new BcosMessage();
-        bcosMessage.setType((short) 0x14);
+        bcosMessage.setType((short) ChannelMessageType.CLIENT_HANDSHAKE.getType());
         bcosMessage.setSeq(seq);
         bcosMessage.setResult(0);
         bcosMessage.setData(payload);
@@ -209,7 +209,7 @@ public class ConnectionCallback implements ChannelConnections.Callback {
                 content);
 
         BcosMessage bcosMessage = new BcosMessage();
-        bcosMessage.setType((short) 0x12);
+        bcosMessage.setType((short) ChannelMessageType.CHANNEL_RPC_REQUEST.getType());
         bcosMessage.setSeq(seq);
         bcosMessage.setResult(0);
         bcosMessage.setData(payload);
@@ -304,7 +304,7 @@ public class ConnectionCallback implements ChannelConnections.Callback {
 
         Message message = new Message();
         message.setResult(0);
-        message.setType((short) 0x32);
+        message.setType((short) ChannelMessageType.AMOP_CLIENT_TOPICS.getType());
         message.setSeq(UUID.randomUUID().toString().replaceAll("-", ""));
 
         topics.add("_block_notify_" + channelService.getGroupId());
@@ -334,7 +334,7 @@ public class ConnectionCallback implements ChannelConnections.Callback {
         String seq = UUID.randomUUID().toString().replaceAll("-", "");
 
         BcosMessage bcosMessage = new BcosMessage();
-        bcosMessage.setType((short) 0x12);
+        bcosMessage.setType((short) ChannelMessageType.CHANNEL_RPC_REQUEST.getType());
         bcosMessage.setSeq(seq);
         ChannelEthereumService channelEthereumService = new ChannelEthereumService();
         channelEthereumService.setChannelService(channelService);
@@ -400,7 +400,13 @@ public class ConnectionCallback implements ChannelConnections.Callback {
     }
 
     @Override
-    public void onDisconnect(ChannelHandlerContext ctx) {}
+    public void onDisconnect(ChannelHandlerContext ctx) {
+        SocketChannel socketChannel = (SocketChannel) ctx.channel();
+        String hostAddress = socketChannel.remoteAddress().getAddress().getHostAddress();
+        int port = socketChannel.remoteAddress().getPort();
+
+        logger.trace(" disconnect , host: {}, port: {}", hostAddress, port);
+    }
 
     @Override
     public void onMessage(ChannelHandlerContext ctx, ByteBuf message) {
@@ -414,35 +420,41 @@ public class ConnectionCallback implements ChannelConnections.Callback {
                     msg.getType(),
                     msg.getResult());
 
-            if (msg.getType() == 0x20 || msg.getType() == 0x21) {
-                ChannelMessage channelMessage = new ChannelMessage(msg);
-                channelMessage.readExtra(message);
-                channelService.onReceiveChannelMessage(ctx, channelMessage);
-            } else if (msg.getType() == 0x30 || msg.getType() == 0x31 || msg.getType() == 0x35) {
+            if (msg.getType() == ChannelMessageType.AMOP_REQUEST.getType()
+                    || msg.getType() == ChannelMessageType.AMOP_RESPONSE.getType()
+                    || msg.getType() == ChannelMessageType.AMOP_MULBROADCAST.getType()) {
                 ChannelMessage2 channelMessage = new ChannelMessage2(msg);
                 channelMessage.readExtra(message);
                 channelService.onReceiveChannelMessage2(ctx, channelMessage);
-            } else if (msg.getType() == 0x12) {
+            } else if (msg.getType() == ChannelMessageType.CHANNEL_RPC_REQUEST.getType()) {
                 BcosMessage fiscoMessage = new BcosMessage(msg);
                 fiscoMessage.readExtra(message);
                 channelService.onReceiveEthereumMessage(ctx, fiscoMessage);
-            } else if (msg.getType() == 0x13) {
+            } else if (msg.getType() == ChannelMessageType.CLIENT_HEARTBEAT.getType()) {
                 msg.readExtra(message);
                 channelService.onReceiveHeartbeat(ctx, msg);
-            } else if (msg.getType() == 0x14) {
+            } else if (msg.getType() == ChannelMessageType.CLIENT_HANDSHAKE.getType()) {
                 BcosMessage fiscoMessage = new BcosMessage(msg);
                 fiscoMessage.readExtra(message);
                 channelService.onReceiveEthereumMessage(ctx, fiscoMessage);
-            } else if (msg.getType() == 0x1000) {
+            } else if (msg.getType() == ChannelMessageType.CLIENT_REGISTER_EVENT_LOG.getType()) {
+                BcosMessage bcosMessage = new BcosMessage(msg);
+                bcosMessage.readExtra(message);
+                channelService.onReceiveEventLogFilterResponse(ctx, bcosMessage);
+            } else if (msg.getType() == ChannelMessageType.TRANSACTION_NOTIFY.getType()) {
                 BcosMessage fiscoMessage = new BcosMessage(msg);
                 fiscoMessage.readExtra(message);
                 channelService.onReceiveTransactionMessage(ctx, fiscoMessage);
-            } else if (msg.getType() == 0x1001) {
+            } else if (msg.getType() == ChannelMessageType.BLOCK_NOTIFY.getType()) {
                 // new block notify
                 ChannelMessage2 channelMessage = new ChannelMessage2(msg);
                 channelMessage.readExtra(message);
                 channelService.onReceiveBlockNotify(ctx, channelMessage);
-            } else if (msg.getType() == 0x37) {
+            } else if (msg.getType() == ChannelMessageType.EVENT_LOG_PUSH.getType()) {
+                BcosMessage bcosMessage = new BcosMessage(msg);
+                bcosMessage.readExtra(message);
+                channelService.onReceiveEventLogPush(ctx, bcosMessage);
+            } else if (msg.getType() == ChannelMessageType.REQUEST_TOPICCERT.getType()) {
                 logger.info("get generate rand value request data");
                 TopicVerifyMessage channelMessage = new TopicVerifyMessage(msg);
                 channelMessage.readExtra(message);

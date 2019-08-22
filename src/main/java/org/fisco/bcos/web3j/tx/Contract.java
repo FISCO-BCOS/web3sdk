@@ -1,5 +1,6 @@
 package org.fisco.bcos.web3j.tx;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.math.BigInteger;
@@ -7,6 +8,11 @@ import java.util.*;
 import java.util.concurrent.Semaphore;
 import java.util.stream.Collectors;
 import org.fisco.bcos.channel.client.TransactionSucCallback;
+import org.fisco.bcos.channel.event.filter.EventLogFilterException;
+import org.fisco.bcos.channel.event.filter.EventLogFilterParams;
+import org.fisco.bcos.channel.event.filter.EventLogFilterPushStatus;
+import org.fisco.bcos.channel.event.filter.EventLogPushWithDecodeCallback;
+import org.fisco.bcos.channel.event.filter.TopicTools;
 import org.fisco.bcos.fisco.EnumNodeVersion;
 import org.fisco.bcos.web3j.abi.EventEncoder;
 import org.fisco.bcos.web3j.abi.EventValues;
@@ -19,6 +25,8 @@ import org.fisco.bcos.web3j.abi.datatypes.Function;
 import org.fisco.bcos.web3j.abi.datatypes.Type;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.protocol.Web3j;
+import org.fisco.bcos.web3j.protocol.Web3jService;
+import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameterName;
 import org.fisco.bcos.web3j.protocol.core.JsonRpc2_0Web3j;
@@ -30,6 +38,7 @@ import org.fisco.bcos.web3j.tx.exceptions.ContractCallException;
 import org.fisco.bcos.web3j.tx.gas.ContractGasProvider;
 import org.fisco.bcos.web3j.tx.gas.DefaultGasProvider;
 import org.fisco.bcos.web3j.tx.gas.StaticGasProvider;
+import org.fisco.bcos.web3j.tx.txdecode.TransactionDecoder;
 import org.fisco.bcos.web3j.utils.Numeric;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -731,6 +740,88 @@ public abstract class Contract extends ManagedTransaction {
                                 BigInteger.ZERO));
     }
 
+    public void registerEventLogPushFilter(
+            TransactionDecoder decoder,
+            EventLogFilterParams filter,
+            EventLogPushWithDecodeCallback callback)
+            throws EventLogFilterException {
+
+        // params check
+        if (filter.getGroupID() == null || filter.getGroupID().equals("")) {
+            logger.error(" groupID null, filter: {} ", filter);
+            throw new EventLogFilterException(
+                    EventLogFilterPushStatus.INVALID_REQUEST,
+                    EventLogFilterPushStatus.getDescMessage(
+                            EventLogFilterPushStatus.INVALID_REQUEST));
+        }
+
+        if (filter.getTopics() == null
+                || filter.getTopics().size() > TopicTools.MAX_NUM_TOPIC_EVENT_LOG) {
+            logger.error(" invalid topices count, filter: {} ", filter);
+            throw new EventLogFilterException(
+                    EventLogFilterPushStatus.INVALID_REQUEST,
+                    EventLogFilterPushStatus.getDescMessage(
+                            EventLogFilterPushStatus.INVALID_REQUEST));
+        }
+
+        Web3jService service = ((JsonRpc2_0Web3j) web3j).web3jService();
+        if (!(service instanceof ChannelEthereumService)) {
+            throw new EventLogFilterException(
+                    EventLogFilterPushStatus.SERVICE_NOT_SUPPORT,
+                    EventLogFilterPushStatus.getDescMessage(
+                            EventLogFilterPushStatus.SERVICE_NOT_SUPPORT));
+        }
+
+        ChannelEthereumService channelEthereumService = (ChannelEthereumService) service;
+        // set timeout
+        filter.setTimeout(channelEthereumService.getTimeout());
+        callback.setDecoder(decoder);
+
+        channelEthereumService
+                .getChannelService()
+                .asyncSendRegisterEventLogFilterMessage(filter, callback);
+    }
+
+    public void registerEventLogPushFilter(
+            TransactionDecoder decoder, String topic0, EventLogPushWithDecodeCallback callback)
+            throws JsonProcessingException, EventLogFilterException {
+
+        registerEventLogPushFilter(
+                decoder,
+                topic0,
+                DefaultBlockParameterName.LATEST,
+                DefaultBlockParameterName.LATEST,
+                new ArrayList<Object>(),
+                callback);
+    }
+
+    public void registerEventLogPushFilter(
+            TransactionDecoder decoder,
+            String topic0,
+            DefaultBlockParameter fromBlock,
+            DefaultBlockParameter toBlock,
+            List<Object> otherTopics,
+            EventLogPushWithDecodeCallback callback)
+            throws JsonProcessingException, EventLogFilterException {
+
+        EventLogFilterParams filter = new EventLogFilterParams();
+        filter.setFromBlock(fromBlock.getValue());
+        filter.setToBlock(toBlock.getValue());
+
+        List<String> addresses = new ArrayList<String>();
+        addresses.add(getContractAddress());
+        filter.setAddress(addresses);
+
+        List<Object> topics = new ArrayList<Object>();
+        topics.add(topic0);
+        for (Object obj : otherTopics) {
+            topics.add(obj);
+        }
+        filter.setTopics(topics);
+
+        this.registerEventLogPushFilter(decoder, filter, callback);
+    }
+
     public static EventValues staticExtractEventParameters(Event event, Log log) {
 
         List<String> topics = log.getTopics();
@@ -777,6 +868,13 @@ public abstract class Contract extends ManagedTransaction {
         return transactionReceipt
                 .getLogs()
                 .stream()
+                .map(log -> extractEventParametersWithLog(event, log))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+
+    protected List<EventValuesWithLog> extractEventParametersWithLog(Event event, List<Log> logs) {
+        return logs.stream()
                 .map(log -> extractEventParametersWithLog(event, log))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());

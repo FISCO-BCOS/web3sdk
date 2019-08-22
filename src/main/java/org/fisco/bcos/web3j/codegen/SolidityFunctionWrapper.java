@@ -53,6 +53,7 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.tx.Contract;
 import org.fisco.bcos.web3j.tx.TransactionManager;
 import org.fisco.bcos.web3j.tx.gas.ContractGasProvider;
+import org.fisco.bcos.web3j.tx.txdecode.TransactionDecoder;
 import org.fisco.bcos.web3j.utils.Collection;
 import org.fisco.bcos.web3j.utils.Strings;
 import org.fisco.bcos.web3j.utils.Version;
@@ -77,6 +78,8 @@ public class SolidityFunctionWrapper extends Generator {
     private static final String START_BLOCK = "startBlock";
     private static final String END_BLOCK = "endBlock";
     private static final String WEI_VALUE = "weiValue";
+    private static final String CALLBACK_VALUE = "callback";
+    private static final String OTHER_TOPICS = "otherTopcs";
     private static final String FUNC_NAME_PREFIX = "FUNC_";
     private String abiContent;
     private static final ClassName LOG = ClassName.get(Log.class);
@@ -644,6 +647,20 @@ public class SolidityFunctionWrapper extends Generator {
         return toReturn.build();
     }
 
+    private MethodSpec.Builder addParameter(
+            MethodSpec.Builder methodBuilder, String type, String name) {
+
+        ParameterSpec parameterSpec = buildParameterType(type, name);
+
+        TypeName typeName = getWrapperType(parameterSpec.type);
+
+        ParameterSpec inputParameter = ParameterSpec.builder(typeName, parameterSpec.name).build();
+
+        methodBuilder.addParameter(inputParameter);
+
+        return methodBuilder;
+    }
+
     private String addParameters(
             MethodSpec.Builder methodBuilder, List<AbiDefinition.NamedType> namedTypes) {
 
@@ -812,6 +829,11 @@ public class SolidityFunctionWrapper extends Generator {
         } else {
             return getNativeType(typeName);
         }
+    }
+
+    private ParameterSpec buildParameterType(String type, String name) {
+
+        return ParameterSpec.builder(buildTypeName(type), name).build();
     }
 
     static List<ParameterSpec> buildParameterTypes(List<AbiDefinition.NamedType> namedTypes) {
@@ -1256,6 +1278,77 @@ public class SolidityFunctionWrapper extends Generator {
         return flowableMethodBuilder.build();
     }
 
+    private MethodSpec buildRegisterEventLogPushFunction(
+            String functionName,
+            List<SolidityFunctionWrapper.NamedTypeName> indexedParameters,
+            List<SolidityFunctionWrapper.NamedTypeName> nonIndexedParameters)
+            throws ClassNotFoundException {
+
+        String generatedFunctionName =
+                "register" + Strings.lowercaseFirstLetter(functionName) + "EventLogFilter";
+
+        MethodSpec.Builder getEventMethodBuilder =
+                MethodSpec.methodBuilder(generatedFunctionName)
+                        .addModifiers(Modifier.PUBLIC)
+                        .addParameter(DefaultBlockParameter.class, START_BLOCK)
+                        .addParameter(DefaultBlockParameter.class, END_BLOCK);
+
+        addParameter(getEventMethodBuilder, "string[]", OTHER_TOPICS)
+                .addParameter(AbiTypes.getType("EventLogPushCallback"), CALLBACK_VALUE);
+
+        getEventMethodBuilder.addStatement(
+                "String topic0 = $T.encode(" + buildEventDefinitionName(functionName) + ")",
+                EventEncoder.class);
+
+        getEventMethodBuilder.addStatement(
+                "$1T decoder = new $1T(ABI, BINARY)",
+                ParameterizedTypeName.get(ClassName.get(TransactionDecoder.class)));
+
+        getEventMethodBuilder.addStatement(
+                "registerEventLogPushFilter(decoder"
+                        + ","
+                        + "topic0"
+                        + ","
+                        + START_BLOCK
+                        + ","
+                        + END_BLOCK
+                        + ","
+                        + OTHER_TOPICS
+                        + ","
+                        + CALLBACK_VALUE
+                        + ")");
+
+        return getEventMethodBuilder.build();
+    }
+
+    private MethodSpec buildDefaultRegisterEventLogPushFunction(
+            String functionName,
+            List<SolidityFunctionWrapper.NamedTypeName> indexedParameters,
+            List<SolidityFunctionWrapper.NamedTypeName> nonIndexedParameters)
+            throws ClassNotFoundException {
+
+        String generatedFunctionName =
+                "register" + Strings.lowercaseFirstLetter(functionName) + "EventLogFilter";
+
+        MethodSpec.Builder getEventMethodBuilder =
+                MethodSpec.methodBuilder(generatedFunctionName)
+                        .addModifiers(Modifier.PUBLIC)
+                        .addParameter(AbiTypes.getType("EventLogPushCallback"), CALLBACK_VALUE);
+
+        getEventMethodBuilder.addStatement(
+                "String topic0 = $T.encode(" + buildEventDefinitionName(functionName) + ")",
+                EventEncoder.class);
+
+        getEventMethodBuilder.addStatement(
+                "$1T decoder = new $1T(ABI, BINARY)",
+                ParameterizedTypeName.get(ClassName.get(TransactionDecoder.class)));
+
+        getEventMethodBuilder.addStatement(
+                "registerEventLogPushFilter(decoder" + "," + "topic0" + "," + CALLBACK_VALUE + ")");
+
+        return getEventMethodBuilder.build();
+    }
+
     MethodSpec buildEventTransactionReceiptFunction(
             String responseClassName,
             String functionName,
@@ -1334,6 +1427,13 @@ public class SolidityFunctionWrapper extends Generator {
         methods.add(
                 buildEventTransactionReceiptFunction(
                         responseClassName, functionName, indexedParameters, nonIndexedParameters));
+
+        methods.add(
+                buildRegisterEventLogPushFunction(
+                        functionName, indexedParameters, nonIndexedParameters));
+        methods.add(
+                buildDefaultRegisterEventLogPushFunction(
+                        functionName, indexedParameters, nonIndexedParameters));
 
         // methods.add(
         //        buildEventFlowableFunction(
