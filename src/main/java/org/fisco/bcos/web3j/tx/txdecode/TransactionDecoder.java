@@ -23,8 +23,12 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.AbiDefinition.NamedTy
 import org.fisco.bcos.web3j.protocol.core.methods.response.Log;
 import org.fisco.bcos.web3j.protocol.exceptions.TransactionException;
 import org.fisco.bcos.web3j.tuples.generated.Tuple2;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TransactionDecoder {
+
+    private static final Logger logger = LoggerFactory.getLogger(TransactionDecoder.class);
 
     private String abi = "";
     private String bin = "";
@@ -241,6 +245,72 @@ public class TransactionDecoder {
         }
 
         return resultEntityMap;
+    }
+
+    /**
+     * @param log
+     * @return LogResult
+     * @throws BaseException
+     */
+    public LogResult decodeEventLogReturnObject(Log log) throws BaseException {
+        // decode log
+        List<AbiDefinition> abiDefinitions = ContractAbiUtil.getEventAbiDefinitions(abi);
+
+        for (AbiDefinition abiDefinition : abiDefinitions) {
+
+            String eventName = decodeMethodSign(abiDefinition);
+            String eventSignature =
+                    EventEncoder.buildEventSignature(decodeMethodSign(abiDefinition));
+
+            List<String> topics = log.getTopics();
+            if ((null == topics) || topics.isEmpty() || !topics.get(0).equals(eventSignature)) {
+                continue;
+            }
+
+            LogResult result = new LogResult();
+
+            EventValues eventValued = ContractAbiUtil.decodeEvent(log, abiDefinition);
+            if (null != eventValued) {
+                List<EventResultEntity> resultEntityList = new ArrayList<EventResultEntity>();
+                List<NamedType> inputs = abiDefinition.getInputs();
+                List<NamedType> indexedInputs =
+                        inputs.stream().filter(NamedType::isIndexed).collect(Collectors.toList());
+                List<NamedType> nonIndexedInputs =
+                        inputs.stream().filter(p -> !p.isIndexed()).collect(Collectors.toList());
+
+                for (int i = 0; i < indexedInputs.size(); i++) {
+                    EventResultEntity eventEntity =
+                            new EventResultEntity(
+                                    indexedInputs.get(i).getName(),
+                                    indexedInputs.get(i).getType(),
+                                    true,
+                                    eventValued.getIndexedValues().get(i));
+
+                    resultEntityList.add(eventEntity);
+                }
+
+                for (int i = 0; i < nonIndexedInputs.size(); i++) {
+                    EventResultEntity eventEntity =
+                            new EventResultEntity(
+                                    nonIndexedInputs.get(i).getName(),
+                                    nonIndexedInputs.get(i).getType(),
+                                    false,
+                                    eventValued.getNonIndexedValues().get(i));
+
+                    resultEntityList.add(eventEntity);
+                }
+
+                result.setEventName(eventName);
+                result.setLogParams(resultEntityList);
+                result.setLog(log);
+
+                logger.debug(" event log result: {}", result);
+
+                return result;
+            }
+        }
+
+        return null;
     }
 
     public Tuple2<AbiDefinition, List<EventResultEntity>> decodeEventReturnObject(Log log)
