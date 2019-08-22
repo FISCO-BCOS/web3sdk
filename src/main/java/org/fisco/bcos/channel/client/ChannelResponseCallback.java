@@ -11,6 +11,7 @@ import org.fisco.bcos.channel.dto.ChannelResponse;
 import org.fisco.bcos.channel.handler.ChannelConnections;
 import org.fisco.bcos.channel.handler.ChannelHandlerContextHelper;
 import org.fisco.bcos.channel.handler.ConnectionInfo;
+import org.fisco.bcos.channel.protocol.ChannelMessageError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,10 +21,11 @@ public abstract class ChannelResponseCallback {
     public abstract void onResponseMessage(ChannelResponse response);
 
     public final void onResponse(ChannelResponse response) {
-        if (response.getErrorCode() == 99) {
+        if (response.getErrorCode() == ChannelMessageError.NODES_UNREACHABLE.getError()) {
             logger.error("Local node error，try the next local node");
             retrySendMessage(1); // 1表示客户端错误
-        } else if (response.getErrorCode() == 100) {
+        } else if (response.getErrorCode()
+                == ChannelMessageError.MESSAGE_SEND_EXCEPTION.getError()) {
             logger.error("Remote node error，try the next remote node");
             retrySendMessage(2); // 2表示服务端错误，错误码可重用
         } else {
@@ -47,7 +49,7 @@ public abstract class ChannelResponseCallback {
         logger.error("send message timeout:{}", message.getSeq());
 
         ChannelResponse response = new ChannelResponse();
-        response.setErrorCode(102);
+        response.setErrorCode(ChannelMessageError.MESSAGE_TIMEOUT.getError());
         response.setMessageID(message.getSeq());
         response.setErrorMessage("send message timeout");
         response.setContent("");
@@ -90,7 +92,7 @@ public abstract class ChannelResponseCallback {
                     // 所有节点已尝试，无法再重试了
                     logger.error("All local nodes are unavailable");
 
-                    errorCode = 99;
+                    errorCode = ChannelMessageError.NODES_UNREACHABLE.getError();
                     throw new Exception("All local nodes are unavailable");
                 }
             }
