@@ -7,6 +7,8 @@ import java.util.*;
 import java.util.concurrent.Semaphore;
 import java.util.stream.Collectors;
 import org.fisco.bcos.channel.client.TransactionSucCallback;
+import org.fisco.bcos.channel.event.filter.EventLogFilterParams;
+import org.fisco.bcos.channel.event.filter.EventLogPushWithDecodeCallback;
 import org.fisco.bcos.fisco.EnumNodeVersion;
 import org.fisco.bcos.web3j.abi.EventEncoder;
 import org.fisco.bcos.web3j.abi.EventValues;
@@ -19,6 +21,8 @@ import org.fisco.bcos.web3j.abi.datatypes.Function;
 import org.fisco.bcos.web3j.abi.datatypes.Type;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.protocol.Web3j;
+import org.fisco.bcos.web3j.protocol.Web3jService;
+import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameterName;
 import org.fisco.bcos.web3j.protocol.core.JsonRpc2_0Web3j;
@@ -30,6 +34,7 @@ import org.fisco.bcos.web3j.tx.exceptions.ContractCallException;
 import org.fisco.bcos.web3j.tx.gas.ContractGasProvider;
 import org.fisco.bcos.web3j.tx.gas.DefaultGasProvider;
 import org.fisco.bcos.web3j.tx.gas.StaticGasProvider;
+import org.fisco.bcos.web3j.tx.txdecode.TransactionDecoder;
 import org.fisco.bcos.web3j.utils.Numeric;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -731,6 +736,66 @@ public abstract class Contract extends ManagedTransaction {
                                 BigInteger.ZERO));
     }
 
+    public void registerEventLogPushFilter(
+            TransactionDecoder decoder,
+            EventLogFilterParams filter,
+            EventLogPushWithDecodeCallback callback) {
+
+        Web3jService service = ((JsonRpc2_0Web3j) web3j).web3jService();
+
+        ChannelEthereumService channelEthereumService = (ChannelEthereumService) service;
+        // set timeout
+        filter.setTimeout(channelEthereumService.getTimeout());
+        callback.setDecoder(decoder);
+
+        channelEthereumService
+                .getChannelService()
+                .asyncSendRegisterEventLogFilterMessage(filter, callback);
+    }
+
+    public void registerEventLogPushFilter(
+            String abi, String bin, String topic0, EventLogPushWithDecodeCallback callback) {
+        registerEventLogPushFilter(
+                abi,
+                bin,
+                topic0,
+                new String(DefaultBlockParameterName.LATEST.getValue()),
+                new String(DefaultBlockParameterName.LATEST.getValue()),
+                new ArrayList<String>(),
+                callback);
+    }
+
+    public void registerEventLogPushFilter(
+            String abi,
+            String bin,
+            String topic0,
+            String fromBlock,
+            String toBlock,
+            List<String> otherTopics,
+            EventLogPushWithDecodeCallback callback) {
+
+        EventLogFilterParams filter = new EventLogFilterParams();
+        filter.setFromBlock(fromBlock);
+        filter.setToBlock(toBlock);
+
+        List<String> addresses = new ArrayList<String>();
+        addresses.add(getContractAddress());
+        filter.setAddresses(addresses);
+
+        List<Object> topics = new ArrayList<Object>();
+        topics.add(topic0);
+        if (otherTopics != null) {
+            for (Object obj : otherTopics) {
+                topics.add(obj);
+            }
+        }
+
+        filter.setTopics(topics);
+
+        TransactionDecoder decoder = new TransactionDecoder(abi, bin);
+        this.registerEventLogPushFilter(decoder, filter, callback);
+    }
+
     public static EventValues staticExtractEventParameters(Event event, Log log) {
 
         List<String> topics = log.getTopics();
@@ -777,6 +842,13 @@ public abstract class Contract extends ManagedTransaction {
         return transactionReceipt
                 .getLogs()
                 .stream()
+                .map(log -> extractEventParametersWithLog(event, log))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+
+    protected List<EventValuesWithLog> extractEventParametersWithLog(Event event, List<Log> logs) {
+        return logs.stream()
                 .map(log -> extractEventParametersWithLog(event, log))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
