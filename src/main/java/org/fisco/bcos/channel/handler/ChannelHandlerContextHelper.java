@@ -35,6 +35,15 @@ public class ChannelHandlerContextHelper {
         }
     }
 
+    public static String getPeerHost(ChannelHandlerContext ctx) {
+
+        SocketChannel socketChannel = (SocketChannel) ctx.channel();
+        String hostAddress = socketChannel.remoteAddress().getAddress().getHostAddress();
+        int port = socketChannel.remoteAddress().getPort();
+
+        return hostAddress + ":" + port;
+    }
+
     public static boolean isChannelAvailable(ChannelHandlerContext ctx) {
 
         // return ctx.channel().isActive();
