@@ -45,7 +45,7 @@ public class ChannelConnections {
     private Callback callback;
     private List<String> connectionsStr;
 
-    private Resource caCertPath;
+    private Resource caCert;
     private Resource sslCert;
     private Resource sslKey;
     private List<ConnectionInfo> connections = new ArrayList<ConnectionInfo>();
@@ -60,11 +60,11 @@ public class ChannelConnections {
     ServerBootstrap serverBootstrap = new ServerBootstrap();
 
     public Resource getCaCert() {
-        return caCertPath;
+        return caCert;
     }
 
-    public void setCaCert(Resource caCertPath) {
-        this.caCertPath = caCertPath;
+    public void setCaCert(Resource caCert) {
+        this.caCert = caCert;
     }
 
     public Resource getSslCert() {
