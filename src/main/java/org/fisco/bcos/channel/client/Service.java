@@ -81,6 +81,10 @@ public class Service {
     public static final String pushChannelPrefix = "#!$PushChannel_";
     public static final String topicNeedVerifyPrefix = "#!$TopicNeedVerify_";
 
+    private final String CA_CERT = "classpath:ca.crt";
+    private final String SSL_CERT = "classpath:node.crt";
+    private final String SSL_KEY = "classpath:node.key";
+
     private Integer connectSeconds = 30;
 
     private Integer connectSleepPerMillis = 1;
@@ -283,10 +287,6 @@ public class Service {
         }
         addTopics(set);
     }
-
-    private final String CA_CERT = "classpath:ca.crt";
-    private final String SSL_CERT = "classpath:node.crt";
-    private final String SSL_KEY = "classpath:node.key";
 
     public void initDefaultCertConfig() {
         PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
