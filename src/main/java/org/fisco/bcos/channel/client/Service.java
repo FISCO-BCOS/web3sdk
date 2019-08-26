@@ -81,9 +81,9 @@ public class Service {
     public static final String pushChannelPrefix = "#!$PushChannel_";
     public static final String topicNeedVerifyPrefix = "#!$TopicNeedVerify_";
 
-    private final String CA_CERT = "classpath:ca.crt";
-    private final String SSL_CERT = "classpath:node.crt";
-    private final String SSL_KEY = "classpath:node.key";
+    private static final String CA_CERT = "classpath:ca.crt";
+    private static final String SSL_CERT = "classpath:node.crt";
+    private static final String SSL_KEY = "classpath:node.key";
 
     private Integer connectSeconds = 30;
 
@@ -289,17 +289,27 @@ public class Service {
     }
 
     public void initDefaultCertConfig() {
-        PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+        PathMatchingResourcePatternResolver resolver = null;
+
         if (allChannelConnections.getCaCert() == null) {
+            if (resolver == null) {
+                resolver = new PathMatchingResourcePatternResolver();
+            }
             allChannelConnections.setCaCert(resolver.getResource(CA_CERT));
         }
 
         // dafault value is node.crt & node.key
         if (allChannelConnections.getSslCert() == null) {
+            if (resolver == null) {
+                resolver = new PathMatchingResourcePatternResolver();
+            }
             allChannelConnections.setSslCert(resolver.getResource(SSL_CERT));
         }
 
         if (allChannelConnections.getSslKey() == null) {
+            if (resolver == null) {
+                resolver = new PathMatchingResourcePatternResolver();
+            }
             allChannelConnections.setSslKey(resolver.getResource(SSL_KEY));
         }
     }
