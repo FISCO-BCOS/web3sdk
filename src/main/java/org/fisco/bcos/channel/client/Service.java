@@ -37,13 +37,15 @@ import org.fisco.bcos.channel.dto.BcosHeartbeat;
 import org.fisco.bcos.channel.dto.BcosMessage;
 import org.fisco.bcos.channel.dto.BcosRequest;
 import org.fisco.bcos.channel.dto.BcosResponse;
-import org.fisco.bcos.channel.dto.ChannelMessage;
 import org.fisco.bcos.channel.dto.ChannelMessage2;
-import org.fisco.bcos.channel.dto.ChannelPush;
 import org.fisco.bcos.channel.dto.ChannelPush2;
 import org.fisco.bcos.channel.dto.ChannelRequest;
 import org.fisco.bcos.channel.dto.ChannelResponse;
 import org.fisco.bcos.channel.dto.TopicVerifyMessage;
+import org.fisco.bcos.channel.event.filter.EventLogFilterParams;
+import org.fisco.bcos.channel.event.filter.EventLogFilterPushResponse;
+import org.fisco.bcos.channel.event.filter.EventLogFilterPushStatus;
+import org.fisco.bcos.channel.event.filter.EventLogPushCallback;
 import org.fisco.bcos.channel.handler.AMOPVerifyKeyInfo;
 import org.fisco.bcos.channel.handler.AMOPVerifyTopicToKeyInfo;
 import org.fisco.bcos.channel.handler.ChannelConnections;
@@ -52,6 +54,8 @@ import org.fisco.bcos.channel.handler.ConnectionCallback;
 import org.fisco.bcos.channel.handler.ConnectionInfo;
 import org.fisco.bcos.channel.handler.GroupChannelConnectionsConfig;
 import org.fisco.bcos.channel.handler.Message;
+import org.fisco.bcos.channel.protocol.ChannelMessageError;
+import org.fisco.bcos.channel.protocol.ChannelMessageType;
 import org.fisco.bcos.channel.protocol.NodeRequestSdkVerifyTopic;
 import org.fisco.bcos.channel.protocol.SdkRequestNodeUpdateTopicStatus;
 import org.fisco.bcos.channel.protocol.TopicVerifyReqProtocol;
@@ -59,8 +63,11 @@ import org.fisco.bcos.channel.protocol.TopicVerifyRespProtocol;
 import org.fisco.bcos.channel.protocol.parser.BlockNotificationParser;
 import org.fisco.bcos.channel.protocol.parser.HeartBeatParser;
 import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
+import org.fisco.bcos.web3j.protocol.core.methods.response.Log;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.protocol.exceptions.TransactionException;
+import org.fisco.bcos.web3j.tx.txdecode.LogResult;
+import org.fisco.bcos.web3j.utils.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -87,7 +94,9 @@ public class Service {
     private ConcurrentHashMap<String, BigInteger> nodeToBlockNumberMap = new ConcurrentHashMap<>();
     /** add transaction seq callback */
     private Map<String, Object> seq2TransactionCallback = new ConcurrentHashMap<String, Object>();
-
+    // add filterID to callback map
+    private transient Map<String, Object> filterIDToEventLogPushCallBack =
+            new ConcurrentHashMap<String, Object>();
     private Timer timeoutHandler = new HashedWheelTimer();
     private ThreadPoolTaskExecutor threadPool;
     private BlockNotifyCallBack blockNotifyCallBack = new DefaultBlockNotifyCallBack();
@@ -468,6 +477,7 @@ public class Service {
             }
         };
 
+        request.setType((short) ChannelMessageType.AMOP_REQUEST.getType());
         Callback callback = new Callback();
 
         asyncSendChannelMessage2(request, callback);
@@ -563,7 +573,6 @@ public class Service {
     public void asyncSendChannelMessage2(
             ChannelRequest request, ChannelResponseCallback2 callback) {
         try {
-
             if (request.getContentByteArray().length >= 32 * 1024 * 1024) {
                 logger.error(
                         "send byte length should not greater than 32M now length:{}",
@@ -578,7 +587,12 @@ public class Service {
 
             channelMessage.setSeq(request.getMessageID());
             channelMessage.setResult(0);
-            channelMessage.setType((short) 0x30); // 链上链下请求0x30
+            // channelMessage.setType((short) ChannelMessageType.AMOP_REQUEST.getType());
+            if (request.getType() == 0) {
+                channelMessage.setType((short) ChannelMessageType.AMOP_REQUEST.getType());
+            } else {
+                channelMessage.setType(request.getType());
+            }
             channelMessage.setData(request.getContentByteArray());
             channelMessage.setTopic(request.getToTopic());
 
@@ -591,7 +605,7 @@ public class Service {
             try {
                 List<ConnectionInfo> fromConnectionInfos = new ArrayList<ConnectionInfo>();
 
-                // 设置发送节点
+                // select send node
                 ChannelConnections fromChannelConnections =
                         allChannelConnections
                                 .getAllChannelConnections()
@@ -600,8 +614,6 @@ public class Service {
                                 .findFirst()
                                 .get();
                 if (fromChannelConnections == null) {
-                    // 没有找到对应的链
-                    // 返回错误
                     if (orgID != null) {
                         logger.error("not found:{}", orgID);
                         throw new Exception("not found orgID");
@@ -619,7 +631,7 @@ public class Service {
                 callback.setFromChannelConnections(fromChannelConnections);
                 callback.setFromConnectionInfos(fromConnectionInfos);
 
-                // 设置消息内容
+                // set request content
                 callback.setRequest(channelMessage);
 
                 logger.info("put msgid:{} into callback map", request.getMessageID());
@@ -635,7 +647,7 @@ public class Service {
 
                                         @Override
                                         public void run(Timeout timeout) throws Exception {
-                                            // 处理超时逻辑
+                                            // process timeout logic
                                             _callback.onTimeout();
                                         }
                                     },
@@ -648,7 +660,7 @@ public class Service {
                 logger.error("send message fail:", e);
 
                 ChannelResponse response = new ChannelResponse();
-                response.setErrorCode(100);
+                response.setErrorCode(ChannelMessageError.MESSAGE_SEND_EXCEPTION.getError());
                 response.setMessageID(request.getMessageID());
                 response.setErrorMessage(e.getMessage());
                 response.setContent("");
@@ -669,11 +681,11 @@ public class Service {
 
             channelMessage.setSeq(request.getMessageID());
             channelMessage.setResult(0);
-            channelMessage.setType((short) 0x35); // 链上链下多播请求0x35
+            channelMessage.setType((short) ChannelMessageType.AMOP_MULBROADCAST.getType());
             channelMessage.setData(request.getContentByteArray());
             channelMessage.setTopic(request.getToTopic());
             try {
-                // 设置发送节点
+                // set request content
                 ChannelConnections fromChannelConnections =
                         allChannelConnections
                                 .getAllChannelConnections()
@@ -682,8 +694,6 @@ public class Service {
                                 .findFirst()
                                 .get();
                 if (fromChannelConnections == null) {
-                    // 没有找到对应的链
-                    // 返回错误
                     if (orgID != null) {
                         logger.error("not found:{}", orgID);
                         throw new Exception("not found orgID");
@@ -703,7 +713,7 @@ public class Service {
                             fromChannelConnections.getNetworkConnectionByHost(
                                     connectionInfo.getHost(), connectionInfo.getPort());
 
-                    if (ctx != null && ctx.channel().isActive()) {
+                    if (ctx != null && ChannelHandlerContextHelper.isChannelAvailable(ctx)) {
                         ByteBuf out = ctx.alloc().buffer();
                         channelMessage.writeHeader(out);
                         channelMessage.writeExtra(out);
@@ -725,7 +735,7 @@ public class Service {
                 logger.error("send message fail:{}", e);
 
                 ChannelResponse response = new ChannelResponse();
-                response.setErrorCode(100);
+                response.setErrorCode(ChannelMessageError.MESSAGE_SEND_EXCEPTION.getError());
                 response.setMessageID(request.getMessageID());
                 response.setErrorMessage(e.getMessage());
                 response.setContent("");
@@ -737,36 +747,6 @@ public class Service {
         }
     }
 
-    public void sendResponseMessage(
-            ChannelResponse response,
-            ConnectionInfo info,
-            ChannelHandlerContext ctx,
-            String fromNode,
-            String toNode,
-            String seq) {
-        try {
-            ChannelMessage responseMessage = new ChannelMessage();
-
-            responseMessage.setData(response.getContent().getBytes());
-            responseMessage.setResult(response.getErrorCode());
-            responseMessage.setSeq(seq);
-            responseMessage.setType((short) 0x21); // 链上链下回包0x21
-            responseMessage.setToNode(fromNode);
-            responseMessage.setFromNode(toNode);
-
-            ByteBuf out = ctx.alloc().buffer();
-            responseMessage.writeHeader(out);
-            responseMessage.writeExtra(out);
-
-            ctx.writeAndFlush(out);
-
-            logger.debug("response seq:{} length:{}", response.getMessageID(), out.readableBytes());
-        } catch (Exception e) {
-            logger.error("system error:{}", e);
-        }
-    }
-
-    // 链上链下二期回包
     public void sendResponseMessage2(
             ChannelResponse response, ChannelHandlerContext ctx, String seq, String topic) {
         try {
@@ -775,7 +755,7 @@ public class Service {
             responseMessage.setData(response.getContentByteArray());
             responseMessage.setResult(response.getErrorCode());
             responseMessage.setSeq(seq);
-            responseMessage.setType((short) 0x31); // 链上链下二期回包0x31
+            responseMessage.setType((short) ChannelMessageType.AMOP_RESPONSE.getType());
             responseMessage.setTopic(topic);
 
             ByteBuf out = ctx.alloc().buffer();
@@ -812,61 +792,170 @@ public class Service {
         }
     }
 
-    public void onReceiveChannelMessage(ChannelHandlerContext ctx, ChannelMessage message) {
-        logger.debug("onReceiveChannelMessage seq:{}", message.getSeq());
-        ChannelResponseCallback callback =
-                (ChannelResponseCallback) seq2Callback.get(message.getSeq());
-        if (message.getType() == 0x20) { // 链上链下请求
-            logger.debug("channel Message PUSH");
-            if (callback != null) {
-                // 清空callback再处理
-                logger.debug("seq already existed，clean:{}", message.getSeq());
-                seq2Callback.remove(message.getSeq());
-            }
+    public void asyncSendRegisterEventLogFilterMessage(
+            EventLogFilterParams filter, EventLogPushCallback callback) {
 
-            try {
-                ChannelPush push = new ChannelPush();
+        filter.setFilterID(newSeq());
+        filter.setGroupID(String.valueOf(getGroupId()));
 
-                if (pushCallback != null) {
-                    push.setService(this);
-                    push.setCtx(ctx);
-                    push.setMessageID(message.getSeq());
-                    push.setFromNode(message.getFromNode());
-                    push.setToNode(message.getToNode());
-                    push.setSeq(message.getSeq());
-                    push.setMessageID(message.getSeq());
+        // Call the callback function directly return an error
+        if (!filter.validParams()) {
+            callback.onPushEventLog(EventLogFilterPushStatus.INVALID_PARAMS.getStatus(), null);
+            return;
+        }
 
-                    push.setContent(new String(message.getData(), 0, message.getData().length));
+        ChannelRequest request = new ChannelRequest();
+        request.setMessageID(newSeq());
+        request.setTimeout(filter.getTimeout());
+        request.setToTopic("");
+        request.setType((short) ChannelMessageType.CLIENT_REGISTER_EVENT_LOG.getType());
+        callback.setParams(filter);
 
-                    pushCallback.onPush(push);
-                } else {
-                    logger.error("can not push，unset push callback");
-                }
-            } catch (Exception e) {
-                logger.error("pushCallback error:", e);
-            }
-        } else if (message.getType() == 0x21) { // 链上链下回包
-            logger.debug("channel response:{}", message.getSeq());
-            if (callback != null) {
-                logger.debug("found callback response");
+        String filterID = filter.getFilterID();
 
-                ChannelResponse response = new ChannelResponse();
-                if (message.getResult() != 0) {
-                    response.setErrorCode(message.getResult());
-                    response.setErrorMessage("response error");
-                }
+        try {
+            String content = ObjectMapperFactory.getObjectMapper().writeValueAsString(filter);
+            request.setContent(content);
+        } catch (JsonProcessingException e) {
+            logger.error(" ObjectMapper JsonProcessingException, message: {} ", e.getMessage());
+            callback.onPushEventLog(EventLogFilterPushStatus.OTHER_ERROR.getStatus(), null);
+            return;
+        }
 
-                response.setErrorCode(message.getResult());
-                response.setMessageID(message.getSeq());
-                if (message.getData() != null) {
-                    response.setContent(new String(message.getData()));
-                }
+        final String innerFilterID = filterID;
+        final EventLogPushCallback innerCallback = callback;
+        filterIDToEventLogPushCallBack.put(filterID, callback);
 
-                callback.onResponse(response);
-            } else {
-                logger.error("can not found response callback，timeout:{}", message.getData());
+        asyncSendChannelMessage2(
+                request,
+                new ChannelResponseCallback2() {
+                    @Override
+                    public void onResponseMessage(ChannelResponse response) {
+                        if (response.getErrorCode() == 0) {
+                            logger.info(
+                                    " register event filter response, content: {}",
+                                    response.getContent());
+                            try {
+                                EventLogFilterPushResponse resp =
+                                        ObjectMapperFactory.getObjectMapper()
+                                                .readValue(
+                                                        response.getContent(),
+                                                        EventLogFilterPushResponse.class);
+                                if (resp.getResult() != 0) {
+                                    logger.warn(
+                                            " register event filter response invalid status, remove callback.");
+                                    filterIDToEventLogPushCallBack.remove(innerFilterID);
+                                    innerCallback.onPushEventLog(
+                                            EventLogFilterPushStatus.INVALID_RESPONSE.getStatus(),
+                                            null);
+                                }
+                            } catch (Exception e) {
+                                logger.warn(
+                                        " register event filter response invalid format, message: {}",
+                                        e.getMessage());
+                                filterIDToEventLogPushCallBack.remove(innerFilterID);
+                                innerCallback.onPushEventLog(
+                                        EventLogFilterPushStatus.OTHER_ERROR.getStatus(), null);
+                            }
+                        } else {
+                            logger.warn(
+                                    " event push request send failed, seq: {}, code: {}",
+                                    response.getMessageID(),
+                                    response.getErrorCode());
+
+                            filterIDToEventLogPushCallBack.remove(innerFilterID);
+                            innerCallback.onPushEventLog(
+                                    EventLogFilterPushStatus.REQUEST_TIMEOUT.getStatus(), null);
+                        }
+
+                        logger.info("get response messageid:{}", response.getMessageID());
+                    }
+                });
+    }
+
+    public void onReceiveRegisterEventResponse(ChannelHandlerContext ctx, ChannelMessage2 message) {
+
+        ChannelResponseCallback2 callback =
+                (ChannelResponseCallback2) seq2Callback.get(message.getSeq());
+        String seq = message.getSeq();
+        String content = new String(message.getData());
+        if (callback == null) {
+            logger.warn(
+                    " register event filter response callback null, maybe timeout, seq: {}, content: {}",
+                    seq,
+                    content);
+            return;
+        }
+
+        seq2Callback.remove(seq);
+
+        ChannelResponse response = new ChannelResponse();
+
+        response.setErrorCode(message.getResult());
+        response.setMessageID(message.getSeq());
+        if (message.getData() != null) {
+            response.setContent(message.getData());
+        }
+
+        callback.onResponse(response);
+    }
+
+    public void onReceiveEventLogPush(ChannelHandlerContext ctx, BcosMessage message) {
+
+        String content = new String(message.getData());
+        try {
+            EventLogFilterPushResponse resp =
+                    ObjectMapperFactory.getObjectMapper()
+                            .readValue(content, EventLogFilterPushResponse.class);
+            if (resp == null || Strings.isEmpty(resp.getFilterID())) {
+                logger.error(" event log response invalid format, content: {}", content);
                 return;
             }
+
+            EventLogPushCallback callback =
+                    (EventLogPushCallback) filterIDToEventLogPushCallBack.get(resp.getFilterID());
+
+            if (callback == null) {
+                logger.warn(
+                        " event log push callback null, maybe timeout, filterID: {}, content: {}",
+                        resp.getFilterID(),
+                        content);
+                return;
+            }
+
+            if (resp.getResult() == EventLogFilterPushStatus.SUCCESS.getStatus()) {
+                // log push
+                logger.trace(
+                        " event log pushing, filterID: {}, resp object: {}, content: {}",
+                        resp.getFilterID(),
+                        resp,
+                        content);
+                if (!resp.getLogs().isEmpty()) {
+                    List<LogResult> logResults = new ArrayList<LogResult>();
+                    for (Log log : resp.getLogs()) {
+                        LogResult logResult = callback.transferLogToLogResult(log);
+                        if (logResult != null) {
+                            logResults.add(logResult);
+                        }
+                    }
+
+                    callback.onPushEventLog(0, logResults);
+                }
+            } else if (resp.getResult() == EventLogFilterPushStatus.PUSH_COMPLETED.getStatus()) {
+                // event log push end
+                logger.trace(
+                        " event log push completed, filterID: {}, resp object: {}, content: {}",
+                        resp.getFilterID(),
+                        resp,
+                        content);
+                filterIDToEventLogPushCallBack.remove(resp.getFilterID());
+            } else { // error ??
+                callback.onPushEventLog(resp.getResult(), null);
+                // should remove callback function
+                // filterIDToEventLogPushCallBack.remove(resp.getFilterID());
+            }
+        } catch (Exception e) {
+            logger.error(" event log push exception, message: {}", e.getMessage());
         }
     }
 
@@ -901,7 +990,8 @@ public class Service {
         ChannelResponseCallback2 callback =
                 (ChannelResponseCallback2) seq2Callback.get(message.getSeq());
 
-        if (message.getType() == 0x30 || message.getType() == 0x35) {
+        if (message.getType() == ChannelMessageType.AMOP_REQUEST.getType()
+                || message.getType() == ChannelMessageType.AMOP_MULBROADCAST.getType()) {
             logger.debug("channel PUSH");
             if (callback != null) {
                 logger.debug("seq already existed，clear:{}", message.getSeq());
@@ -939,7 +1029,7 @@ public class Service {
                 }
             }
 
-        } else if (message.getType() == 0x31) {
+        } else if (message.getType() == ChannelMessageType.AMOP_RESPONSE.getType()) {
             logger.info("channel message:{}", message.getSeq());
             if (callback != null) {
                 logger.debug("found callback response");
@@ -994,6 +1084,7 @@ public class Service {
         request.setToTopic(topicForCert);
         request.setMessageID(newSeq());
         request.setTimeout(5000);
+        request.setType((short) ChannelMessageType.AMOP_REQUEST.getType());
 
         String randValue = UUID.randomUUID().toString().replaceAll("-", "");
         TopicVerifyReqProtocol topicVerifyProtocol = new TopicVerifyReqProtocol();
@@ -1182,7 +1273,7 @@ public class Service {
         Message message = new BcosMessage();
         message.setSeq(UUID.randomUUID().toString().replaceAll("-", ""));
         message.setResult(0);
-        message.setType((short) 0x13);
+        message.setType((short) ChannelMessageType.CLIENT_HEARTBEAT.getType());
 
         HeartBeatParser heartBeatParser =
                 new HeartBeatParser(ChannelHandlerContextHelper.getProtocolVersion(ctx));
@@ -1225,7 +1316,7 @@ public class Service {
 
             response.setSeq(msg.getSeq());
             response.setResult(0);
-            response.setType((short) 0x13);
+            response.setType((short) ChannelMessageType.CLIENT_HEARTBEAT.getType());
 
             try {
                 response.setData(heartBeatParser.encode("1"));
