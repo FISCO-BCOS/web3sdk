@@ -294,7 +294,7 @@ public class Service {
             allChannelConnections.setCaCert(resolver.getResource(CA_CERT));
         }
 
-        // dafault value is node.crt & node.key
+        // dafault value is node.crt & node.key 
         if (allChannelConnections.getSslCert() == null) {
             allChannelConnections.setSslCert(resolver.getResource(SSL_CERT));
         }
