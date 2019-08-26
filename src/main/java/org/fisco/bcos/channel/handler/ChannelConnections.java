@@ -46,9 +46,10 @@ public class ChannelConnections {
 
     private Callback callback;
     private List<String> connectionsStr;
-    private String caCertPath = "classpath:ca.crt";
-    private String sslCert = "classpath:node.crt";
-    private String sslKey = "classpath:node.key";
+
+    private Resource caCertPath;
+    private Resource sslCert;
+    private Resource sslKey;
     private List<ConnectionInfo> connections = new ArrayList<ConnectionInfo>();
     private Boolean running = false;
     private ThreadPoolTaskExecutor threadPool;
@@ -59,6 +60,30 @@ public class ChannelConnections {
     private int groupId;
     private Bootstrap bootstrap = new Bootstrap();
     ServerBootstrap serverBootstrap = new ServerBootstrap();
+    
+    public Resource getCaCert() {
+		return caCertPath;
+	}
+
+	public void setCaCert(Resource caCertPath) {
+		this.caCertPath = caCertPath;
+	}
+
+	public Resource getSslCert() {
+		return sslCert;
+	}
+
+	public void setSslCert(Resource sslCert) {
+		this.sslCert = sslCert;
+	}
+
+	public Resource getSslKey() {
+		return sslKey;
+	}
+
+	public void setSslKey(Resource sslKey) {
+		this.sslKey = sslKey;
+	}
 
     public int getGroupId() {
         return groupId;
@@ -66,22 +91,6 @@ public class ChannelConnections {
 
     public void setGroupId(int groupId) {
         this.groupId = groupId;
-    }
-
-    public String getSslCert() {
-        return sslCert;
-    }
-
-    public void setSslCert(String sslCert) {
-        this.sslCert = sslCert;
-    }
-
-    public String getSslKey() {
-        return sslKey;
-    }
-
-    public void setSslKey(String sslKey) {
-        this.sslKey = sslKey;
     }
 
     public interface Callback {
@@ -140,14 +149,6 @@ public class ChannelConnections {
 
     public void setHeartBeatDelay(long heartBeatDelay) {
         this.heartBeatDelay = heartBeatDelay;
-    }
-
-    public String getCaCertPath() {
-        return caCertPath;
-    }
-
-    public void setCaCertPath(String caCertPath) {
-        this.caCertPath = caCertPath;
     }
 
     public ChannelHandlerContext randomNetworkConnection(
@@ -398,11 +399,10 @@ public class ChannelConnections {
     private SslContext initSslContextForConnect() throws SSLException {
         SslContext sslCtx;
         try {
-            ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-            Resource caResource = resolver.getResource(getCaCertPath());
+            Resource caResource = getCaCert();
             InputStream caInputStream = caResource.getInputStream();
-            Resource keystorecaResource = resolver.getResource(getSslCert());
-            Resource keystorekeyResource = resolver.getResource(getSslKey());
+            Resource keystorecaResource = getSslCert();
+            Resource keystorekeyResource = getSslKey();
             sslCtx =
                     SslContextBuilder.forClient()
                             .trustManager(caInputStream)
@@ -422,11 +422,10 @@ public class ChannelConnections {
     private SslContext initSslContextForListening() throws SSLException {
         SslContext sslCtx;
         try {
-            ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-            Resource caResource = resolver.getResource(getCaCertPath());
+            Resource caResource = getCaCert();
             InputStream caInputStream = caResource.getInputStream();
-            Resource keystorecaResource = resolver.getResource(getSslCert());
-            Resource keystorekeyResource = resolver.getResource(getSslKey());
+            Resource keystorecaResource = getSslCert();
+            Resource keystorekeyResource = getSslKey();
             sslCtx =
                     SslContextBuilder.forServer(
                                     keystorecaResource.getInputStream(),

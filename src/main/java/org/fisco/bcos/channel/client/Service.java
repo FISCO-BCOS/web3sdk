@@ -8,6 +8,9 @@ import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import io.netty.util.Timer;
 import io.netty.util.TimerTask;
+
+import static org.junit.Assume.assumeNotNull;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -71,6 +74,7 @@ import org.fisco.bcos.web3j.utils.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 public class Service {
@@ -287,6 +291,22 @@ public class Service {
         logger.debug("init ChannelService");
         parseFromTopic2KeyInfo();
         int flag = 0;
+        
+        PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+        if(allChannelConnections.getCaCert() == null) {
+        	allChannelConnections.setCaCert(resolver.getResource("classpath:ca.crt"));
+        }
+
+        //dafault value is node.crt & node.key
+        if(allChannelConnections.getSslCert() == null) {
+        	allChannelConnections.setSslCert(resolver.getResource("classpath:node.crt"));
+        }
+        
+        if(allChannelConnections.getSslKey() == null) {
+        	allChannelConnections.setSslKey(resolver.getResource("classpath:node.key"));
+        }
+        
+        
         for (ChannelConnections channelConnections :
                 allChannelConnections.getAllChannelConnections()) {
 
@@ -298,11 +318,9 @@ public class Service {
 
                     channelConnections.setCallback(connectionCallback);
                     
-                    /*
-                    channelConnections.setCaCertPath(allChannelConnections.getCaCert());
+                    channelConnections.setCaCert(allChannelConnections.getCaCert());
                     channelConnections.setSslCert(allChannelConnections.getSslCert());
                     channelConnections.setSslKey(allChannelConnections.getSslKey());
-                    */
                     
                     channelConnections.init();
                     channelConnections.setThreadPool(threadPool);

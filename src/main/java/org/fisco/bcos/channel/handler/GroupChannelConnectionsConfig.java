@@ -45,30 +45,4 @@ public class GroupChannelConnectionsConfig {
 	public void setSslKey(Resource sslKey) {
 		this.sslKey = sslKey;
 	}
-
-    /*
-    public void setSslKey(String sslKey) {
-        this.sslKey = sslKey;
-    }
-
-    public void setSslCert(String sslCert) {
-        this.sslCert = sslCert;
-    }
-
-    public void setCaCert(String caCert) {
-        this.caCert = caCert;
-    }
-
-    public String getCaCert() {
-        return caCert;
-    }
-
-    public String getSslCert() {
-        return sslCert;
-    }
-
-    public String getSslKey() {
-        return sslKey;
-    }
-    */
 }
