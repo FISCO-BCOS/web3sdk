@@ -286,26 +286,33 @@ public class Service {
         }
         addTopics(set);
     }
+    
+    private final String CA_CERT = "classpath:ca.crt";
+    private final String SSL_CERT = "classpath:node.crt";
+    private final String SSL_KEY = "classpath:node.key";
+    
+    public void initDefaultCertConfig() {
+    	PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+        if(allChannelConnections.getCaCert() == null) {
+        	allChannelConnections.setCaCert(resolver.getResource(CA_CERT));
+        }
+
+        //dafault value is node.crt & node.key
+        if(allChannelConnections.getSslCert() == null) {
+        	allChannelConnections.setSslCert(resolver.getResource(SSL_CERT));
+        }
+        
+        if(allChannelConnections.getSslKey() == null) {
+        	allChannelConnections.setSslKey(resolver.getResource(SSL_KEY));
+        }
+    }
 
     public void run() throws Exception {
         logger.debug("init ChannelService");
         parseFromTopic2KeyInfo();
         int flag = 0;
         
-        PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-        if(allChannelConnections.getCaCert() == null) {
-        	allChannelConnections.setCaCert(resolver.getResource("classpath:ca.crt"));
-        }
-
-        //dafault value is node.crt & node.key
-        if(allChannelConnections.getSslCert() == null) {
-        	allChannelConnections.setSslCert(resolver.getResource("classpath:node.crt"));
-        }
-        
-        if(allChannelConnections.getSslKey() == null) {
-        	allChannelConnections.setSslKey(resolver.getResource("classpath:node.key"));
-        }
-        
+        initDefaultCertConfig();
         
         for (ChannelConnections channelConnections :
                 allChannelConnections.getAllChannelConnections()) {
