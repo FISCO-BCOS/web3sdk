@@ -289,27 +289,22 @@ public class Service {
     }
 
     public void initDefaultCertConfig() {
-        PathMatchingResourcePatternResolver resolver = null;
-
         if (allChannelConnections.getCaCert() == null) {
-            if (resolver == null) {
-                resolver = new PathMatchingResourcePatternResolver();
-            }
+            PathMatchingResourcePatternResolver resolver =
+                    new PathMatchingResourcePatternResolver();
             allChannelConnections.setCaCert(resolver.getResource(CA_CERT));
         }
 
         // dafault value is node.crt & node.key
         if (allChannelConnections.getSslCert() == null) {
-            if (resolver == null) {
-                resolver = new PathMatchingResourcePatternResolver();
-            }
+            PathMatchingResourcePatternResolver resolver =
+                    new PathMatchingResourcePatternResolver();
             allChannelConnections.setSslCert(resolver.getResource(SSL_CERT));
         }
 
         if (allChannelConnections.getSslKey() == null) {
-            if (resolver == null) {
-                resolver = new PathMatchingResourcePatternResolver();
-            }
+            PathMatchingResourcePatternResolver resolver =
+                    new PathMatchingResourcePatternResolver();
             allChannelConnections.setSslKey(resolver.getResource(SSL_KEY));
         }
     }

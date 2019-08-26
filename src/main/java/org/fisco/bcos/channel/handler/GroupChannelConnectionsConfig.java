@@ -6,9 +6,9 @@ import org.springframework.core.io.Resource;
 public class GroupChannelConnectionsConfig {
     private List<ChannelConnections> allChannelConnections;
 
-    private Resource caCert = null;
-    private Resource sslCert = null;
-    private Resource sslKey = null;
+    private Resource caCert;
+    private Resource sslCert;
+    private Resource sslKey;
 
     public List<ChannelConnections> getAllChannelConnections() {
         return allChannelConnections;
