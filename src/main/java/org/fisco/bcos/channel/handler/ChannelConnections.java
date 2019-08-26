@@ -47,8 +47,8 @@ public class ChannelConnections {
     private Callback callback;
     private List<String> connectionsStr;
     private String caCertPath = "classpath:ca.crt";
-    private String nodeCaPath = "classpath:node.crt";
-    private String nodeKeyPath = "classpath:node.key";
+    private String sslCert = "classpath:node.crt";
+    private String sslKey = "classpath:node.key";
     private List<ConnectionInfo> connections = new ArrayList<ConnectionInfo>();
     private Boolean running = false;
     private ThreadPoolTaskExecutor threadPool;
@@ -68,20 +68,20 @@ public class ChannelConnections {
         this.groupId = groupId;
     }
 
-    public String getNodeCaPath() {
-        return nodeCaPath;
+    public String getSslCert() {
+        return sslCert;
     }
 
-    public void setNodeCaPath(String nodeCaPath) {
-        this.nodeCaPath = nodeCaPath;
+    public void setSslCert(String sslCert) {
+        this.sslCert = sslCert;
     }
 
-    public String getNodeKeyPath() {
-        return nodeKeyPath;
+    public String getSslKey() {
+        return sslKey;
     }
 
-    public void setNodeKeyPath(String nodeKeyPath) {
-        this.nodeKeyPath = nodeKeyPath;
+    public void setSslKey(String sslKey) {
+        this.sslKey = sslKey;
     }
 
     public interface Callback {
@@ -401,8 +401,8 @@ public class ChannelConnections {
             ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
             Resource caResource = resolver.getResource(getCaCertPath());
             InputStream caInputStream = caResource.getInputStream();
-            Resource keystorecaResource = resolver.getResource(getNodeCaPath());
-            Resource keystorekeyResource = resolver.getResource(getNodeKeyPath());
+            Resource keystorecaResource = resolver.getResource(getSslCert());
+            Resource keystorekeyResource = resolver.getResource(getSslKey());
             sslCtx =
                     SslContextBuilder.forClient()
                             .trustManager(caInputStream)
@@ -425,8 +425,8 @@ public class ChannelConnections {
             ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
             Resource caResource = resolver.getResource(getCaCertPath());
             InputStream caInputStream = caResource.getInputStream();
-            Resource keystorecaResource = resolver.getResource(getNodeCaPath());
-            Resource keystorekeyResource = resolver.getResource(getNodeKeyPath());
+            Resource keystorecaResource = resolver.getResource(getSslCert());
+            Resource keystorekeyResource = resolver.getResource(getSslKey());
             sslCtx =
                     SslContextBuilder.forServer(
                                     keystorecaResource.getInputStream(),
