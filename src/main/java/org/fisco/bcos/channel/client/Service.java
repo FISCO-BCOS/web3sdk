@@ -297,9 +297,13 @@ public class Service {
                     connectionCallback.setChannelService(this);
 
                     channelConnections.setCallback(connectionCallback);
+                    
+                    /*
                     channelConnections.setCaCertPath(allChannelConnections.getCaCert());
                     channelConnections.setSslCert(allChannelConnections.getSslCert());
                     channelConnections.setSslKey(allChannelConnections.getSslKey());
+                    */
+                    
                     channelConnections.init();
                     channelConnections.setThreadPool(threadPool);
                     channelConnections.startConnect();
