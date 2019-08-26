@@ -37,8 +37,6 @@ import org.fisco.bcos.channel.protocol.EnumSocketChannelAttributeKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 public class ChannelConnections {
@@ -60,30 +58,30 @@ public class ChannelConnections {
     private int groupId;
     private Bootstrap bootstrap = new Bootstrap();
     ServerBootstrap serverBootstrap = new ServerBootstrap();
-    
+
     public Resource getCaCert() {
-		return caCertPath;
-	}
+        return caCertPath;
+    }
 
-	public void setCaCert(Resource caCertPath) {
-		this.caCertPath = caCertPath;
-	}
+    public void setCaCert(Resource caCertPath) {
+        this.caCertPath = caCertPath;
+    }
 
-	public Resource getSslCert() {
-		return sslCert;
-	}
+    public Resource getSslCert() {
+        return sslCert;
+    }
 
-	public void setSslCert(Resource sslCert) {
-		this.sslCert = sslCert;
-	}
+    public void setSslCert(Resource sslCert) {
+        this.sslCert = sslCert;
+    }
 
-	public Resource getSslKey() {
-		return sslKey;
-	}
+    public Resource getSslKey() {
+        return sslKey;
+    }
 
-	public void setSslKey(Resource sslKey) {
-		this.sslKey = sslKey;
-	}
+    public void setSslKey(Resource sslKey) {
+        this.sslKey = sslKey;
+    }
 
     public int getGroupId() {
         return groupId;
