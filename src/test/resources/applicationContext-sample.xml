@@ -69,8 +69,7 @@
 	-->  
 	
   <!--
-	<bean class="org.fisco.bcos.channel.handler.
-	" id="AMOPVerifyKeyInfo_helloworld00000001">
+	<bean class="org.fisco.bcos.channel.handler.AMOPVerifyKeyInfo" id="AMOPVerifyKeyInfo_helloworld00000001">
 		<property name="publicKey">
 			<list>
 				<value>classpath:$consumer_public_key_1.pem$</value>
