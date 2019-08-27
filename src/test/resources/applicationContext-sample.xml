@@ -88,4 +88,5 @@
 		<property name="privateKey" value="classpath:$consumer_private_key.pem$"></property>
 	</bean>
 	--> 
-	</beans>
+</beans>
+
