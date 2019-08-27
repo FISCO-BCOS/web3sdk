@@ -2,16 +2,8 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:p="http://www.springframework.org/schema/p"
-	xmlns:tx="http://www.springframework.org/schema/tx"
-	xmlns:aop="http://www.springframework.org/schema/aop"
-	xmlns:context="http://www.springframework.org/schema/context"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
-    http://www.springframework.org/schema/beans/spring-beans-2.5.xsd  
-         http://www.springframework.org/schema/tx   
-    http://www.springframework.org/schema/tx/spring-tx-2.5.xsd  
-         http://www.springframework.org/schema/aop   
-    http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
+    http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
 
 	<bean id="encryptType"
@@ -21,6 +13,9 @@
 
 	<bean id="groupChannelConnectionsConfig"
 		class="org.fisco.bcos.channel.handler.GroupChannelConnectionsConfig">
+		<property name="caCert" value="ca.crt" />
+		<property name="sslCert" value="sdk.crt" />
+		<property name="sslKey" value="sdk.key" />
 		<property name="allChannelConnections">
 			<list>
 				<bean id="group1"
@@ -46,15 +41,18 @@
 			</list>
 		</property>
 	</bean>
-	 <bean id="channelService" class="org.fisco.bcos.channel.client.Service" depends-on="groupChannelConnectionsConfig"> 
-    <property name="groupId" value="1"/>  
-    <property name="agencyName" value="fisco"/>  
-    <property name="allChannelConnections" ref="groupChannelConnectionsConfig"/>  
-    <!-- If you want to enable topic authentication, please uncomment the following configuration. -->  
+
+	<bean id="channelService"
+		class="org.fisco.bcos.channel.client.Service"
+		depends-on="groupChannelConnectionsConfig">
+		<property name="groupId" value="1" />
+		<property name="agencyName" value="fisco" />
+		<property name="allChannelConnections"
+			ref="groupChannelConnectionsConfig"></property>
+		<!-- If you want to enable topic authentication, please uncomment the following configuration. -->  
     <!-- <property name="topic2KeyInfo" ref="amopVerifyTopicToKeyInfo"></property>--> 
-  </bean>  
-  
-  <!-- If you want to enable topic authentication, please uncomment the following configuration. -->  
+	</bean>
+	  <!-- If you want to enable topic authentication, please uncomment the following configuration. -->  
   <!--
     <bean class="org.fisco.bcos.channel.handler.AMOPVerifyTopicToKeyInfo" id="amopVerifyTopicToKeyInfo">
 		<property name="topicToKeyInfo">
@@ -90,4 +88,4 @@
 		<property name="privateKey" value="classpath:$consumer_private_key.pem$"></property>
 	</bean>
 	--> 
-</beans>
+	</beans>
