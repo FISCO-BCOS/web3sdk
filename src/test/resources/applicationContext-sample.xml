@@ -81,7 +81,7 @@
 	
   <!-- If you are a topic consumer, you need to configure the privateKey property.
 		This private key will authenticate you to the corresponding topic producer.
-	-->  
+	--> 
   <!--
 	<bean class="org.fisco.bcos.channel.handler.AMOPVerifyKeyInfo" id="AMOPVerifyKeyInfo_helloworld00000001">
 		<property name="privateKey" value="classpath:$consumer_private_key.pem$"></property>
