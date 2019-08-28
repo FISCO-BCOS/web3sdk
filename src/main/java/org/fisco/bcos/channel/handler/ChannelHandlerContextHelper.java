@@ -47,7 +47,6 @@ public class ChannelHandlerContextHelper {
     public static boolean isChannelAvailable(ChannelHandlerContext ctx) {
 
         // return ctx.channel().isActive();
-
         return (null != ctx) && ctx.channel().isActive() && (null != getProtocolVersion(ctx));
     }
 }
