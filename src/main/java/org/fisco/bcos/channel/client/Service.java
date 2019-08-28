@@ -707,6 +707,12 @@ public class Service {
         }
     }
 
+    public void asyncMulticastChannelMessageForVerifyTopic(ChannelRequest request) {
+        String toTopic = request.getToTopic();
+        request.setToTopic(getNeedVerifyTopics(toTopic));
+        asyncMulticastChannelMessage2(request);
+    }
+
     public void asyncMulticastChannelMessage2(ChannelRequest request) {
         try {
             logger.debug("ChannelRequest:{} ", request.getMessageID());
