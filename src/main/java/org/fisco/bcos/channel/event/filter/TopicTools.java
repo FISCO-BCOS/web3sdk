@@ -36,4 +36,8 @@ public class TopicTools {
     public static String byteNToTopic(byte[] b) {
         return Numeric.toHexString(b);
     }
+
+    public static void main(String[] args) {
+        System.out.println(byteNToTopic("01234567890123456789012345678901".getBytes()));
+    }
 }

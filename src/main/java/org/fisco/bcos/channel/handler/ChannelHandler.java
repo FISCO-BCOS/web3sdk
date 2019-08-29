@@ -5,6 +5,9 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.timeout.IdleStateEvent;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.RejectedExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,6 +83,8 @@ public class ChannelHandler extends SimpleChannelInboundHandler<ByteBuf> {
                     connections.getCallback().onConnect(ctx);
                 }
             }
+
+            executeConnectCallback();
         } catch (Exception e) {
             logger.error("error", e);
         }
@@ -120,6 +125,7 @@ public class ChannelHandler extends SimpleChannelInboundHandler<ByteBuf> {
             }
 
             connections.getCallback().onDisconnect(ctx);
+            executeDisconnectCallback();
         } catch (Exception e) {
             logger.error("error ", e);
         }
@@ -151,6 +157,7 @@ public class ChannelHandler extends SimpleChannelInboundHandler<ByteBuf> {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         logger.error("network error ", cause);
+        cause.printStackTrace();
         // lost the connection，get ip info
         String host = ((SocketChannel) ctx.channel()).remoteAddress().getAddress().getHostAddress();
         Integer port = ((SocketChannel) ctx.channel()).remoteAddress().getPort();
@@ -208,7 +215,54 @@ public class ChannelHandler extends SimpleChannelInboundHandler<ByteBuf> {
         logger.debug("set threadPool:{}", threadPool == null);
     }
 
+    @SuppressWarnings("rawtypes")
+    public synchronized void addConnectCallback(Callable callable) {
+        connectCallback.add(callable);
+    }
+
+    @SuppressWarnings("rawtypes")
+    public synchronized void addDisconnectCallback(Callable callable) {
+        disconnectCallback.add(callable);
+    }
+
+    @SuppressWarnings("rawtypes")
+    public void executeConnectCallback() {
+        for (Callable callable : connectCallback) {
+            try {
+                callable.call();
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                // e.printStackTrace();
+                logger.error(
+                        " connect call back exception, object: {}, exception message: {}",
+                        callable,
+                        e.getMessage());
+            }
+        }
+    }
+
+    @SuppressWarnings("rawtypes")
+    public void executeDisconnectCallback() {
+        for (Callable callable : disconnectCallback) {
+            try {
+                callable.call();
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                // e.printStackTrace();
+                logger.error(
+                        " connect call back exception, object: {}, exception message: {}",
+                        callable,
+                        e.getMessage());
+            }
+        }
+    }
+
     private ChannelConnections connections;
     private Boolean isServer = false;
     private ThreadPoolTaskExecutor threadPool;
+
+    @SuppressWarnings("rawtypes")
+    private List<Callable> disconnectCallback = new ArrayList<Callable>();
+
+    private List<Callable> connectCallback = new ArrayList<Callable>();
 }

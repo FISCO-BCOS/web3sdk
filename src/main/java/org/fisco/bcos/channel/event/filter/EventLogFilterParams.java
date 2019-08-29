@@ -1,27 +1,16 @@
 package org.fisco.bcos.channel.event.filter;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.math.BigInteger;
 import java.util.List;
+import org.fisco.bcos.web3j.crypto.WalletUtils;
 import org.fisco.bcos.web3j.utils.Strings;
 
 public class EventLogFilterParams {
 
-    private String groupID;
     private String fromBlock;
     private String toBlock;
     private List<String> addresses;
     private List<Object> topics;
-    // timeout
-    private int timeout;
-    private String filterID;
-
-    public String getGroupID() {
-        return groupID;
-    }
-
-    public void setGroupID(String groupID) {
-        this.groupID = groupID;
-    }
 
     public String getFromBlock() {
         return fromBlock;
@@ -55,65 +44,84 @@ public class EventLogFilterParams {
         this.topics = topics;
     }
 
-    public String getFilterID() {
-        return filterID;
-    }
+    /**
+     * @param blockNumber: block number of blockchain
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public boolean checkParams(BigInteger blockNumber) {
 
-    public void setFilterID(String filterID) {
-        this.filterID = filterID;
-    }
+        try {
+            if (Strings.isEmpty(getFromBlock())
+                    || Strings.isEmpty(getToBlock())
+                    || getAddresses() == null
+                    || getTopics() == null) {
+                return false;
+            }
 
-    public boolean validParams() { // check if EventLogFilterParams valid
-        if (Strings.isEmpty(getGroupID())
-                || Strings.isEmpty(getFromBlock())
-                || Strings.isEmpty(getToBlock())) {
+            // fromBlock, toBlock,
+            if (getFromBlock().equals("latest") && getToBlock().equals("latest")) {
+                // fromBlock="latest" and toBlock="latest"
+            } else if (getFromBlock().equals("latest")) {
+                // fromBlock="latest" but toBlock is not
+                return false;
+            } else if (getToBlock().equals("latest")) {
+                // toBlock="latest" but fromBlock is not
+                BigInteger fromBlock = new BigInteger(getFromBlock());
+                // fromBlock is bigger than block number of the blockchain
+                if (fromBlock.compareTo(blockNumber) > 0) {
+                    return false;
+                }
+            } else {
+                // fromBlock and toBlock none is "latest"
+                BigInteger fromBlock = new BigInteger(getFromBlock());
+                BigInteger toBlock = new BigInteger(getToBlock());
+                // fromBlock is bigger than toBlock
+                if (fromBlock.compareTo(toBlock) > 0) {
+                    return false;
+                }
+
+                // fromBlock is bigger than block number
+                if (fromBlock.compareTo(blockNumber) > 0) {
+                    return false;
+                }
+            }
+
+            // addresses field
+            for (String address : getAddresses()) {
+                // check if address valid
+                if (!WalletUtils.isValidAddress(address)) {
+                    return false;
+                }
+            }
+
+            // topics
+            if (getTopics().size() > TopicTools.MAX_NUM_TOPIC_EVENT_LOG) {
+                return false;
+            }
+
+            for (Object topic : getTopics()) {
+                if (topic instanceof String) {
+                    // if valid topic
+                    if (((String) topic).isEmpty()) {
+                        return false;
+                    }
+                } else if (topic instanceof java.util.List) {
+                    for (Object o : (java.util.List<String>) topic) {
+                        // if valid topic
+                        if (((String) o).isEmpty()) {
+                            return false;
+                        }
+                    }
+                } else {
+                    return false;
+                }
+            }
+        } catch (Exception e) {
+            // invalid format
             return false;
         }
 
-        if ((getTopics() == null) || (getAddresses() == null)) {
-            return false;
-        }
-
-        if (getTopics().size() > TopicTools.MAX_NUM_TOPIC_EVENT_LOG) {
-            return false;
-        }
-
-        if (getToBlock().equals("latest")) {
-            return true;
-        } else if (getFromBlock().equals("latest")) {
-            return true;
-        }
-
-        long fromBlock = Long.valueOf(getFromBlock());
-        long toBlock = Long.valueOf(getToBlock());
-        return fromBlock <= toBlock;
-    }
-
-    @JsonIgnore
-    public int getTimeout() {
-        return timeout;
-    }
-
-    public void setTimeout(int timeout) {
-        this.timeout = timeout;
-    }
-
-    @Override
-    public String toString() {
-        return "EventLogFilterParams [groupID="
-                + groupID
-                + ", filterID="
-                + filterID
-                + ", fromBlock="
-                + fromBlock
-                + ", toBlock="
-                + toBlock
-                + ", address="
-                + addresses
-                + ", topics="
-                + topics
-                + ", timeout="
-                + timeout
-                + "]";
+        return true;
     }
 }
