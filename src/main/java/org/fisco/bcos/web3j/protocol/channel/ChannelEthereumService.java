@@ -8,6 +8,7 @@ import org.fisco.bcos.channel.dto.BcosResponse;
 import org.fisco.bcos.web3j.protocol.core.Request;
 import org.fisco.bcos.web3j.protocol.core.Response;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Call.CallOutput;
+import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.protocol.exceptions.MessageDecodingException;
 import org.fisco.bcos.web3j.tx.exceptions.ContractCallException;
 import org.slf4j.Logger;
@@ -111,7 +112,6 @@ public class ChannelEthereumService extends org.fisco.bcos.web3j.protocol.Servic
             fiscoRequest.setTimeout(timeout);
         }
 
-        BcosResponse response;
         if (!request.isNeedTransCallback()) {
             channelService.asyncSendEthereumMessage(
                     fiscoRequest,
@@ -156,6 +156,31 @@ public class ChannelEthereumService extends org.fisco.bcos.web3j.protocol.Servic
 
                                 if (response.getErrorCode() != 0) {
                                     logger.error("Error: " + response.getErrorCode());
+
+                                    TransactionReceipt receipt = new TransactionReceipt();
+                                    receipt.setStatus(String.valueOf(response.getErrorCode()));
+                                    receipt.setMessage(response.getErrorMessage());
+
+                                    // optional code
+                                    if (channelService.getThreadPool() == null) {
+                                        channelService.onReceiveTransactionMessage(
+                                                fiscoRequest.getMessageID(), receipt);
+                                    } else {
+                                        // Execute the callback function in the thread pool
+                                        channelService
+                                                .getThreadPool()
+                                                .execute(
+                                                        new Runnable() {
+                                                            @Override
+                                                            public void run() {
+                                                                channelService
+                                                                        .onReceiveTransactionMessage(
+                                                                                fiscoRequest
+                                                                                        .getMessageID(),
+                                                                                receipt);
+                                                            }
+                                                        });
+                                    }
                                 }
                             } catch (Exception e) {
                                 logger.error("Error: ", e);
