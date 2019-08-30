@@ -1451,4 +1451,12 @@ public class Service {
     public void setNumber(BigInteger number) {
         this.number = number;
     }
+
+    public Timer getTimeoutHandler() {
+        return timeoutHandler;
+    }
+
+    public void setTimeoutHandler(Timer timeoutHandler) {
+        this.timeoutHandler = timeoutHandler;
+    }
 }
