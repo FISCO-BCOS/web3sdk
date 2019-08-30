@@ -13,6 +13,25 @@ public class ChannelHandlerContextHelper {
 
     private static Logger logger = LoggerFactory.getLogger(ChannelHandlerContextHelper.class);
 
+    public static void setProtocolVersion(
+            ChannelHandlerContext ctx, EnumChannelProtocolVersion version, String nodeVersion) {
+        ChannelProtocol channelProtocol = new ChannelProtocol();
+        channelProtocol.setProtocol(version.getVersionNumber());
+        channelProtocol.setNodeVersion(nodeVersion);
+        channelProtocol.setEnumProtocol(version);
+        ctx.channel()
+                .attr(
+                        AttributeKey.valueOf(
+                                EnumSocketChannelAttributeKey.CHANNEL_PROTOCOL_KEY.getKey()))
+                .set(channelProtocol);
+    }
+
+    public static void setCtxAttibuteValue(ChannelHandlerContext ctx, String key, String value) {
+
+        AttributeKey<String> attributeKey = AttributeKey.valueOf(key);
+        ctx.channel().attr(attributeKey).set(value);
+    }
+
     public static EnumChannelProtocolVersion getProtocolVersion(ChannelHandlerContext ctx) {
 
         SocketChannel socketChannel = (SocketChannel) ctx.channel();
