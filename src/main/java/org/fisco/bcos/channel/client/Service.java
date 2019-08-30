@@ -1094,6 +1094,24 @@ public class Service {
         }
     }
 
+    private void sendResponse2Node(ChannelHandlerContext ctx, TopicVerifyMessage message) {
+        try {
+            Message response = new Message();
+            response.setSeq(message.getSeq());
+            response.setResult(0);
+            response.setType((short) 0x37);
+            response.setData("".getBytes());
+
+            ByteBuf out = ctx.alloc().buffer();
+            response.writeHeader(out);
+            response.writeExtra(out);
+            ctx.writeAndFlush(out);
+            logger.info("response seq:{} length:{}", response.getSeq(), out.readableBytes());
+        } catch (Exception e) {
+            logger.error("response seq:{} send error", message.getSeq());
+        }
+    }
+
     public void checkTopicVerify(ChannelHandlerContext ctx, TopicVerifyMessage message)
             throws IOException {
         SocketChannel socketChannel = (SocketChannel) ctx.channel();
@@ -1108,6 +1126,8 @@ public class Service {
                 "get rand value request :{} length:{}",
                 Arrays.toString(message.getData()),
                 message.getLength());
+
+        sendResponse2Node(ctx, message);
 
         String content = new String(message.getData());
         logger.info("content:{} content:{}", content, Arrays.toString(content.getBytes()));
