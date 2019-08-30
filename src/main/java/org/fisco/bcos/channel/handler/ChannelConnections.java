@@ -19,7 +19,6 @@ import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.SslProvider;
 import io.netty.handler.timeout.IdleStateHandler;
-import io.netty.util.AttributeKey;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.SecureRandom;
@@ -33,7 +32,6 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLException;
-import org.fisco.bcos.channel.protocol.EnumSocketChannelAttributeKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -271,8 +269,7 @@ public class ChannelConnections {
                                 @Override
                                 public void initChannel(SocketChannel ch) throws Exception {
                                     /*
-                                     * 每次连接使用新的handler
-                                     * 连接信息从socketChannel中获取
+                                     * Each connection is fetched from the socketChannel, using the new handler connection information
                                      */
                                     ChannelHandler handler = new ChannelHandler();
                                     handler.setConnections(selfService);
@@ -347,7 +344,7 @@ public class ChannelConnections {
                     @Override
                     public void initChannel(SocketChannel ch) throws Exception {
                         /*
-                         * 每次连接使用新的handler 连接信息从socketChannel中获取
+                         * Each connection is fetched from the socketChannel, using the new handler connection information
                          */
                         ChannelHandler handler = new ChannelHandler();
                         handler.setConnections(selfService);
@@ -456,21 +453,10 @@ public class ChannelConnections {
                     logger.trace("send heart beat to {}", ctx.getKey());
                     callback.sendHeartbeat(ctx.getValue());
                 } else {
-                    SocketChannel socketChannel = (SocketChannel) ctx.getValue().channel();
-                    String hostAddress =
-                            socketChannel.remoteAddress().getAddress().getHostAddress();
-                    int port = socketChannel.remoteAddress().getPort();
-
-                    AttributeKey<String> attributeKey =
-                            AttributeKey.valueOf(
-                                    EnumSocketChannelAttributeKey.CHANNEL_CONNECTED_KEY.getKey());
-                    String connectTimePoint = ctx.getValue().channel().attr(attributeKey).get();
-
-                    String host = hostAddress + ":" + port;
                     logger.debug(
-                            " socket channel active, channel protocol handshake not finished, host: {}, connect time: {}",
-                            host,
-                            connectTimePoint);
+                            " socket channel active, channel protocol handshake not finished, host: {}, ctx: {}",
+                            ctx.getKey(),
+                            System.identityHashCode(ctx.getValue()));
                 }
             }
         }

@@ -1099,7 +1099,7 @@ public class Service {
             Message response = new Message();
             response.setSeq(message.getSeq());
             response.setResult(0);
-            response.setType((short) 0x37);
+            response.setType((short) ChannelMessageType.REQUEST_TOPICCERT.getType());
             response.setData("".getBytes());
 
             ByteBuf out = ctx.alloc().buffer();
@@ -1257,7 +1257,8 @@ public class Service {
         request.setToTopic(topic);
         request.setTimeout(5000);
         request.setContent(jsonStr.getBytes());
-        sendCheckResultToNode(request, ctx, (short) 0x38);
+        sendCheckResultToNode(
+                request, ctx, (short) ChannelMessageType.UPDATE_TOPIICSTATUS.getType());
     }
 
     public void onReceiveBlockNotify(ChannelHandlerContext ctx, ChannelMessage2 message) {
@@ -1398,8 +1399,25 @@ public class Service {
     }
 
     public void onReceiveTransactionMessage(ChannelHandlerContext ctx, BcosMessage message) {
-        TransactionSucCallback callback =
-                (TransactionSucCallback) seq2TransactionCallback.get(message.getSeq());
+        TransactionReceipt receipt = null;
+        try {
+            receipt =
+                    ObjectMapperFactory.getObjectMapper()
+                            .readValue(message.getData(), TransactionReceipt.class);
+        } catch (Exception e) {
+            receipt = new TransactionReceipt();
+            receipt.setStatus(
+                    String.valueOf(
+                            ChannelMessageError.MESSAGE_DECODE_ERROR
+                                    .getError())); // 0x105 for decode error
+            receipt.setMessage("Decode receipt error: " + e.getLocalizedMessage());
+        }
+
+        onReceiveTransactionMessage(message.getSeq(), receipt);
+    }
+
+    public void onReceiveTransactionMessage(String seq, TransactionReceipt receipt) {
+        TransactionSucCallback callback = (TransactionSucCallback) seq2TransactionCallback.get(seq);
 
         if (callback != null) {
             if (callback.getTimeout() != null) {
@@ -1408,18 +1426,12 @@ public class Service {
             }
 
             try {
-                TransactionReceipt receipt =
-                        ObjectMapperFactory.getObjectMapper()
-                                .readValue(message.getData(), TransactionReceipt.class);
                 callback.onResponse(receipt);
             } catch (Exception e) {
-                TransactionReceipt receipt = new TransactionReceipt();
-                receipt.setStatus("Decode receipt error: " + e.getLocalizedMessage());
-
-                callback.onResponse(receipt);
+                logger.error("Error process transactionMessage: ", e);
             }
 
-            seq2TransactionCallback.remove(message.getSeq());
+            seq2TransactionCallback.remove(seq);
         }
     }
 
@@ -1459,5 +1471,13 @@ public class Service {
 
     public void setNumber(BigInteger number) {
         this.number = number;
+    }
+
+    public Timer getTimeoutHandler() {
+        return timeoutHandler;
+    }
+
+    public void setTimeoutHandler(Timer timeoutHandler) {
+        this.timeoutHandler = timeoutHandler;
     }
 }
