@@ -16,6 +16,7 @@ public class TransactionReceipt {
     // status is only present on Byzantium transactions onwards
     // see EIP 658 https://github.com/ethereum/EIPs/pull/658
     private String status;
+    private String message;
     private String from;
     private String to;
     private String input;
@@ -34,6 +35,7 @@ public class TransactionReceipt {
             String contractAddress,
             String root,
             String status,
+            String message,
             String from,
             String to,
             String input,
@@ -48,6 +50,7 @@ public class TransactionReceipt {
         this.contractAddress = contractAddress;
         this.root = root;
         this.status = status;
+        this.message = message;
         this.from = from;
         this.to = to;
         this.input = input;
@@ -146,6 +149,14 @@ public class TransactionReceipt {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public boolean isStatusOK() {
