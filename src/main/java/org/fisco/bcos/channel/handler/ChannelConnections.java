@@ -326,7 +326,7 @@ public class ChannelConnections {
         }
 
         logger.debug("init connections connect");
-        // 初始化netty
+        // init netty
         EventLoopGroup workerGroup = new NioEventLoopGroup();
 
         bootstrap.group(workerGroup);
@@ -376,8 +376,7 @@ public class ChannelConnections {
                                     return;
                                 }
 
-                                // 尝试重连
-
+                                // attempt to reconnect
                                 reconnect();
                                 Thread.sleep(heartBeatDelay);
                             }

@@ -42,10 +42,14 @@ import org.fisco.bcos.channel.dto.ChannelPush2;
 import org.fisco.bcos.channel.dto.ChannelRequest;
 import org.fisco.bcos.channel.dto.ChannelResponse;
 import org.fisco.bcos.channel.dto.TopicVerifyMessage;
-import org.fisco.bcos.channel.event.filter.EventLogFilterParams;
+import org.fisco.bcos.channel.event.filter.EventLogFilter;
+import org.fisco.bcos.channel.event.filter.EventLogFilterManager;
 import org.fisco.bcos.channel.event.filter.EventLogFilterPushResponse;
 import org.fisco.bcos.channel.event.filter.EventLogFilterPushStatus;
+import org.fisco.bcos.channel.event.filter.EventLogFilterStatus;
 import org.fisco.bcos.channel.event.filter.EventLogPushCallback;
+import org.fisco.bcos.channel.event.filter.EventLogRequestParams;
+import org.fisco.bcos.channel.event.filter.EventLogUserParams;
 import org.fisco.bcos.channel.handler.AMOPVerifyKeyInfo;
 import org.fisco.bcos.channel.handler.AMOPVerifyTopicToKeyInfo;
 import org.fisco.bcos.channel.handler.ChannelConnections;
@@ -99,14 +103,14 @@ public class Service {
     private ConcurrentHashMap<String, BigInteger> nodeToBlockNumberMap = new ConcurrentHashMap<>();
     /** add transaction seq callback */
     private Map<String, Object> seq2TransactionCallback = new ConcurrentHashMap<String, Object>();
-    // add filterID to callback map
-    private transient Map<String, Object> filterIDToEventLogPushCallBack =
-            new ConcurrentHashMap<String, Object>();
+
     private Timer timeoutHandler = new HashedWheelTimer();
     private ThreadPoolTaskExecutor threadPool;
     private BlockNotifyCallBack blockNotifyCallBack = new DefaultBlockNotifyCallBack();
     private Set<String> topics = new HashSet<String>();
     private transient AMOPVerifyUtil topicVerify = new AMOPVerifyUtil();
+    // event filter manager
+    private EventLogFilterManager eventLogFilterManager = new EventLogFilterManager(this);
 
     private AMOPVerifyTopicToKeyInfo topic2KeyInfo = new AMOPVerifyTopicToKeyInfo();
 
@@ -364,6 +368,8 @@ public class Service {
                         throw new Exception(
                                 "Can not connect to nodes success, please checkout the node status and the sdk config!");
                     }
+
+                    eventLogFilterManager.start();
                 } catch (InterruptedException e) {
                     logger.error("system error ", e);
                     Thread.currentThread().interrupt();
@@ -832,83 +838,127 @@ public class Service {
         }
     }
 
-    public void asyncSendRegisterEventLogFilterMessage(
-            EventLogFilterParams filter, EventLogPushCallback callback) {
+    /**
+     * @param params
+     * @param callback
+     * @param timeout
+     */
+    public void registerEventLogFilter(EventLogUserParams params, EventLogPushCallback callback) {
 
-        filter.setFilterID(newSeq());
-        filter.setGroupID(String.valueOf(getGroupId()));
-
-        // Call the callback function directly return an error
-        if (!filter.validParams()) {
+        // first check parameters
+        if (!params.checkParams(getNumber())) {
             callback.onPushEventLog(EventLogFilterPushStatus.INVALID_PARAMS.getStatus(), null);
             return;
         }
 
+        EventLogFilter filter = new EventLogFilter();
+        filter.setCallback(callback);
+        filter.setRegisterID(newSeq());
+        filter.setParams(params);
+        callback.setFilter(filter);
+        eventLogFilterManager.addEventLogFilter(filter);
+        // send request to node
+        asyncSendRegisterEventLogFilterMessage(filter);
+
+        logger.info(
+                " add register event log filter, registerID: {}, params: {}",
+                filter.getRegisterID(),
+                params);
+    }
+
+    /**
+     * @param filter
+     * @param callback
+     * @throws JsonProcessingException
+     */
+    public void asyncSendRegisterEventLogFilterMessage(EventLogFilter filter) {
+
         ChannelRequest request = new ChannelRequest();
         request.setMessageID(newSeq());
-        request.setTimeout(filter.getTimeout());
         request.setToTopic("");
         request.setType((short) ChannelMessageType.CLIENT_REGISTER_EVENT_LOG.getType());
-        callback.setParams(filter);
 
-        String filterID = filter.getFilterID();
+        EventLogRequestParams params =
+                new EventLogRequestParams(
+                        filter.generateNewParams(), String.valueOf(getGroupId()), newSeq());
+
+        logger.info(
+                " registerID: {}, filterID: {}, params: {}",
+                filter.getRegisterID(),
+                filter.getFilterID(),
+                params);
 
         try {
-            String content = ObjectMapperFactory.getObjectMapper().writeValueAsString(filter);
-            request.setContent(content);
-        } catch (JsonProcessingException e) {
-            logger.error(" ObjectMapper JsonProcessingException, message: {} ", e.getMessage());
-            callback.onPushEventLog(EventLogFilterPushStatus.OTHER_ERROR.getStatus(), null);
+            request.setContent(params.toJsonString());
+        } catch (JsonProcessingException e1) {
+            filter.getCallback()
+                    .onPushEventLog(EventLogFilterPushStatus.INVALID_PARAMS.getStatus(), null);
+            eventLogFilterManager.removeFilter(filter.getRegisterID());
             return;
         }
 
-        final String innerFilterID = filterID;
-        final EventLogPushCallback innerCallback = callback;
-        filterIDToEventLogPushCallBack.put(filterID, callback);
+        final String filterID = params.getFilterID();
+        final String registerID = filter.getRegisterID();
 
+        filter.setFilterID(filterID);
+        final EventLogPushCallback callback0 = filter.getCallback();
+
+        // register callback
+        eventLogFilterManager.addCallback(params.getFilterID(), filter.getCallback());
         asyncSendChannelMessage2(
                 request,
                 new ChannelResponseCallback2() {
                     @Override
                     public void onResponseMessage(ChannelResponse response) {
-                        if (response.getErrorCode() == 0) {
-                            logger.info(
-                                    " register event filter response, content: {}",
-                                    response.getContent());
-                            try {
+                        logger.info(
+                                " event filter callback response, registerID: {}, filterID: {}, seq: {}, error code: {},  content: {}",
+                                registerID,
+                                filterID,
+                                response.getMessageID(),
+                                response.getErrorCode(),
+                                response.getContent());
+                        try {
+                            if (0 == response.getErrorCode()) {
+                                // receive response successfully
                                 EventLogFilterPushResponse resp =
                                         ObjectMapperFactory.getObjectMapper()
                                                 .readValue(
                                                         response.getContent(),
                                                         EventLogFilterPushResponse.class);
-                                if (resp.getResult() != 0) {
-                                    logger.warn(
-                                            " register event filter response invalid status, remove callback.");
-                                    filterIDToEventLogPushCallBack.remove(innerFilterID);
-                                    innerCallback.onPushEventLog(
+
+                                if (resp.getResult() == 0) {
+                                    // node response ok, event log will be pushed soon
+                                    eventLogFilterManager.updateEventLogFilter(
+                                            callback0.getFilter(),
+                                            EventLogFilterStatus.EVENT_LOG_PUSHING,
+                                            response.getCtx());
+                                } else { // node response not ok, callback to client
+                                    callback0.onPushEventLog(
                                             EventLogFilterPushStatus.INVALID_RESPONSE.getStatus(),
                                             null);
+                                    eventLogFilterManager.removeFilterAndCallback(
+                                            registerID, filterID);
                                 }
-                            } catch (Exception e) {
-                                logger.warn(
-                                        " register event filter response invalid format, message: {}",
-                                        e.getMessage());
-                                filterIDToEventLogPushCallBack.remove(innerFilterID);
-                                innerCallback.onPushEventLog(
-                                        EventLogFilterPushStatus.OTHER_ERROR.getStatus(), null);
+                            } else { // register request send failed, waiting to be re-sent
+                                eventLogFilterManager.updateEventLogFilter(
+                                        callback0.getFilter(),
+                                        EventLogFilterStatus.WAITING_REQUEST,
+                                        null);
+                                // remove register callback
+                                eventLogFilterManager.removeCallback(filterID);
                             }
-                        } else {
-                            logger.warn(
-                                    " event push request send failed, seq: {}, code: {}",
-                                    response.getMessageID(),
-                                    response.getErrorCode());
+                        } catch (Exception e) {
+                            callback0.onPushEventLog(
+                                    EventLogFilterPushStatus.OTHER_ERROR.getStatus(), null);
+                            eventLogFilterManager.removeFilterAndCallback(
+                                    filter.getRegisterID(), filterID);
 
-                            filterIDToEventLogPushCallBack.remove(innerFilterID);
-                            innerCallback.onPushEventLog(
-                                    EventLogFilterPushStatus.REQUEST_TIMEOUT.getStatus(), null);
+                            logger.error(
+                                    " event filter response message exception, filterID: {}, registerID: {}, exception message: {}",
+                                    filterID,
+                                    registerID,
+                                    e.getMessage());
                         }
-
-                        logger.info("get response messageid:{}", response.getMessageID());
                     }
                 });
     }
@@ -921,7 +971,7 @@ public class Service {
         String content = new String(message.getData());
         if (callback == null) {
             logger.warn(
-                    " register event filter response callback null, maybe timeout, seq: {}, content: {}",
+                    " register event filter response cannot find callback, seq: {}, content: {}",
                     seq,
                     content);
             return;
@@ -931,6 +981,7 @@ public class Service {
 
         ChannelResponse response = new ChannelResponse();
 
+        response.setCtx(ctx);
         response.setErrorCode(message.getResult());
         response.setMessageID(message.getSeq());
         if (message.getData() != null) {
@@ -938,6 +989,8 @@ public class Service {
         }
 
         callback.onResponse(response);
+
+        logger.info(" register event filter response, seq: {}, content: {} ", seq, content);
     }
 
     public void onReceiveEventLogPush(ChannelHandlerContext ctx, BcosMessage message) {
@@ -953,49 +1006,69 @@ public class Service {
             }
 
             EventLogPushCallback callback =
-                    (EventLogPushCallback) filterIDToEventLogPushCallBack.get(resp.getFilterID());
+                    (EventLogPushCallback)
+                            eventLogFilterManager.getFilterCallback(resp.getFilterID());
 
             if (callback == null) {
-                logger.warn(
-                        " event log push callback null, maybe timeout, filterID: {}, content: {}",
+                logger.debug(
+                        " event log push message cannot find callback, filterID: {}, content: {}",
                         resp.getFilterID(),
                         content);
                 return;
             }
 
             if (resp.getResult() == EventLogFilterPushStatus.SUCCESS.getStatus()) {
-                // log push
-                logger.trace(
-                        " event log pushing, filterID: {}, resp object: {}, content: {}",
-                        resp.getFilterID(),
-                        resp,
-                        content);
                 if (!resp.getLogs().isEmpty()) {
                     List<LogResult> logResults = new ArrayList<LogResult>();
                     for (Log log : resp.getLogs()) {
                         LogResult logResult = callback.transferLogToLogResult(log);
-                        if (logResult != null) {
+                        if (logResult == null) {
+                            logger.warn(
+                                    " event log push message decode failed, filterID: {}, log: {}",
+                                    resp.getFilterID(),
+                                    log);
+                        } else {
                             logResults.add(logResult);
                         }
                     }
 
-                    callback.onPushEventLog(0, logResults);
+                    callback.onPushEventLog(
+                            EventLogFilterPushStatus.SUCCESS.getStatus(), logResults);
+                    // update status
+                    callback.getFilter().updateByLogResult(logResults);
+                    logger.info(
+                            " log size: {}, blocknumber: {}",
+                            logResults.size(),
+                            logResults.get(0).getLog().getBlockNumber());
                 }
             } else if (resp.getResult() == EventLogFilterPushStatus.PUSH_COMPLETED.getStatus()) {
                 // event log push end
-                logger.trace(
-                        " event log push completed, filterID: {}, resp object: {}, content: {}",
+                callback.onPushEventLog(EventLogFilterPushStatus.PUSH_COMPLETED.getStatus(), null);
+                eventLogFilterManager.removeFilterAndCallback(
+                        callback.getFilter().getRegisterID(), resp.getFilterID());
+
+                logger.info(
+                        "event log push message push end, filterID: {}, registerID: {}, content: {}",
                         resp.getFilterID(),
-                        resp,
+                        callback.getFilter().getRegisterID(),
                         content);
-                filterIDToEventLogPushCallBack.remove(resp.getFilterID());
-            } else { // error ??
+            } else {
                 callback.onPushEventLog(resp.getResult(), null);
                 // should remove callback function
-                // filterIDToEventLogPushCallBack.remove(resp.getFilterID());
+                eventLogFilterManager.removeFilterAndCallback(
+                        callback.getFilter().getRegisterID(), resp.getFilterID());
+                logger.warn(
+                        "event log push message, filterID: {}, registerID: {}, code: {}, content: {}",
+                        resp.getFilterID(),
+                        callback.getFilter().getRegisterID(),
+                        resp.getResult(),
+                        content);
             }
         } catch (Exception e) {
-            logger.error(" event log push exception, message: {}", e.getMessage());
+            logger.error(
+                    "event log push message exception, error message: {}, content: {}",
+                    e.getMessage(),
+                    content);
         }
     }
 
@@ -1409,7 +1482,8 @@ public class Service {
             receipt.setStatus(
                     String.valueOf(
                             ChannelMessageError.MESSAGE_DECODE_ERROR
-                                    .getError())); // 0x105 for decode error
+                                    .getError())); // 0x105 for decode
+            // error
             receipt.setMessage("Decode receipt error: " + e.getLocalizedMessage());
         }
 
@@ -1471,6 +1545,14 @@ public class Service {
 
     public void setNumber(BigInteger number) {
         this.number = number;
+    }
+
+    public EventLogFilterManager getEventLogFilterManager() {
+        return eventLogFilterManager;
+    }
+
+    public void setEventLogFilterManager(EventLogFilterManager eventLogFilterManager) {
+        this.eventLogFilterManager = eventLogFilterManager;
     }
 
     public Timer getTimeoutHandler() {
