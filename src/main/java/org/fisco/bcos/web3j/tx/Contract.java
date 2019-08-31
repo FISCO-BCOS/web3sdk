@@ -104,10 +104,10 @@ public abstract class Contract extends ManagedTransaction {
             if (EnumNodeVersion.BCOS_2_0_0_RC1.getVersion().equals(version)
                     || EnumNodeVersion.BCOS_2_0_0_RC1.getVersion().equals(supportedVersion)) {
                 version = EnumNodeVersion.BCOS_2_0_0_RC1.getVersion();
-                logger.info("fisco-bcos version:{}", version);
+                logger.debug("fisco-bcos version:{}", version);
             } else {
                 chainId = nodeVersion.getChainID();
-                logger.info(
+                logger.debug(
                         "fisco-bcos version:{}, supported version:{}", version, supportedVersion);
             }
         } catch (IOException e) {
@@ -738,19 +738,17 @@ public abstract class Contract extends ManagedTransaction {
 
     public void registerEventLogPushFilter(
             TransactionDecoder decoder,
-            EventLogFilterParams filter,
+            EventLogFilterParams params,
             EventLogPushWithDecodeCallback callback) {
 
         Web3jService service = ((JsonRpc2_0Web3j) web3j).web3jService();
 
         ChannelEthereumService channelEthereumService = (ChannelEthereumService) service;
         // set timeout
-        filter.setTimeout(channelEthereumService.getTimeout());
+        // filter.setTimeout(channelEthereumService.getTimeout());
         callback.setDecoder(decoder);
 
-        channelEthereumService
-                .getChannelService()
-                .asyncSendRegisterEventLogFilterMessage(filter, callback);
+        channelEthereumService.getChannelService().registerEventLogFilter(params, callback);
     }
 
     public void registerEventLogPushFilter(
