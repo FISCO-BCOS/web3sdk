@@ -46,6 +46,14 @@ public class ConnectionCallback implements ChannelConnections.Callback {
     // getClientVersion interface timeout, unit millisecond
     private Integer queryNodeVersionTimeoutMS = 5000;
 
+    public Integer getQueryNodeVersionTimeoutMS() {
+        return queryNodeVersionTimeoutMS;
+    }
+
+    public void setQueryNodeVersionTimeoutMS(Integer queryNodeVersionTimeoutMS) {
+        this.queryNodeVersionTimeoutMS = queryNodeVersionTimeoutMS;
+    }
+
     public Integer getConnectTimeoutMS() {
         return connectTimeoutMS;
     }
@@ -171,6 +179,7 @@ public class ConnectionCallback implements ChannelConnections.Callback {
                                     //
                                     subBlockNotification(ctx);
                                     queryBlockNumber(ctx);
+                                    // channelService.getEventLogFilterManager().sendFilter();
 
                                 } catch (Exception e) {
                                     logger.error(
@@ -275,6 +284,7 @@ public class ConnectionCallback implements ChannelConnections.Callback {
 
                                 subBlockNotification(ctx);
                                 queryBlockNumber(ctx);
+                                // channelService.getEventLogFilterManager().sendFilter();
                             }
 
                         } catch (Exception e) {
@@ -401,6 +411,7 @@ public class ConnectionCallback implements ChannelConnections.Callback {
     @Override
     public void onDisconnect(ChannelHandlerContext ctx) {
         final String host = ChannelHandlerContextHelper.getPeerHost(ctx);
+        channelService.getEventLogFilterManager().updateEventLogFilterStatus(ctx);
         logger.debug(" disconnect, host: {}, ctx: {}", host, System.identityHashCode(ctx));
     }
 
