@@ -1,36 +1,30 @@
 package org.fisco.bcos.channel.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import java.math.BigInteger;
 
 public class BcosBlockNotification {
-    @JsonProperty("GroupID")
-    private String GroupID;
+    private String groupID;
 
-    @JsonProperty("BlockNumber")
-    private BigInteger BlockNumber;
+    private BigInteger blockNumber;
 
-    @JsonIgnore
     public BigInteger getBlockNumber() {
-        return BlockNumber;
+        return blockNumber;
     }
 
     public void setBlockNumber(BigInteger blockNumber) {
-        BlockNumber = blockNumber;
+        this.blockNumber = blockNumber;
     }
 
-    @JsonIgnore
     public String getGroupID() {
-        return GroupID;
+        return groupID;
     }
 
     public void setGroupID(String groupID) {
-        this.GroupID = groupID;
+        this.groupID = groupID;
     }
 
     @Override
     public String toString() {
-        return "BcosBlkNotify [GroupID=" + GroupID + ", BlockNumber=" + BlockNumber + "]";
+        return "BcosBlkNotify [groupID=" + groupID + ", blockNumber=" + blockNumber + "]";
     }
 }
