@@ -260,7 +260,7 @@ public class TransactionDecoder {
 
         for (AbiDefinition abiDefinition : abiDefinitions) {
 
-            String eventName = decodeMethodSign(abiDefinition);
+            // String eventName = decodeMethodSign(abiDefinition);
             String eventSignature =
                     EventEncoder.buildEventSignature(decodeMethodSign(abiDefinition));
 
@@ -300,7 +300,7 @@ public class TransactionDecoder {
                     resultEntityList.add(eventEntity);
                 }
 
-                result.setEventName(eventName);
+                // result.setEventName(eventName);
                 result.setLogParams(resultEntityList);
                 result.setLog(log);
 
