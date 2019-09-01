@@ -4,17 +4,8 @@ import java.util.List;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Log;
 
 public class LogResult {
-    private String eventName;
     private List<EventResultEntity> logParams;
     private Log log;
-
-    public String getEventName() {
-        return eventName;
-    }
-
-    public void setEventName(String eventName) {
-        this.eventName = eventName;
-    }
 
     public List<EventResultEntity> getLogParams() {
         return logParams;
@@ -34,12 +25,6 @@ public class LogResult {
 
     @Override
     public String toString() {
-        return "LogResult [eventName="
-                + eventName
-                + ", logParams="
-                + logParams
-                + ", log="
-                + log
-                + "]";
+        return "LogResult [logParams=" + logParams + ", log=" + log + "]";
     }
 }

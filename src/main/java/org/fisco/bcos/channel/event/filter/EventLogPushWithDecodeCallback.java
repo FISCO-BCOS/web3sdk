@@ -32,7 +32,11 @@ public class EventLogPushWithDecodeCallback extends EventLogPushCallback {
 
     @Override
     public void onPushEventLog(int status, List<LogResult> logs) {
-        logger.info(" onPushEventLog, parsms: {}, status: {}, logs: {}", getParams(), status, logs);
+        logger.info(
+                " onPushEventLog, params: {}, status: {}, logs: {}",
+                getFilter().getParams(),
+                status,
+                logs);
     }
 
     @Override

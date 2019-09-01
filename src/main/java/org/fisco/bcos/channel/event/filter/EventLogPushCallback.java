@@ -6,18 +6,17 @@ import org.fisco.bcos.web3j.tx.txdecode.LogResult;
 
 public abstract class EventLogPushCallback {
 
-    // record event log push parameter
-    private EventLogFilterParams params;
+    private EventLogFilter filter;
 
     public abstract LogResult transferLogToLogResult(Log log);
 
     public abstract void onPushEventLog(int status, List<LogResult> logs);
 
-    public EventLogFilterParams getParams() {
-        return params;
+    public EventLogFilter getFilter() {
+        return filter;
     }
 
-    public void setParams(EventLogFilterParams params) {
-        this.params = params;
+    public void setFilter(EventLogFilter filter) {
+        this.filter = filter;
     }
 }
