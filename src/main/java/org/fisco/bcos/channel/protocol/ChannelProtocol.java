@@ -1,33 +1,28 @@
 package org.fisco.bcos.channel.protocol;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ChannelProtocol {
-    @JsonProperty("Protocol")
-    private int Protocol;
+    private int protocol;
 
-    @JsonProperty("NodeVersion")
-    private String NodeVersion;
+    private String nodeVersion;
 
     @JsonIgnore private EnumChannelProtocolVersion EnumProtocol;
 
-    @JsonIgnore
     public String getNodeVersion() {
-        return NodeVersion;
+        return nodeVersion;
     }
 
     public void setNodeVersion(String nodeVersion) {
-        NodeVersion = nodeVersion;
+        this.nodeVersion = nodeVersion;
     }
 
-    @JsonIgnore
     public int getProtocol() {
-        return Protocol;
+        return protocol;
     }
 
     public void setProtocol(int protocol) {
-        Protocol = protocol;
+        this.protocol = protocol;
     }
 
     @JsonIgnore
@@ -41,10 +36,10 @@ public class ChannelProtocol {
 
     @Override
     public String toString() {
-        return "ChannelProtocol [Protocol="
-                + Protocol
-                + ", NodeVersion="
-                + NodeVersion
+        return "ChannelProtocol [protocol="
+                + protocol
+                + ", nodeVersion="
+                + nodeVersion
                 + ", EnumProtocol="
                 + EnumProtocol
                 + "]";
