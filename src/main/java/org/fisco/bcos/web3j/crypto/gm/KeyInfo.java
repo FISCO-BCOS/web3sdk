@@ -1,7 +1,7 @@
 package org.fisco.bcos.web3j.crypto.gm;
 
-import com.alibaba.fastjson.JSONObject;
 import java.io.*;
+import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,18 +104,14 @@ public class KeyInfo implements KeyInfoInterface {
         System.out.println("");
         System.out.println("===key info:" + keyInfoJsonStr);
         try {
-            JSONObject keyInfoJsonObj = JSONObject.parseObject(keyInfoJsonStr);
+            KeyInfo keyInfoJsonObj =
+                    ObjectMapperFactory.getObjectMapper().readValue(keyInfoJsonStr, KeyInfo.class);
             if (keyInfoJsonObj == null) {
                 System.out.println("load json str from key info failed");
                 logger.error("load json str from key info failed");
                 return RetCode.parseJsonFailed;
             }
-            if (keyInfoJsonObj.containsKey(privJsonKey))
-                privateKey = keyInfoJsonObj.getString(privJsonKey);
-            if (keyInfoJsonObj.containsKey(pubJsonKey))
-                publicKey = keyInfoJsonObj.getString(pubJsonKey);
-            if (keyInfoJsonObj.containsKey(accountJsonKey))
-                account = keyInfoJsonObj.getString(accountJsonKey);
+
             System.out.println("");
             System.out.println("====LOADED KEY INFO ===");
             System.out.println("* private key:" + privateKey);
@@ -159,13 +155,7 @@ public class KeyInfo implements KeyInfoInterface {
     @Override
     public int storeKeyInfo(String keyFile) {
         try {
-            // Map<String, String> keyMap = new HashMap<String, String>();
-            JSONObject keyMapJson = new JSONObject();
-            keyMapJson.put(privJsonKey, privateKey);
-            keyMapJson.put(pubJsonKey, publicKey);
-            keyMapJson.put(accountJsonKey, account);
-
-            String keyJsonInfo = keyMapJson.toString();
+            String keyJsonInfo = ObjectMapperFactory.getObjectMapper().writeValueAsString(this);
             System.out.println("== SAVED KEY INFO: " + keyJsonInfo);
             return writeFile(keyFile, keyJsonInfo);
         } catch (Exception e) {

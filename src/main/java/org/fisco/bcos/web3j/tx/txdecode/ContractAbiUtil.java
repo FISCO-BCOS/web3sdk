@@ -14,13 +14,12 @@
 
 package org.fisco.bcos.web3j.tx.txdecode;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import java.util.ArrayList;
 import java.util.List;
 import org.fisco.bcos.web3j.abi.EventValues;
 import org.fisco.bcos.web3j.abi.TypeReference;
 import org.fisco.bcos.web3j.abi.datatypes.Event;
+import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 import org.fisco.bcos.web3j.protocol.core.methods.response.AbiDefinition;
 import org.fisco.bcos.web3j.protocol.core.methods.response.AbiDefinition.NamedType;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Log;
@@ -38,16 +37,28 @@ public class ContractAbiUtil {
      * @return
      */
     public static AbiDefinition getConstructorAbiDefinition(String contractAbi) {
-        JSONArray abiArr = JSONArray.parseArray(contractAbi);
-        AbiDefinition result = null;
-        for (Object object : abiArr) {
-            AbiDefinition abiDefinition = JSON.parseObject(object.toString(), AbiDefinition.class);
-            if (TYPE_CONSTRUCTOR.equals(abiDefinition.getType())) {
-                result = abiDefinition;
-                break;
+
+        try {
+            AbiDefinition[] abiDefinitions =
+                    ObjectMapperFactory.getObjectMapper()
+                            .readValue(contractAbi, AbiDefinition[].class);
+            if (null != abiDefinitions) {
+                AbiDefinition result = null;
+                for (AbiDefinition abiDefinition : abiDefinitions) {
+                    if (TYPE_CONSTRUCTOR.equals(abiDefinition.getType())) {
+                        result = abiDefinition;
+                        break;
+                    }
+                }
+                return result;
             }
+
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            // e.printStackTrace();
         }
-        return result;
+
+        return null;
     }
 
     /**
@@ -55,15 +66,26 @@ public class ContractAbiUtil {
      * @return
      */
     public static List<AbiDefinition> getFuncAbiDefinition(String contractAbi) {
-        JSONArray abiArr = JSONArray.parseArray(contractAbi);
         List<AbiDefinition> result = new ArrayList<>();
-        for (Object object : abiArr) {
-            AbiDefinition abiDefinition = JSON.parseObject(object.toString(), AbiDefinition.class);
-            if (TYPE_FUNCTION.equals(abiDefinition.getType())
-                    || TYPE_CONSTRUCTOR.equals(abiDefinition.getType())) {
-                result.add(abiDefinition);
+
+        try {
+            AbiDefinition[] abiDefinitions =
+                    ObjectMapperFactory.getObjectMapper()
+                            .readValue(contractAbi, AbiDefinition[].class);
+            if (null != abiDefinitions) {
+                for (AbiDefinition abiDefinition : abiDefinitions) {
+                    if (TYPE_FUNCTION.equals(abiDefinition.getType())
+                            || TYPE_CONSTRUCTOR.equals(abiDefinition.getType())) {
+                        result.add(abiDefinition);
+                    }
+                }
             }
+
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            // e.printStackTrace();
         }
+
         return result;
     }
 
@@ -72,14 +94,24 @@ public class ContractAbiUtil {
      * @return
      */
     public static List<AbiDefinition> getEventAbiDefinitions(String contractAbi) {
-        JSONArray abiArr = JSONArray.parseArray(contractAbi);
         List<AbiDefinition> result = new ArrayList<>();
-        for (Object object : abiArr) {
-            AbiDefinition abiDefinition = JSON.parseObject(object.toString(), AbiDefinition.class);
-            if (TYPE_EVENT.equals(abiDefinition.getType())) {
-                result.add(abiDefinition);
+        try {
+            AbiDefinition[] abiDefinitions =
+                    ObjectMapperFactory.getObjectMapper()
+                            .readValue(contractAbi, AbiDefinition[].class);
+            if (null != abiDefinitions) {
+                for (AbiDefinition abiDefinition : abiDefinitions) {
+                    if (TYPE_EVENT.equals(abiDefinition.getType())) {
+                        result.add(abiDefinition);
+                    }
+                }
             }
+
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            // e.printStackTrace();
         }
+
         return result;
     }
 
