@@ -328,20 +328,22 @@ public class ChannelConnections {
     public void init() {
         logger.debug("init connections");
         // 初始化connections
-        for (String conn : connectionsStr) {
-            ConnectionInfo connection = new ConnectionInfo();
+        if (connectionsStr != null) {
+            for (String conn : connectionsStr) {
+                ConnectionInfo connection = new ConnectionInfo();
 
-            String[] split2 = conn.split(":");
+                String[] split2 = conn.split(":");
 
-            connection.setHost(split2[0]);
-            connection.setPort(Integer.parseInt(split2[1]));
+                connection.setHost(split2[0]);
+                connection.setPort(Integer.parseInt(split2[1]));
 
-            networkConnections.put(conn, null);
+                networkConnections.put(conn, null);
 
-            logger.debug("add direct node :[" + "]:[" + split2[1] + "]");
+                logger.debug("add direct node :[" + "]:[" + split2[1] + "]");
 
-            connection.setConfig(true);
-            connections.add(connection);
+                connection.setConfig(true);
+                connections.add(connection);
+            }
         }
 
         initDefaultCertConfig();
