@@ -178,6 +178,7 @@ public class Server {
             remoteConnectionCallback.setFromRemote(true);
 
             localConnections.setCallback(localConnectionCallback);
+            localConnections.init();
             localConnections.startListen(bindPort);
 
             remoteConnections.setCallback(remoteConnectionCallback);

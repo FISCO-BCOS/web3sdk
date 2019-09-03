@@ -35,6 +35,7 @@ import javax.net.ssl.SSLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 public class ChannelConnections {
@@ -42,6 +43,10 @@ public class ChannelConnections {
 
     private Callback callback;
     private List<String> connectionsStr;
+
+    private static final String CA_CERT = "classpath:ca.crt";
+    private static final String SSL_CERT = "classpath:node.crt";
+    private static final String SSL_KEY = "classpath:node.key";
 
     private Resource caCert;
     private Resource sslCert;
@@ -56,6 +61,27 @@ public class ChannelConnections {
     private int groupId;
     private Bootstrap bootstrap = new Bootstrap();
     ServerBootstrap serverBootstrap = new ServerBootstrap();
+
+    private void initDefaultCertConfig() {
+        if (getCaCert() == null) {
+            PathMatchingResourcePatternResolver resolver =
+                    new PathMatchingResourcePatternResolver();
+            setCaCert(resolver.getResource(CA_CERT));
+        }
+
+        // dafault value is node.crt & node.key
+        if (getSslCert() == null) {
+            PathMatchingResourcePatternResolver resolver =
+                    new PathMatchingResourcePatternResolver();
+            setSslCert(resolver.getResource(SSL_CERT));
+        }
+
+        if (getSslKey() == null) {
+            PathMatchingResourcePatternResolver resolver =
+                    new PathMatchingResourcePatternResolver();
+            setSslKey(resolver.getResource(SSL_KEY));
+        }
+    }
 
     public Resource getCaCert() {
         return caCert;
@@ -317,6 +343,8 @@ public class ChannelConnections {
             connection.setConfig(true);
             connections.add(connection);
         }
+
+        initDefaultCertConfig();
     }
 
     public void startConnect() throws SSLException {
