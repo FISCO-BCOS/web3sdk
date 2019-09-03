@@ -35,6 +35,7 @@ import javax.net.ssl.SSLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 public class ChannelConnections {
@@ -42,6 +43,10 @@ public class ChannelConnections {
 
     private Callback callback;
     private List<String> connectionsStr;
+
+    private static final String CA_CERT = "classpath:ca.crt";
+    private static final String SSL_CERT = "classpath:node.crt";
+    private static final String SSL_KEY = "classpath:node.key";
 
     private Resource caCert;
     private Resource sslCert;
@@ -56,6 +61,27 @@ public class ChannelConnections {
     private int groupId;
     private Bootstrap bootstrap = new Bootstrap();
     ServerBootstrap serverBootstrap = new ServerBootstrap();
+
+    private void initDefaultCertConfig() {
+        if (getCaCert() == null) {
+            PathMatchingResourcePatternResolver resolver =
+                    new PathMatchingResourcePatternResolver();
+            setCaCert(resolver.getResource(CA_CERT));
+        }
+
+        // dafault value is node.crt & node.key
+        if (getSslCert() == null) {
+            PathMatchingResourcePatternResolver resolver =
+                    new PathMatchingResourcePatternResolver();
+            setSslCert(resolver.getResource(SSL_CERT));
+        }
+
+        if (getSslKey() == null) {
+            PathMatchingResourcePatternResolver resolver =
+                    new PathMatchingResourcePatternResolver();
+            setSslKey(resolver.getResource(SSL_KEY));
+        }
+    }
 
     public Resource getCaCert() {
         return caCert;
@@ -302,21 +328,25 @@ public class ChannelConnections {
     public void init() {
         logger.debug("init connections");
         // 初始化connections
-        for (String conn : connectionsStr) {
-            ConnectionInfo connection = new ConnectionInfo();
+        if (connectionsStr != null) {
+            for (String conn : connectionsStr) {
+                ConnectionInfo connection = new ConnectionInfo();
 
-            String[] split2 = conn.split(":");
+                String[] split2 = conn.split(":");
 
-            connection.setHost(split2[0]);
-            connection.setPort(Integer.parseInt(split2[1]));
+                connection.setHost(split2[0]);
+                connection.setPort(Integer.parseInt(split2[1]));
 
-            networkConnections.put(conn, null);
+                networkConnections.put(conn, null);
 
-            logger.debug("add direct node :[" + "]:[" + split2[1] + "]");
+                logger.debug("add direct node :[" + "]:[" + split2[1] + "]");
 
-            connection.setConfig(true);
-            connections.add(connection);
+                connection.setConfig(true);
+                connections.add(connection);
+            }
         }
+
+        initDefaultCertConfig();
     }
 
     public void startConnect() throws SSLException {

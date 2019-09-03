@@ -75,7 +75,6 @@ import org.fisco.bcos.web3j.utils.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 public class Service {
@@ -84,10 +83,6 @@ public class Service {
     public static final String verifyChannelPrefix = "#!$VerifyChannel_";
     public static final String pushChannelPrefix = "#!$PushChannel_";
     public static final String topicNeedVerifyPrefix = "#!$TopicNeedVerify_";
-
-    private static final String CA_CERT = "classpath:ca.crt";
-    private static final String SSL_CERT = "classpath:node.crt";
-    private static final String SSL_KEY = "classpath:node.key";
 
     private Integer connectSeconds = 30;
 
@@ -292,33 +287,10 @@ public class Service {
         addTopics(set);
     }
 
-    public void initDefaultCertConfig() {
-        if (allChannelConnections.getCaCert() == null) {
-            PathMatchingResourcePatternResolver resolver =
-                    new PathMatchingResourcePatternResolver();
-            allChannelConnections.setCaCert(resolver.getResource(CA_CERT));
-        }
-
-        // dafault value is node.crt & node.key
-        if (allChannelConnections.getSslCert() == null) {
-            PathMatchingResourcePatternResolver resolver =
-                    new PathMatchingResourcePatternResolver();
-            allChannelConnections.setSslCert(resolver.getResource(SSL_CERT));
-        }
-
-        if (allChannelConnections.getSslKey() == null) {
-            PathMatchingResourcePatternResolver resolver =
-                    new PathMatchingResourcePatternResolver();
-            allChannelConnections.setSslKey(resolver.getResource(SSL_KEY));
-        }
-    }
-
     public void run() throws Exception {
         logger.debug("init ChannelService");
         parseFromTopic2KeyInfo();
         int flag = 0;
-
-        initDefaultCertConfig();
 
         for (ChannelConnections channelConnections :
                 allChannelConnections.getAllChannelConnections()) {
