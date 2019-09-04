@@ -88,7 +88,7 @@ public class ConnectionCallback implements ChannelConnections.Callback {
     @Override
     public void onConnect(ChannelHandlerContext ctx) {
         String host = ChannelHandlerContextHelper.getPeerHost(ctx);
-        logger.info(" connect callback, host: {}, ctx: {}", host, System.identityHashCode(ctx));
+        logger.info(" connect {} success, ctx: {}", host, System.identityHashCode(ctx));
         try {
             // must set to BigInteger.ONE
             // since sdk only get and initialize blockNumber when the init blockNumber is
