@@ -32,7 +32,6 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLException;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -438,28 +437,6 @@ public class ChannelConnections {
                                     keystorekeyResource.getInputStream())
                             .sslProvider(SslProvider.JDK)
                             .build();
-
-            // log ca md5 info
-            String caCertMd5 = "";
-            if (caResource.getInputStream() != null) {
-                caCertMd5 = DigestUtils.md5Hex(caResource.getInputStream());
-            }
-
-            String sslCertMd5 = "";
-            if (keystorecaResource.getInputStream() != null) {
-                sslCertMd5 = DigestUtils.md5Hex(keystorecaResource.getInputStream());
-            }
-
-            String sslKeyMd5 = "";
-            if (keystorekeyResource.getInputStream() != null) {
-                sslKeyMd5 = DigestUtils.md5Hex(keystorekeyResource.getInputStream());
-            }
-
-            logger.info(
-                    " init ssl context, ca.crt md5: {}, sdk.crt md5: {}, sdk.key md5: {}",
-                    caCertMd5,
-                    sslCertMd5,
-                    sslKeyMd5);
 
         } catch (Exception e) {
             logger.debug("SSLCONTEXT ***********" + e.getMessage());
