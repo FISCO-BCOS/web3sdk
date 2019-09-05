@@ -905,9 +905,7 @@ public class Service {
                                             EventLogFilterStatus.EVENT_LOG_PUSHING,
                                             response.getCtx());
                                 } else { // node response not ok, callback to client
-                                    callback0.onPushEventLog(
-                                            EventLogFilterPushStatus.INVALID_RESPONSE.getStatus(),
-                                            null);
+                                    callback0.onPushEventLog(resp.getResult(), null);
                                     eventLogFilterManager.removeFilterAndCallback(
                                             registerID, filterID);
                                 }
@@ -1052,6 +1050,12 @@ public class Service {
             if (callback.getTimeout() != null) {
                 callback.getTimeout().cancel();
             }
+
+            logger.trace(
+                    " receive ethereum response, seq: {}, result: {}, content: {}",
+                    message.getSeq(),
+                    message.getResult(),
+                    new String(message.getData()));
 
             BcosResponse response = new BcosResponse();
             if (message.getResult() != 0) {
