@@ -5,12 +5,16 @@ import java.util.List;
 import org.fisco.bcos.web3j.crypto.WalletUtils;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameterName;
 import org.fisco.bcos.web3j.utils.Strings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is used by the user to set the required event log filter conditions, please refer to
  * the user manual for details
  */
 public class EventLogUserParams {
+
+    private static Logger logger = LoggerFactory.getLogger(EventLogUserParams.class);
 
     private String fromBlock;
     private String toBlock;
@@ -116,16 +120,50 @@ public class EventLogUserParams {
         return true;
     }
 
+    private boolean validToBlock(BigInteger blockNumber) {
+
+        // fromBlock="latest" but toBlock is not
+        BigInteger toBlock = new BigInteger(getToBlock());
+        return (blockNumber.compareTo(BigInteger.ONE) <= 0)
+                || (blockNumber.compareTo(BigInteger.ONE) > 0
+                        && (toBlock.compareTo(blockNumber)) > 0);
+    }
+
+    private boolean validFromBlock(BigInteger blockNumber) {
+
+        // toBlock="latest" but fromBlock is not
+        BigInteger fromBlock = new BigInteger(getFromBlock());
+        // fromBlock is bigger than block number of the blockchain
+        if (fromBlock.compareTo(BigInteger.ZERO) <= 0) {
+            return false;
+        }
+
+        if (blockNumber.compareTo(BigInteger.ONE) > 0 && (fromBlock.compareTo(blockNumber) > 0)) {
+            logger.info(
+                    " future block range request, from: {}, to: {}", getFromBlock(), getToBlock());
+        }
+
+        return true;
+    }
+
     private boolean validFromToBlock(BigInteger blockNumber) throws NumberFormatException {
 
         // fromBlock and toBlock none is "latest"
         BigInteger fromBlock = new BigInteger(getFromBlock());
         BigInteger toBlock = new BigInteger(getToBlock());
 
-        return !((fromBlock.compareTo(toBlock) > 0)
-                || (blockNumber.compareTo(BigInteger.ONE) > 0
-                        && fromBlock.compareTo(blockNumber) > 0)
-                || (fromBlock.compareTo(BigInteger.ZERO) <= 0));
+        if ((fromBlock.compareTo(BigInteger.ZERO) <= 0) || (fromBlock.compareTo(toBlock) > 0)) {
+            return false;
+        } else {
+            if (blockNumber.compareTo(BigInteger.ONE) > 0
+                    && (fromBlock.compareTo(blockNumber) > 0)) {
+                logger.info(
+                        " future block range request, from: {}, to: {}",
+                        getFromBlock(),
+                        getToBlock());
+            }
+            return true;
+        }
     }
 
     /**
@@ -143,21 +181,14 @@ public class EventLogUserParams {
         boolean isValidBlockRange = true;
 
         try {
-            // fromBlock, toBlock,
             if (getFromBlock().equals(DefaultBlockParameterName.LATEST.getValue())
                     && !getToBlock().equals(DefaultBlockParameterName.LATEST.getValue())) {
                 // fromBlock="latest" but toBlock is not
-                isValidBlockRange = false;
+                isValidBlockRange = validToBlock(blockNumber);
             } else if (!getFromBlock().equals(DefaultBlockParameterName.LATEST.getValue())
                     && getToBlock().equals(DefaultBlockParameterName.LATEST.getValue())) {
                 // toBlock="latest" but fromBlock is not
-                BigInteger fromBlock = new BigInteger(getFromBlock());
-                // fromBlock is bigger than block number of the blockchain
-                if ((blockNumber.compareTo(BigInteger.ONE) > 0
-                                && fromBlock.compareTo(blockNumber) > 0)
-                        || (fromBlock.compareTo(BigInteger.ZERO) <= 0)) {
-                    isValidBlockRange = false;
-                }
+                isValidBlockRange = validFromBlock(blockNumber);
             } else if (!getFromBlock().equals(DefaultBlockParameterName.LATEST.getValue())
                     && !getToBlock().equals(DefaultBlockParameterName.LATEST.getValue())) {
                 isValidBlockRange = validFromToBlock(blockNumber);
