@@ -722,7 +722,7 @@ public class SolidityFunctionWrapper extends Generator {
 
                 if (innerType.dynamicArray()) { // dynamic array
                     return parameterSpec.name
-                            + ".isEmpty()?DynamicArray.empty"
+                            + ".isEmpty()?org.fisco.bcos.web3j.abi.datatypes.DynamicArray.empty"
                             + "(\""
                             + type
                             + "\"):"
