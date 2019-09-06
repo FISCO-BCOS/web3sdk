@@ -31,6 +31,10 @@ public class StatusCode {
     public static final String CallAddressError = "0x1a";
 
     public static String getStatusMessage(String status) {
+        return getStatusMessage(status, " Error code: " + status);
+    }
+
+    public static String getStatusMessage(String status, String errorMessage) {
         String message = "";
         switch (status) {
             case Success:
@@ -115,7 +119,7 @@ public class StatusCode {
                 message = "call address error";
                 break;
             default:
-                message = status;
+                message = errorMessage;
                 break;
         }
 

@@ -1477,6 +1477,8 @@ public class Service {
             }
 
             seq2TransactionCallback.remove(seq);
+        } else {
+            logger.trace(" transaction call back null, seq: {}", seq);
         }
     }
 
