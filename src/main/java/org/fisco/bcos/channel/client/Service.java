@@ -813,7 +813,6 @@ public class Service {
     /**
      * @param params
      * @param callback
-     * @param timeout
      */
     public void registerEventLogFilter(EventLogUserParams params, EventLogPushCallback callback) {
 
@@ -838,11 +837,7 @@ public class Service {
                 params);
     }
 
-    /**
-     * @param filter
-     * @param callback
-     * @throws JsonProcessingException
-     */
+    /** @param filter */
     public void asyncSendRegisterEventLogFilterMessage(EventLogFilter filter) {
 
         ChannelRequest request = new ChannelRequest();
@@ -1482,6 +1477,8 @@ public class Service {
             }
 
             seq2TransactionCallback.remove(seq);
+        } else {
+            logger.trace(" transaction call back null, seq: {}", seq);
         }
     }
 

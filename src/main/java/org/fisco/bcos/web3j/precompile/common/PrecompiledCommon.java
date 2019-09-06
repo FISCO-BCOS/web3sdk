@@ -140,7 +140,8 @@ public class PrecompiledCommon {
             throws TransactionException {
         String status = receipt.getStatus();
         if (!"0x0".equals(status)) {
-            throw new TransactionException(StatusCode.getStatusMessage(status));
+            throw new TransactionException(
+                    StatusCode.getStatusMessage(status, receipt.getMessage()));
         }
         String output = receipt.getOutput();
         if (!"0x".equals(output)) {
@@ -154,7 +155,8 @@ public class PrecompiledCommon {
             throws TransactionException, IOException {
         String status = receipt.getStatus();
         if (!"0x0".equals(status)) {
-            throw new TransactionException(StatusCode.getStatusMessage(receipt.getStatus()));
+            throw new TransactionException(
+                    StatusCode.getStatusMessage(receipt.getStatus(), receipt.getMessage()));
         } else {
             if (receipt.getOutput() != null) {
                 return PrecompiledCommon.getJsonStr(receipt.getOutput(), web3j);
