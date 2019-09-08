@@ -30,6 +30,7 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Modifier;
 import org.fisco.bcos.web3j.abi.EventEncoder;
 import org.fisco.bcos.web3j.abi.FunctionEncoder;
+import org.fisco.bcos.web3j.abi.FunctionReturnDecoder;
 import org.fisco.bcos.web3j.abi.TypeReference;
 import org.fisco.bcos.web3j.abi.datatypes.Address;
 import org.fisco.bcos.web3j.abi.datatypes.Bool;
@@ -296,6 +297,17 @@ public class SolidityFunctionWrapper extends Generator {
 
                     MethodSpec msSeq = buildFunctionSeq(functionDefinition);
                     methodSpecs.add(msSeq);
+
+                    if (!functionDefinition.getInputs().isEmpty()) {
+                        MethodSpec inputDecoder = buildFunctionWithInputDecoder(functionDefinition);
+                        methodSpecs.add(inputDecoder);
+                    }
+
+                    if (!functionDefinition.getOutputs().isEmpty()) {
+                        MethodSpec outputDecoder =
+                                buildFunctionWithOutputDecoder(functionDefinition);
+                        methodSpecs.add(outputDecoder);
+                    }
                 }
             } else if (functionDefinition.getType().equals("event")) {
                 methodSpecs.addAll(buildEventFunctions(functionDefinition, classBuilder));
@@ -684,6 +696,28 @@ public class SolidityFunctionWrapper extends Generator {
         }
     }
 
+    private String addParameters(List<AbiDefinition.NamedType> namedTypes) {
+
+        List<ParameterSpec> inputParameterTypes = buildParameterTypes(namedTypes);
+
+        List<ParameterSpec> nativeInputParameterTypes = new ArrayList<>(inputParameterTypes.size());
+        for (ParameterSpec parameterSpec : inputParameterTypes) {
+            TypeName typeName = getWrapperType(parameterSpec.type);
+            nativeInputParameterTypes.add(
+                    ParameterSpec.builder(typeName, parameterSpec.name).build());
+        }
+
+        if (useNativeJavaTypes) {
+            return Collection.join(
+                    namedTypes,
+                    ", \n",
+                    // this results in fully qualified names being generated
+                    this::createMappedParameterTypes);
+        } else {
+            return Collection.join(inputParameterTypes, ", ", parameterSpec -> parameterSpec.name);
+        }
+    }
+
     private String createMappedParameterTypes(AbiDefinition.NamedType namedType) {
 
         String name = namedType.getName();
@@ -937,6 +971,86 @@ public class SolidityFunctionWrapper extends Generator {
 
             buildTransactionFunctionWithCallback(functionDefinition, methodBuilder, inputParams);
         }
+
+        return methodBuilder.build();
+    }
+
+    private MethodSpec buildFunctionWithInputDecoder(AbiDefinition functionDefinition)
+            throws ClassNotFoundException {
+
+        String functionName = functionDefinition.getName();
+
+        MethodSpec.Builder methodBuilder =
+                MethodSpec.methodBuilder(
+                                "get" + Strings.capitaliseFirstLetter(functionName) + "Input")
+                        .addModifiers(Modifier.PUBLIC)
+                        .addParameter(TransactionReceipt.class, "transactionReceipt");
+
+        List<TypeName> returnTypes =
+                buildReturnTypes(buildTypeNames(functionDefinition.getInputs()));
+
+        ParameterizedTypeName parameterizedTupleType =
+                ParameterizedTypeName.get(
+                        ClassName.get(
+                                "org.fisco.bcos.web3j.tuples.generated",
+                                "Tuple" + returnTypes.size()),
+                        returnTypes.toArray(new TypeName[returnTypes.size()]));
+
+        methodBuilder.returns(parameterizedTupleType);
+        methodBuilder.addStatement("String data = transactionReceipt.getInput().substring(10)");
+
+        buildVariableLengthReturnFunctionConstructor(
+                methodBuilder, functionName, "", buildTypeNames(functionDefinition.getInputs()));
+
+        methodBuilder.addStatement(
+                "$T<Type> results = $T.decode(data, function.getOutputParameters());",
+                List.class,
+                FunctionReturnDecoder.class);
+
+        buildTupleResultContainer0(
+                methodBuilder,
+                parameterizedTupleType,
+                buildTypeNames(functionDefinition.getInputs()));
+
+        return methodBuilder.build();
+    }
+
+    private MethodSpec buildFunctionWithOutputDecoder(AbiDefinition functionDefinition)
+            throws ClassNotFoundException {
+
+        String functionName = functionDefinition.getName();
+
+        MethodSpec.Builder methodBuilder =
+                MethodSpec.methodBuilder(
+                                "get" + Strings.capitaliseFirstLetter(functionName) + "Output")
+                        .addModifiers(Modifier.PUBLIC)
+                        .addParameter(TransactionReceipt.class, "transactionReceipt");
+
+        List<TypeName> returnTypes =
+                buildReturnTypes(buildTypeNames(functionDefinition.getOutputs()));
+
+        ParameterizedTypeName parameterizedTupleType =
+                ParameterizedTypeName.get(
+                        ClassName.get(
+                                "org.fisco.bcos.web3j.tuples.generated",
+                                "Tuple" + returnTypes.size()),
+                        returnTypes.toArray(new TypeName[returnTypes.size()]));
+
+        methodBuilder.returns(parameterizedTupleType);
+        methodBuilder.addStatement("String data = transactionReceipt.getOutput()");
+
+        buildVariableLengthReturnFunctionConstructor(
+                methodBuilder, functionName, "", buildTypeNames(functionDefinition.getOutputs()));
+
+        methodBuilder.addStatement(
+                "$T<Type> results = $T.decode(data, function.getOutputParameters());",
+                List.class,
+                FunctionReturnDecoder.class);
+
+        buildTupleResultContainer0(
+                methodBuilder,
+                parameterizedTupleType,
+                buildTypeNames(functionDefinition.getOutputs()));
 
         return methodBuilder.build();
     }
@@ -1617,6 +1731,52 @@ public class SolidityFunctionWrapper extends Generator {
                         .build();
 
         methodBuilder.addStatement("return new $T(\n$L)", buildRemoteCall(tupleType), callableType);
+    }
+
+    private void buildTupleResultContainer0(
+            MethodSpec.Builder methodBuilder,
+            ParameterizedTypeName tupleType,
+            List<TypeName> outputParameterTypes)
+            throws ClassNotFoundException {
+
+        List<TypeName> typeArguments = tupleType.typeArguments;
+
+        CodeBlock.Builder codeBuilder = CodeBlock.builder();
+
+        String resultStringSimple = "\n($T) results.get($L)";
+        if (useNativeJavaTypes) {
+            resultStringSimple += ".getValue()";
+        }
+
+        String resultStringNativeList = "\nconvertToNative(($T) results.get($L).getValue())";
+
+        int size = typeArguments.size();
+        ClassName classList = ClassName.get(List.class);
+
+        for (int i = 0; i < size; i++) {
+            TypeName param = outputParameterTypes.get(i);
+            TypeName convertTo = typeArguments.get(i);
+
+            String resultString = resultStringSimple;
+
+            // If we use native java types we need to convert
+            // elements of arrays to native java types too
+            if (useNativeJavaTypes && param instanceof ParameterizedTypeName) {
+                ParameterizedTypeName oldContainer = (ParameterizedTypeName) param;
+                ParameterizedTypeName newContainer = (ParameterizedTypeName) convertTo;
+                if (newContainer.rawType.compareTo(classList) == 0
+                        && newContainer.typeArguments.size() == 1) {
+                    convertTo =
+                            ParameterizedTypeName.get(classList, oldContainer.typeArguments.get(0));
+                    resultString = resultStringNativeList;
+                }
+            }
+
+            codeBuilder.add(resultString, convertTo, i);
+            codeBuilder.add(i < size - 1 ? ", " : "\n");
+        }
+
+        methodBuilder.addStatement("return new $T(\n$L)", tupleType, codeBuilder.build());
     }
 
     private static CodeBlock buildVariableLengthEventInitializer(
