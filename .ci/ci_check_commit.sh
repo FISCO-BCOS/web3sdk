@@ -30,7 +30,7 @@ scan_code()
 {
     # Redirect output to stderr.
     exec 1>&2
-    for file in $(git diff-index --name-status HEAD^ | grep -v -E '.ci|SM2KeyGenerator|SM2Algorithm' | awk '{print $2}'); do
+    for file in $(git diff-index --name-status HEAD^ | grep -v -E '.ci|PerformanceDTTest|SM2KeyGenerator|SM2Algorithm' | awk '{print $2}'); do
 	if [ ! -f ${file} ];then
 		continue;
 	fi
