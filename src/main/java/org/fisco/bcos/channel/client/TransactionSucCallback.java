@@ -16,6 +16,7 @@ public abstract class TransactionSucCallback {
 
         TransactionReceipt receipt = new TransactionReceipt();
         receipt.setStatus("Transaction receipt timeout.");
+        // For console can get error message when timeout
         receipt.setMessage("Transaction receipt timeout.");
         onResponse(receipt);
     }
