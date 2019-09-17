@@ -377,76 +377,70 @@ public class PerformanceDTTest {
                 Lock fileLock = new ReentrantLock();
                 BufferedWriter writer = null;
 
-                try {
-                    writer = new BufferedWriter(new FileWriter(fileName));
+                writer = new BufferedWriter(new FileWriter(fileName));
 
-                    AtomicLong writed = new AtomicLong(0);
-                    for (int j = start; j < end; ++j) {
-                        final int index = j;
-                        final int totalWrite = end - start;
-                        final BufferedWriter finalWriter = writer;
-                        threadPool.execute(
-                                new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        while (true) {
-                                            DagTransferUser from = dagUserMgr.getFrom(index);
-                                            DagTransferUser to = dagUserMgr.getTo(index);
-                                            if ((deci.intValue() > 0)
-                                                    && (deci.intValue() >= (index % 10 + 1))) {
-                                                to = dagUserMgr.getNext(index);
+                AtomicLong writed = new AtomicLong(0);
+                for (int j = start; j < end; ++j) {
+                    final int index = j;
+                    final int totalWrite = end - start;
+                    final BufferedWriter finalWriter = writer;
+                    threadPool.execute(
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    while (true) {
+                                        DagTransferUser from = dagUserMgr.getFrom(index);
+                                        DagTransferUser to = dagUserMgr.getTo(index);
+                                        if ((deci.intValue() > 0)
+                                                && (deci.intValue() >= (index % 10 + 1))) {
+                                            to = dagUserMgr.getNext(index);
+                                        }
+
+                                        Random random = new Random();
+                                        int r = random.nextInt(100) + 1;
+                                        BigInteger amount = BigInteger.valueOf(r);
+
+                                        try {
+                                            String signedTransaction =
+                                                    dagTransfer.userTransferSeq(
+                                                            from.getUser(),
+                                                            to.getUser(),
+                                                            amount);
+                                            String content =
+                                                    String.format(
+                                                            "%s %d %d%n",
+                                                            signedTransaction, index, r);
+                                            fileLock.lock();
+                                            finalWriter.write(content);
+
+                                            long totalSigned = signed.incrementAndGet();
+                                            if (totalSigned % (count.longValue() / 10) == 0) {
+                                                System.out.println(
+                                                        "Signed transaction: "
+                                                                + String.valueOf(
+                                                                        totalSigned
+                                                                                * 100
+                                                                                / count
+                                                                                        .longValue())
+                                                                + "%");
                                             }
 
-                                            Random random = new Random();
-                                            int r = random.nextInt(100) + 1;
-                                            BigInteger amount = BigInteger.valueOf(r);
-
-                                            try {
-                                                String signedTransaction =
-                                                        dagTransfer.userTransferSeq(
-                                                                from.getUser(),
-                                                                to.getUser(),
-                                                                amount);
-                                                String content =
-                                                        String.format(
-                                                                "%s %d %d%n",
-                                                                signedTransaction, index, r);
-                                                fileLock.lock();
-                                                finalWriter.write(content);
-
-                                                long totalSigned = signed.incrementAndGet();
-                                                if (totalSigned % (count.longValue() / 10) == 0) {
-                                                    System.out.println(
-                                                            "Signed transaction: "
-                                                                    + String.valueOf(
-                                                                            totalSigned
-                                                                                    * 100
-                                                                                    / count
-                                                                                            .longValue())
-                                                                    + "%");
-                                                }
-
-                                                long writedCount = writed.incrementAndGet();
-                                                totalWrited.incrementAndGet();
-                                                if (writedCount >= totalWrite) {
-                                                    finalWriter.close();
-                                                }
-
-                                                break;
-                                            } catch (Exception e) {
-                                                e.printStackTrace();
-                                                continue;
-                                            } finally {
-                                                fileLock.unlock();
+                                            long writedCount = writed.incrementAndGet();
+                                            totalWrited.incrementAndGet();
+                                            if (writedCount >= totalWrite) {
+                                                finalWriter.close();
                                             }
+
+                                            break;
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                            continue;
+                                        } finally {
+                                            fileLock.unlock();
                                         }
                                     }
-                                });
-                    }
-                } finally {
-                    if (writer != null) {
-                        writer.close();
-                    }
+                                }
+                            });
                 }
             }
 
