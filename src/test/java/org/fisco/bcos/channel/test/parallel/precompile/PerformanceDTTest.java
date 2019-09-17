@@ -403,9 +403,7 @@ public class PerformanceDTTest {
                                         try {
                                             String signedTransaction =
                                                     dagTransfer.userTransferSeq(
-                                                            from.getUser(),
-                                                            to.getUser(),
-                                                            amount);
+                                                            from.getUser(), to.getUser(), amount);
                                             String content =
                                                     String.format(
                                                             "%s %d %d%n",
@@ -420,8 +418,7 @@ public class PerformanceDTTest {
                                                                 + String.valueOf(
                                                                         totalSigned
                                                                                 * 100
-                                                                                / count
-                                                                                        .longValue())
+                                                                                / count.longValue())
                                                                 + "%");
                                             }
 
