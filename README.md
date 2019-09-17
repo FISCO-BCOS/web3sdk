@@ -8,7 +8,7 @@ English / [中文](doc/README_CN.md)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/a2a6c2eb499e42739d066ff775d1b288)](https://www.codacy.com/app/fisco/console?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=FISCO-BCOS/console&amp;utm_campaign=Badge_Grade)
 [![GitHub All Releases](https://img.shields.io/github/downloads/FISCO-BCOS/web3sdk/total.svg)](https://github.com/FISCO-BCOS/web3sdk)
 ---
-Web3SDK provides the Java API for [FISCO-BCOS](https://github.com/FISCO-BCOS/FISCO-BCOS/tree/master). You can easily and quickly develop your blockchain applications based on the Web3SDK. **The version only supports** [FISCO BCOS 2+](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/introduction.html).
+Web3SDK provides the Java API for [FISCO-BCOS](https://github.com/FISCO-BCOS/FISCO-BCOS/tree/master). You can easily and quickly develop your blockchain applications based on the Web3SDK. **The version only supports** [FISCO BCOS 2.0+](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/introduction.html).
 
 <div align="center">
   <img src="./images/sdk.png" width = "600" height = "420"/>
