@@ -70,13 +70,37 @@ public class ChannelConnections {
         }
 
         // dafault value is node.crt & node.key
-        if (getSslCert() == null) {
+        if (getSslCert() == null || !getSslCert().exists()) {
+
+            if (getSslCert() == null) {
+                logger.info(
+                        " sslCert not configured in applicationContext.xml, use default setting: {}  ",
+                        SSL_CERT);
+            } else {
+                logger.info(
+                        " sslCert:{} configured in applicationContext.xml not exist, use default setting: {}  ",
+                        getSslCert().getFilename(),
+                        SSL_CERT);
+            }
+
             PathMatchingResourcePatternResolver resolver =
                     new PathMatchingResourcePatternResolver();
             setSslCert(resolver.getResource(SSL_CERT));
         }
 
-        if (getSslKey() == null) {
+        if (getSslKey() == null || !getSslKey().exists()) {
+
+            if (getSslKey() == null) {
+                logger.info(
+                        " sslKey not configured in applicationContext.xml, use default setting: {}  ",
+                        SSL_KEY);
+            } else {
+                logger.info(
+                        " sslKey:{} configured in applicationContext.xml not exist, use default setting: {}  ",
+                        getSslKey().getFilename(),
+                        SSL_KEY);
+            }
+
             PathMatchingResourcePatternResolver resolver =
                     new PathMatchingResourcePatternResolver();
             setSslKey(resolver.getResource(SSL_KEY));
@@ -429,6 +453,7 @@ public class ChannelConnections {
             InputStream caInputStream = caResource.getInputStream();
             Resource keystorecaResource = getSslCert();
             Resource keystorekeyResource = getSslKey();
+
             sslCtx =
                     SslContextBuilder.forClient()
                             .trustManager(caInputStream)
@@ -437,7 +462,6 @@ public class ChannelConnections {
                                     keystorekeyResource.getInputStream())
                             .sslProvider(SslProvider.JDK)
                             .build();
-
         } catch (Exception e) {
             logger.debug("SSLCONTEXT ***********" + e.getMessage());
             throw new SSLException(
