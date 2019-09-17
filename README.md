@@ -8,7 +8,7 @@ English / [中文](doc/README_CN.md)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/a2a6c2eb499e42739d066ff775d1b288)](https://www.codacy.com/app/fisco/console?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=FISCO-BCOS/console&amp;utm_campaign=Badge_Grade)
 [![GitHub All Releases](https://img.shields.io/github/downloads/FISCO-BCOS/web3sdk/total.svg)](https://github.com/FISCO-BCOS/web3sdk)
 ---
-Web3SDK provides the Java API for [FISCO-BCOS](https://github.com/FISCO-BCOS/FISCO-BCOS/tree/master). You can easily and quickly develop your blockchain applications based on the Web3SDK. **The version only supports** [FISCO BCOS 2.0](https://fisco-bcos-documentation.readthedocs.io/zh_CN/release-2.0/docs/introduction.html).
+Web3SDK provides the Java API for [FISCO-BCOS](https://github.com/FISCO-BCOS/FISCO-BCOS/tree/master). You can easily and quickly develop your blockchain applications based on the Web3SDK. **The version only supports** [FISCO BCOS 2+](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/introduction.html).
 
 <div align="center">
   <img src="./images/sdk.png" width = "600" height = "420"/>
@@ -16,10 +16,10 @@ Web3SDK provides the Java API for [FISCO-BCOS](https://github.com/FISCO-BCOS/FIS
 
 ## Features
 
-- Implement [JSON-RPC](https://fisco-bcos-documentation.readthedocs.io/zh_CN/release-2.0/docs/api.html) of FISCO BCOS.
-- Provide [precompiled contracts](https://fisco-bcos-documentation.readthedocs.io/zh_CN/release-2.0/docs/manual/smart_contract.html#id2) to manage the blockchain. 
-- Implement [AMOP](https://fisco-bcos-documentation.readthedocs.io/zh_CN/release-2.0/docs/manual/amop_protocol.html)(Advanced Messages Onchain Protocol) to provide a secure and efficient message channel for the consortium blockchain.
-- Provide [Guomi algorithms](https://fisco-bcos-documentation.readthedocs.io/zh_CN/release-2.0/docs/manual/guomi_crypto.html) to send transactions.
+- Implement [JSON-RPC](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/api.html) of FISCO BCOS.
+- Provide [precompiled contracts](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/manual/smart_contract.html#id2) to manage the blockchain. 
+- Implement [AMOP](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/manual/amop_protocol.html)(Advanced Messages Onchain Protocol) to provide a secure and efficient message channel for the consortium blockchain.
+- Provide [Guomi algorithms](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/manual/guomi_crypto.html) to send transactions.
 
 ## Quickstart
 A [spring boot starter](https://github.com/FISCO-BCOS/spring-boot-starter) for SDK is available that demonstrates a number of core features, including:
@@ -31,7 +31,7 @@ A [spring boot starter](https://github.com/FISCO-BCOS/spring-boot-starter) for S
 - Providing integration tests demonstrating for the above features.
 
 ## Documentation
-- [**中文**](https://fisco-bcos-documentation.readthedocs.io/zh_CN/release-2.0/docs/sdk/sdk.html)
+- [**中文**](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/sdk/sdk.html)
 
 ## Developing & Contributing
 - Star our Github.
