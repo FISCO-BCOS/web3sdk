@@ -1,3 +1,5 @@
+![](https://github.com/FISCO-BCOS/FISCO-BCOS/raw/master/docs/images/FISCO_BCOS_Logo.svg?sanitize=true)
+
 English / [中文](doc/README_CN.md)
 
 # Web3SDK
@@ -17,12 +19,33 @@ Web3SDK provides the Java API for [FISCO-BCOS](https://github.com/FISCO-BCOS/FIS
 ## Features
 
 - Implement [JSON-RPC](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/api.html) of FISCO BCOS.
-- Provide [precompiled contracts](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/manual/smart_contract.html#id2) to manage the blockchain. 
+- Provide [precompiled contracts](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/manual/smart_contract.html#precompiled-contract-development) to manage the blockchain. 
 - Implement [AMOP](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/manual/amop_protocol.html)(Advanced Messages Onchain Protocol) to provide a secure and efficient message channel for the consortium blockchain.
-- Provide [Guomi algorithms](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/manual/guomi_crypto.html) to send transactions.
+- Provide [OSCCA-approved cryptography](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/manual/guomi_crypto.html) to send transactions.
+
+## Compile
+
+**Environmental requirements**:
+- [JDK8 or above](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/sdk/sdk.html#environment-requirements)
+- Gradle 5.0 or above
+
+**Compile web3sdk using the following command**:
+```shell
+$ cd web3sdk
+$ ./gradlew build
+```
+
+**The artifact is located at**:
+```shell
+web3sdk/dist/apps/web3sdk.jar
+```
+
+## Documentation
+  - [**English**](https://fisco-bcos-documentation.readthedocs.io/en/latest/docs/sdk/sdk.html)
+  - [**Chinese**](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/sdk/sdk.html)
 
 ## Quickstart
-A [spring boot starter](https://github.com/FISCO-BCOS/spring-boot-starter) for SDK is available that demonstrates a number of core features, including:
+[spring boot starter](https://github.com/FISCO-BCOS/spring-boot-starter) for Web3SDK is available that demonstrates a number of core features, including:
 
 - Connecting to a node on the FISCO BCOS network.
 - Deploying a smart contract to the network.
@@ -30,26 +53,18 @@ A [spring boot starter](https://github.com/FISCO-BCOS/spring-boot-starter) for S
 - Updating a value in the deployed smart contract.
 - Providing integration tests demonstrating for the above features.
 
-## Documentation
-- [**中文**](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/sdk/sdk.html)
+## Code Contribution
+  - If this project is useful to you, please star us on GitHub project page.
+  - Pull requests. See [CONTRIBUTING](CONTRIBUTING.md).
+  - Report bugs, issues or feature requests. Using [GitHub issues](https://github.com/FISCO-BCOS/web3sdk/issues/new).
+  - If you find any security vulnerabilities, please [report them](https://security.webank.com) here!
 
-## Developing & Contributing
-- Star our Github.
-- Pull requests. See [CONTRIBUTING](CONTRIBUTING.md).
-- [Ask questions](https://github.com/FISCO-BCOS/web3sdk/issues).
-- Discuss in [WeChat group](https://github.com/FISCO-BCOS/FISCO-BCOS-DOC/blob/release-2.0/images/community/WeChatQR.jpg)  or [Gitter](https://gitter.im/fisco-bcos/Lobby).
+## Join Our Community
 
-## Community
+The FISCO BCOS community is one of the most active open-source blockchain communities in China. It provides long-term technical support for both institutional and individual developers and users of FISCO BCOS. Thousands of technical enthusiasts from numerous industry sectors have joined this community, studying and using FISCO BCOS platform. If you are also interested, you are most welcome to join us for more support and fun.
 
-By the end of 2018, Financial Blockchain Shenzhen Consortium (FISCO) has attracted and admitted more than 100 members from 6 sectors including banking, fund management, securities brokerage, insurance, regional equity exchanges, and financial information service companies. The first members include the following organizations: Beyondsoft, Huawei, Shenzhen Securities Communications, Digital China, Forms Syntron, Tencent, WeBank, Yuexiu FinTech.
-
-- Join our WeChat [![Scan](https://img.shields.io/badge/style-Scan_QR_Code-green.svg?logo=wechat&longCache=false&style=social&label=Group)](https://github.com/FISCO-BCOS/FISCO-BCOS-DOC/blob/release-2.0/images/community/WeChatQR.jpg) and [![Scan](https://img.shields.io/badge/style-Scan_QR_Code-green.svg?logo=wechat&longCache=false&style=social&label=Official%20accounts)](https://github.com/FISCO-BCOS/FISCO-BCOS-DOC/blob/release-2.0/images/community/OfficialAccountsQR.jpg) 
-
-- Discuss in [![Gitter](https://img.shields.io/badge/style-on_gitter-green.svg?logo=gitter&longCache=false&style=social&label=Chat)](https://gitter.im/fisco-bcos/Lobby) 
-
-- Read news by [![](https://img.shields.io/twitter/url/http/shields.io.svg?style=social&label=Follow@FiscoBcos)](https://twitter.com/FiscoBcos)
-
-- Mail us at [![](https://img.shields.io/twitter/url/http/shields.io.svg?logo=Gmail&style=social&label=service@fisco.com.cn)](mailto:service@fisco.com.cn)
+![](https://media.githubusercontent.com/media/FISCO-BCOS/LargeFiles/master/images/QR_image_en.png)
+ 
 
 ## License
 ![license](http://img.shields.io/badge/license-Apache%20v2-blue.svg)
