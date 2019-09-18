@@ -2,7 +2,8 @@
 
 set -e
 
-scan_code_script="python ~/cobra/cobra.py -t "
+scan_code_script="cobra/cobra.py -f json -o /tmp/report.json -t "
+ignore_files=(PerformanceOkDSync.java)
 
 LOG_ERROR() {
     content=${1}
@@ -14,27 +15,27 @@ LOG_INFO() {
     echo -e "\033[32m${content}\033[0m"
 }
 
-execute_cmd() {
-    command="${1}"
-    eval ${command}
-    ret=$?
-    if [ $ret -ne 0 ];then
-        LOG_ERROR "FAILED of command: ${command}"
-        exit 1
-    else
-        LOG_INFO "SUCCESS of command: ${command}"
-    fi
+should_ignore()
+{
+    local file=${1}
+    for ignore in ${ignore_files[*]}; do
+        if echo ${file} | grep ${ignore} &>/dev/null; then
+            echo "ignore ${file} ${ignore}"
+            return 0
+        fi
+    done
+    return 1
 }
 
 scan_code()
 {
     # Redirect output to stderr.
     exec 1>&2
-    for file in $(git diff-index --name-status HEAD^ | grep -v -E '.ci|PerformanceDTTest|SM2KeyGenerator|SM2Algorithm' | awk '{print $2}'); do
-	if [ ! -f ${file} ];then
-		continue;
-	fi
-        execute_cmd "${scan_code_script} $file -f json -o /tmp/report.json"
+    for file in $(git diff-index --name-status HEAD^ | awk '{print $2}'); do
+        if should_ignore ${file}; then continue; fi
+        if [ ! -f ${file} ];then continue; fi
+        LOG_INFO "check file ${file}"
+        python ${scan_code_script} $file 
         trigger_rules=$(jq -r '.' /tmp/report.json | grep 'trigger_rules' | awk '{print $2}' | sed 's/,//g')
         echo "trigger_rules is ${trigger_rules}"
         rm /tmp/report.json
@@ -46,9 +47,9 @@ scan_code()
 }
 
 install_cobra() {
-   git clone https://github.com/WhaleShark-Team/cobra.git ~/cobra
-   pip install -r ~/cobra/requirements.txt
-   cp ~/cobra/config.template ~/cobra/config
+   git clone https://github.com/WhaleShark-Team/cobra.git
+   pip install -r cobra/requirements.txt
+   cp cobra/config.template cobra/config
 }
 
 install_cobra
