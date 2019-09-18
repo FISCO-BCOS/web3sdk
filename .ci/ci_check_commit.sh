@@ -2,7 +2,7 @@
 
 set -e
 
-scan_code_script="python ~/cobra/cobra.py -t "
+scan_code_script="cobra/cobra.py -f json -o /tmp/report.json -t "
 ignore_files=(PerformanceOkDSync.java)
 
 LOG_ERROR() {
@@ -13,18 +13,6 @@ LOG_ERROR() {
 LOG_INFO() {
     content=${1}
     echo -e "\033[32m${content}\033[0m"
-}
-
-execute_cmd() {
-    command="${1}"
-    eval ${command}
-    ret=$?
-    if [ $ret -ne 0 ];then
-        LOG_ERROR "FAILED of command: ${command}"
-        exit 1
-    else
-        LOG_INFO "SUCCESS of command: ${command}"
-    fi
 }
 
 should_ignore()
@@ -59,9 +47,9 @@ scan_code()
 }
 
 install_cobra() {
-   git clone https://github.com/WhaleShark-Team/cobra.git ~/cobra
-   pip install -r ~/cobra/requirements.txt
-   cp ~/cobra/config.template ~/cobra/config
+   git clone https://github.com/WhaleShark-Team/cobra.git
+   pip install -r cobra/requirements.txt
+   cp cobra/config.template cobra/config
 }
 
 install_cobra
