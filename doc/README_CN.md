@@ -1,3 +1,5 @@
+![](https://github.com/FISCO-BCOS/FISCO-BCOS/raw/master/docs/images/FISCO_BCOS_Logo.svg?sanitize=true)
+
 [English](../README.md) / 中文
 
 # Web3SDK
@@ -22,6 +24,28 @@ Web3SDK为[FISCO BCOS](https://github.com/FISCO-BCOS/FISCO-BCOS/tree/master)提�
 - 支持[链上信使协议](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/manual/amop_protocol.html)为联盟链提供安全高效的消息信道。
 - 支持使用[国密算法](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/manual/guomi_crypto.html)发送交易。
 
+## 源码编译
+
+**环境要求**:
+  - [JDK8及以上](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/sdk/sdk.html#id1)
+  - Gradle 5.0及以上
+
+**编译运行如下命令**:
+```shell
+$ cd web3sdk
+$ ./gradlew build
+```
+**编译结果**: 
+编译的web3sdk jar位于:
+```shell
+web3sdk/dist/apps/web3sdk.jar
+```
+
+## 文档
+- [**英文**](https://fisco-bcos-documentation.readthedocs.io/en/latest/docs/sdk/sdk.html)
+- [**中文**](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/sdk/sdk.html)
+
+
 ## 快速入门
 提供基于SDK的[spring boot starter](https://github.com/FISCO-BCOS/spring-boot-starter)示例项目，示例项目使用了SDK的核心特性, 包括:
 
@@ -31,27 +55,20 @@ Web3SDK为[FISCO BCOS](https://github.com/FISCO-BCOS/FISCO-BCOS/tree/master)提�
 - 更新部署合约的变量值。
 - 提供SDK API接口的测试案例。
 
-## 文档
-- [**中文**](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/sdk/sdk.html)
-
 ## 贡献代码
 欢迎参与FISCO BCOS的社区建设：
-- 点亮我们的小星星(点击项目左上方Star按钮)。
+- 如项目对您有帮助，欢迎点亮我们的小星星(点击项目左上方Star按钮)。
 - 提交代码(Pull requests)，参考我们的[代码贡献流程](CONTRIBUTING_CN.md)。
-- [提问和提交BUG](https://github.com/FISCO-BCOS/web3sdk/issues)。
-- 在[微信群](https://github.com/FISCO-BCOS/FISCO-BCOS-DOC/blob/release-2.0/images/community/WeChatQR.jpg)和[Gitter](https://gitter.im/fisco-bcos/Lobby)参与讨论。
+- [提问和提交BUG](https://github.com/FISCO-BCOS/web3sdk/issues/new)。
+- 如果发现代码存在安全漏洞，请在[这里](https://security.webank.com)上报。
 
-## 社区生态
+## 加入我们的社区
 
-**金链盟**开源工作组，获得金链盟成员机构的广泛认可，并由专注于区块链底层技术研发的成员机构及开发者牵头开展工作。其中首批成员包括以下单位(排名不分先后): 博彦科技、华为、深证通、神州数码、四方精创、腾讯、微众银行、越秀金科。
+FISCO BCOS开源社区是国内活跃的开源社区，社区长期为机构和个人开发者提供各类支持与帮助。已有来自各行业的数千名技术爱好者在研究和使用FISCO BCOS。如您对FISCO BCOS开源技术及应用感兴趣，欢迎加入社区获得更多支持与帮助。
 
-- 微信群：[![Scan](https://img.shields.io/badge/style-Scan_QR_Code-green.svg?logo=wechat&longCache=false&style=social&label=Group)](https://github.com/FISCO-BCOS/FISCO-BCOS-DOC/blob/release-2.0/images/community/WeChatQR.jpg)  公众号：[![Scan](https://img.shields.io/badge/style-Scan_QR_Code-green.svg?logo=wechat&longCache=false&style=social&label=Official%20accounts)](https://github.com/FISCO-BCOS/FISCO-BCOS-DOC/blob/release-2.0/images/community/OfficialAccountsQR.jpg)
 
-- Gitter：[![Gitter](https://img.shields.io/badge/style-on_gitter-green.svg?logo=gitter&longCache=false&style=social&label=Chat)](https://gitter.im/fisco-bcos/Lobby) 
+![](https://media.githubusercontent.com/media/FISCO-BCOS/LargeFiles/master/images/QR_image.png)
 
-- Twitter：[![](https://img.shields.io/twitter/url/http/shields.io.svg?style=social&label=Follow@FiscoBcos)](https://twitter.com/FiscoBcos)
-
-- e-mail：[![](https://img.shields.io/twitter/url/http/shields.io.svg?logo=Gmail&style=social&label=service@fisco.com.cn)](mailto:service@fisco.com.cn)
 
 ## License
 ![license](http://img.shields.io/badge/license-Apache%20v2-blue.svg)
