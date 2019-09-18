@@ -8,6 +8,8 @@ import org.fisco.bcos.channel.dto.BcosResponse;
 import org.fisco.bcos.web3j.protocol.core.Request;
 import org.fisco.bcos.web3j.protocol.core.Response;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Call.CallOutput;
+import org.fisco.bcos.web3j.protocol.core.methods.response.SendTransaction;
+import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.protocol.exceptions.MessageDecodingException;
 import org.fisco.bcos.web3j.tx.exceptions.ContractCallException;
 import org.slf4j.Logger;
@@ -111,7 +113,6 @@ public class ChannelEthereumService extends org.fisco.bcos.web3j.protocol.Servic
             fiscoRequest.setTimeout(timeout);
         }
 
-        BcosResponse response;
         if (!request.isNeedTransCallback()) {
             channelService.asyncSendEthereumMessage(
                     fiscoRequest,
@@ -148,14 +149,57 @@ public class ChannelEthereumService extends org.fisco.bcos.web3j.protocol.Servic
                                         "fisco Request:{} {}",
                                         fiscoRequest.getMessageID(),
                                         objectMapper.writeValueAsString(request));
+
                                 logger.debug(
                                         "fisco Response:{} {} {}",
                                         fiscoRequest.getMessageID(),
                                         response.getErrorCode(),
                                         response.getContent());
 
-                                if (response.getErrorCode() != 0) {
-                                    logger.error("Error: " + response.getErrorCode());
+                                if (response.getErrorCode() == 0) {
+
+                                    // SendTransaction
+                                    SendTransaction sendTransaction =
+                                            objectMapper.readValue(
+                                                    response.getContent(), SendTransaction.class);
+
+                                    if (sendTransaction.getError() == null) {
+                                        logger.debug(
+                                                "sendRawTransaction response ok, transaction hash: {} ",
+                                                sendTransaction.getResult());
+                                    } else {
+                                        TransactionReceipt receipt = new TransactionReceipt();
+                                        receipt.setStatus(
+                                                String.valueOf(
+                                                        sendTransaction.getError().getCode()));
+                                        receipt.setMessage(sendTransaction.getError().getMessage());
+
+                                        // optional code
+                                        if (channelService.getThreadPool() == null) {
+                                            channelService.onReceiveTransactionMessage(
+                                                    fiscoRequest.getMessageID(), receipt);
+                                        } else {
+                                            // Execute the callback function in the thread pool
+                                            channelService
+                                                    .getThreadPool()
+                                                    .execute(
+                                                            new Runnable() {
+                                                                @Override
+                                                                public void run() {
+                                                                    channelService
+                                                                            .onReceiveTransactionMessage(
+                                                                                    fiscoRequest
+                                                                                            .getMessageID(),
+                                                                                    receipt);
+                                                                }
+                                                            });
+                                        }
+
+                                        logger.debug(
+                                                " sendRawTransaction response not ok, code: {}, message: {} ",
+                                                receipt.getStatus(),
+                                                receipt.getMessage());
+                                    }
                                 }
                             } catch (Exception e) {
                                 logger.error("Error: ", e);

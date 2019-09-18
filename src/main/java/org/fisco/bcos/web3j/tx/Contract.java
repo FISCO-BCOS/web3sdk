@@ -7,6 +7,9 @@ import java.util.*;
 import java.util.concurrent.Semaphore;
 import java.util.stream.Collectors;
 import org.fisco.bcos.channel.client.TransactionSucCallback;
+import org.fisco.bcos.channel.event.filter.EventLogPushWithDecodeCallback;
+import org.fisco.bcos.channel.event.filter.EventLogUserParams;
+import org.fisco.bcos.fisco.EnumNodeVersion;
 import org.fisco.bcos.web3j.abi.EventEncoder;
 import org.fisco.bcos.web3j.abi.EventValues;
 import org.fisco.bcos.web3j.abi.FunctionEncoder;
@@ -18,6 +21,8 @@ import org.fisco.bcos.web3j.abi.datatypes.Function;
 import org.fisco.bcos.web3j.abi.datatypes.Type;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.protocol.Web3j;
+import org.fisco.bcos.web3j.protocol.Web3jService;
+import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameterName;
 import org.fisco.bcos.web3j.protocol.core.JsonRpc2_0Web3j;
@@ -29,6 +34,7 @@ import org.fisco.bcos.web3j.tx.exceptions.ContractCallException;
 import org.fisco.bcos.web3j.tx.gas.ContractGasProvider;
 import org.fisco.bcos.web3j.tx.gas.DefaultGasProvider;
 import org.fisco.bcos.web3j.tx.gas.StaticGasProvider;
+import org.fisco.bcos.web3j.tx.txdecode.TransactionDecoder;
 import org.fisco.bcos.web3j.utils.Numeric;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +54,7 @@ public abstract class Contract extends ManagedTransaction {
 
     public static final String BIN_NOT_PROVIDED = "Bin file was not provided";
     public static final String FUNC_DEPLOY = "deploy";
-    public static final String BCOS_RC1 = "2.0.0-rc1";
+
     protected final String contractBinary;
     protected String contractAddress;
     protected ContractGasProvider gasProvider;
@@ -94,19 +100,21 @@ public abstract class Contract extends ManagedTransaction {
             NodeVersion.Version nodeVersion = web3j.getNodeVersion().send().getNodeVersion();
             version = nodeVersion.getVersion();
             supportedVersion = nodeVersion.getSupportedVersion();
-            if (BCOS_RC1.equals(version) || BCOS_RC1.equals(supportedVersion)) {
-                version = BCOS_RC1;
-                logger.info("fisco-bcos version:{}", version);
+
+            if (EnumNodeVersion.BCOS_2_0_0_RC1.getVersion().equals(version)
+                    || EnumNodeVersion.BCOS_2_0_0_RC1.getVersion().equals(supportedVersion)) {
+                version = EnumNodeVersion.BCOS_2_0_0_RC1.getVersion();
+                logger.debug("fisco-bcos version:{}", version);
             } else {
                 chainId = nodeVersion.getChainID();
-                logger.info(
+                logger.debug(
                         "fisco-bcos version:{}, supported version:{}", version, supportedVersion);
             }
         } catch (IOException e) {
             logger.error("Query fisco-bcos version failed", e);
         }
 
-        return BCOS_RC1.equals(version)
+        return EnumNodeVersion.BCOS_2_0_0_RC1.getVersion().equals(version)
                 ? new RawTransactionManager(web3j, credentials)
                 : new ExtendedRawTransactionManager(
                         web3j, credentials, BigInteger.valueOf(groupId), new BigInteger(chainId));
@@ -404,9 +412,11 @@ public abstract class Contract extends ManagedTransaction {
                     gasProvider.getGasLimit(function.getName()),
                     callback);
         } catch (IOException e) {
-            e.printStackTrace();
+            // e.print_Stack_Trace();
+            logger.error(" IOException, message:{}", e.getMessage());
         } catch (TransactionException e) {
-            e.printStackTrace();
+            // e.print_Stack_Trace();
+            logger.error(" TransactionException, message:{}", e.getMessage());
         }
     }
 
@@ -421,7 +431,8 @@ public abstract class Contract extends ManagedTransaction {
                             gasProvider.getGasLimit(function.getName()));
             return signedTransaction;
         } catch (IOException e) {
-            e.printStackTrace();
+            // e.print_Stack_Trace();
+            logger.error(" IOException, message:{}", e.getMessage());
             return "";
         }
     }
@@ -725,6 +736,64 @@ public abstract class Contract extends ManagedTransaction {
                                 BigInteger.ZERO));
     }
 
+    public void registerEventLogPushFilter(
+            TransactionDecoder decoder,
+            EventLogUserParams params,
+            EventLogPushWithDecodeCallback callback) {
+
+        Web3jService service = ((JsonRpc2_0Web3j) web3j).web3jService();
+
+        ChannelEthereumService channelEthereumService = (ChannelEthereumService) service;
+        // set timeout
+        // filter.setTimeout(channelEthereumService.getTimeout());
+        callback.setDecoder(decoder);
+
+        channelEthereumService.getChannelService().registerEventLogFilter(params, callback);
+    }
+
+    public void registerEventLogPushFilter(
+            String abi, String bin, String topic0, EventLogPushWithDecodeCallback callback) {
+        registerEventLogPushFilter(
+                abi,
+                bin,
+                topic0,
+                new String(DefaultBlockParameterName.LATEST.getValue()),
+                new String(DefaultBlockParameterName.LATEST.getValue()),
+                new ArrayList<String>(),
+                callback);
+    }
+
+    public void registerEventLogPushFilter(
+            String abi,
+            String bin,
+            String topic0,
+            String fromBlock,
+            String toBlock,
+            List<String> otherTopics,
+            EventLogPushWithDecodeCallback callback) {
+
+        EventLogUserParams filter = new EventLogUserParams();
+        filter.setFromBlock(fromBlock);
+        filter.setToBlock(toBlock);
+
+        List<String> addresses = new ArrayList<String>();
+        addresses.add(getContractAddress());
+        filter.setAddresses(addresses);
+
+        List<Object> topics = new ArrayList<Object>();
+        topics.add(topic0);
+        if (otherTopics != null) {
+            for (Object obj : otherTopics) {
+                topics.add(obj);
+            }
+        }
+
+        filter.setTopics(topics);
+
+        TransactionDecoder decoder = new TransactionDecoder(abi, bin);
+        this.registerEventLogPushFilter(decoder, filter, callback);
+    }
+
     public static EventValues staticExtractEventParameters(Event event, Log log) {
 
         List<String> topics = log.getTopics();
@@ -771,6 +840,13 @@ public abstract class Contract extends ManagedTransaction {
         return transactionReceipt
                 .getLogs()
                 .stream()
+                .map(log -> extractEventParametersWithLog(event, log))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+
+    protected List<EventValuesWithLog> extractEventParametersWithLog(Event event, List<Log> logs) {
+        return logs.stream()
                 .map(log -> extractEventParametersWithLog(event, log))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());

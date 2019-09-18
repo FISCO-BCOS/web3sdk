@@ -1,14 +1,14 @@
 package org.fisco.bcos.channel.test.contract;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.fisco.bcos.channel.client.TransactionSucCallback;
+import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class PerfomanceTableTestCallback extends TransactionSucCallback {
-    private static ObjectMapper objectMapper = new ObjectMapper();
+
     private Long startTime = System.currentTimeMillis();
 
     private PerfomanceCollector collector;
@@ -24,7 +24,8 @@ public class PerfomanceTableTestCallback extends TransactionSucCallback {
     static Logger logger = LoggerFactory.getLogger(PerfomanceTableTestCallback.class);
 
     PerfomanceTableTestCallback() {
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        ObjectMapperFactory.getObjectMapper()
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
     @Override

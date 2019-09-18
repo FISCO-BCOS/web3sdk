@@ -1,13 +1,16 @@
 package org.fisco.bcos.channel.dto;
 
+import io.netty.channel.ChannelHandlerContext;
 import java.nio.charset.StandardCharsets;
 
 public class ChannelResponse {
 
-    private Integer errorCode; // 错误码
-    private String errorMessage; // 错误信息
-    private String messageID; // 消息唯一ID
-    private byte[] content; // 响应包体
+    private Integer errorCode;
+    private String errorMessage;
+    private String messageID; // message unique ID
+    private byte[] content; // return message body
+
+    private ChannelHandlerContext ctx; // connection of message exchange
 
     public Integer getErrorCode() {
         return errorCode;
@@ -56,5 +59,13 @@ public class ChannelResponse {
 
     public void setContent(byte[] content) {
         this.content = content;
+    }
+
+    public ChannelHandlerContext getCtx() {
+        return ctx;
+    }
+
+    public void setCtx(ChannelHandlerContext ctx) {
+        this.ctx = ctx;
     }
 }

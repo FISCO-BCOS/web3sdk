@@ -23,6 +23,16 @@ public class ChannelPush {
 
     private byte[] content; // 请求包体
 
+    private String topic;
+
+    public String getTopic() {
+        return topic;
+    }
+
+    public void setTopic(String topic) {
+        this.topic = topic;
+    }
+
     public String getKeyID() {
         return keyID;
     }
@@ -123,13 +133,12 @@ public class ChannelPush {
     public void sendResponse(ChannelResponse response) {
         logger.debug("send ChannelResponse seq:{}", response.getMessageID());
 
-        response.setMessageID(seq);
+        response.setMessageID(getSeq());
 
-        service.sendResponseMessage(response, info, ctx, fromNode, toNode, seq);
+        getService().sendResponseMessage2(response, getCtx(), getSeq(), topic);
     }
 
     // 回包用字段
-
     public Service getService() {
         return service;
     }
