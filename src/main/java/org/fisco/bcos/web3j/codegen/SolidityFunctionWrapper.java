@@ -44,7 +44,6 @@ import org.fisco.bcos.web3j.abi.datatypes.generated.AbiTypes;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 import org.fisco.bcos.web3j.protocol.Web3j;
-import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
 import org.fisco.bcos.web3j.protocol.core.RemoteCall;
 import org.fisco.bcos.web3j.protocol.core.methods.request.BcosFilter;
 import org.fisco.bcos.web3j.protocol.core.methods.response.AbiDefinition;
@@ -63,7 +62,7 @@ import org.slf4j.LoggerFactory;
 
 /** Generate Java Classes based on generated Solidity bin and abi files. */
 public class SolidityFunctionWrapper extends Generator {
-
+    private static final int maxSolidityBinSize = 0x40000;
     private static final String BINARY = "BINARY";
     private static final String WEB3J = "web3j";
     private static final String CREDENTIALS = "credentials";
@@ -74,9 +73,11 @@ public class SolidityFunctionWrapper extends Generator {
     private static final String GAS_PRICE = "gasPrice";
     private static final String GAS_LIMIT = "gasLimit";
     private static final String FILTER = "filter";
-    private static final String START_BLOCK = "startBlock";
-    private static final String END_BLOCK = "endBlock";
+    private static final String FROM_BLOCK = "fromBlock";
+    private static final String TO_BLOCK = "toBlock";
     private static final String WEI_VALUE = "weiValue";
+    private static final String CALLBACK_VALUE = "callback";
+    private static final String OTHER_TOPICS = "otherTopcs";
     private static final String FUNC_NAME_PREFIX = "FUNC_";
     private String abiContent;
     private static final ClassName LOG = ClassName.get(Log.class);
@@ -131,8 +132,14 @@ public class SolidityFunctionWrapper extends Generator {
             String destinationDir,
             String basePackageName,
             Map<String, String> addresses)
-            throws IOException, ClassNotFoundException {
+            throws IOException, ClassNotFoundException, UnsupportedOperationException {
         String className = Strings.capitaliseFirstLetter(contractName);
+
+        if (bin.length() > maxSolidityBinSize) {
+            throw new UnsupportedOperationException(
+                    " contract binary too long, max support is 256k, now is "
+                            + Integer.valueOf(bin.length()));
+        }
 
         TypeSpec.Builder classBuilder = createClassBuilder(className, bin, abi);
 
@@ -242,8 +249,10 @@ public class SolidityFunctionWrapper extends Generator {
     }
 
     private FieldSpec createBinaryDefinition(String binary) {
+
         return FieldSpec.builder(String.class, BINARY)
-                .addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC)
+                .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+                // .addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC)
                 .initializer("$S", binary)
                 .build();
     }
@@ -636,6 +645,20 @@ public class SolidityFunctionWrapper extends Generator {
         return toReturn.build();
     }
 
+    private MethodSpec.Builder addParameter(
+            MethodSpec.Builder methodBuilder, String type, String name) {
+
+        ParameterSpec parameterSpec = buildParameterType(type, name);
+
+        TypeName typeName = getWrapperType(parameterSpec.type);
+
+        ParameterSpec inputParameter = ParameterSpec.builder(typeName, parameterSpec.name).build();
+
+        methodBuilder.addParameter(inputParameter);
+
+        return methodBuilder;
+    }
+
     private String addParameters(
             MethodSpec.Builder methodBuilder, List<AbiDefinition.NamedType> namedTypes) {
 
@@ -652,7 +675,7 @@ public class SolidityFunctionWrapper extends Generator {
 
         if (useNativeJavaTypes) {
             return Collection.join(
-                    inputParameterTypes,
+                    namedTypes,
                     ", \n",
                     // this results in fully qualified names being generated
                     this::createMappedParameterTypes);
@@ -661,7 +684,14 @@ public class SolidityFunctionWrapper extends Generator {
         }
     }
 
-    private String createMappedParameterTypes(ParameterSpec parameterSpec) {
+    private String createMappedParameterTypes(AbiDefinition.NamedType namedType) {
+
+        String name = namedType.getName();
+        String type = namedType.getType();
+        AbiDefinition.NamedType.Type innerType = new AbiDefinition.NamedType.Type(type);
+
+        ParameterSpec parameterSpec = ParameterSpec.builder(buildTypeName(type), name).build();
+
         if (parameterSpec.type instanceof ParameterizedTypeName) {
             List<TypeName> typeNames = ((ParameterizedTypeName) parameterSpec.type).typeArguments;
             if (typeNames.size() != 1) {
@@ -671,29 +701,49 @@ public class SolidityFunctionWrapper extends Generator {
                 String parameterSpecType = parameterSpec.type.toString();
                 TypeName typeName = typeNames.get(0);
                 String typeMapInput = typeName + ".class";
+
                 if (typeName instanceof ParameterizedTypeName) {
                     List<TypeName> typeArguments = ((ParameterizedTypeName) typeName).typeArguments;
                     if (typeArguments.size() != 1) {
                         throw new UnsupportedOperationException(
                                 "Only a single parameterized type is supported");
                     }
+
                     TypeName innerTypeName = typeArguments.get(0);
                     parameterSpecType =
                             ((ParameterizedTypeName) parameterSpec.type).rawType.toString();
+
                     typeMapInput =
                             ((ParameterizedTypeName) typeName).rawType
                                     + ".class, "
                                     + innerTypeName
                                     + ".class";
                 }
-                return "new "
-                        + parameterSpecType
-                        + "(\n"
-                        + "        org.fisco.bcos.web3j.abi.Utils.typeMap("
-                        + parameterSpec.name
-                        + ", "
-                        + typeMapInput
-                        + "))";
+
+                if (innerType.dynamicArray()) { // dynamic array
+                    return parameterSpec.name
+                            + ".isEmpty()?org.fisco.bcos.web3j.abi.datatypes.DynamicArray.empty"
+                            + "(\""
+                            + type
+                            + "\"):"
+                            + "new "
+                            + parameterSpecType
+                            + "(\n"
+                            + "        org.fisco.bcos.web3j.abi.Utils.typeMap("
+                            + parameterSpec.name
+                            + ", "
+                            + typeMapInput
+                            + "))";
+                } else { // static array
+                    return "new "
+                            + parameterSpecType
+                            + "(\n"
+                            + "        org.fisco.bcos.web3j.abi.Utils.typeMap("
+                            + parameterSpec.name
+                            + ", "
+                            + typeMapInput
+                            + "))";
+                }
             }
         } else {
             return "new " + parameterSpec.type + "(" + parameterSpec.name + ")";
@@ -779,6 +829,11 @@ public class SolidityFunctionWrapper extends Generator {
         }
     }
 
+    private ParameterSpec buildParameterType(String type, String name) {
+
+        return ParameterSpec.builder(buildTypeName(type), name).build();
+    }
+
     static List<ParameterSpec> buildParameterTypes(List<AbiDefinition.NamedType> namedTypes) {
         List<ParameterSpec> result = new ArrayList<>(namedTypes.size());
         for (int i = 0; i < namedTypes.size(); i++) {
@@ -786,6 +841,7 @@ public class SolidityFunctionWrapper extends Generator {
 
             String name = createValidParamName(namedType.getName(), i);
             String type = namedTypes.get(i).getType();
+            namedType.setName(name);
 
             result.add(ParameterSpec.builder(buildTypeName(type), name).build());
         }
@@ -1200,16 +1256,16 @@ public class SolidityFunctionWrapper extends Generator {
         MethodSpec.Builder flowableMethodBuilder =
                 MethodSpec.methodBuilder(generatedFunctionName)
                         .addModifiers(Modifier.PUBLIC)
-                        .addParameter(DefaultBlockParameter.class, START_BLOCK)
-                        .addParameter(DefaultBlockParameter.class, END_BLOCK)
+                        .addParameter(String.class, FROM_BLOCK)
+                        .addParameter(String.class, TO_BLOCK)
                         .returns(parameterizedTypeName);
 
         flowableMethodBuilder
                 .addStatement(
                         "$1T filter = new $1T($2L, $3L, " + "getContractAddress())",
                         BcosFilter.class,
-                        START_BLOCK,
-                        END_BLOCK)
+                        FROM_BLOCK,
+                        TO_BLOCK)
                 .addStatement(
                         "filter.addSingleTopic($T.encode("
                                 + buildEventDefinitionName(functionName)
@@ -1218,6 +1274,61 @@ public class SolidityFunctionWrapper extends Generator {
                 .addStatement("return " + generatedFunctionName + "(filter)");
 
         return flowableMethodBuilder.build();
+    }
+
+    private MethodSpec buildRegisterEventLogPushFunction(String eventName)
+            throws ClassNotFoundException {
+
+        String generatedFunctionName = "register" + eventName + "EventLogFilter";
+
+        MethodSpec.Builder getEventMethodBuilder =
+                MethodSpec.methodBuilder(generatedFunctionName)
+                        .addModifiers(Modifier.PUBLIC)
+                        .addParameter(String.class, FROM_BLOCK)
+                        .addParameter(String.class, TO_BLOCK);
+
+        addParameter(getEventMethodBuilder, "string[]", OTHER_TOPICS)
+                .addParameter(AbiTypes.getType("EventLogPushCallback"), CALLBACK_VALUE);
+
+        getEventMethodBuilder.addStatement(
+                "String topic0 = $T.encode(" + buildEventDefinitionName(eventName) + ")",
+                EventEncoder.class);
+
+        getEventMethodBuilder.addStatement(
+                "registerEventLogPushFilter(ABI,BINARY"
+                        + ","
+                        + "topic0"
+                        + ","
+                        + FROM_BLOCK
+                        + ","
+                        + TO_BLOCK
+                        + ","
+                        + OTHER_TOPICS
+                        + ","
+                        + CALLBACK_VALUE
+                        + ")");
+
+        return getEventMethodBuilder.build();
+    }
+
+    private MethodSpec buildDefaultRegisterEventLogPushFunction(String eventName)
+            throws ClassNotFoundException {
+
+        String generatedFunctionName = "register" + eventName + "EventLogFilter";
+
+        MethodSpec.Builder getEventMethodBuilder =
+                MethodSpec.methodBuilder(generatedFunctionName)
+                        .addModifiers(Modifier.PUBLIC)
+                        .addParameter(AbiTypes.getType("EventLogPushCallback"), CALLBACK_VALUE);
+
+        getEventMethodBuilder.addStatement(
+                "String topic0 = $T.encode(" + buildEventDefinitionName(eventName) + ")",
+                EventEncoder.class);
+
+        getEventMethodBuilder.addStatement(
+                "registerEventLogPushFilter(ABI,BINARY" + ",topic0" + "," + CALLBACK_VALUE + ")");
+
+        return getEventMethodBuilder.build();
     }
 
     MethodSpec buildEventTransactionReceiptFunction(
@@ -1299,10 +1410,14 @@ public class SolidityFunctionWrapper extends Generator {
                 buildEventTransactionReceiptFunction(
                         responseClassName, functionName, indexedParameters, nonIndexedParameters));
 
-        methods.add(
-                buildEventFlowableFunction(
-                        responseClassName, functionName, indexedParameters, nonIndexedParameters));
-        methods.add(buildDefaultEventFlowableFunction(responseClassName, functionName));
+        methods.add(buildRegisterEventLogPushFunction(functionName));
+        methods.add(buildDefaultRegisterEventLogPushFunction(functionName));
+
+        // methods.add(
+        //        buildEventFlowableFunction(
+        //                responseClassName, functionName, indexedParameters,
+        // nonIndexedParameters));
+        // methods.add(buildDefaultEventFlowableFunction(responseClassName, functionName));
         return methods;
     }
 

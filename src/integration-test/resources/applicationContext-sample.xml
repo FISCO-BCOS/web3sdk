@@ -46,14 +46,48 @@
 			</list>
 		</property>
 	</bean>
-
-	<bean id="channelService"
-		class="org.fisco.bcos.channel.client.Service"
-		depends-on="groupChannelConnectionsConfig">
-		<property name="groupId" value="1" />
-		<property name="agencyName" value="fisco" />
-		<property name="allChannelConnections"
-			ref="groupChannelConnectionsConfig"></property>
+	 <bean id="channelService" class="org.fisco.bcos.channel.client.Service" depends-on="groupChannelConnectionsConfig"> 
+    <property name="groupId" value="1"/>  
+    <property name="agencyName" value="fisco"/>  
+    <property name="allChannelConnections" ref="groupChannelConnectionsConfig"/>  
+    <!-- If you want to enable topic authentication, please uncomment the following configuration. -->  
+    <!-- <property name="topic2KeyInfo" ref="amopVerifyTopicToKeyInfo"></property>--> 
+  </bean>  
+  
+  <!-- If you want to enable topic authentication, please uncomment the following configuration. -->  
+  <!--
+    <bean class="org.fisco.bcos.channel.handler.AMOPVerifyTopicToKeyInfo" id="amopVerifyTopicToKeyInfo">
+		<property name="topicToKeyInfo">
+			<map>
+				<entry key="helloworld00000001" value-ref="AMOPVerifyKeyInfo_helloworld00000001" />
+			</map>
+		</property>
 	</bean>
-
+	-->  
+	
+  <!-- If you are a topic producer, you need to configure the publicKey property.
+		Each authenticated consumer holds a different public-private key pair.
+		Please list the public key files of all the authenticated consumers.
+	-->  
+	
+  <!--
+	<bean class="org.fisco.bcos.channel.handler.
+	" id="AMOPVerifyKeyInfo_helloworld00000001">
+		<property name="publicKey">
+			<list>
+				<value>classpath:$consumer_public_key_1.pem$</value>
+				<value>classpath:$consumer_public_key_2.pem$</value>
+			</list>
+		</property>
+	</bean>
+	--> 
+	
+  <!-- If you are a topic consumer, you need to configure the privateKey property.
+		This private key will authenticate you to the corresponding topic producer.
+	-->  
+  <!--
+	<bean class="org.fisco.bcos.channel.handler.AMOPVerifyKeyInfo" id="AMOPVerifyKeyInfo_helloworld00000001">
+		<property name="privateKey" value="classpath:$consumer_private_key.pem$"></property>
+	</bean>
+	--> 
 </beans>
