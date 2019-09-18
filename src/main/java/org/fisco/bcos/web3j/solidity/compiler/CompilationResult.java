@@ -20,7 +20,6 @@ package org.fisco.bcos.web3j.solidity.compiler;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -28,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CompilationResult {
@@ -47,7 +47,8 @@ public class CompilationResult {
 
             return empty;
         } else {
-            return new ObjectMapper().readValue(rawJson, CompilationResult.class);
+            return ObjectMapperFactory.getObjectMapper()
+                    .readValue(rawJson, CompilationResult.class);
         }
     }
 

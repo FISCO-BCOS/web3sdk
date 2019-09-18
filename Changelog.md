@@ -1,8 +1,38 @@
+### v2.1.0
+
+(2019-09-17)
+
+* 增加
+
+1. [合约事件通知](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/sdk/java_sdk.html#id14)
+2. 支持[Channel Message v2通信协议](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/design/protocol_description.html#channelmessage-v2)
+3. 区块回调接口
+4. [增加AMOP认证功能](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/manual/amop_protocol.html#topic)
+
+* 更新
+
+1. 支持手动配置证书名，默认为sdk.crt和sdk.key
+2. 发交易时处理立即返回的RPC消息
+3. 更新依赖库的版本号
+4. 更详细的日志打印
+
+* 修复
+
+1. 修复了ABI空字符串处理的异常问题
+2. 修复了发交易blocklimt的异常问题
+3. 其它一些bug
+
+* 兼容
+
+1. 兼容Channel Message v1协议
+2. 兼容FISCO BCOS 2.1以下的sdk证书名node.crt和node.key
+
 ### v2.0.5
 
 (2019-07-10)
 
-更新
+* 更新
+
 1. 升级fastjson库至1.2.58
 2. 修复AMOP传输字符串bug
 
@@ -14,7 +44,8 @@
 
 (2019-07-04)
 
-增加
+* 增加
+
 1. 添加交易解析工具
 
 * Compatibility
@@ -25,12 +56,14 @@
 
 (2019-05-28)
 
-增加
+* 增加
+
 1. 提供CRUDService类，包含操作用户表的CRUD接口。
 2. 提供加载账号文件的工具管理类PEMManager和P12Manager，可以分别加载PEM格式和PKCS12格式的账戶文件。
 3. 增加集成测试，覆盖web3j api和precompile api。
 
-更新
+* 更新
+
 1. 优化日志格式，调整日志输出内容，可以更详细显示交易流程信息。
 2. 优化选择节点块高最大的节点发送交易。
 3. 支持多群组区块链前置配置。

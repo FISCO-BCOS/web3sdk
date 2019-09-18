@@ -18,4 +18,17 @@ public class EventResultEntity extends ResultEntity {
 
         this.setIndexed(indexed);
     }
+
+    @Override
+    public String toString() {
+        return "EventResultEntity [name="
+                + getName()
+                + ", type="
+                + getType()
+                + ", data="
+                + getData()
+                + ", indexed="
+                + indexed
+                + "]";
+    }
 }
