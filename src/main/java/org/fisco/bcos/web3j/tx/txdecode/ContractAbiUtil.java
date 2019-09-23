@@ -157,7 +157,7 @@ public class ContractAbiUtil {
             AbiDefinition.NamedType.Type type =
                     new AbiDefinition.NamedType.Type(paramTypes.get(i).getType());
             // nested array , not support now.
-            if (type.getDepth() > 1) {
+            if (type.getDepth().size() > 1) {
                 throw new BaseException(
                         201202,
                         String.format("type:%s unsupported array decoding", type.getName()));

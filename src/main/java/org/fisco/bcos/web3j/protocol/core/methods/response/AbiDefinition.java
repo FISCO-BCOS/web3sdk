@@ -161,7 +161,6 @@ public class AbiDefinition {
 
         private String name;
         private String type;
-        private Type type0;
         private boolean indexed;
 
         public NamedType() {}
@@ -169,14 +168,12 @@ public class AbiDefinition {
         public NamedType(String name, String type) {
             this.name = name;
             this.type = type;
-            this.setType0(new Type(name));
         }
 
         public NamedType(String name, String type, boolean indexed) {
             this.name = name;
             this.type = type;
             this.indexed = indexed;
-            this.setType0(new Type(name));
         }
 
         public String getName() {
@@ -236,14 +233,6 @@ public class AbiDefinition {
             return result;
         }
 
-        public Type getType0() {
-            return type0;
-        }
-
-        public void setType0(Type type0) {
-            this.type0 = type0;
-        }
-
         public static class Type {
             public String name;
             public String baseName;
@@ -280,31 +269,40 @@ public class AbiDefinition {
                 return name;
             }
 
-            public int getDimensions() {
-                if (arrayType()) {
-                    return depth.get(depth.size() - 1);
-                }
-                return 0;
-            }
-
             public String getBaseName() {
                 return baseName;
             }
 
             public boolean arrayType() {
-                return 0 != getDepth();
+                return !depth.isEmpty();
             }
 
             public boolean staticArray() {
-                return arrayType() && (depth.get(depth.size() - 1) > 0);
+                if (!depth.isEmpty()) {
+                    return depth.get(depth.size() - 1) > 0;
+                }
+
+                return false;
+            }
+
+            public int getDimensions() {
+                if (staticArray()) {
+                    return depth.get(depth.size() - 1);
+                }
+
+                return 0;
             }
 
             public boolean dynamicArray() {
-                return arrayType() && (depth.get(depth.size() - 1) == 0);
+                if (!depth.isEmpty()) {
+                    return depth.get(depth.size() - 1) == 0;
+                }
+
+                return false;
             }
 
-            public int getDepth() {
-                return depth.size();
+            public List<Integer> getDepth() {
+                return depth;
             }
         }
     }
