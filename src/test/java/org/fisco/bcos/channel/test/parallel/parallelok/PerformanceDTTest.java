@@ -29,7 +29,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 public class PerformanceDTTest {
     private static Logger logger = LoggerFactory.getLogger(PerformanceDTTest.class);
-    private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     private static String groupId = "1";
 
