@@ -18,17 +18,24 @@ public class Channel2ClientBin {
     private static Logger logger = LoggerFactory.getLogger(Channel2ClientBin.class);
 
     public static byte[] toByteArrFromFile(String path) throws Exception {
-        File inFile = new File(path);
-        FileInputStream fileInputStream = new FileInputStream(inFile);
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        int i;
-        while ((i = fileInputStream.read()) != -1) {
-            byteArrayOutputStream.write(i);
+        FileInputStream fileInputStream = null;
+        try {
+            File inFile = new File(path);
+            fileInputStream = new FileInputStream(inFile);
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            int i;
+            while ((i = fileInputStream.read()) != -1) {
+                byteArrayOutputStream.write(i);
+            }
+
+            byte[] bytes = byteArrayOutputStream.toByteArray();
+            byteArrayOutputStream.close();
+            return bytes;
+        } finally {
+            if (fileInputStream != null) {
+                fileInputStream.close();
+            }
         }
-        fileInputStream.close();
-        byte[] bytes = byteArrayOutputStream.toByteArray();
-        byteArrayOutputStream.close();
-        return bytes;
     }
 
     public static byte[] intToByteArray(int i) {

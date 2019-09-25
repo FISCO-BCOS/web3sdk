@@ -1,6 +1,5 @@
 package org.fisco.bcos.channel.proxy;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.SocketChannel;
@@ -20,6 +19,9 @@ import javax.net.ssl.SSLException;
 import org.fisco.bcos.channel.handler.ChannelConnections;
 import org.fisco.bcos.channel.handler.ConnectionInfo;
 import org.fisco.bcos.channel.handler.Message;
+import org.fisco.bcos.channel.protocol.ChannelMessageError;
+import org.fisco.bcos.channel.protocol.ChannelMessageType;
+import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -53,21 +55,20 @@ public class Server {
 
                 logger.debug("receive Message type: {}", msg.getType());
 
-                if (msg.getType() == 0x20 || msg.getType() == 0x21) {
-                    logger.debug("channel ");
-                } else if (msg.getType() == 0x30 || msg.getType() == 0x31) {
+                if (msg.getType() == ChannelMessageType.AMOP_REQUEST.getType()
+                        || msg.getType() == ChannelMessageType.AMOP_RESPONSE.getType()) {
                     logger.debug("channel2");
-                } else if (msg.getType() == 0x32) {
+                } else if (msg.getType() == ChannelMessageType.AMOP_CLIENT_TOPICS.getType()) {
                     logger.debug("topic");
 
                     onTopic(ctx, msg);
                     return;
-                } else if (msg.getType() == 0x12) {
+                } else if (msg.getType() == ChannelMessageType.CHANNEL_RPC_REQUEST.getType()) {
                     logger.debug("ethereum");
-                } else if (msg.getType() == 0x13) {
+                } else if (msg.getType() == ChannelMessageType.CLIENT_HEARTBEAT.getType()) {
                     onHeartBeat(ctx, msg);
                     return;
-                } else if (msg.getType() == 0x1000) {
+                } else if (msg.getType() == ChannelMessageType.TRANSACTION_NOTIFY.getType()) {
                     logger.debug("transaction message call back.");
                 } else {
                     logger.error("unknown message:{}", msg.getType());
@@ -177,6 +178,7 @@ public class Server {
             remoteConnectionCallback.setFromRemote(true);
 
             localConnections.setCallback(localConnectionCallback);
+            localConnections.init();
             localConnections.startListen(bindPort);
 
             remoteConnections.setCallback(remoteConnectionCallback);
@@ -198,10 +200,9 @@ public class Server {
         try {
             Message message = new Message();
             message.setResult(0);
-            message.setType((short) 0x32); // topic设置topic消息0x32
+            message.setType((short) ChannelMessageType.AMOP_CLIENT_TOPICS.getType());
             message.setSeq(UUID.randomUUID().toString().replaceAll("-", ""));
 
-            // 综合所有的topics
             Set<String> allTopics = new HashSet<String>();
             for (ConnectionInfo connectionInfo : localConnections.getConnections()) {
                 // 有效的连接，才增加到全局topic
@@ -219,7 +220,8 @@ public class Server {
                 }
             }
 
-            message.setData(objectMapper.writeValueAsBytes(allTopics.toArray()));
+            message.setData(
+                    ObjectMapperFactory.getObjectMapper().writeValueAsBytes(allTopics.toArray()));
 
             logger.debug("all topics: {}", new String(message.getData()));
 
@@ -285,7 +287,7 @@ public class Server {
                 // 发送到远端的响应
                 remoteCtx = pair.remoteConnection;
 
-                if (message.getType() != 0x31) {
+                if (message.getType() != ChannelMessageType.AMOP_RESPONSE.getType()) {
                     pair.localConnection = ctx;
                 }
 
@@ -309,78 +311,19 @@ public class Server {
 
                 // 没有这个seq，可能是新发请求或者新收到的push
                 // 本地发往远程的消息，如果是链上链下，需要按给定的nodeID发
-                if (message.getType() == 0x20 || message.getType() == 0x21) {
-                    // 获取nodeID
-                    logger.debug("channel message v1");
-                    if (message.getData().length < 256) {
-                        logger.error(
-                                "wrong channel message, length less than 256:{}",
-                                message.getData().length);
-                    }
 
-                    // 获取nodeID对应的连接，检查可用性
-                    String nodeID = new String(message.getData(), 128, 128);
+                logger.debug("other type message，ConnectionPair");
 
-                    logger.debug("forward:{}", nodeID, message.getData());
-                    for (ConnectionInfo conn : remoteConnections.getConnections()) {
-                        if (conn.getNodeID().equals(nodeID)) {
-                            remoteCtx =
-                                    remoteConnections.getNetworkConnectionByHost(
-                                            conn.getHost(), conn.getPort());
-                            pair.remoteConnection = remoteCtx;
+                pair.setRemoteChannelConnections(remoteConnections);
 
-                            break;
-                        }
-                    }
+                List<ConnectionInfo> remoteConnectionInfos = new ArrayList<ConnectionInfo>();
+                remoteConnectionInfos.addAll(remoteConnections.getConnections());
+                pair.setRemoteConnectionInfos(remoteConnectionInfos);
 
-                    if (remoteCtx == null || !remoteCtx.channel().isActive()) {
-                        // 找不到连接，错误
-                        logger.error("connect exception，error 99");
+                seq2Connections.put(message.getSeq(), pair);
 
-                        if (message.getType() == 0x20 || message.getType() == 0x21) {
-                            message.setType((short) 0x21);
-                        } else {
-                            message.setType((short) 0x31);
-                        }
-
-                        message.setResult(99);
-
-                        ByteBuf out = ctx.alloc().buffer();
-                        message.writeHeader(out);
-                        message.writeExtra(out);
-
-                        ctx.writeAndFlush(out);
-
-                        return;
-                    }
-
-                    ByteBuf out = remoteCtx.alloc().buffer();
-                    message.writeHeader(out);
-                    message.writeExtra(out);
-
-                    logger.debug(
-                            "send to:{}:{}",
-                            ((SocketChannel) remoteCtx.channel())
-                                    .remoteAddress()
-                                    .getAddress()
-                                    .getHostAddress(),
-                            ((SocketChannel) remoteCtx.channel()).remoteAddress().getPort());
-                    remoteCtx.writeAndFlush(out);
-                    pair.init();
-                } else {
-                    logger.debug("other type message，ConnectionPair");
-
-                    pair.setRemoteChannelConnections(remoteConnections);
-
-                    List<ConnectionInfo> remoteConnectionInfos = new ArrayList<ConnectionInfo>();
-                    remoteConnectionInfos.addAll(remoteConnections.getConnections());
-                    pair.setRemoteConnectionInfos(remoteConnectionInfos);
-
-                    seq2Connections.put(message.getSeq(), pair);
-
-                    pair.init();
-                    pair.retrySendRemoteMessage();
-                }
+                pair.init();
+                pair.retrySendRemoteMessage();
             }
         } catch (Exception e) {
             logger.error("error ", e);
@@ -395,8 +338,8 @@ public class Server {
 
             ConnectionPair pair = seq2Connections.get(message.getSeq());
 
-            if (message.getType() == 0x30) {
-                // 链上链下二期，需要找到关注该topic的连接
+            if (message.getType() == (short) ChannelMessageType.AMOP_REQUEST.getType()) {
+
                 Short length = (short) message.getData()[0];
                 String topic = new String(message.getData(), 1, length - 1);
 
@@ -419,8 +362,8 @@ public class Server {
                     // 找不到连接，错误
                     logger.error("connection not found，error 99");
 
-                    message.setType((short) 0x31);
-                    message.setResult(99);
+                    message.setType((short) ChannelMessageType.AMOP_RESPONSE.getType());
+                    message.setResult(ChannelMessageError.NODES_UNREACHABLE.getError());
 
                     ByteBuf out = ctx.alloc().buffer();
                     message.writeHeader(out);
@@ -466,7 +409,8 @@ public class Server {
                     // 收到来自远端的回包
                     localCtx = pair.localConnection;
 
-                    if (message.getResult() != 0 && message.getType() == 0x31) {
+                    if (message.getResult() != 0
+                            && message.getType() == ChannelMessageType.AMOP_RESPONSE.getType()) {
                         // 链上链下二期错误时，执行retry
                         logger.error("endpoint error:{}，retry", message.getResult());
 
@@ -487,13 +431,9 @@ public class Server {
                 // 找不到连接，错误
                 logger.error("connect unavailable，error 99");
 
-                if (message.getType() == 0x20 || message.getType() == 0x21) {
-                    message.setType((short) 0x21);
-                } else {
-                    message.setType((short) 0x31);
-                }
+                message.setType((short) ChannelMessageType.AMOP_RESPONSE.getType());
 
-                message.setResult(99);
+                message.setResult(ChannelMessageError.NODES_UNREACHABLE.getError());
 
                 ByteBuf out = ctx.alloc().buffer();
                 message.writeHeader(out);
@@ -536,7 +476,7 @@ public class Server {
 
             response.setSeq(message.getSeq());
             response.setResult(0);
-            response.setType((short) 0x13);
+            response.setType((short) ChannelMessageType.CLIENT_HEARTBEAT.getType());
             response.setData("1".getBytes());
 
             ByteBuf out = ctx.alloc().buffer();
@@ -556,7 +496,9 @@ public class Server {
 
         if (info != null) {
             try {
-                List<String> topics = objectMapper.readValue(message.getData(), List.class);
+                List<String> topics =
+                        ObjectMapperFactory.getObjectMapper()
+                                .readValue(message.getData(), List.class);
 
                 info.setTopics(topics);
 
@@ -581,7 +523,7 @@ public class Server {
     private Map<String, ConnectionPair> seq2Connections =
             new ConcurrentHashMap<String, ConnectionPair>();
     private Integer bindPort = 8830;
-    private ObjectMapper objectMapper = new ObjectMapper();
+
     private Timer timeoutHandler = new HashedWheelTimer();
 
     private ThreadPoolTaskExecutor threadPool;
