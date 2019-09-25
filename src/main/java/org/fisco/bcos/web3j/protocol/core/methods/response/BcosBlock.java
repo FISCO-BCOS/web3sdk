@@ -46,7 +46,7 @@ public class BcosBlock extends Response<BcosBlock.Block> {
         private String timestamp;
         private List<TransactionResult> transactions;
         private List<String> uncles;
-        private List<String> sealFields;
+        private List<String> sealerList;
 
         public Block() {}
 
@@ -89,7 +89,7 @@ public class BcosBlock extends Response<BcosBlock.Block> {
                     + ", uncles="
                     + uncles
                     + ", sealFields="
-                    + sealFields
+                    + sealerList
                     + "]";
         }
 
@@ -112,7 +112,7 @@ public class BcosBlock extends Response<BcosBlock.Block> {
                 String timestamp,
                 List<TransactionResult> transactions,
                 List<String> uncles,
-                List<String> sealFields) {
+                List<String> sealerList) {
             this.number = number;
             this.hash = hash;
             this.parentHash = parentHash;
@@ -131,7 +131,7 @@ public class BcosBlock extends Response<BcosBlock.Block> {
             this.timestamp = timestamp;
             this.transactions = transactions;
             this.uncles = uncles;
-            this.sealFields = sealFields;
+            this.sealerList = sealerList;
         }
 
         public BigInteger getNumber() {
@@ -300,12 +300,12 @@ public class BcosBlock extends Response<BcosBlock.Block> {
             this.uncles = uncles;
         }
 
-        public List<String> getSealFields() {
-            return sealFields;
+        public List<String> getSealerList() {
+            return sealerList;
         }
 
-        public void setSealFields(List<String> sealFields) {
-            this.sealFields = sealFields;
+        public void setSealerList(List<String> sealerList) {
+            this.sealerList = sealerList;
         }
 
         @Override
@@ -407,9 +407,9 @@ public class BcosBlock extends Response<BcosBlock.Block> {
                     : block.getUncles() != null) {
                 return false;
             }
-            return getSealFields() != null
-                    ? getSealFields().equals(block.getSealFields())
-                    : block.getSealFields() == null;
+            return getSealerList() != null
+                    ? getSealerList().equals(block.getSealerList())
+                    : block.getSealerList() == null;
         }
 
         @Override
@@ -436,7 +436,7 @@ public class BcosBlock extends Response<BcosBlock.Block> {
             result = 31 * result + (getTimestampRaw() != null ? getTimestampRaw().hashCode() : 0);
             result = 31 * result + (getTransactions() != null ? getTransactions().hashCode() : 0);
             result = 31 * result + (getUncles() != null ? getUncles().hashCode() : 0);
-            result = 31 * result + (getSealFields() != null ? getSealFields().hashCode() : 0);
+            result = 31 * result + (getSealerList() != null ? getSealerList().hashCode() : 0);
             return result;
         }
     }

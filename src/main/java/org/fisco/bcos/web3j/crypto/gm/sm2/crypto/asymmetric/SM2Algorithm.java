@@ -97,7 +97,6 @@ public class SM2Algorithm {
      * @param cipher 待解密的数据
      * @param byte[] 解密后的数据
      */
-    @SuppressWarnings("deprecation")
     public static byte[] decrypt(String pvk, byte[] data) {
         String hexCipher = KeyUtils.bcdhex_to_aschex(data);
         String pbX = hexCipher.substring(0, 64);
@@ -115,8 +114,8 @@ public class SM2Algorithm {
         ECPoint s =
                 calculateS(
                         new BigInteger(pbX, 16), new BigInteger(pbY, 16), new BigInteger(pvk, 16));
-        BigInteger x2 = s.getX().toBigInteger();
-        BigInteger y2 = s.getY().toBigInteger();
+        BigInteger x2 = s.getAffineXCoord().toBigInteger();
+        BigInteger y2 = s.getAffineYCoord().toBigInteger();
 
         byte[] t = kdf(x2, y2, c2.length);
         if (isEmpty(t)) {
@@ -183,14 +182,12 @@ public class SM2Algorithm {
     /*
      * 第4步:计算 [k]Pb=(x2,y2)
      */
-    @SuppressWarnings("deprecation")
     private static BigInteger calculateX2(ECPoint s) {
-        return s.getX().toBigInteger();
+        return s.getAffineXCoord().toBigInteger();
     }
 
-    @SuppressWarnings("deprecation")
     private static BigInteger calculateY2(ECPoint s) {
-        return s.getY().toBigInteger();
+        return s.getAffineYCoord().toBigInteger();
     }
 
     /*
@@ -269,12 +266,11 @@ public class SM2Algorithm {
      * @param c2  算法加密部分
      * @param c3 消息摘要部分(校验)
      */
-    @SuppressWarnings("deprecation")
     private static byte[] getC(ECPoint c1, byte[] c3, byte[] c2) {
         byte[] c = new byte[64 + c3.length + c2.length];
 
-        byte[] c1xBuf = padding(c1.getX().toBigInteger().toByteArray());
-        byte[] c1yBuf = padding(c1.getY().toBigInteger().toByteArray());
+        byte[] c1xBuf = padding(c1.getAffineXCoord().toBigInteger().toByteArray());
+        byte[] c1yBuf = padding(c1.getAffineYCoord().toBigInteger().toByteArray());
 
         System.arraycopy(c1xBuf, 0, c, 0, 32);
         System.arraycopy(c1yBuf, 0, c, 32, 32);
@@ -371,7 +367,7 @@ public class SM2Algorithm {
             do {
                 k = createRandom();
                 kp = g256.multiply(k);
-                r = e.add(kp.getX().toBigInteger());
+                r = e.add(kp.getAffineXCoord().toBigInteger());
                 r = r.mod(n);
             } while (r.equals(BigInteger.ZERO) || r.add(k).equals(n));
             BigInteger da_1 = userD.add(BigInteger.ONE).modInverse(n);
@@ -420,7 +416,7 @@ public class SM2Algorithm {
         if (t.equals(BigInteger.ZERO)) return false;
         ECPoint x1y1 = g256.multiply(s);
         x1y1 = x1y1.add(userKey.multiply(t));
-        BigInteger R = e.add(x1y1.getX().toBigInteger()).mod(n);
+        BigInteger R = e.add(x1y1.getAffineXCoord().toBigInteger()).mod(n);
 
         return r.equals(R);
     }
@@ -464,8 +460,8 @@ public class SM2Algorithm {
         sm3BlockUpdate(sm3, getEncoded(b));
         sm3BlockUpdate(sm3, getEncoded(gx));
         sm3BlockUpdate(sm3, getEncoded(gy));
-        sm3BlockUpdate(sm3, getEncoded(publicKey.getX().toBigInteger()));
-        sm3BlockUpdate(sm3, getEncoded(publicKey.getY().toBigInteger()));
+        sm3BlockUpdate(sm3, getEncoded(publicKey.getAffineXCoord().toBigInteger()));
+        sm3BlockUpdate(sm3, getEncoded(publicKey.getAffineYCoord().toBigInteger()));
 
         byte[] md = new byte[sm3.getDigestSize()];
         sm3.doFinal(md, 0);

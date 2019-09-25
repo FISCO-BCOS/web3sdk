@@ -68,7 +68,6 @@ public class PerformanceOkDSync {
                 case "trans":
                     count = Integer.parseInt(args[1]);
                     qps = Integer.parseInt(args[2]);
-
                     break;
                 default:
                     System.out.println("Args: <trans> <Total> <QPS> <GroupID> <ThreadPoolSize>");
