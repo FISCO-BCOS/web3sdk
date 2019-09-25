@@ -2,6 +2,7 @@ package org.fisco.bcos.channel.client;
 
 import io.netty.util.Timeout;
 import org.fisco.bcos.channel.dto.BcosResponse;
+import org.fisco.bcos.channel.protocol.ChannelMessageError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,7 +17,7 @@ public abstract class BcosResponseCallback {
         logger.error("Processing bcos message timeout:{}");
 
         BcosResponse response = new BcosResponse();
-        response.setErrorCode(102);
+        response.setErrorCode(ChannelMessageError.MESSAGE_TIMEOUT.getError());
         response.setErrorMessage("Processing bcos message timeout");
 
         response.setContent("");

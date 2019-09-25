@@ -45,7 +45,7 @@ verifyGoogleJavaFormat {
   exclude '**/temp/*.java'
 }
 
-def spring_version="4.3.18.RELEASE"
+def spring_version="4.3.25.RELEASE"
 
 List logger = [
 		'org.slf4j:slf4j-log4j12:1.7.25'
@@ -61,7 +61,7 @@ List spring =[
 
 List alibaba = [
         'com.alibaba:druid:1.0.29',
-        'com.alibaba:fastjson:1.2.58'
+        'com.alibaba:fastjson:1.2.60'
 ]
 
 // In this section you declare the dependencies for your production and test code
@@ -71,15 +71,15 @@ dependencies {
 	compile 'org.ethereum:solcJ-all:0.4.25'
 	compile logger,spring,alibaba
 	compile 'org.apache.commons:commons-lang3:3.1'
-	compile 'com.fasterxml.jackson.core:jackson-databind:2.9.6'
+	compile 'com.fasterxml.jackson.core:jackson-databind:2.9.9.2'
 	compile 'io.netty:netty-all:4.1.32.Final'
-	compile 'io.netty:netty-tcnative:2.0.20.Final'
+	compile 'io.netty:netty-tcnative:2.0.25.Final'
 	compile 'io.netty:netty-tcnative-boringssl-static:2.0.20.Final'
-	compile 'com.google.guava:guava:19.0'
+	compile 'com.google.guava:guava:28.1-jre'
 	compile 'commons-configuration:commons-configuration:1.10'
 	 // web3j
 	compile 'org.apache.httpcomponents:httpclient:4.5.5',
-            'org.bouncycastle:bcprov-jdk15on:1.54',
+            'org.bouncycastle:bcprov-jdk15on:1.60',
             'com.lambdaworks:scrypt:1.4.0',
             'com.squareup:javapoet:1.7.0',
             'io.reactivex:rxjava:1.2.4',

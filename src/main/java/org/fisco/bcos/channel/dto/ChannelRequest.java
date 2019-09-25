@@ -19,6 +19,8 @@ public class ChannelRequest {
 
     private byte[] content; // 请求包体
 
+    private short type = 0; // 请求类型
+
     public String getFromOrg() {
         return fromOrg;
     }
@@ -122,5 +124,13 @@ public class ChannelRequest {
 
     public void setContent(byte[] content) {
         this.content = content;
+    }
+
+    public short getType() {
+        return type;
+    }
+
+    public void setType(short type) {
+        this.type = type;
     }
 }

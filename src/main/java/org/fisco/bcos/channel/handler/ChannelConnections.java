@@ -19,7 +19,6 @@ import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.SslProvider;
 import io.netty.handler.timeout.IdleStateHandler;
-import io.netty.util.AttributeKey;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.SecureRandom;
@@ -33,13 +32,10 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLException;
-
-import org.fisco.bcos.channel.protocol.EnumSocketChannelAttributeKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 public class ChannelConnections {
@@ -47,9 +43,14 @@ public class ChannelConnections {
 
     private Callback callback;
     private List<String> connectionsStr;
-    private String caCertPath = "classpath:ca.crt";
-    private String nodeCaPath = "classpath:node.crt";
-    private String nodeKeyPath = "classpath:node.key";
+
+    private static final String CA_CERT = "classpath:ca.crt";
+    private static final String SSL_CERT = "classpath:node.crt";
+    private static final String SSL_KEY = "classpath:node.key";
+
+    private Resource caCert;
+    private Resource sslCert;
+    private Resource sslKey;
     private List<ConnectionInfo> connections = new ArrayList<ConnectionInfo>();
     private Boolean running = false;
     private ThreadPoolTaskExecutor threadPool;
@@ -61,28 +62,81 @@ public class ChannelConnections {
     private Bootstrap bootstrap = new Bootstrap();
     ServerBootstrap serverBootstrap = new ServerBootstrap();
 
+    private void initDefaultCertConfig() {
+        if (getCaCert() == null) {
+            PathMatchingResourcePatternResolver resolver =
+                    new PathMatchingResourcePatternResolver();
+            setCaCert(resolver.getResource(CA_CERT));
+        }
+
+        // dafault value is node.crt & node.key
+        if (getSslCert() == null || !getSslCert().exists()) {
+
+            if (getSslCert() == null) {
+                logger.info(
+                        " sslCert not configured in applicationContext.xml, use default setting: {}  ",
+                        SSL_CERT);
+            } else {
+                logger.info(
+                        " sslCert:{} configured in applicationContext.xml not exist, use default setting: {}  ",
+                        getSslCert().getFilename(),
+                        SSL_CERT);
+            }
+
+            PathMatchingResourcePatternResolver resolver =
+                    new PathMatchingResourcePatternResolver();
+            setSslCert(resolver.getResource(SSL_CERT));
+        }
+
+        if (getSslKey() == null || !getSslKey().exists()) {
+
+            if (getSslKey() == null) {
+                logger.info(
+                        " sslKey not configured in applicationContext.xml, use default setting: {}  ",
+                        SSL_KEY);
+            } else {
+                logger.info(
+                        " sslKey:{} configured in applicationContext.xml not exist, use default setting: {}  ",
+                        getSslKey().getFilename(),
+                        SSL_KEY);
+            }
+
+            PathMatchingResourcePatternResolver resolver =
+                    new PathMatchingResourcePatternResolver();
+            setSslKey(resolver.getResource(SSL_KEY));
+        }
+    }
+
+    public Resource getCaCert() {
+        return caCert;
+    }
+
+    public void setCaCert(Resource caCert) {
+        this.caCert = caCert;
+    }
+
+    public Resource getSslCert() {
+        return sslCert;
+    }
+
+    public void setSslCert(Resource sslCert) {
+        this.sslCert = sslCert;
+    }
+
+    public Resource getSslKey() {
+        return sslKey;
+    }
+
+    public void setSslKey(Resource sslKey) {
+        this.sslKey = sslKey;
+    }
+
     public int getGroupId() {
         return groupId;
     }
 
     public void setGroupId(int groupId) {
         this.groupId = groupId;
-    }
-
-    public String getNodeCaPath() {
-        return nodeCaPath;
-    }
-
-    public void setNodeCaPath(String nodeCaPath) {
-        this.nodeCaPath = nodeCaPath;
-    }
-
-    public String getNodeKeyPath() {
-        return nodeKeyPath;
-    }
-
-    public void setNodeKeyPath(String nodeKeyPath) {
-        this.nodeKeyPath = nodeKeyPath;
     }
 
     public interface Callback {
@@ -141,14 +195,6 @@ public class ChannelConnections {
 
     public void setHeartBeatDelay(long heartBeatDelay) {
         this.heartBeatDelay = heartBeatDelay;
-    }
-
-    public String getCaCertPath() {
-        return caCertPath;
-    }
-
-    public void setCaCertPath(String caCertPath) {
-        this.caCertPath = caCertPath;
     }
 
     public ChannelHandlerContext randomNetworkConnection(
@@ -273,8 +319,7 @@ public class ChannelConnections {
                                 @Override
                                 public void initChannel(SocketChannel ch) throws Exception {
                                     /*
-                                     * 每次连接使用新的handler
-                                     * 连接信息从socketChannel中获取
+                                     * Each connection is fetched from the socketChannel, using the new handler connection information
                                      */
                                     ChannelHandler handler = new ChannelHandler();
                                     handler.setConnections(selfService);
@@ -306,22 +351,28 @@ public class ChannelConnections {
 
     public void init() {
         logger.debug("init connections");
-        // 初始化connections
-        for (String conn : connectionsStr) {
-            ConnectionInfo connection = new ConnectionInfo();
+        // init connections
+        if (connectionsStr != null) {
+            for (String conn : connectionsStr) {
+                ConnectionInfo connection = new ConnectionInfo();
 
-            String[] split2 = conn.split(":");
+                String[] split2 = conn.split(":");
 
-            connection.setHost(split2[0]);
-            connection.setPort(Integer.parseInt(split2[1]));
+                connection.setHost(split2[0]);
+                connection.setPort(Integer.parseInt(split2[1]));
 
-            networkConnections.put(conn, null);
+                networkConnections.put(conn, null);
 
-            logger.debug("add direct node :[" + "]:[" + split2[1] + "]");
+                logger.info(" add connected node: " + split2[0] + ":" + split2[1]);
 
-            connection.setConfig(true);
-            connections.add(connection);
+                connection.setConfig(true);
+                connections.add(connection);
+            }
+        } else {
+            logger.warn(" connectionsStr null, check your connectionsStr list config.");
         }
+
+        initDefaultCertConfig();
     }
 
     public void startConnect() throws SSLException {
@@ -331,7 +382,7 @@ public class ChannelConnections {
         }
 
         logger.debug("init connections connect");
-        // 初始化netty
+        // init netty
         EventLoopGroup workerGroup = new NioEventLoopGroup();
 
         bootstrap.group(workerGroup);
@@ -349,7 +400,7 @@ public class ChannelConnections {
                     @Override
                     public void initChannel(SocketChannel ch) throws Exception {
                         /*
-                         * 每次连接使用新的handler 连接信息从socketChannel中获取
+                         * Each connection is fetched from the socketChannel, using the new handler connection information
                          */
                         ChannelHandler handler = new ChannelHandler();
                         handler.setConnections(selfService);
@@ -381,8 +432,7 @@ public class ChannelConnections {
                                     return;
                                 }
 
-                                // 尝试重连
-
+                                // attempt to reconnect
                                 reconnect();
                                 Thread.sleep(heartBeatDelay);
                             }
@@ -399,11 +449,11 @@ public class ChannelConnections {
     private SslContext initSslContextForConnect() throws SSLException {
         SslContext sslCtx;
         try {
-            ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-            Resource caResource = resolver.getResource(getCaCertPath());
+            Resource caResource = getCaCert();
             InputStream caInputStream = caResource.getInputStream();
-            Resource keystorecaResource = resolver.getResource(getNodeCaPath());
-            Resource keystorekeyResource = resolver.getResource(getNodeKeyPath());
+            Resource keystorecaResource = getSslCert();
+            Resource keystorekeyResource = getSslKey();
+
             sslCtx =
                     SslContextBuilder.forClient()
                             .trustManager(caInputStream)
@@ -423,11 +473,10 @@ public class ChannelConnections {
     private SslContext initSslContextForListening() throws SSLException {
         SslContext sslCtx;
         try {
-            ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-            Resource caResource = resolver.getResource(getCaCertPath());
+            Resource caResource = getCaCert();
             InputStream caInputStream = caResource.getInputStream();
-            Resource keystorecaResource = resolver.getResource(getNodeCaPath());
-            Resource keystorekeyResource = resolver.getResource(getNodeKeyPath());
+            Resource keystorecaResource = getSslCert();
+            Resource keystorekeyResource = getSslKey();
             sslCtx =
                     SslContextBuilder.forServer(
                                     keystorecaResource.getInputStream(),
@@ -451,28 +500,19 @@ public class ChannelConnections {
 
                 String host = split[0];
                 Integer port = Integer.parseInt(split[1]);
-                logger.debug("try connect to: {}:{}", host, port);
+                logger.info("try connect to: {}:{}", host, port);
 
                 bootstrap.connect(host, port);
-                logger.debug("connect to: {}:{} success", host, port);
+                // logger.debug("connect to: {}:{} success", host, port);
             } else {
                 if (ChannelHandlerContextHelper.isChannelAvailable(ctx.getValue())) {
                     logger.trace("send heart beat to {}", ctx.getKey());
                     callback.sendHeartbeat(ctx.getValue());
                 } else {
-                    SocketChannel socketChannel = (SocketChannel) ctx.getValue().channel();
-                    String hostAddress =
-                            socketChannel.remoteAddress().getAddress().getHostAddress();
-                    int port = socketChannel.remoteAddress().getPort();
-
-                    AttributeKey<String> attributeKey = AttributeKey.valueOf(EnumSocketChannelAttributeKey.CHANNEL_CONNECTED_KEY.getKey());
-                    String connectTimePoint = ctx.getValue().channel().attr(attributeKey).get();
-
-                    String host = hostAddress + ":" + port;
                     logger.debug(
-                            " socket channel active, channel protocol handshake not finished, host: {}, connect time: {}",
-                            host,
-                            connectTimePoint);
+                            " socket channel active, channel protocol handshake not finished, host: {}, ctx: {}",
+                            ctx.getKey(),
+                            System.identityHashCode(ctx.getValue()));
                 }
             }
         }
