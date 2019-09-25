@@ -12,24 +12,33 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 class PushCallback extends ChannelPushCallback {
-    static Logger logger = LoggerFactory.getLogger(PushCallback.class);
+    private static final Logger logger = LoggerFactory.getLogger(PushCallback.class);
 
     public static void getFileFromBytes(byte[] b, String outputFile) {
         File ret = null;
         BufferedOutputStream stream = null;
+        FileOutputStream fstream = null;
         try {
             ret = new File(outputFile);
-            FileOutputStream fstream = new FileOutputStream(ret);
+            fstream = new FileOutputStream(ret);
             stream = new BufferedOutputStream(fstream);
             stream.write(b);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(" write exception, message: {}", e.getMessage());
         } finally {
             if (stream != null) {
                 try {
                     stream.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.error(" close exception, message: {}", e.getMessage());
+                }
+            }
+
+            if (fstream != null) {
+                try {
+                    fstream.close();
+                } catch (IOException e) {
+                    logger.error(" close exception, message: {}", e.getMessage());
                 }
             }
         }

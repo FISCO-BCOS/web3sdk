@@ -19,6 +19,7 @@ import java.security.spec.ECPoint;
 import java.security.spec.ECPublicKeySpec;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.Collections;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.io.pem.PemObject;
@@ -60,13 +61,17 @@ public class PEMManager {
 
     public PrivateKey getPrivateKey()
             throws InvalidKeySpecException, NoSuchAlgorithmException, NoSuchProviderException {
-        // PrivateKey key = KeyFactory.getInstance("EC",
-        // org.bouncycastle.jce.provider.BouncyCastleProvider.PROVIDER_NAME).generatePrivate(new
-        // X509EncodedKeySpec(pem.getContent()));
-
         PKCS8EncodedKeySpec encodedKeySpec = new PKCS8EncodedKeySpec(pem.getContent());
         KeyFactory keyFacotry = KeyFactory.getInstance("EC", BouncyCastleProvider.PROVIDER_NAME);
+
         return keyFacotry.generatePrivate(encodedKeySpec);
+    }
+
+    public PublicKey getPublicKeyFromPublicPem()
+            throws InvalidKeySpecException, NoSuchAlgorithmException, NoSuchProviderException {
+        X509EncodedKeySpec encodedKeySpec = new X509EncodedKeySpec(pem.getContent());
+        KeyFactory keyFacotry = KeyFactory.getInstance("EC", BouncyCastleProvider.PROVIDER_NAME);
+        return keyFacotry.generatePublic(encodedKeySpec);
     }
 
     public PublicKey getPublicKey()

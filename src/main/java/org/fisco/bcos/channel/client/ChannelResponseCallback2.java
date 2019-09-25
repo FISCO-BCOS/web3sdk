@@ -11,6 +11,7 @@ import org.fisco.bcos.channel.dto.ChannelResponse;
 import org.fisco.bcos.channel.handler.ChannelConnections;
 import org.fisco.bcos.channel.handler.ChannelHandlerContextHelper;
 import org.fisco.bcos.channel.handler.ConnectionInfo;
+import org.fisco.bcos.channel.protocol.ChannelMessageError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +27,7 @@ public abstract class ChannelResponseCallback2 {
     public abstract void onResponseMessage(ChannelResponse response);
 
     public final void onResponse(ChannelResponse response) {
-        if (response.getErrorCode() == 99) {
+        if (response.getErrorCode() == ChannelMessageError.NODES_UNREACHABLE.getError()) {
             logger.error("Local node error，try the next local nodec");
 
             retrySendMessage(); // 1表示客户端错误
@@ -51,7 +52,7 @@ public abstract class ChannelResponseCallback2 {
         logger.error("send message timeout:{}", message.getSeq());
 
         ChannelResponse response = new ChannelResponse();
-        response.setErrorCode(102);
+        response.setErrorCode(ChannelMessageError.MESSAGE_TIMEOUT.getError());
         response.setMessageID(message.getSeq());
         response.setErrorMessage("send message timeout");
         response.setContent("");
@@ -88,7 +89,7 @@ public abstract class ChannelResponseCallback2 {
                 // 所有节点已尝试，无法再重试了
                 logger.error("Failed to send message,all retry failed");
 
-                errorCode = 99;
+                errorCode = ChannelMessageError.NODES_UNREACHABLE.getError();
                 throw new Exception("Failed to send message,all retry failed");
             }
 
@@ -104,18 +105,16 @@ public abstract class ChannelResponseCallback2 {
                 ctx.writeAndFlush(out);
 
                 logger.debug(
-                        "send message to  "
-                                + fromConnection.getHost()
-                                + ":"
-                                + String.valueOf(fromConnection.getPort())
-                                + " 成功");
+                        "send message to  {}:{} success ",
+                        fromConnection.getHost(),
+                        fromConnection.getPort());
             } else {
                 logger.error("sending node unavailable");
 
                 retrySendMessage();
             }
         } catch (Exception e) {
-            logger.error("send message exception ", e);
+            logger.error("send message exception {}", e);
 
             ChannelResponse response = new ChannelResponse();
             response.setErrorCode(errorCode);
@@ -124,7 +123,7 @@ public abstract class ChannelResponseCallback2 {
             try {
                 onResponseMessage(response);
             } catch (Exception ee) {
-                logger.error("onResponseMessage error:", ee);
+                logger.error("onResponseMessage error:{}", ee);
             }
 
             // 彻底失败后，删掉这个seq

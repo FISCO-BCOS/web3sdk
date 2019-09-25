@@ -16,11 +16,10 @@ public class SM2PublicKey implements PublicKey {
 
     public SM2PublicKey() {}
 
-    @SuppressWarnings("deprecation")
     public SM2PublicKey(ECPoint p) {
         this.p = p;
-        this.x = p.getX().toBigInteger();
-        this.y = p.getY().toBigInteger();
+        this.x = p.getXCoord().toBigInteger();
+        this.y = p.getYCoord().toBigInteger();
     }
 
     public String getAlgorithm() {

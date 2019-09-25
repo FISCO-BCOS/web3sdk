@@ -12,10 +12,11 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class Channel2Client {
-    static Logger logger = LoggerFactory.getLogger(Channel2Client.class);
+    private static final Logger logger = LoggerFactory.getLogger(Channel2Client.class);
+    private static final int parameterNum = 2;
 
     public static void main(String[] args) throws Exception {
-        if (args.length < 2) {
+        if (args.length < parameterNum) {
             System.out.println("param: target topic total number of request");
             return;
         }
@@ -25,11 +26,10 @@ public class Channel2Client {
         DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
         logger.debug("init client");
-
         ApplicationContext context =
                 new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
-
         Service service = context.getBean(Service.class);
+
         service.run();
 
         System.out.println("3s ...");
@@ -42,9 +42,9 @@ public class Channel2Client {
         System.out.println("start test");
         System.out.println("===================================================================");
 
+        ChannelRequest request = new ChannelRequest();
         for (Integer i = 0; i < count; ++i) {
             Thread.sleep(2000);
-            ChannelRequest request = new ChannelRequest();
             request.setToTopic(topic);
             request.setMessageID(service.newSeq());
             request.setTimeout(5000);
@@ -56,7 +56,7 @@ public class Channel2Client {
             System.out.println(
                     df.format(LocalDateTime.now())
                             + " request seq:"
-                            + String.valueOf(request.getMessageID())
+                            + request.getMessageID()
                             + ", Content:"
                             + request.getContent()
                             + " content:"
@@ -67,7 +67,7 @@ public class Channel2Client {
             System.out.println(
                     df.format(LocalDateTime.now())
                             + "response seq:"
-                            + String.valueOf(response.getMessageID())
+                            + response.getMessageID()
                             + ", ErrorCode:"
                             + response.getErrorCode()
                             + ", Content:"
