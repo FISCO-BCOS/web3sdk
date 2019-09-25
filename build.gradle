@@ -66,8 +66,6 @@ List alibaba = [
 
 // In this section you declare the dependencies for your production and test code
 dependencies {
-   // compile files('lib/solcJ-all-0.4.25-gm.jar')
-   // compile 'org.ethereum:solcJ-all:0.5.2'
 	compile 'org.ethereum:solcJ-all:0.4.25'
 	compile logger,spring,alibaba
 	compile 'org.apache.commons:commons-lang3:3.1'
@@ -93,7 +91,7 @@ dependencies {
             'junit:junit:4.12',
             'org.mockito:mockito-core:2.23.0'
 	compile 'de.vandermeer:asciitable:0.3.2'
-	compile 'org.projectlombok:lombok:1.18.2'
+	compile 'org.projectlombok:lombok:1.18.8'
 }
 
 //archivesBaseName = 'web3sdk'
