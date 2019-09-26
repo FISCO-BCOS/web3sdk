@@ -8,7 +8,6 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.tx.Contract;
 
 public class ExecuteTransaction extends Contract {
-
     public ExecuteTransaction(
             String contractAddress,
             Web3j web3j,
