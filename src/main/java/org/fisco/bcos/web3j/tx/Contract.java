@@ -3,7 +3,13 @@ package org.fisco.bcos.web3j.tx;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.math.BigInteger;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.Semaphore;
 import java.util.stream.Collectors;
 import org.fisco.bcos.channel.client.TransactionSucCallback;
@@ -28,7 +34,11 @@ import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameterName;
 import org.fisco.bcos.web3j.protocol.core.JsonRpc2_0Web3j;
 import org.fisco.bcos.web3j.protocol.core.RemoteCall;
 import org.fisco.bcos.web3j.protocol.core.methods.request.Transaction;
-import org.fisco.bcos.web3j.protocol.core.methods.response.*;
+import org.fisco.bcos.web3j.protocol.core.methods.response.Call;
+import org.fisco.bcos.web3j.protocol.core.methods.response.Code;
+import org.fisco.bcos.web3j.protocol.core.methods.response.Log;
+import org.fisco.bcos.web3j.protocol.core.methods.response.NodeVersion;
+import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.protocol.exceptions.TransactionException;
 import org.fisco.bcos.web3j.tx.exceptions.ContractCallException;
 import org.fisco.bcos.web3j.tx.gas.ContractGasProvider;
@@ -902,7 +912,7 @@ public abstract class Contract extends ManagedTransaction {
     }
 
     @SuppressWarnings("unchecked")
-    protected static <S extends Type, T> List<T> convertToNative(List<S> arr) {
+    public static <S extends Type, T> List<T> convertToNative(List<S> arr) {
         List<T> out = new ArrayList<T>();
         for (Iterator<S> it = arr.iterator(); it.hasNext(); ) {
             out.add((T) it.next().getValue());
