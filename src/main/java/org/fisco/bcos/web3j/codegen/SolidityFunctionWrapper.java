@@ -43,6 +43,7 @@ import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.RemoteCall;
 import org.fisco.bcos.web3j.protocol.core.methods.response.AbiDefinition;
+import org.fisco.bcos.web3j.protocol.core.methods.response.AbiDefinition.NamedType;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Log;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.tx.Contract;
@@ -227,6 +228,21 @@ public class SolidityFunctionWrapper extends Generator {
         return eventName.toUpperCase() + "_EVENT";
     }
 
+    private boolean isOverLoadFunction(String name, List<AbiDefinition> functionDefinitions) {
+        int count = 0;
+        for (AbiDefinition functionDefinition : functionDefinitions) {
+            if (!functionDefinition.getType().equals("function")) {
+                continue;
+            }
+
+            if (functionDefinition.getName().equals(name)) {
+                count += 1;
+            }
+        }
+
+        return count > 1;
+    }
+
     private List<MethodSpec> buildFunctionDefinitions(
             String className,
             TypeSpec.Builder classBuilder,
@@ -246,14 +262,17 @@ public class SolidityFunctionWrapper extends Generator {
                     MethodSpec msSeq = buildFunctionSeq(functionDefinition);
                     methodSpecs.add(msSeq);
 
+                    boolean isOverLoad =
+                            isOverLoadFunction(functionDefinition.getName(), functionDefinitions);
                     if (!functionDefinition.getInputs().isEmpty()) {
-                        MethodSpec inputDecoder = buildFunctionWithInputDecoder(functionDefinition);
+                        MethodSpec inputDecoder =
+                                buildFunctionWithInputDecoder(functionDefinition, isOverLoad);
                         methodSpecs.add(inputDecoder);
                     }
 
                     if (!functionDefinition.getOutputs().isEmpty()) {
                         MethodSpec outputDecoder =
-                                buildFunctionWithOutputDecoder(functionDefinition);
+                                buildFunctionWithOutputDecoder(functionDefinition, isOverLoad);
                         methodSpecs.add(outputDecoder);
                     }
                 }
@@ -903,10 +922,36 @@ public class SolidityFunctionWrapper extends Generator {
         return methodBuilder.build();
     }
 
-    private MethodSpec buildFunctionWithInputDecoder(AbiDefinition functionDefinition)
-            throws ClassNotFoundException {
+    private String getInputOutputFunctionName(
+            AbiDefinition functionDefinition, boolean input, boolean isOverLoad) {
+        if (!isOverLoad) {
+            return functionDefinition.getName();
+        }
 
-        String functionName = functionDefinition.getName();
+        List<NamedType> nameTypes =
+                (input ? functionDefinition.getInputs() : functionDefinition.getOutputs());
+
+        String name = functionDefinition.getName();
+        for (int i = 0; i < nameTypes.size(); i++) {
+            AbiDefinition.NamedType.Type type =
+                    new AbiDefinition.NamedType.Type(nameTypes.get(i).getType());
+            List<Integer> depths = type.getDepth();
+            name += Strings.capitaliseFirstLetter(type.getBaseName());
+            for (int j = 0; j < depths.size(); j++) {
+                name += "Array";
+                if (0 != depths.get(j)) {
+                    name += String.valueOf(depths.get(j));
+                }
+            }
+        }
+
+        return name;
+    }
+
+    private MethodSpec buildFunctionWithInputDecoder(
+            AbiDefinition functionDefinition, boolean isOverLoad) throws ClassNotFoundException {
+
+        String functionName = getInputOutputFunctionName(functionDefinition, true, isOverLoad);
 
         MethodSpec.Builder methodBuilder =
                 MethodSpec.methodBuilder(
@@ -943,10 +988,10 @@ public class SolidityFunctionWrapper extends Generator {
         return methodBuilder.build();
     }
 
-    private MethodSpec buildFunctionWithOutputDecoder(AbiDefinition functionDefinition)
-            throws ClassNotFoundException {
+    private MethodSpec buildFunctionWithOutputDecoder(
+            AbiDefinition functionDefinition, boolean isOverLoad) throws ClassNotFoundException {
 
-        String functionName = functionDefinition.getName();
+        String functionName = getInputOutputFunctionName(functionDefinition, false, isOverLoad);
 
         MethodSpec.Builder methodBuilder =
                 MethodSpec.methodBuilder(
