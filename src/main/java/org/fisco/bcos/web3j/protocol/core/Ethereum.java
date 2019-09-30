@@ -79,7 +79,8 @@ public interface Ethereum {
 
     Request<?, BcosTransactionReceipt> getTransactionReceipt(String transactionHash);
 
-    Request<?, TransactionReceiptWithProof> getReceiptByHashWithProof(String transactionHash);
+    Request<?, TransactionReceiptWithProof> getTransactionReceiptByHashWithProof(
+            String transactionHash);
 
     Request<?, PendingTransactions> getPendingTransaction();
 
