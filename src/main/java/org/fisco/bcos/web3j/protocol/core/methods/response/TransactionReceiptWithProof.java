@@ -18,14 +18,14 @@ public class TransactionReceiptWithProof
         private TransactionReceipt transactionReceipt;
 
         @JsonProperty("receiptProof")
-        private List<MerkleProof> receiptProof;
+        private List<MerkleProofUnit> receiptProof;
 
         public ReceiptAndProof() {
             super();
         }
 
         public ReceiptAndProof(
-                TransactionReceipt transactionReceipt, List<MerkleProof> receiptProof) {
+                TransactionReceipt transactionReceipt, List<MerkleProofUnit> receiptProof) {
             super();
             this.transactionReceipt = transactionReceipt;
             this.receiptProof = receiptProof;
@@ -39,11 +39,11 @@ public class TransactionReceiptWithProof
             this.transactionReceipt = transactionReceipt;
         }
 
-        public List<MerkleProof> getReceiptProof() {
+        public List<MerkleProofUnit> getReceiptProof() {
             return receiptProof;
         }
 
-        public void setReceiptProof(List<MerkleProof> receiptProof) {
+        public void setReceiptProof(List<MerkleProofUnit> receiptProof) {
             this.receiptProof = receiptProof;
         }
 

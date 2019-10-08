@@ -162,9 +162,9 @@ public class Web3jApITest extends TestBase {
   // web3j.getTransactionByHashWithProof(txHash).send();
   //    Transaction transaction = transactionWithProof.getTransactionWithProof().getTransaction();
   //    assertNotNull(transaction);
-  //    List<MerkleProof> merkleProofs =
-  // transactionWithProof.getTransactionWithProof().getTxProof();
-  //    assertNotNull(merkleProofs);
+  //    List<MerkleProofUnit> merkleProofUnits =
+  //        transactionWithProof.getTransactionWithProof().getTxProof();
+  //    assertNotNull(merkleProofUnits);
   //  }
 
   @Test
@@ -194,15 +194,15 @@ public class Web3jApITest extends TestBase {
   }
 
   //  @Test
-  //  public void getReceiptByHashWithProof() throws IOException {
+  //  public void getTransactionReceiptByHashWithProof() throws IOException {
   //    TransactionReceiptWithProof transactionReceiptWithProof =
-  //        web3j.getReceiptByHashWithProof(txHash).send();
+  //        web3j.getTransactionReceiptByHashWithProof(txHash).send();
   //    TransactionReceipt transactionReceipt =
   //        transactionReceiptWithProof.getTransactionReceiptWithProof().getTransactionReceipt();
   //    assertNotNull(transactionReceipt);
-  //    List<MerkleProof> merkleProofs =
+  //    List<MerkleProofUnit> merkleProofUnits =
   //        transactionReceiptWithProof.getTransactionReceiptWithProof().getReceiptProof();
-  //    assertNotNull(merkleProofs);
+  //    assertNotNull(merkleProofUnits);
   //  }
 
   @Test

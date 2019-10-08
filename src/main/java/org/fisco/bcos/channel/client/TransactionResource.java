@@ -2,8 +2,10 @@ package org.fisco.bcos.channel.client;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.fisco.bcos.web3j.crypto.Hash;
 import org.fisco.bcos.web3j.protocol.Web3j;
+import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceiptWithProof;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionWithProof;
@@ -26,66 +28,111 @@ public class TransactionResource {
             throws IOException {
         TransactionWithProof transactionWithProof =
                 web3j.getTransactionByHashWithProof(transactionHash).send();
-        if (transactionWithProof.getTransactionWithProof() == null) return null;
+        if (transactionWithProof.getTransactionWithProof() == null) {
+            return null;
+        }
+
+        Transaction transaction = transactionWithProof.getTransactionWithProof().getTransaction();
+        logger.info("Transaction:{}", transaction);
 
         // transaction index
-        String index =
-                transactionWithProof
-                        .getTransactionWithProof()
-                        .getTransaction()
-                        .getTransactionIndexRaw();
+        String index = transaction.getTransactionIndexRaw();
         BigInteger indexValue = Numeric.toBigInt(index);
         byte[] byteIndex = RlpEncoder.encode(RlpString.create(indexValue));
         String input = Numeric.toHexString(byteIndex) + transactionHash.substring(2);
-        logger.info("Trans:{}", input);
+        logger.info("TransWithIndex:{}", input);
 
         String thisHash = Hash.sha3(input);
         logger.info("ThisHash:{}", thisHash);
 
         String proof =
-                MerkleRoot.calculateMerkleRoot(
+                Merkle.calculateMerkleRoot(
                         transactionWithProof.getTransactionWithProof().getTxProof(), thisHash);
 
-        if (!proof.equals(rootHash)) return null;
+        if (!proof.equals(rootHash)) {
+            return null;
+        }
         return transactionWithProof;
     }
 
     public TransactionReceiptWithProof getTransactionReceiptWithProof(
             String transactionHash, String rootHash) throws IOException {
         TransactionReceiptWithProof transactionReceiptWithProof =
-                web3j.getReceiptByHashWithProof(transactionHash).send();
+                web3j.getTransactionReceiptByHashWithProof(transactionHash).send();
 
-        if (transactionReceiptWithProof.getTransactionReceiptWithProof() == null) return null;
+        if (transactionReceiptWithProof.getTransactionReceiptWithProof() == null) {
+            return null;
+        }
         TransactionReceipt transactionReceipt =
                 transactionReceiptWithProof
                         .getTransactionReceiptWithProof()
                         .getTransactionReceipt();
-        logger.info(transactionReceipt.toString());
+        logger.info("Receipt {}", transactionReceipt.toString());
 
         // transaction index
         String index = transactionReceipt.getTransactionIndexRaw();
         BigInteger indexValue = Numeric.toBigInt(index);
         byte[] byteIndex = RlpEncoder.encode(RlpString.create(indexValue));
 
-        String receiptRlp = ReceiptRlp.encode(transactionReceipt);
+        String receiptRlp = ReceiptEncoder.encode(transactionReceipt);
         logger.info("ReceiptRlp:{}", receiptRlp);
 
         String rlpHash = Hash.sha3(receiptRlp);
-        logger.info("ReceiptHash:{}", rlpHash);
+        logger.info("ReceiptRlpHash:{}", rlpHash);
 
         String input = Numeric.toHexString(byteIndex) + rlpHash.substring(2);
         String thistHash = Hash.sha3(input);
-        logger.info("thisHash:{}", thistHash);
+        logger.info("ThisHash:{}", thistHash);
 
         String proof =
-                MerkleRoot.calculateMerkleRoot(
+                Merkle.calculateMerkleRoot(
                         transactionReceiptWithProof
                                 .getTransactionReceiptWithProof()
                                 .getReceiptProof(),
                         thistHash);
-        logger.info("MerkleProof:{}", proof);
 
-        if (!proof.equals(rootHash)) return null;
+        if (!proof.equals(rootHash)) {
+            return null;
+        }
         return transactionReceiptWithProof;
+    }
+
+    public ImmutablePair<TransactionWithProof, TransactionReceiptWithProof>
+            getTransactionAndReceiptWithProof(
+                    String transactionHash, String transactionsRoot, String receiptsRoot)
+                    throws IOException {
+        TransactionWithProof transactionWithProof =
+                getTransactionWithProof(transactionHash, transactionsRoot);
+        if (transactionWithProof == null) {
+            return null;
+        }
+
+        TransactionReceiptWithProof transactionReceiptWithProof =
+                getTransactionReceiptWithProof(transactionHash, receiptsRoot);
+        if (transactionReceiptWithProof == null) {
+            return null;
+        }
+
+        String indexFromTransaction =
+                transactionWithProof
+                        .getTransactionWithProof()
+                        .getTransaction()
+                        .getTransactionIndexRaw();
+
+        String indexFromReceipt =
+                transactionReceiptWithProof
+                        .getTransactionReceiptWithProof()
+                        .getTransactionReceipt()
+                        .getTransactionIndexRaw();
+
+        logger.info(
+                "indexFromTransaction:{}, indexFromReceipt:{}",
+                indexFromTransaction,
+                indexFromReceipt);
+        if (!indexFromTransaction.equals(indexFromReceipt)) {
+            return null;
+        }
+
+        return new ImmutablePair<>(transactionWithProof, transactionReceiptWithProof);
     }
 }
