@@ -11,7 +11,7 @@ import org.fisco.bcos.web3j.rlp.RlpType;
 import org.fisco.bcos.web3j.utils.Numeric;
 
 // encode transaction receipt by Rlp into hex string
-public class ReceiptRlp {
+public class ReceiptEncoder {
     public static String encode(TransactionReceipt transactionReceipt) {
         List<RlpType> values = asRlpValues(transactionReceipt);
         RlpList rlpList = new RlpList(values);
@@ -21,8 +21,10 @@ public class ReceiptRlp {
 
     private static List<RlpType> asRlpValues(TransactionReceipt transactionReceipt) {
         List<RlpType> result = new ArrayList<>();
+        // bytes
         result.add(RlpString.create(Numeric.hexStringToByteArray(transactionReceipt.getRoot())));
 
+        // BigInteger
         result.add(RlpString.create(Numeric.toBigInt(transactionReceipt.getGasUsedRaw())));
 
         result.add(
@@ -36,13 +38,12 @@ public class ReceiptRlp {
 
         result.add(RlpString.create(Numeric.hexStringToByteArray(transactionReceipt.getOutput())));
 
-        // logs is List
+        // List
         List<Log> logs = transactionReceipt.getLogs();
         List<RlpType> logList = new ArrayList<>();
         for (Log log : logs) {
             logList.add(RlpString.create(Numeric.hexStringToByteArray(log.getAddress())));
 
-            // topics is List
             List<String> topics = log.getTopics();
             List<RlpType> topicList = new ArrayList<>();
             for (String topic : topics) {
