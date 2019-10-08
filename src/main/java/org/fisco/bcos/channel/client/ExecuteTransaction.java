@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ExecuteTransaction extends Contract {
-
     private static Logger logger = LoggerFactory.getLogger(ExecuteTransaction.class);
 
     public ExecuteTransaction(
@@ -32,5 +31,9 @@ public class ExecuteTransaction extends Contract {
             logger.error("Execute transaction failed:", e);
         }
         return transactionReceipt;
+    }
+
+    public void asyncSend(Function function, TransactionSucCallback callback) {
+        asyncExecuteTransaction(function, callback);
     }
 }
