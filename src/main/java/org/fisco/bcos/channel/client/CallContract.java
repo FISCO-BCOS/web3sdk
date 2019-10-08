@@ -19,6 +19,7 @@ import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameterName;
 import org.fisco.bcos.web3j.protocol.core.methods.request.Transaction;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Call;
+import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 
 public class CallContract {
 
@@ -33,28 +34,35 @@ public class CallContract {
         this.web3j = web3j;
     }
 
-    public String call(String contractAddress, String funcName, Type... args) throws IOException {
+    public CallResult call(String contractAddress, String funcName, Type... args) {
         final Function function =
                 new Function(
                         funcName,
                         Arrays.<Type>asList(args),
                         Collections.<TypeReference<?>>emptyList());
         String data = FunctionEncoder.encode(function);
-        Call ethCall =
-                web3j.call(
-                                Transaction.createEthCallTransaction(
-                                        credentials.getAddress(), contractAddress, data),
-                                DefaultBlockParameterName.LATEST)
-                        .send();
+        Call ethCall;
+        try {
+            ethCall =
+                    web3j.call(
+                                    Transaction.createEthCallTransaction(
+                                            credentials.getAddress(), contractAddress, data),
+                                    DefaultBlockParameterName.LATEST)
+                            .send();
+        } catch (IOException e) {
+            return new CallResult("IOException", e.getMessage(), "");
+        }
+
         Call.CallOutput callOutput = ethCall.getValue();
         if (callOutput != null) {
-            return callOutput.getOutput();
+            return new CallResult(callOutput.getStatus(), "", callOutput.getOutput());
         } else {
-            return null;
+            return new CallResult("RpcError", "", "");
         }
     }
 
-    public String sendTransaction(String contractAddress, String funcName, Type... args) {
+    public TransactionReceipt sendTransaction(
+            String contractAddress, String funcName, Type... args) {
         final Function function =
                 new Function(
                         funcName,
@@ -64,10 +72,10 @@ public class CallContract {
         ExecuteTransaction executeTransaction =
                 new ExecuteTransaction(contractAddress, web3j, credentials, gasPrice, gasLimit);
 
-        return executeTransaction.send(function).getOutput();
+        return executeTransaction.send(function);
     }
 
-    public String sendTransaction(
+    public TransactionReceipt sendTransaction(
             BigInteger gasPrice,
             BigInteger gasLimit,
             String contractAddress,
@@ -82,7 +90,43 @@ public class CallContract {
         ExecuteTransaction executeTransaction =
                 new ExecuteTransaction(contractAddress, web3j, credentials, gasPrice, gasLimit);
 
-        return executeTransaction.send(function).getOutput();
+        return executeTransaction.send(function);
+    }
+
+    public void asyncSendTransaction(
+            TransactionSucCallback callback,
+            String contractAddress,
+            String funcName,
+            Type... args) {
+        final Function function =
+                new Function(
+                        funcName,
+                        Arrays.<Type>asList(args),
+                        Collections.<TypeReference<?>>emptyList());
+
+        ExecuteTransaction executeTransaction =
+                new ExecuteTransaction(contractAddress, web3j, credentials, gasPrice, gasLimit);
+
+        executeTransaction.asyncSend(function, callback);
+    }
+
+    public void asyncSendTransaction(
+            TransactionSucCallback callback,
+            BigInteger gasPrice,
+            BigInteger gasLimit,
+            String contractAddress,
+            String funcName,
+            Type... args) {
+        final Function function =
+                new Function(
+                        funcName,
+                        Arrays.<Type>asList(args),
+                        Collections.<TypeReference<?>>emptyList());
+
+        ExecuteTransaction executeTransaction =
+                new ExecuteTransaction(contractAddress, web3j, credentials, gasPrice, gasLimit);
+
+        executeTransaction.asyncSend(function, callback);
     }
 
     public List<Type> decode(String data, TypeReference<?>... typeReferences) {
