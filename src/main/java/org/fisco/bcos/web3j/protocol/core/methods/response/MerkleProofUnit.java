@@ -4,16 +4,16 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * MerkleProof object used by both {@link TransactionReceiptWithProof} and {@link
+ * MerkleProofUnit object used by both {@link TransactionReceiptWithProof} and {@link
  * TransactionWithProof}.
  */
-public class MerkleProof {
+public class MerkleProofUnit {
     private List<String> left;
     private List<String> right;
 
-    public MerkleProof() {}
+    public MerkleProofUnit() {}
 
-    public MerkleProof(List<String> left, List<String> right) {
+    public MerkleProofUnit(List<String> left, List<String> right) {
         this.left = left;
         this.right = right;
     }
@@ -39,10 +39,10 @@ public class MerkleProof {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof MerkleProof)) {
+        if (!(o instanceof MerkleProofUnit)) {
             return false;
         }
-        MerkleProof that = (MerkleProof) o;
+        MerkleProofUnit that = (MerkleProofUnit) o;
         return Objects.equals(getLeft(), that.getLeft())
                 && Objects.equals(getRight(), that.getRight());
     }
@@ -54,6 +54,6 @@ public class MerkleProof {
 
     @Override
     public String toString() {
-        return "MerkleRoot{" + "left=" + left + ", right=" + right + '}';
+        return "MerkleProofUnit{" + "left=" + left + ", right=" + right + '}';
     }
 }

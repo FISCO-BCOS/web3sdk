@@ -283,10 +283,10 @@ public class JsonRpc2_0Web3j implements Web3j {
     }
 
     @Override
-    public Request<?, TransactionReceiptWithProof> getReceiptByHashWithProof(
+    public Request<?, TransactionReceiptWithProof> getTransactionReceiptByHashWithProof(
             String transactionHash) {
         return new Request<>(
-                "getReceiptByHashWithProof",
+                "getTransactionReceiptByHashWithProof",
                 Arrays.asList(groupId, transactionHash),
                 web3jService,
                 TransactionReceiptWithProof.class);
