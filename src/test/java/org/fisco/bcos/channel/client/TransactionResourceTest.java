@@ -2,6 +2,7 @@ package org.fisco.bcos.channel.client;
 
 import java.math.BigInteger;
 import java.util.List;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.crypto.ECKeyPair;
 import org.fisco.bcos.web3j.crypto.Keys;
@@ -10,7 +11,7 @@ import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosTransaction;
-import org.fisco.bcos.web3j.protocol.core.methods.response.MerkleProof;
+import org.fisco.bcos.web3j.protocol.core.methods.response.MerkleProofUnit;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceiptWithProof;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionWithProof;
 import org.slf4j.Logger;
@@ -44,7 +45,7 @@ public class TransactionResourceTest {
         try {
             web3j = Web3j.build(channelEthereumService, Integer.parseInt(args[0]));
         } catch (Exception e) {
-            System.out.println("\nPlease provide groupID in the first paramters");
+            System.out.println("Please provide groupID in the first paramters");
             System.exit(0);
         }
 
@@ -68,15 +69,16 @@ public class TransactionResourceTest {
             if ("getTrans".equals(args[1])) {
                 TransactionWithProof transactionWithProof =
                         web3j.getTransactionByHashWithProof(transactionHash).send();
-                if (transactionWithProof == null)
+                if (transactionWithProof == null) {
                     System.out.println("transactionWithProof == null");
+                }
 
                 System.out.println("***********Test getTransactionByHashWithProof************");
-                List<MerkleProof> transactionProof =
+                List<MerkleProofUnit> transactionProof =
                         transactionWithProof.getTransactionWithProof().getTxProof();
-                String thisRoot = MerkleRoot.calculateMerkleRoot(transactionProof, transactionHash);
+                String thisRoot = Merkle.calculateMerkleRoot(transactionProof, transactionHash);
                 System.out.println("transactionProof:" + transactionProof);
-                System.out.println("MerkleRoot: " + thisRoot);
+                System.out.println("Merkle: " + thisRoot);
 
                 TransactionWithProof newTransactionWithProof =
                         transactionResource.getTransactionWithProof(
@@ -84,9 +86,10 @@ public class TransactionResourceTest {
                 System.out.println(newTransactionWithProof.getTransactionWithProof().toString());
             } else if ("getReceipt".equals(args[1])) {
                 TransactionReceiptWithProof transactionReceiptWithProof =
-                        web3j.getReceiptByHashWithProof(transactionHash).send();
-                if (transactionReceiptWithProof == null)
+                        web3j.getTransactionReceiptByHashWithProof(transactionHash).send();
+                if (transactionReceiptWithProof == null) {
                     System.out.println("transactionReceiptWithProof == null");
+                }
 
                 System.out.println("***********Test getReceiptByHashWithProof************");
                 TransactionReceiptWithProof newTransactionReceiptWithProof =
@@ -94,11 +97,21 @@ public class TransactionResourceTest {
                                 transactionHash, receiptRootHash);
                 System.out.println(
                         newTransactionReceiptWithProof.getTransactionReceiptWithProof().toString());
+            } else if ("getAll".equals(args[1])) {
+                System.out.println("***********Test getTransactionAndReceiptWithProof************");
+                ImmutablePair<TransactionWithProof, TransactionReceiptWithProof> pair =
+                        transactionResource.getTransactionAndReceiptWithProof(
+                                transactionHash, transactionsRootHash, receiptRootHash);
+                if (pair == null) {
+                    System.out.println("failed!");
+                } else {
+                    System.out.println("successful!");
+                }
             } else {
-                System.out.println("\nCommand not found");
+                System.out.println("Command not found");
             }
         } else {
-            System.out.println("\nPlease choose follow commands:\n getTrans or getReceipt");
+            System.out.println("Please choose follow commands:\n getTrans or getReceipt");
         }
 
         System.exit(0);
