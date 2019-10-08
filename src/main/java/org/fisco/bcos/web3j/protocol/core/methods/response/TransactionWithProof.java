@@ -17,13 +17,13 @@ public class TransactionWithProof extends Response<TransactionWithProof.TransAnd
         private Transaction transaction;
 
         @JsonProperty("txProof")
-        private List<MerkleProof> txProof;
+        private List<MerkleProofUnit> txProof;
 
         public TransAndProof() {
             super();
         }
 
-        public TransAndProof(Transaction transaction, List<MerkleProof> txProof) {
+        public TransAndProof(Transaction transaction, List<MerkleProofUnit> txProof) {
             super();
             this.transaction = transaction;
             this.txProof = txProof;
@@ -37,11 +37,11 @@ public class TransactionWithProof extends Response<TransactionWithProof.TransAnd
             this.transaction = transaction;
         }
 
-        public List<MerkleProof> getTxProof() {
+        public List<MerkleProofUnit> getTxProof() {
             return txProof;
         }
 
-        public void setTxProof(List<MerkleProof> txProof) {
+        public void setTxProof(List<MerkleProofUnit> txProof) {
             this.txProof = txProof;
         }
 
