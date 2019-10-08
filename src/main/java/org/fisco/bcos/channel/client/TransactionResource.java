@@ -41,7 +41,6 @@ public class TransactionResource {
         byte[] byteIndex = RlpEncoder.encode(RlpString.create(indexValue));
         String input = Numeric.toHexString(byteIndex) + transactionHash.substring(2);
         logger.info("TransWithIndex:{}", input);
-
         String proof =
                 Merkle.calculateMerkleRoot(
                         transactionWithProof.getTransactionWithProof().getTxProof(), input);

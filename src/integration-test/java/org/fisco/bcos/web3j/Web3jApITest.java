@@ -162,15 +162,6 @@ public class Web3jApITest extends TestBase {
   // web3j.getTransactionByHashWithProof(txHash).send();
   //    Transaction transaction = transactionWithProof.getTransactionWithProof().getTransaction();
   //    assertNotNull(transaction);
-<<<<<<< HEAD
-  //    List<MerkleProofUnit> merkleProofUnits =
-  //        transactionWithProof.getTransactionWithProof().getTxProof();
-  //    assertNotNull(merkleProofUnits);
-=======
-  //    List<MerkleProof> merkleProofs =
-  // transactionWithProof.getTransactionWithProof().getTxProof();
-  //    assertNotNull(merkleProofs);
->>>>>>> handle Rlp list (#419)
   //  }
 
   @Test

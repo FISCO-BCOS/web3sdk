@@ -17,7 +17,6 @@ public class TransactionWithProof extends Response<TransactionWithProof.TransAnd
         private Transaction transaction;
 
         @JsonProperty("txProof")
-
         private List<MerkleProofUnit> txProof;
 
         public TransAndProof() {
