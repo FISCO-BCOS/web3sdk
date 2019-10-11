@@ -1011,7 +1011,10 @@ public class SolidityFunctionWrapper extends Generator {
         methodBuilder.addStatement("String data = transactionReceipt.getInput().substring(10)");
 
         buildVariableLengthReturnFunctionConstructor(
-                methodBuilder, functionName, "", buildTypeNames(functionDefinition.getInputs()));
+                methodBuilder,
+                functionDefinition.getName(),
+                "",
+                buildTypeNames(functionDefinition.getInputs()));
 
         methodBuilder.addStatement(
                 "$T<Type> results = $T.decode(data, function.getOutputParameters());",
@@ -1051,7 +1054,10 @@ public class SolidityFunctionWrapper extends Generator {
         methodBuilder.addStatement("String data = transactionReceipt.getOutput()");
 
         buildVariableLengthReturnFunctionConstructor(
-                methodBuilder, functionName, "", buildTypeNames(functionDefinition.getOutputs()));
+                methodBuilder,
+                functionDefinition.getName(),
+                "",
+                buildTypeNames(functionDefinition.getOutputs()));
 
         methodBuilder.addStatement(
                 "$T<Type> results = $T.decode(data, function.getOutputParameters());",
