@@ -1,7 +1,10 @@
 package org.fisco.bcos.channel.event.filter;
 
 import java.math.BigInteger;
+import org.fisco.bcos.web3j.abi.TypeEncoder;
+import org.fisco.bcos.web3j.abi.datatypes.Bytes;
 import org.fisco.bcos.web3j.crypto.Hash;
+import org.fisco.bcos.web3j.crypto.WalletUtils;
 import org.fisco.bcos.web3j.utils.Numeric;
 
 public class TopicTools {
@@ -20,7 +23,12 @@ public class TopicTools {
     }
 
     public static String addressToTopic(String s) {
-        return s;
+
+        if (!WalletUtils.isValidAddress(s)) {
+            throw new IllegalArgumentException("invalid address");
+        }
+
+        return "0x000000000000000000000000" + Numeric.cleanHexPrefix(s);
     }
 
     public static String stringToTopic(String s) {
@@ -34,6 +42,12 @@ public class TopicTools {
     }
 
     public static String byteNToTopic(byte[] b) {
-        return Numeric.toHexString(b);
+        // byte[] can't be more than 32 byte
+        if (b.length > 32) {
+            throw new IllegalArgumentException("byteN can't be more than 32 byte");
+        }
+
+        Bytes bs = new Bytes(b.length, b);
+        return Numeric.prependHexPrefix(TypeEncoder.encode(bs));
     }
 }
