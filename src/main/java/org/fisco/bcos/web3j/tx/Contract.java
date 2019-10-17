@@ -27,6 +27,7 @@ import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.Web3jService;
 import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
+import org.fisco.bcos.web3j.protocol.channel.StatusCode;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameterName;
 import org.fisco.bcos.web3j.protocol.core.JsonRpc2_0Web3j;
@@ -396,14 +397,25 @@ public abstract class Contract extends ManagedTransaction {
         if (!receipt.isStatusOK()) {
             String status = receipt.getStatus();
             BigInteger gasUsed = receipt.getGasUsed();
-            /*String message =
-                                String.format(
-                                        "Transaction has failed with status: %s. "
-                                                + "Gas used: %d. (not-enough gas?)",
-                                        status, gasUsed);
-            */
-            throw new TransactionException(
-                    receipt.getMessage(), status, gasUsed, receipt.getTransactionHash());
+
+            /* String message =
+            String.format(
+                    "Transaction has failed with status: %s. "
+                            + "Gas used: %d. (not-enough gas?)",
+                    status, gasUsed);*/
+            String message =
+                    StatusCode.getStatusMessage(receipt.getStatus(), receipt.getMessage())
+                            + " .Gas used: "
+                            + gasUsed.toString();
+
+            logger.trace(
+                    " execute transaction not successfully, hash: {}, status: {}, message: {}, gasUsed: {}",
+                    receipt.getTransactionHash(),
+                    receipt.getStatus(),
+                    receipt.getMessage(),
+                    receipt.getGasUsed());
+
+            throw new TransactionException(message, status, gasUsed, receipt.getTransactionHash());
         }
 
         return receipt;
@@ -479,6 +491,7 @@ public abstract class Contract extends ManagedTransaction {
     private static <T extends Contract> T create(
             T contract, String binary, String encodedConstructor, BigInteger value)
             throws IOException, TransactionException {
+
         TransactionReceipt transactionReceipt =
                 contract.executeTransaction(binary + encodedConstructor, value, FUNC_DEPLOY);
 
