@@ -50,7 +50,7 @@ public class StatusCode {
                 message = "invalid format";
                 break;
             case OutOfGasIntrinsic:
-                message = "out of gas intrinsic";
+                message = "out of gas";
                 break;
             case InvalidSignature:
                 message = "invalid signature";
