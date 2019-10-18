@@ -405,7 +405,7 @@ public abstract class Contract extends ManagedTransaction {
                     status, gasUsed);*/
             String message =
                     StatusCode.getStatusMessage(receipt.getStatus(), receipt.getMessage())
-                            + " .Gas used: "
+                            + " .gas used: "
                             + gasUsed.toString();
 
             logger.trace(
