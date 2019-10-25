@@ -31,7 +31,6 @@ scan_code()
 {
     # Redirect output to stderr.
     exec 1>&2
-<<<<<<< HEAD
     for file in $(git diff-index --name-status HEAD^ | awk '{print $2}'); do
         if should_ignore ${file}; then continue; fi
         if [ ! -f ${file} ];then continue; fi
