@@ -1,3 +1,20 @@
+### v2.1.1
+
+(2019-10-29)
+
+* 增加
+1. 生成`java`合约代码添加`input`和`output`的解析接口
+
+* 更新
+1. 修复`SDK`与节点握手协议的漏洞
+2. 部署合约`SDK`时不再通过轮询方式判断是否成功
+3. 修复`TransactionReceipt`类的`isStatusOK`接口抛出异常的问题
+
+* 兼容
+
+1. 兼容Channel Message v1协议
+2. 兼容FISCO BCOS 2.1以下的sdk证书名node.crt和node.key
+
 ### v2.1.0
 
 (2019-09-17)
