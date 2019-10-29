@@ -29,6 +29,9 @@ public class StatusCode {
     public static final String AddressAlreadyUsed = "0x18";
     public static final String PermissionDenied = "0x19";
     public static final String CallAddressError = "0x1a";
+    public static final String GasOverflow = "0x1b";
+    public static final String TxPoolIsFull = "0x1c";
+    public static final String TransactionRefused = "0x1d";
 
     public static String getStatusMessage(String status) {
         return getStatusMessage(status, " Error code: " + status);
@@ -50,7 +53,7 @@ public class StatusCode {
                 message = "invalid format";
                 break;
             case OutOfGasIntrinsic:
-                message = "out of gas intrinsic";
+                message = "out of gas";
                 break;
             case InvalidSignature:
                 message = "invalid signature";
@@ -117,6 +120,15 @@ public class StatusCode {
                 break;
             case CallAddressError:
                 message = "call address error";
+                break;
+            case GasOverflow:
+                message = "gas over flow";
+                break;
+            case TxPoolIsFull:
+                message = "transaction pool is full";
+                break;
+            case TransactionRefused:
+                message = "transaction refuesd";
                 break;
             default:
                 message = errorMessage;
