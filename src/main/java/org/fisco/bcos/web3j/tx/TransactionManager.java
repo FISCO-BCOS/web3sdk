@@ -45,6 +45,7 @@ public abstract class TransactionManager {
         this(new PollingTransactionReceiptProcessor(web3j, sleepDuration, attempts), credentials);
     }
 
+    @Deprecated
     protected TransactionReceipt executeTransaction(
             BigInteger gasPrice,
             BigInteger gasLimit,
@@ -110,6 +111,7 @@ public abstract class TransactionManager {
         return credentials.getAddress();
     }
 
+    @Deprecated
     private TransactionReceipt processResponse(SendTransaction transactionResponse)
             throws IOException, TransactionException {
         if (transactionResponse.hasError()) {

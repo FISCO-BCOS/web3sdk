@@ -163,8 +163,13 @@ public class TransactionReceipt {
         if (null == status) {
             return true;
         }
-        BigInteger statusQuantity = Numeric.decodeQuantity(status);
-        return BigInteger.ZERO.equals(statusQuantity);
+
+        try {
+            BigInteger statusQuantity = Numeric.decodeQuantity(status);
+            return BigInteger.ZERO.equals(statusQuantity);
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public String getFrom() {

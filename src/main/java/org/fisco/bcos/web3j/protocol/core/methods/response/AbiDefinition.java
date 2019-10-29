@@ -306,6 +306,10 @@ public class AbiDefinition {
             public int getDepth() {
                 return depth.size();
             }
+
+            public List<Integer> getDepthArray() {
+                return depth;
+            }
         }
     }
 }
