@@ -484,7 +484,6 @@ public class Server {
             response.writeExtra(out);
 
             ctx.writeAndFlush(out);
-        } else if (content.equals("1")) {
         }
     }
 
