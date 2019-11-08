@@ -33,7 +33,7 @@ public class MockBlockTest {
         BcosBlock block = objectMapper.readValue(rawResponse, BcosBlock.class);
         block.setRawResponse(rawResponse);
 
-        Web3j web3j = Web3j.build(web3jService);
+        Web3j web3j = Web3j.build(web3jService, 1);
         when(web3jService.send(any(Request.class), eq(BcosBlock.class))).thenReturn(block);
 
         BcosBlock mockBlocks =

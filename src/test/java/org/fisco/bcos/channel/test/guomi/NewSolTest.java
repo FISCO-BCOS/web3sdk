@@ -1,21 +1,21 @@
 package org.fisco.bcos.channel.test.guomi;
 
-import io.reactivex.Flowable;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.fisco.bcos.web3j.abi.EventEncoder;
 import org.fisco.bcos.web3j.abi.TypeReference;
-import org.fisco.bcos.web3j.abi.datatypes.*;
+import org.fisco.bcos.web3j.abi.datatypes.Address;
+import org.fisco.bcos.web3j.abi.datatypes.Event;
+import org.fisco.bcos.web3j.abi.datatypes.Function;
+import org.fisco.bcos.web3j.abi.datatypes.Type;
+import org.fisco.bcos.web3j.abi.datatypes.Utf8String;
 import org.fisco.bcos.web3j.abi.datatypes.generated.Uint256;
 import org.fisco.bcos.web3j.abi.datatypes.generated.Uint8;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.protocol.Web3j;
-import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
 import org.fisco.bcos.web3j.protocol.core.RemoteCall;
-import org.fisco.bcos.web3j.protocol.core.methods.request.BcosFilter;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Log;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.tx.Contract;
@@ -280,36 +280,6 @@ public class NewSolTest extends Contract {
         return responses;
     }
 
-    public Flowable<OwnershipTransferredEventResponse> ownershipTransferredEventFlowable(
-            BcosFilter filter) {
-        return web3j.logFlowable(filter)
-                .map(
-                        new io.reactivex.functions.Function<
-                                Log, OwnershipTransferredEventResponse>() {
-                            @Override
-                            public OwnershipTransferredEventResponse apply(Log log) {
-                                EventValuesWithLog eventValues =
-                                        extractEventParametersWithLog(
-                                                OWNERSHIPTRANSFERRED_EVENT, log);
-                                OwnershipTransferredEventResponse typedResponse =
-                                        new OwnershipTransferredEventResponse();
-                                typedResponse.log = log;
-                                typedResponse._from =
-                                        (String) eventValues.getIndexedValues().get(0).getValue();
-                                typedResponse._to =
-                                        (String) eventValues.getIndexedValues().get(1).getValue();
-                                return typedResponse;
-                            }
-                        });
-    }
-
-    public Flowable<OwnershipTransferredEventResponse> ownershipTransferredEventFlowable(
-            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
-        BcosFilter filter = new BcosFilter(startBlock, endBlock, getContractAddress());
-        filter.addSingleTopic(EventEncoder.encode(OWNERSHIPTRANSFERRED_EVENT));
-        return ownershipTransferredEventFlowable(filter);
-    }
-
     public List<TransferEventResponse> getTransferEvents(TransactionReceipt transactionReceipt) {
         List<EventValuesWithLog> valueList =
                 extractEventParametersWithLog(TRANSFER_EVENT, transactionReceipt);
@@ -326,35 +296,6 @@ public class NewSolTest extends Contract {
         return responses;
     }
 
-    public Flowable<TransferEventResponse> transferEventFlowable(BcosFilter filter) {
-        return web3j.logFlowable(filter)
-                .map(
-                        new io.reactivex.functions.Function<Log, TransferEventResponse>() {
-                            @Override
-                            public TransferEventResponse apply(Log log) {
-                                EventValuesWithLog eventValues =
-                                        extractEventParametersWithLog(TRANSFER_EVENT, log);
-                                TransferEventResponse typedResponse = new TransferEventResponse();
-                                typedResponse.log = log;
-                                typedResponse.from =
-                                        (String) eventValues.getIndexedValues().get(0).getValue();
-                                typedResponse.to =
-                                        (String) eventValues.getIndexedValues().get(1).getValue();
-                                typedResponse.tokens =
-                                        (BigInteger)
-                                                eventValues.getNonIndexedValues().get(0).getValue();
-                                return typedResponse;
-                            }
-                        });
-    }
-
-    public Flowable<TransferEventResponse> transferEventFlowable(
-            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
-        BcosFilter filter = new BcosFilter(startBlock, endBlock, getContractAddress());
-        filter.addSingleTopic(EventEncoder.encode(TRANSFER_EVENT));
-        return transferEventFlowable(filter);
-    }
-
     public List<ApprovalEventResponse> getApprovalEvents(TransactionReceipt transactionReceipt) {
         List<EventValuesWithLog> valueList =
                 extractEventParametersWithLog(APPROVAL_EVENT, transactionReceipt);
@@ -369,35 +310,6 @@ public class NewSolTest extends Contract {
             responses.add(typedResponse);
         }
         return responses;
-    }
-
-    public Flowable<ApprovalEventResponse> approvalEventFlowable(BcosFilter filter) {
-        return web3j.logFlowable(filter)
-                .map(
-                        new io.reactivex.functions.Function<Log, ApprovalEventResponse>() {
-                            @Override
-                            public ApprovalEventResponse apply(Log log) {
-                                EventValuesWithLog eventValues =
-                                        extractEventParametersWithLog(APPROVAL_EVENT, log);
-                                ApprovalEventResponse typedResponse = new ApprovalEventResponse();
-                                typedResponse.log = log;
-                                typedResponse.tokenOwner =
-                                        (String) eventValues.getIndexedValues().get(0).getValue();
-                                typedResponse.spender =
-                                        (String) eventValues.getIndexedValues().get(1).getValue();
-                                typedResponse.tokens =
-                                        (BigInteger)
-                                                eventValues.getNonIndexedValues().get(0).getValue();
-                                return typedResponse;
-                            }
-                        });
-    }
-
-    public Flowable<ApprovalEventResponse> approvalEventFlowable(
-            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
-        BcosFilter filter = new BcosFilter(startBlock, endBlock, getContractAddress());
-        filter.addSingleTopic(EventEncoder.encode(APPROVAL_EVENT));
-        return approvalEventFlowable(filter);
     }
 
     @Deprecated

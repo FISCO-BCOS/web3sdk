@@ -5,7 +5,10 @@ import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.Random;
 import org.fisco.bcos.channel.client.TransactionSucCallback;
-import org.fisco.bcos.web3j.crypto.*;
+import org.fisco.bcos.web3j.crypto.Credentials;
+import org.fisco.bcos.web3j.crypto.ExtendedRawTransaction;
+import org.fisco.bcos.web3j.crypto.ExtendedTransactionEncoder;
+import org.fisco.bcos.web3j.crypto.Hash;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.Request;
 import org.fisco.bcos.web3j.protocol.core.methods.response.SendTransaction;
@@ -37,7 +40,7 @@ public class ExtendedRawTransactionManager extends TransactionManager {
             byte chainId,
             BigInteger groupId,
             BigInteger fiscoChainId) {
-        super(web3j, credentials);
+        super(credentials);
         this.web3j = web3j;
         this.credentials = credentials;
         this.chainId = chainId;
@@ -53,7 +56,7 @@ public class ExtendedRawTransactionManager extends TransactionManager {
             int sleepDuration,
             BigInteger groupId,
             BigInteger fiscoChainId) {
-        super(web3j, attempts, sleepDuration, credentials);
+        super(credentials);
         this.web3j = web3j;
         this.credentials = credentials;
         this.chainId = chainId;

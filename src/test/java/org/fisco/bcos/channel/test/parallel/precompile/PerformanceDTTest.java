@@ -182,12 +182,7 @@ public class PerformanceDTTest {
         Web3AsyncThreadPoolSize.web3AsyncPoolSize = 2000;
 
         ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(500);
-        Web3j web3 =
-                Web3j.build(
-                        channelEthereumService,
-                        15 * 100,
-                        scheduledExecutorService,
-                        Integer.parseInt(groupId));
+        Web3j web3 = Web3j.build(channelEthereumService, Integer.parseInt(groupId));
 
         Credentials credentials =
                 Credentials.create(

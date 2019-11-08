@@ -11,7 +11,6 @@ import org.fisco.bcos.web3j.crypto.TransactionEncoder;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.methods.response.SendTransaction;
 import org.fisco.bcos.web3j.tx.exceptions.TxHashMismatchException;
-import org.fisco.bcos.web3j.tx.response.TransactionReceiptProcessor;
 import org.fisco.bcos.web3j.utils.Numeric;
 import org.fisco.bcos.web3j.utils.TxHashVerifier;
 import org.slf4j.Logger;
@@ -28,21 +27,7 @@ public class ClientTransactionManager extends TransactionManager {
     protected TxHashVerifier txHashVerifier = new TxHashVerifier();
 
     public ClientTransactionManager(Web3j web3j, Credentials credentials) {
-        super(web3j, credentials);
-        this.web3j = web3j;
-    }
-
-    public ClientTransactionManager(
-            Web3j web3j, Credentials credentials, int attempts, int sleepDuration) {
-        super(web3j, attempts, sleepDuration, credentials);
-        this.web3j = web3j;
-    }
-
-    public ClientTransactionManager(
-            Web3j web3j,
-            Credentials credentials,
-            TransactionReceiptProcessor transactionReceiptProcessor) {
-        super(transactionReceiptProcessor, credentials);
+        super(credentials);
         this.web3j = web3j;
     }
 

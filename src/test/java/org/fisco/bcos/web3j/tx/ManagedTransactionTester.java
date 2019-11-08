@@ -30,14 +30,6 @@ public abstract class ManagedTransactionTester {
         when(txHashVerifier.verify(any(), any())).thenReturn(true);
     }
 
-    public TransactionManager getVerifiedTransactionManager(
-            Credentials credentials, int attempts, int sleepDuration) {
-        RawTransactionManager transactionManager =
-                new RawTransactionManager(web3j, credentials, attempts, sleepDuration);
-        transactionManager.setTxHashVerifier(txHashVerifier);
-        return transactionManager;
-    }
-
     public TransactionManager getVerifiedTransactionManager(Credentials credentials) {
         RawTransactionManager transactionManager = new RawTransactionManager(web3j, credentials);
         transactionManager.setTxHashVerifier(txHashVerifier);

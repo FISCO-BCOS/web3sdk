@@ -1,6 +1,5 @@
 package org.fisco.bcos.channel.test.guomi;
 
-import io.reactivex.Flowable;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,7 +7,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 import org.fisco.bcos.channel.client.TransactionSucCallback;
-import org.fisco.bcos.web3j.abi.EventEncoder;
 import org.fisco.bcos.web3j.abi.TypeReference;
 import org.fisco.bcos.web3j.abi.datatypes.DynamicArray;
 import org.fisco.bcos.web3j.abi.datatypes.Event;
@@ -18,9 +16,7 @@ import org.fisco.bcos.web3j.abi.datatypes.generated.Bytes32;
 import org.fisco.bcos.web3j.abi.datatypes.generated.Int256;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.protocol.Web3j;
-import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
 import org.fisco.bcos.web3j.protocol.core.RemoteCall;
-import org.fisco.bcos.web3j.protocol.core.methods.request.BcosFilter;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Log;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.tuples.generated.Tuple3;
@@ -296,32 +292,6 @@ public class TableTest extends Contract {
         return responses;
     }
 
-    public Flowable<CreateResultEventResponse> createResultEventFlowable(BcosFilter filter) {
-        return web3j.logFlowable(filter)
-                .map(
-                        new io.reactivex.functions.Function<Log, CreateResultEventResponse>() {
-                            @Override
-                            public CreateResultEventResponse apply(Log log) {
-                                Contract.EventValuesWithLog eventValues =
-                                        extractEventParametersWithLog(CREATERESULT_EVENT, log);
-                                CreateResultEventResponse typedResponse =
-                                        new CreateResultEventResponse();
-                                typedResponse.log = log;
-                                typedResponse.count =
-                                        (BigInteger)
-                                                eventValues.getNonIndexedValues().get(0).getValue();
-                                return typedResponse;
-                            }
-                        });
-    }
-
-    public Flowable<CreateResultEventResponse> createResultEventFlowable(
-            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
-        BcosFilter filter = new BcosFilter(startBlock, endBlock, getContractAddress());
-        filter.addSingleTopic(EventEncoder.encode(CREATERESULT_EVENT));
-        return createResultEventFlowable(filter);
-    }
-
     public List<SelectResultEventResponse> getSelectResultEvents(
             TransactionReceipt transactionReceipt) {
         List<Contract.EventValuesWithLog> valueList =
@@ -340,38 +310,6 @@ public class TableTest extends Contract {
         return responses;
     }
 
-    public Flowable<SelectResultEventResponse> selectResultEventFlowable(BcosFilter filter) {
-        return web3j.logFlowable(filter)
-                .map(
-                        new io.reactivex.functions.Function<Log, SelectResultEventResponse>() {
-                            @Override
-                            public SelectResultEventResponse apply(Log log) {
-                                Contract.EventValuesWithLog eventValues =
-                                        extractEventParametersWithLog(SELECTRESULT_EVENT, log);
-                                SelectResultEventResponse typedResponse =
-                                        new SelectResultEventResponse();
-                                typedResponse.log = log;
-                                typedResponse.name =
-                                        (byte[])
-                                                eventValues.getNonIndexedValues().get(0).getValue();
-                                typedResponse.item_id =
-                                        (BigInteger)
-                                                eventValues.getNonIndexedValues().get(1).getValue();
-                                typedResponse.item_name =
-                                        (byte[])
-                                                eventValues.getNonIndexedValues().get(2).getValue();
-                                return typedResponse;
-                            }
-                        });
-    }
-
-    public Flowable<SelectResultEventResponse> selectResultEventFlowable(
-            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
-        BcosFilter filter = new BcosFilter(startBlock, endBlock, getContractAddress());
-        filter.addSingleTopic(EventEncoder.encode(SELECTRESULT_EVENT));
-        return selectResultEventFlowable(filter);
-    }
-
     public List<InsertResultEventResponse> getInsertResultEvents(
             TransactionReceipt transactionReceipt) {
         List<Contract.EventValuesWithLog> valueList =
@@ -385,32 +323,6 @@ public class TableTest extends Contract {
             responses.add(typedResponse);
         }
         return responses;
-    }
-
-    public Flowable<InsertResultEventResponse> insertResultEventFlowable(BcosFilter filter) {
-        return web3j.logFlowable(filter)
-                .map(
-                        new io.reactivex.functions.Function<Log, InsertResultEventResponse>() {
-                            @Override
-                            public InsertResultEventResponse apply(Log log) {
-                                Contract.EventValuesWithLog eventValues =
-                                        extractEventParametersWithLog(INSERTRESULT_EVENT, log);
-                                InsertResultEventResponse typedResponse =
-                                        new InsertResultEventResponse();
-                                typedResponse.log = log;
-                                typedResponse.count =
-                                        (BigInteger)
-                                                eventValues.getNonIndexedValues().get(0).getValue();
-                                return typedResponse;
-                            }
-                        });
-    }
-
-    public Flowable<InsertResultEventResponse> insertResultEventFlowable(
-            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
-        BcosFilter filter = new BcosFilter(startBlock, endBlock, getContractAddress());
-        filter.addSingleTopic(EventEncoder.encode(INSERTRESULT_EVENT));
-        return insertResultEventFlowable(filter);
     }
 
     public List<UpdateResultEventResponse> getUpdateResultEvents(
@@ -428,32 +340,6 @@ public class TableTest extends Contract {
         return responses;
     }
 
-    public Flowable<UpdateResultEventResponse> updateResultEventFlowable(BcosFilter filter) {
-        return web3j.logFlowable(filter)
-                .map(
-                        new io.reactivex.functions.Function<Log, UpdateResultEventResponse>() {
-                            @Override
-                            public UpdateResultEventResponse apply(Log log) {
-                                Contract.EventValuesWithLog eventValues =
-                                        extractEventParametersWithLog(UPDATERESULT_EVENT, log);
-                                UpdateResultEventResponse typedResponse =
-                                        new UpdateResultEventResponse();
-                                typedResponse.log = log;
-                                typedResponse.count =
-                                        (BigInteger)
-                                                eventValues.getNonIndexedValues().get(0).getValue();
-                                return typedResponse;
-                            }
-                        });
-    }
-
-    public Flowable<UpdateResultEventResponse> updateResultEventFlowable(
-            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
-        BcosFilter filter = new BcosFilter(startBlock, endBlock, getContractAddress());
-        filter.addSingleTopic(EventEncoder.encode(UPDATERESULT_EVENT));
-        return updateResultEventFlowable(filter);
-    }
-
     public List<RemoveResultEventResponse> getRemoveResultEvents(
             TransactionReceipt transactionReceipt) {
         List<Contract.EventValuesWithLog> valueList =
@@ -467,32 +353,6 @@ public class TableTest extends Contract {
             responses.add(typedResponse);
         }
         return responses;
-    }
-
-    public Flowable<RemoveResultEventResponse> removeResultEventFlowable(BcosFilter filter) {
-        return web3j.logFlowable(filter)
-                .map(
-                        new io.reactivex.functions.Function<Log, RemoveResultEventResponse>() {
-                            @Override
-                            public RemoveResultEventResponse apply(Log log) {
-                                Contract.EventValuesWithLog eventValues =
-                                        extractEventParametersWithLog(REMOVERESULT_EVENT, log);
-                                RemoveResultEventResponse typedResponse =
-                                        new RemoveResultEventResponse();
-                                typedResponse.log = log;
-                                typedResponse.count =
-                                        (BigInteger)
-                                                eventValues.getNonIndexedValues().get(0).getValue();
-                                return typedResponse;
-                            }
-                        });
-    }
-
-    public Flowable<RemoveResultEventResponse> removeResultEventFlowable(
-            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
-        BcosFilter filter = new BcosFilter(startBlock, endBlock, getContractAddress());
-        filter.addSingleTopic(EventEncoder.encode(REMOVERESULT_EVENT));
-        return removeResultEventFlowable(filter);
     }
 
     @Deprecated

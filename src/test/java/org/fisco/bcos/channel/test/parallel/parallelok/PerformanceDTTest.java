@@ -8,8 +8,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.*;
@@ -163,14 +161,7 @@ public class PerformanceDTTest {
         Web3AsyncThreadPoolSize.web3AsyncCorePoolSize = 3000;
         Web3AsyncThreadPoolSize.web3AsyncPoolSize = 2000;
 
-        ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(500);
-
-        web3 =
-                Web3j.build(
-                        channelEthereumService,
-                        15 * 100,
-                        scheduledExecutorService,
-                        Integer.parseInt(groupId));
+        web3 = Web3j.build(channelEthereumService, Integer.parseInt(groupId));
         credentials =
                 Credentials.create(
                         "b83261efa42895c38c6c2364ca878f43e77f3cddbc922bf57d0d48070f79feb6");

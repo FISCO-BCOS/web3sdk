@@ -4,8 +4,6 @@ import com.google.common.util.concurrent.RateLimiter;
 import java.math.BigInteger;
 import java.util.Random;
 import java.util.UUID;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import org.fisco.bcos.channel.client.Service;
@@ -50,14 +48,7 @@ public class PerfomanceTableRemove {
             ChannelEthereumService channelEthereumService = new ChannelEthereumService();
             channelEthereumService.setChannelService(service);
 
-            ScheduledExecutorService scheduledExecutorService =
-                    Executors.newScheduledThreadPool(500);
-            Web3j web3 =
-                    Web3j.build(
-                            channelEthereumService,
-                            15 * 100,
-                            scheduledExecutorService,
-                            Integer.parseInt(groupId));
+            Web3j web3 = Web3j.build(channelEthereumService, Integer.parseInt(groupId));
 
             Credentials credentials =
                     Credentials.create(
