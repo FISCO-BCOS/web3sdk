@@ -9,6 +9,7 @@
 1. netty-tcnative升级至2.0.30.Final版本
 2. Java-WebSocket升级至1.5.1版本
 3. commons-collections4升级至4.4版本
+4. bcprov-jdk15on升级至1.60
 
 * 兼容
 1. 兼容rc1，rc2, rc3, v2.0.0的节点
