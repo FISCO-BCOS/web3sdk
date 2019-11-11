@@ -119,7 +119,7 @@ public class TransactionResourceTest {
                 System.out.println("Please choose follow commands:\n getTrans or getReceipt");
             }
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println(e.getLocalizedMessage());
             System.exit(1);
         }
 
