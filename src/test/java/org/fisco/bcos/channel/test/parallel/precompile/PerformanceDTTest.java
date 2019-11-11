@@ -17,7 +17,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.locks.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.protocol.Web3j;
@@ -377,67 +378,76 @@ public class PerformanceDTTest {
                 Lock fileLock = new ReentrantLock();
                 BufferedWriter writer = null;
 
-                writer = new BufferedWriter(new FileWriter(fileName));
+                try {
+                    writer = new BufferedWriter(new FileWriter(fileName));
 
-                AtomicLong writed = new AtomicLong(0);
-                for (int j = start; j < end; ++j) {
-                    final int index = j;
-                    final int totalWrite = end - start;
-                    final BufferedWriter finalWriter = writer;
-                    threadPool.execute(
-                            new Runnable() {
-                                @Override
-                                public void run() {
-                                    while (true) {
-                                        DagTransferUser from = dagUserMgr.getFrom(index);
-                                        DagTransferUser to = dagUserMgr.getTo(index);
-                                        if ((deci.intValue() > 0)
-                                                && (deci.intValue() >= (index % 10 + 1))) {
-                                            to = dagUserMgr.getNext(index);
-                                        }
-
-                                        Random random = new Random();
-                                        int r = random.nextInt(100) + 1;
-                                        BigInteger amount = BigInteger.valueOf(r);
-
-                                        try {
-                                            String signedTransaction =
-                                                    dagTransfer.userTransferSeq(
-                                                            from.getUser(), to.getUser(), amount);
-                                            String content =
-                                                    String.format(
-                                                            "%s %d %d%n",
-                                                            signedTransaction, index, r);
-                                            fileLock.lock();
-                                            finalWriter.write(content);
-
-                                            long totalSigned = signed.incrementAndGet();
-                                            if (totalSigned % (count.longValue() / 10) == 0) {
-                                                System.out.println(
-                                                        "Signed transaction: "
-                                                                + String.valueOf(
-                                                                        totalSigned
-                                                                                * 100
-                                                                                / count.longValue())
-                                                                + "%");
+                    AtomicLong writed = new AtomicLong(0);
+                    for (int j = start; j < end; ++j) {
+                        final int index = j;
+                        final int totalWrite = end - start;
+                        final BufferedWriter finalWriter = writer;
+                        threadPool.execute(
+                                new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        while (true) {
+                                            DagTransferUser from = dagUserMgr.getFrom(index);
+                                            DagTransferUser to = dagUserMgr.getTo(index);
+                                            if ((deci.intValue() > 0)
+                                                    && (deci.intValue() >= (index % 10 + 1))) {
+                                                to = dagUserMgr.getNext(index);
                                             }
 
-                                            long writedCount = writed.incrementAndGet();
-                                            totalWrited.incrementAndGet();
-                                            if (writedCount >= totalWrite) {
-                                                finalWriter.close();
-                                            }
+                                            Random random = new Random();
+                                            int r = random.nextInt(100) + 1;
+                                            BigInteger amount = BigInteger.valueOf(r);
 
-                                            break;
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
-                                            continue;
-                                        } finally {
-                                            fileLock.unlock();
+                                            try {
+                                                String signedTransaction =
+                                                        dagTransfer.userTransferSeq(
+                                                                from.getUser(),
+                                                                to.getUser(),
+                                                                amount);
+                                                String content =
+                                                        String.format(
+                                                                "%s %d %d%n",
+                                                                signedTransaction, index, r);
+                                                fileLock.lock();
+                                                finalWriter.write(content);
+
+                                                long totalSigned = signed.incrementAndGet();
+                                                if (totalSigned % (count.longValue() / 10) == 0) {
+                                                    System.out.println(
+                                                            "Signed transaction: "
+                                                                    + String.valueOf(
+                                                                            totalSigned
+                                                                                    * 100
+                                                                                    / count
+                                                                                            .longValue())
+                                                                    + "%");
+                                                }
+
+                                                long writedCount = writed.incrementAndGet();
+                                                totalWrited.incrementAndGet();
+                                                if (writedCount >= totalWrite) {
+                                                    finalWriter.close();
+                                                }
+
+                                                break;
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
+                                                continue;
+                                            } finally {
+                                                fileLock.unlock();
+                                            }
                                         }
                                     }
-                                }
-                            });
+                                });
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    writer.close();
                 }
             }
 
