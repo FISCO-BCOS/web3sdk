@@ -72,6 +72,7 @@ public class TransactionResourceTest {
                             web3j.getTransactionByHashWithProof(transactionHash).send();
                     if (transactionWithProof == null) {
                         System.out.println("transactionWithProof == null");
+                        System.exit(1);
                     }
 
                     System.out.println("***********Test getTransactionByHashWithProof************");
@@ -91,6 +92,7 @@ public class TransactionResourceTest {
                             web3j.getTransactionReceiptByHashWithProof(transactionHash).send();
                     if (transactionReceiptWithProof == null) {
                         System.out.println("transactionReceiptWithProof == null");
+                        System.exit(1);
                     }
 
                     System.out.println("***********Test getReceiptByHashWithProof************");
