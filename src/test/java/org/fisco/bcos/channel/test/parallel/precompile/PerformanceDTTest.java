@@ -380,7 +380,6 @@ public class PerformanceDTTest {
 
                 try {
                     writer = new BufferedWriter(new FileWriter(fileName));
-
                     AtomicLong writed = new AtomicLong(0);
                     for (int j = start; j < end; ++j) {
                         final int index = j;
@@ -447,7 +446,9 @@ public class PerformanceDTTest {
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
-                    writer.close();
+                    if (writer != null) {
+                        writer.close();
+                    }
                 }
             }
 
