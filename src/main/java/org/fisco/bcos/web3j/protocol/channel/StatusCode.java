@@ -33,6 +33,10 @@ public class StatusCode {
     public static final String TxPoolIsFull = "0x1c";
     public static final String TransactionRefused = "0x1d";
 
+    // extension
+    public static final String IOExceptionCatched = "0x30";
+    public static final String ErrorInRPC = "0x31";
+
     public static String getStatusMessage(String status) {
         return getStatusMessage(status, " Error code: " + status);
     }
@@ -129,6 +133,9 @@ public class StatusCode {
                 break;
             case TransactionRefused:
                 message = "transaction refuesd";
+                break;
+            case ErrorInRPC:
+                message = "error in RPC";
                 break;
             default:
                 message = errorMessage;
