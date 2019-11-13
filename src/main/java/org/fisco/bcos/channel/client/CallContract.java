@@ -16,6 +16,7 @@ import org.fisco.bcos.web3j.abi.datatypes.StaticArray;
 import org.fisco.bcos.web3j.abi.datatypes.Type;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.protocol.Web3j;
+import org.fisco.bcos.web3j.protocol.channel.StatusCode;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameterName;
 import org.fisco.bcos.web3j.protocol.core.methods.request.Transaction;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Call;
@@ -50,14 +51,20 @@ public class CallContract {
                                     DefaultBlockParameterName.LATEST)
                             .send();
         } catch (IOException e) {
-            return new CallResult("IOException", e.getMessage(), "");
+            return new CallResult(StatusCode.IOExceptionCatched, e.getMessage(), "0x");
         }
 
         Call.CallOutput callOutput = ethCall.getValue();
         if (callOutput != null) {
-            return new CallResult(callOutput.getStatus(), "", callOutput.getOutput());
+            return new CallResult(
+                    callOutput.getStatus(),
+                    StatusCode.getStatusMessage(callOutput.getStatus()),
+                    callOutput.getOutput());
         } else {
-            return new CallResult("RpcError", "", "");
+            return new CallResult(
+                    StatusCode.ErrorInRPC,
+                    StatusCode.getStatusMessage(StatusCode.ErrorInRPC),
+                    "0x");
         }
     }
 
@@ -72,7 +79,12 @@ public class CallContract {
         ExecuteTransaction executeTransaction =
                 new ExecuteTransaction(contractAddress, web3j, credentials, gasPrice, gasLimit);
 
-        return executeTransaction.send(function);
+        TransactionReceipt transactionReceipt = executeTransaction.send(function);
+        if (transactionReceipt != null) {
+            String status = transactionReceipt.getStatus();
+            transactionReceipt.setMessage(StatusCode.getStatusMessage(status));
+        }
+        return transactionReceipt;
     }
 
     public TransactionReceipt sendTransaction(
@@ -90,7 +102,12 @@ public class CallContract {
         ExecuteTransaction executeTransaction =
                 new ExecuteTransaction(contractAddress, web3j, credentials, gasPrice, gasLimit);
 
-        return executeTransaction.send(function);
+        TransactionReceipt transactionReceipt = executeTransaction.send(function);
+        if (transactionReceipt != null) {
+            String status = transactionReceipt.getStatus();
+            transactionReceipt.setMessage(StatusCode.getStatusMessage(status));
+        }
+        return transactionReceipt;
     }
 
     public void asyncSendTransaction(
