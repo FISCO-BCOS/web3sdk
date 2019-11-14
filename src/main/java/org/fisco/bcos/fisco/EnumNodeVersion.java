@@ -8,7 +8,8 @@ public enum EnumNodeVersion {
     BCOS_2_0_0_RC3("2.0.0-rc3"),
     BCOS_2_0_0("2.0.0"),
     BCOS_2_0_1("2.0.1"),
-    BCOS_2_1_0("2.1.0");
+    BCOS_2_1_0("2.1.0"),
+    BCOS_2_2_0("2.2.0");
 
     private String version;
 
@@ -25,7 +26,7 @@ public enum EnumNodeVersion {
     }
 
     // the object of node version
-    class Version {
+    public class Version {
         private int major;
         private int minor;
         private int patch;
@@ -77,7 +78,7 @@ public enum EnumNodeVersion {
         }
     }
 
-    private static Version getClassVersion(String version) throws ChannelPrococolExceiption {
+    public static Version getClassVersion(String version) throws ChannelPrococolExceiption {
         try {
             // node version str format : "a.b.c" or "a.b.c-rcx"
             String[] s0 = version.trim().split("-");
