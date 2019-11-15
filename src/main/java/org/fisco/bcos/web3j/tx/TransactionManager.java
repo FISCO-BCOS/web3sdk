@@ -6,6 +6,7 @@ import org.fisco.bcos.channel.client.TransactionSucCallback;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.crypto.ExtendedRawTransaction;
 import org.fisco.bcos.web3j.protocol.Web3j;
+import org.fisco.bcos.web3j.protocol.core.methods.response.NodeVersion;
 import org.fisco.bcos.web3j.protocol.core.methods.response.SendTransaction;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.protocol.exceptions.TransactionException;
@@ -25,7 +26,18 @@ public abstract class TransactionManager {
     public static final int DEFAULT_POLLING_FREQUENCY = AttemptsConf.attempts; // 15 * 100
 
     private final TransactionReceiptProcessor transactionReceiptProcessor;
+
     final Credentials credentials;
+
+    private NodeVersion.Version nodeVersion;
+
+    public NodeVersion.Version getNodeVersion() {
+        return nodeVersion;
+    }
+
+    public void setNodeVersion(NodeVersion.Version nodeVersion) {
+        this.nodeVersion = nodeVersion;
+    }
 
     protected TransactionManager(
             TransactionReceiptProcessor transactionReceiptProcessor, Credentials credentials) {

@@ -444,11 +444,13 @@ public class PerformanceDTTest {
                                 });
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
+
                     if (writer != null) {
                         writer.close();
                     }
+
+                    e.printStackTrace();
+                    System.exit(0);
                 }
             }
 
@@ -541,6 +543,9 @@ public class PerformanceDTTest {
                                     + " transactions"
                                     + ",QPS="
                                     + sendSpeed);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.exit(0);
                 } finally {
                     if (reader != null) {
                         reader.close();
