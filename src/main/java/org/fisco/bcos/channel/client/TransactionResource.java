@@ -48,8 +48,11 @@ public class TransactionResource {
         String proof =
                 Merkle.calculateMerkleRoot(
                         transactionWithProof.getTransactionWithProof().getTxProof(), thisHash);
+        //        System.out.println("MerkleRoot: " + proof);
 
         if (!proof.equals(rootHash)) {
+            logger.info("MerkleRoot:{}", proof);
+            logger.info("TransRoot :{}", rootHash);
             return null;
         }
         return transactionWithProof;
@@ -91,7 +94,10 @@ public class TransactionResource {
                                 .getReceiptProof(),
                         thistHash);
 
+        //        System.out.println("MerkleRoot: " + proof);
         if (!proof.equals(rootHash)) {
+            logger.info("MerkleRoot:{}", proof);
+            logger.info("TransRoot :{}", rootHash);
             return null;
         }
         return transactionReceiptWithProof;
