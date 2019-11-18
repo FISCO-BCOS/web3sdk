@@ -106,6 +106,8 @@ public class PerfOK {
         Thread.sleep(100);
       }
 
+      System.exit(0);
+
     } catch (Exception e) {
       e.printStackTrace();
       System.exit(0);
