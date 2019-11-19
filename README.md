@@ -41,8 +41,8 @@ web3sdk/dist/apps/web3sdk.jar
 ```
 
 ## Documentation
-  - [**English**](https://fisco-bcos-documentation.readthedocs.io/en/latest/docs/sdk/sdk.html)
-  - [**Chinese**](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/sdk/sdk.html)
+  - [**English**](https://fisco-bcos-documentation.readthedocs.io/en/latest/docs/sdk/java_sdk.html)
+  - [**Chinese**](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/sdk/java_sdk.html)
 
 ## Quickstart
 [spring boot starter](https://github.com/FISCO-BCOS/spring-boot-starter) for Web3SDK is available that demonstrates a number of core features, including:
