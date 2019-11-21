@@ -3,15 +3,25 @@ package org.fisco.bcos.web3j.tx;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.SecureRandom;
+import java.util.List;
 import java.util.Random;
+
 import org.fisco.bcos.channel.client.TransactionSucCallback;
-import org.fisco.bcos.web3j.crypto.*;
+import org.fisco.bcos.web3j.crypto.Credentials;
+import org.fisco.bcos.web3j.crypto.ExtendedRawTransaction;
+import org.fisco.bcos.web3j.crypto.ExtendedTransactionEncoder;
+import org.fisco.bcos.web3j.crypto.Hash;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.Request;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock;
 import org.fisco.bcos.web3j.protocol.core.methods.response.SendTransaction;
+import org.fisco.bcos.web3j.tx.exceptions.ContractCallException;
 import org.fisco.bcos.web3j.tx.exceptions.TxHashMismatchException;
 import org.fisco.bcos.web3j.utils.Numeric;
 import org.fisco.bcos.web3j.utils.TxHashVerifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 
 /**
  * TransactionManager implementation using Ethereum wallet file to create and sign transactions
@@ -21,6 +31,7 @@ import org.fisco.bcos.web3j.utils.TxHashVerifier;
  * <a href="https://github.com/ethereum/EIPs/issues/155">EIP155</a>.
  */
 public class ExtendedRawTransactionManager extends TransactionManager {
+    private static final Logger logger = LoggerFactory.getLogger(ExtendedRawTransactionManager.class);
     private final Web3j web3j;
     final Credentials credentials;
 
@@ -185,6 +196,33 @@ public class ExtendedRawTransactionManager extends TransactionManager {
 
         return ethSendTransaction;
         */
+    }
+    
+    @Override
+    public BcosBlock submitTransactions(List<ExtendedRawTransaction> transactionList) throws IOException {
+        if (CollectionUtils.isEmpty(transactionList)) {
+            logger.error("TransactionList is empty. Please check it.");
+            return null;
+        }
+        StringBuffer str = new StringBuffer();
+        for (ExtendedRawTransaction tx : transactionList) {
+            ExtendedRawTransaction rawTransaction = createTransaction(tx.getGasPrice(), tx.getGasLimit(), tx.getTo(),
+                    tx.getData(), tx.getValue(), tx.getExtraData());
+            String signedTransaction = sign(rawTransaction);
+            str.append(signedTransaction);
+            str.append(",");
+        }
+        String txsStr = str.deleteCharAt(str.length() - 1).toString();
+        logger.debug("Txs to be submitted: {}", txsStr);
+
+        BcosBlock block = web3j.submitTransactions(txsStr).send();
+        if (block == null) {
+            throw new ContractCallException("The return is null.");
+        }
+        if (block.hasError()) {
+            throw new ContractCallException(block.getError().getMessage());
+        }
+        return block;
     }
 
     @Override

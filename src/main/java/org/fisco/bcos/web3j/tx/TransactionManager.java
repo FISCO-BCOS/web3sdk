@@ -2,10 +2,14 @@ package org.fisco.bcos.web3j.tx;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.List;
+
 import org.fisco.bcos.channel.client.TransactionSucCallback;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.crypto.ExtendedRawTransaction;
 import org.fisco.bcos.web3j.protocol.Web3j;
+import org.fisco.bcos.web3j.protocol.core.methods.request.Transaction;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock;
 import org.fisco.bcos.web3j.protocol.core.methods.response.SendTransaction;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.protocol.exceptions.TransactionException;
@@ -76,6 +80,26 @@ public abstract class TransactionManager {
             BigInteger value,
             String extraData,
             TransactionSucCallback callback)
+            throws IOException {
+        return null;
+    };
+
+    public BcosBlock submitTransactions(String signedTransactions)
+            throws IOException, TxHashMismatchException {
+        return null;
+    }
+
+    public BcosBlock submitTransactions(
+            String signedTransactions, TransactionSucCallback callback)
+            throws IOException, TxHashMismatchException {
+        return null;
+    }
+    
+    public abstract BcosBlock submitTransactions(
+            List<ExtendedRawTransaction> transactionList) 
+            throws IOException;
+
+    public SendTransaction sendTransaction(List<Transaction> transactionList, TransactionSucCallback callback)
             throws IOException {
         return null;
     };
