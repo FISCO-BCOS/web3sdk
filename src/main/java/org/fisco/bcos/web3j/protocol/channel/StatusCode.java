@@ -34,7 +34,7 @@ public class StatusCode {
     public static final String TransactionRefused = "0x1d";
 
     // extension
-    public static final String IOExceptionCatched = "0x30";
+    public static final String ExceptionCatched = "0x30";
     public static final String ErrorInRPC = "0x31";
 
     public static String getStatusMessage(String status) {
