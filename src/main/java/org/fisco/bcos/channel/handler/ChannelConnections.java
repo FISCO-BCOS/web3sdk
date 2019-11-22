@@ -31,7 +31,10 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.net.ssl.SSLException;
+import org.fisco.bcos.web3j.tuples.generated.Tuple2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -56,6 +59,8 @@ public class ChannelConnections {
     private ThreadPoolTaskExecutor threadPool;
     private long idleTimeout = (long) 10000;
     private long heartBeatDelay = (long) 2000;
+
+    public ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
     public Map<String, ChannelHandlerContext> networkConnections =
             new HashMap<String, ChannelHandlerContext>();
     private int groupId;
@@ -201,12 +206,17 @@ public class ChannelConnections {
             ConcurrentHashMap<String, BigInteger> nodeToBlockNumberMap) throws Exception {
         List<ChannelHandlerContext> activeConnections = new ArrayList<ChannelHandlerContext>();
 
-        for (String key : networkConnections.keySet()) {
-            if (networkConnections.get(key) != null
-                    && ChannelHandlerContextHelper.isChannelAvailable(
-                            networkConnections.get(key))) {
-                activeConnections.add(networkConnections.get(key));
+        getReadWriteLock().readLock().lock();
+        try {
+            for (String key : networkConnections.keySet()) {
+                if (networkConnections.get(key) != null
+                        && ChannelHandlerContextHelper.isChannelAvailable(
+                                networkConnections.get(key))) {
+                    activeConnections.add(networkConnections.get(key));
+                }
             }
+        } finally {
+            getReadWriteLock().readLock().unlock();
         }
 
         if (activeConnections.isEmpty()) {
@@ -276,20 +286,37 @@ public class ChannelConnections {
 
     public ChannelHandlerContext getNetworkConnectionByHost(String host, Integer port) {
         String endpoint = host + ":" + port;
+        ChannelHandlerContext channelHandlerContext = null;
+        getReadWriteLock().readLock().lock();
+        try {
+            channelHandlerContext = networkConnections.get(endpoint);
+        } finally {
+            getReadWriteLock().readLock().unlock();
+        }
 
-        return networkConnections.get(endpoint);
+        return channelHandlerContext;
     }
 
     public void setNetworkConnectionByHost(String host, Integer port, ChannelHandlerContext ctx) {
         String endpoint = host + ":" + port;
 
-        networkConnections.put(endpoint, ctx);
+        getReadWriteLock().writeLock().lock();
+        try {
+            networkConnections.put(endpoint, ctx);
+        } finally {
+            getReadWriteLock().writeLock().unlock();
+        }
     }
 
     public void removeNetworkConnectionByHost(String host, Integer port) {
         String endpoint = host + ":" + port;
 
-        networkConnections.remove(endpoint);
+        getReadWriteLock().writeLock().lock();
+        try {
+            networkConnections.remove(endpoint);
+        } finally {
+            getReadWriteLock().writeLock().unlock();
+        }
     }
 
     public void startListen(Integer port) throws SSLException {
@@ -323,7 +350,6 @@ public class ChannelConnections {
                                      */
                                     ChannelHandler handler = new ChannelHandler();
                                     handler.setConnections(selfService);
-                                    handler.setIsServer(true);
                                     handler.setThreadPool(selfThreadPool);
 
                                     ch.pipeline()
@@ -404,7 +430,6 @@ public class ChannelConnections {
                          */
                         ChannelHandler handler = new ChannelHandler();
                         handler.setConnections(selfService);
-                        handler.setIsServer(false);
                         handler.setThreadPool(selfThreadPool);
 
                         ch.pipeline()
@@ -494,31 +519,53 @@ public class ChannelConnections {
     }
 
     public void reconnect() {
-        for (Entry<String, ChannelHandlerContext> ctx : networkConnections.entrySet()) {
-            if (ctx.getValue() == null || !ctx.getValue().channel().isActive()) {
-                String[] split = ctx.getKey().split(":");
 
-                String host = split[0];
-                Integer port = Integer.parseInt(split[1]);
-                logger.info("try connect to: {}:{}", host, port);
+        List<String> shouldConnectNodes = new ArrayList<>();
+        List<Tuple2<String, ChannelHandlerContext>> shouldHeatBeatNodes = new ArrayList<>();
 
-                bootstrap.connect(host, port);
-                // logger.debug("connect to: {}:{} success", host, port);
-            } else {
-                if (ChannelHandlerContextHelper.isChannelAvailable(ctx.getValue())) {
-                    logger.trace("send heart beat to {}", ctx.getKey());
-                    callback.sendHeartbeat(ctx.getValue());
+        getReadWriteLock().readLock().lock();
+        try {
+            for (Entry<String, ChannelHandlerContext> ctx : networkConnections.entrySet()) {
+                if (ctx.getValue() == null || !ctx.getValue().channel().isActive()) {
+                    shouldConnectNodes.add(ctx.getKey());
                 } else {
-                    logger.debug(
-                            " socket channel active, channel protocol handshake not finished, host: {}, ctx: {}",
-                            ctx.getKey(),
-                            System.identityHashCode(ctx.getValue()));
+                    if (ChannelHandlerContextHelper.isChannelAvailable(ctx.getValue())) {
+                        shouldHeatBeatNodes.add(
+                                new Tuple2<String, ChannelHandlerContext>(
+                                        ctx.getKey(), ctx.getValue()));
+                    }
                 }
             }
+        } finally {
+            getReadWriteLock().readLock().unlock();
+        }
+
+        for (int j = 0; j < shouldHeatBeatNodes.size(); ++j) {
+            logger.trace("send heart beat to {}", shouldHeatBeatNodes.get(j).getValue1());
+            callback.sendHeartbeat(shouldHeatBeatNodes.get(j).getValue2());
+        }
+
+        for (int i = 0; i < shouldConnectNodes.size(); ++i) {
+            String[] split = shouldConnectNodes.get(i).split(":");
+
+            String host = split[0];
+            Integer port = Integer.parseInt(split[1]);
+            logger.info("try connect to: {}:{}", host, port);
+
+            bootstrap.connect(host, port);
+            // logger.debug("connect to: {}:{} success", host, port);
         }
     }
 
     public void onReceiveMessage(ChannelHandlerContext ctx, ByteBuf message) {
         callback.onMessage(ctx, message);
+    }
+
+    public ReadWriteLock getReadWriteLock() {
+        return readWriteLock;
+    }
+
+    public void setReadWriteLock(ReadWriteLock readWriteLock) {
+        this.readWriteLock = readWriteLock;
     }
 }
