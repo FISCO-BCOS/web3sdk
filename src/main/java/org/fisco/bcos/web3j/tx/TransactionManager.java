@@ -83,17 +83,6 @@ public abstract class TransactionManager {
             throws IOException {
         return null;
     };
-
-    public BcosBlock submitTransactions(String signedTransactions)
-            throws IOException, TxHashMismatchException {
-        return null;
-    }
-
-    public BcosBlock submitTransactions(
-            String signedTransactions, TransactionSucCallback callback)
-            throws IOException, TxHashMismatchException {
-        return null;
-    }
     
     public abstract BcosBlock submitTransactions(
             List<ExtendedRawTransaction> transactionList) 
