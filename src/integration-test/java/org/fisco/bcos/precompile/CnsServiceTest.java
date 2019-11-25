@@ -1,20 +1,20 @@
 package org.fisco.bcos.precompile;
 
-import static org.junit.Assert.assertEquals;
+import org.fisco.bcos.TestBase;
+import org.fisco.bcos.channel.test.contract.Ok;
+import org.fisco.bcos.web3j.crypto.Credentials;
+import org.fisco.bcos.web3j.crypto.gm.GenCredential;
+import org.fisco.bcos.web3j.precompile.cns.CnsService;
+import org.junit.Test;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
 
-import org.fisco.bcos.TestBase;
-import org.fisco.bcos.channel.test.contract.Ok;
-import org.fisco.bcos.web3j.crypto.Credentials;
-import org.fisco.bcos.web3j.precompile.cns.CnsService;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 public class CnsServiceTest extends TestBase {
 
-  public Credentials credentials =
-      Credentials.create("b83261efa42895c38c6c2364ca878f43e77f3cddbc922bf57d0d48070f79feb6");
+  public Credentials credentials = GenCredential.create();
 
   CnsService cnsService = new CnsService(web3j, credentials);
 
