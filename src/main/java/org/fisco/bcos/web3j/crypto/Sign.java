@@ -13,6 +13,7 @@ import org.bouncycastle.math.ec.ECAlgorithms;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.math.ec.FixedPointCombMultiplier;
 import org.bouncycastle.math.ec.custom.sec.SecP256K1Curve;
+import org.fisco.bcos.web3j.crypto.gm.sm2.SM2Sign;
 
 /**
  * Transaction signing logic.
@@ -23,13 +24,10 @@ import org.bouncycastle.math.ec.custom.sec.SecP256K1Curve;
  */
 public class Sign {
     private static SignInterface signInterface = new ECDSASign();
+    private static SignInterface signInterface0 = new SM2Sign();
 
     public static SignInterface getSignInterface() {
         return signInterface;
-    }
-
-    public static void setSignInterface(SignInterface signInterface) {
-        Sign.signInterface = signInterface;
     }
 
     private static final X9ECParameters CURVE_PARAMS = CustomNamedCurves.getByName("secp256k1");

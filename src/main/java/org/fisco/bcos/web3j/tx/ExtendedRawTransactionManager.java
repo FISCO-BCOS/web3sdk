@@ -5,7 +5,10 @@ import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.Random;
 import org.fisco.bcos.channel.client.TransactionSucCallback;
-import org.fisco.bcos.web3j.crypto.*;
+import org.fisco.bcos.web3j.crypto.Credentials;
+import org.fisco.bcos.web3j.crypto.ExtendedRawTransaction;
+import org.fisco.bcos.web3j.crypto.ExtendedTransactionEncoder;
+import org.fisco.bcos.web3j.crypto.Hash;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.Request;
 import org.fisco.bcos.web3j.protocol.core.methods.response.SendTransaction;
@@ -37,23 +40,7 @@ public class ExtendedRawTransactionManager extends TransactionManager {
             byte chainId,
             BigInteger groupId,
             BigInteger fiscoChainId) {
-        super(web3j, credentials);
-        this.web3j = web3j;
-        this.credentials = credentials;
-        this.chainId = chainId;
-        this.groupId = groupId;
-        this.fiscoChainId = fiscoChainId;
-    }
-
-    public ExtendedRawTransactionManager(
-            Web3j web3j,
-            Credentials credentials,
-            byte chainId,
-            int attempts,
-            int sleepDuration,
-            BigInteger groupId,
-            BigInteger fiscoChainId) {
-        super(web3j, attempts, sleepDuration, credentials);
+        super(credentials);
         this.web3j = web3j;
         this.credentials = credentials;
         this.chainId = chainId;
@@ -64,16 +51,6 @@ public class ExtendedRawTransactionManager extends TransactionManager {
     public ExtendedRawTransactionManager(
             Web3j web3j, Credentials credentials, BigInteger groupId, BigInteger fiscoChainId) {
         this(web3j, credentials, ChainId.NONE, groupId, fiscoChainId);
-    }
-
-    public ExtendedRawTransactionManager(
-            Web3j web3j,
-            Credentials credentials,
-            int attempts,
-            int sleepDuration,
-            BigInteger groupId,
-            BigInteger fiscoChainId) {
-        this(web3j, credentials, ChainId.NONE, attempts, sleepDuration, groupId, fiscoChainId);
     }
 
     BigInteger getBlockLimit() throws IOException {
@@ -173,18 +150,6 @@ public class ExtendedRawTransactionManager extends TransactionManager {
         request.sendOnly();
 
         return null;
-
-        /*
-        if (ethSendTransaction != null && !ethSendTransaction.hasError()) {
-            String txHashLocal = Hash.sha3(signedTransaction);
-            String txHashRemote = ethSendTransaction.getTransactionHash();
-            if (!txHashVerifier.verify(txHashLocal, txHashRemote)) {
-                throw new TxHashMismatchException(txHashLocal, txHashRemote);
-            }
-        }
-
-        return ethSendTransaction;
-        */
     }
 
     @Override

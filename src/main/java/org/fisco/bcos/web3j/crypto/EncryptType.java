@@ -18,8 +18,6 @@ public class EncryptType {
             signInterface = new ECDSASign();
             hashInterface = new SHA3Digest();
         }
-        Sign.setSignInterface(signInterface);
-        Hash.setHashInterface(hashInterface);
     }
 
     public int getEncryptType() {

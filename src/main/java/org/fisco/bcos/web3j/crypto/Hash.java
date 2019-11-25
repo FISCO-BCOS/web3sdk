@@ -7,21 +7,15 @@ import org.bouncycastle.crypto.digests.RIPEMD160Digest;
 import org.bouncycastle.crypto.digests.SHA512Digest;
 import org.bouncycastle.crypto.macs.HMac;
 import org.bouncycastle.crypto.params.KeyParameter;
+import org.fisco.bcos.web3j.crypto.gm.sm2.crypto.digests.SM3Digest;
 import org.fisco.bcos.web3j.utils.Numeric;
 
 /** Crypto related functions. */
 public class Hash {
     private Hash() {}
 
-    private static HashInterface hashInterface = new SHA3Digest();
-
-    public static HashInterface getHashInterface() {
-        return hashInterface;
-    }
-
-    public static void setHashInterface(HashInterface hashInterface) {
-        Hash.hashInterface = hashInterface;
-    }
+    private static SHA3Digest hashInterface = new SHA3Digest();
+    private static SM3Digest hashInterface0 = new SM3Digest();
 
     /**
      * Keccak-256 hash function.

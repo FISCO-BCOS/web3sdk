@@ -6,7 +6,6 @@ import org.fisco.bcos.channel.client.TransactionSucCallback;
 import org.fisco.bcos.web3j.crypto.ExtendedRawTransaction;
 import org.fisco.bcos.web3j.precompile.cns.CnsService;
 import org.fisco.bcos.web3j.protocol.Web3j;
-import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.protocol.exceptions.TransactionException;
 
 /** Generic transaction manager. */
@@ -32,13 +31,6 @@ public abstract class ManagedTransaction {
 
     public void setSyncThreshold(long syncThreshold) {
         cnsService.setSyncThreshold(syncThreshold);
-    }
-
-    protected TransactionReceipt send(
-            String to, String data, BigInteger value, BigInteger gasPrice, BigInteger gasLimit)
-            throws IOException, TransactionException {
-
-        return transactionManager.executeTransaction(gasPrice, gasLimit, to, data, value, null);
     }
 
     protected void sendOnly(
