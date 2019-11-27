@@ -37,6 +37,14 @@ public class StatusCode {
     public static final String ExceptionCatched = "0x30";
     public static final String ErrorInRPC = "0x31";
 
+    /// txPool related errors
+    public static final String AlreadyKnown = "0x2710";
+    public static final String AlreadyInChain = "0x2711";
+    public static final String InvalidTxChainId = "0x2712";
+    public static final String InvalidTxGroupId = "0x2713";
+    public static final String RequestNotBelongToTheGroup = "0x2714";
+    public static final String MalformedTx = "0x2715";
+
     public static String getStatusMessage(String status) {
         return getStatusMessage(status, " Error code: " + status);
     }
@@ -136,6 +144,24 @@ public class StatusCode {
                 break;
             case ErrorInRPC:
                 message = "error in RPC";
+                break;
+            case AlreadyKnown:
+                message = "transaction already known";
+                break;
+            case AlreadyInChain:
+                message = "transaction already in chain";
+                break;
+            case InvalidTxChainId:
+                message = "invalid chain id";
+                break;
+            case InvalidTxGroupId:
+                message = "invalid group id";
+                break;
+            case RequestNotBelongToTheGroup:
+                message = "request not belong to the group";
+                break;
+            case MalformedTx:
+                message = "malformed transaction";
                 break;
             default:
                 message = errorMessage;
