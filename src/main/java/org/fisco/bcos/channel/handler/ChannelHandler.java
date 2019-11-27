@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.handler.ssl.SslHandshakeCompletionEvent;
 import io.netty.handler.timeout.IdleStateEvent;
 import java.util.concurrent.RejectedExecutionException;
 import org.slf4j.Logger;
@@ -36,6 +37,20 @@ public class ChannelHandler extends SimpleChannelInboundHandler<ByteBuf> {
                 default:
                     break;
             }
+        } else if (evt instanceof SslHandshakeCompletionEvent) {
+            logger.info(" handshake success, host: {}, port: {}", host, port);
+            // ssl handshake success.
+            try {
+                connections.setNetworkConnectionByHost(host, port, ctx);
+                connections.getCallback().onConnect(ctx);
+            } catch (Exception e) {
+                logger.error(
+                        " disconnect, host: {}, port: {}, error: {}", host, port, e.getMessage());
+                ctx.disconnect();
+                ctx.close();
+            }
+        } else {
+            logger.info(" other network event, host: {}, port: {}, evt: {}", host, port, evt);
         }
     }
 
@@ -58,15 +73,15 @@ public class ChannelHandler extends SimpleChannelInboundHandler<ByteBuf> {
             // 更新ctx信息
             ChannelHandlerContext connection = connections.getNetworkConnectionByHost(host, port);
             if (connection != null && connection.channel().isActive()) {
-                logger.debug("connect available, close reconnect: {}:{}", host, port);
+                logger.info("connect available, close reconnect: {}:{}", host, port);
 
                 ctx.channel().disconnect();
                 ctx.channel().close();
-            } else {
-                logger.debug("client connect success {}:{}", host, port);
-                connections.setNetworkConnectionByHost(host, port, ctx);
-                connections.getCallback().onConnect(ctx);
-            }
+            } /*else {
+                  logger.debug("client connect success {}:{}", host, port);
+                  connections.setNetworkConnectionByHost(host, port, ctx);
+                  connections.getCallback().onConnect(ctx);
+              }*/
 
         } catch (Exception e) {
             logger.error("error", e);
