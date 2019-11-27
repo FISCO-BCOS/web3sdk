@@ -3,18 +3,23 @@ package org.fisco.bcos.web3j.tx;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.SecureRandom;
+import java.util.List;
 import java.util.Random;
 import org.fisco.bcos.channel.client.TransactionSucCallback;
 import org.fisco.bcos.web3j.crypto.Credentials;
+import org.fisco.bcos.web3j.crypto.ExtendedRawTransaction;
 import org.fisco.bcos.web3j.crypto.Hash;
 import org.fisco.bcos.web3j.crypto.RawTransaction;
 import org.fisco.bcos.web3j.crypto.TransactionEncoder;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.Request;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock;
 import org.fisco.bcos.web3j.protocol.core.methods.response.SendTransaction;
+import org.fisco.bcos.web3j.tx.exceptions.ContractCallException;
 import org.fisco.bcos.web3j.tx.exceptions.TxHashMismatchException;
 import org.fisco.bcos.web3j.utils.Numeric;
 import org.fisco.bcos.web3j.utils.TxHashVerifier;
+import org.springframework.util.CollectionUtils;
 
 /**
  * TransactionManager implementation using Ethereum wallet file to create and sign transactions
@@ -149,5 +154,49 @@ public class RawTransactionManager extends TransactionManager {
         request.sendOnly();
 
         return null;
+    }
+
+    @Override
+    public BcosBlock submitTransactions(List<ExtendedRawTransaction> transactionList)
+            throws IOException {
+        if (CollectionUtils.isEmpty(transactionList)) {
+            return null;
+        }
+        StringBuffer str = new StringBuffer();
+        for (ExtendedRawTransaction tx : transactionList) {
+            Random r = new SecureRandom();
+            BigInteger randomid = new BigInteger(250, r);
+            BigInteger blockLimit = getBlockLimit();
+            RawTransaction rawTransaction =
+                    RawTransaction.createTransaction(
+                            randomid,
+                            tx.getGasPrice(),
+                            tx.getGasLimit(),
+                            blockLimit,
+                            tx.getData(),
+                            tx.getValue(),
+                            tx.getExtraData());
+            byte[] signedMessage;
+
+            if (chainId > ChainId.NONE) {
+                signedMessage =
+                        TransactionEncoder.signMessage(rawTransaction, chainId, credentials);
+            } else {
+                signedMessage = TransactionEncoder.signMessage(rawTransaction, credentials);
+            }
+
+            String signedTransaction = Numeric.toHexString(signedMessage);
+            str.append(signedTransaction);
+            str.append(",");
+        }
+        String txsStr = str.deleteCharAt(str.length() - 1).toString();
+        BcosBlock block = web3j.submitTransactions(txsStr).send();
+        if (block == null) {
+            throw new ContractCallException("The return is null.");
+        }
+        if (block.hasError()) {
+            throw new ContractCallException(block.getError().getMessage());
+        }
+        return block;
     }
 }

@@ -3,19 +3,24 @@ package org.fisco.bcos.web3j.tx;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.SecureRandom;
+import java.util.List;
 import java.util.Random;
 import org.fisco.bcos.web3j.crypto.Credentials;
+import org.fisco.bcos.web3j.crypto.ExtendedRawTransaction;
 import org.fisco.bcos.web3j.crypto.Hash;
 import org.fisco.bcos.web3j.crypto.RawTransaction;
 import org.fisco.bcos.web3j.crypto.TransactionEncoder;
 import org.fisco.bcos.web3j.protocol.Web3j;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock;
 import org.fisco.bcos.web3j.protocol.core.methods.response.SendTransaction;
+import org.fisco.bcos.web3j.tx.exceptions.ContractCallException;
 import org.fisco.bcos.web3j.tx.exceptions.TxHashMismatchException;
 import org.fisco.bcos.web3j.tx.response.TransactionReceiptProcessor;
 import org.fisco.bcos.web3j.utils.Numeric;
 import org.fisco.bcos.web3j.utils.TxHashVerifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 
 /**
  * TransactionManager implementation for using an Ethereum node to transact.
@@ -99,5 +104,44 @@ public class ClientTransactionManager extends TransactionManager {
 
     BigInteger getBlockLimit() throws IOException {
         return web3j.getBlockNumberCache();
+    }
+
+    @Override
+    public BcosBlock submitTransactions(List<ExtendedRawTransaction> transactionList)
+            throws IOException {
+        if (CollectionUtils.isEmpty(transactionList)) {
+            return null;
+        }
+        StringBuffer str = new StringBuffer();
+        for (ExtendedRawTransaction tx : transactionList) {
+            Random r = new SecureRandom();
+            BigInteger randomid = new BigInteger(250, r);
+            BigInteger blockLimit = getBlockLimit();
+            RawTransaction rawTransaction =
+                    RawTransaction.createTransaction(
+                            randomid,
+                            tx.getGasPrice(),
+                            tx.getGasLimit(),
+                            blockLimit,
+                            tx.getData(),
+                            tx.getValue(),
+                            tx.getExtraData());
+            byte[] signedMessage;
+
+            signedMessage = TransactionEncoder.signMessage(rawTransaction, credentials);
+
+            String signedTransaction = Numeric.toHexString(signedMessage);
+            str.append(signedTransaction);
+            str.append(",");
+        }
+        String txsStr = str.deleteCharAt(str.length() - 1).toString();
+        BcosBlock block = web3j.submitTransactions(txsStr).send();
+        if (block == null) {
+            throw new ContractCallException("The return is null.");
+        }
+        if (block.hasError()) {
+            throw new ContractCallException(block.getError().getMessage());
+        }
+        return block;
     }
 }

@@ -94,6 +94,8 @@ public interface Ethereum {
 
     Request<?, SendTransaction> sendRawTransaction(String signedTransactionData);
 
+    Request<?, BcosBlock> submitTransactions(String transactionsData);
+
     // TODO
     Request<?, BcosFilter> newPendingTransactionFilter();
 

@@ -317,6 +317,15 @@ public class JsonRpc2_0Web3j implements Web3j {
     }
 
     @Override
+    public Request<?, BcosBlock> submitTransactions(String signedTransactionData) {
+        return new Request<>(
+                "submitTransactions",
+                Arrays.asList(groupId, signedTransactionData),
+                web3jService,
+                BcosBlock.class);
+    }
+
+    @Override
     public Request<?, GroupPeers> getGroupPeers() {
         return new Request<>(
                 "getGroupPeers", Arrays.asList(groupId), web3jService, GroupPeers.class);
