@@ -86,7 +86,7 @@ public class Service {
 
     private Integer connectSeconds = 30;
 
-    private Integer connectSleepPerMillis = 1;
+    private Integer connectSleepPerMillis = 30;
     private String orgID;
     private String agencyName;
     private GroupChannelConnectionsConfig allChannelConnections;
@@ -316,13 +316,18 @@ public class Service {
                     while (true) {
                         Map<String, ChannelHandlerContext> networkConnection =
                                 channelConnections.getNetworkConnections();
-                        for (String key : networkConnection.keySet()) {
-                            if (networkConnection.get(key) != null
-                                    && ChannelHandlerContextHelper.isChannelAvailable(
-                                            networkConnection.get(key))) {
-                                running = true;
-                                break;
+                        channelConnections.getReadWriteLock().readLock().lock();
+                        try {
+                            for (String key : networkConnection.keySet()) {
+                                if (networkConnection.get(key) != null
+                                        && ChannelHandlerContextHelper.isChannelAvailable(
+                                                networkConnection.get(key))) {
+                                    running = true;
+                                    break;
+                                }
                             }
+                        } finally {
+                            channelConnections.getReadWriteLock().readLock().unlock();
                         }
 
                         if (running || sleepTime > connectSeconds * 1000) {
