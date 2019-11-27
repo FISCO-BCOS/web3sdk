@@ -29,13 +29,6 @@ public class BlockNotificationParser {
         BcosBlockNotification bcosBlkNotify = new BcosBlockNotification();
 
         switch (getVersion()) {
-            case VERSION_2:
-                {
-                    bcosBlkNotify =
-                            ObjectMapperFactory.getObjectMapper()
-                                    .readValue(data, BcosBlockNotification.class);
-                }
-                break;
             case VERSION_1:
                 {
                     String[] split = data.split(",");
@@ -49,6 +42,11 @@ public class BlockNotificationParser {
                 }
                 break;
             default:
+                {
+                    bcosBlkNotify =
+                            ObjectMapperFactory.getObjectMapper()
+                                    .readValue(data, BcosBlockNotification.class);
+                }
                 break;
         }
 

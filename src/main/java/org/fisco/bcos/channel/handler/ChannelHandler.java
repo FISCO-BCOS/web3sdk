@@ -55,31 +55,19 @@ public class ChannelHandler extends SimpleChannelInboundHandler<ByteBuf> {
                             + "],"
                             + String.valueOf(ctx.channel().isActive()));
 
-            if (isServer) {
-                logger.debug("server accept new connect: {}:{}", host, port);
-                // add the connection to the connections
-                ConnectionInfo info = new ConnectionInfo();
-                info.setHost(host);
-                info.setPort(port);
+            // 更新ctx信息
+            ChannelHandlerContext connection = connections.getNetworkConnectionByHost(host, port);
+            if (connection != null && connection.channel().isActive()) {
+                logger.debug("connect available, close reconnect: {}:{}", host, port);
 
-                connections.getConnections().add(info);
-                connections.setNetworkConnectionByHost(info.getHost(), info.getPort(), ctx);
-                connections.getCallback().onConnect(ctx);
+                ctx.channel().disconnect();
+                ctx.channel().close();
             } else {
-                // 更新ctx信息
-                ChannelHandlerContext connection =
-                        connections.getNetworkConnectionByHost(host, port);
-                if (connection != null && connection.channel().isActive()) {
-                    logger.debug("connect available, close reconnect: {}:{}", host, port);
-
-                    ctx.channel().disconnect();
-                    ctx.channel().close();
-                } else {
-                    logger.debug("client connect success {}:{}", host, port);
-                    connections.setNetworkConnectionByHost(host, port, ctx);
-                    connections.getCallback().onConnect(ctx);
-                }
+                logger.debug("client connect success {}:{}", host, port);
+                connections.setNetworkConnectionByHost(host, port, ctx);
+                connections.getCallback().onConnect(ctx);
             }
+
         } catch (Exception e) {
             logger.error("error", e);
         }
@@ -102,22 +90,8 @@ public class ChannelHandler extends SimpleChannelInboundHandler<ByteBuf> {
                             + " ,"
                             + String.valueOf(ctx.channel().isActive()));
 
-            if (isServer) {
-                // server mode，remove the connection
-                for (Integer i = 0; i < connections.getConnections().size(); ++i) {
-                    ConnectionInfo info = connections.getConnections().get(i);
-
-                    if (info.getHost().equals(host) && info.getPort().equals(port)) {
-                        connections.getConnections().remove(i);
-                    }
-                }
-
-                // remove the networkConnection
-                connections.removeNetworkConnectionByHost(host, port);
-            } else {
-                // set the connection disabled
-                // connections.setNetworkConnection(host, port, null);
-            }
+            // set the connection disabled
+            // connections.setNetworkConnection(host, port, null)
 
             connections.getCallback().onDisconnect(ctx);
         } catch (Exception e) {
@@ -163,13 +137,8 @@ public class ChannelHandler extends SimpleChannelInboundHandler<ByteBuf> {
                         + " ,"
                         + String.valueOf(ctx.channel().isActive()));
 
-        if (isServer) {
-            // server mode，remove the connection
-            connections.removeNetworkConnectionByHost(host, port);
-        } else {
-            // set the connection disabled
-            // connections.setNetworkConnection(host, port, null);
-        }
+        // set the connection disabled
+        // connections.setNetworkConnection(host, port, null);
 
         ctx.disconnect();
         ctx.close();
@@ -190,14 +159,6 @@ public class ChannelHandler extends SimpleChannelInboundHandler<ByteBuf> {
         this.connections = connections;
     }
 
-    public Boolean getIsServer() {
-        return isServer;
-    }
-
-    public void setIsServer(Boolean isServer) {
-        this.isServer = isServer;
-    }
-
     public ThreadPoolTaskExecutor getThreadPool() {
         return threadPool;
     }
@@ -209,6 +170,5 @@ public class ChannelHandler extends SimpleChannelInboundHandler<ByteBuf> {
     }
 
     private ChannelConnections connections;
-    private Boolean isServer = false;
     private ThreadPoolTaskExecutor threadPool;
 }
