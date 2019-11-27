@@ -29,19 +29,17 @@ public class HeartBeatParser {
         byte[] result = null;
 
         switch (getVersion()) {
-            case VERSION_2:
-                {
-                    BcosHeartbeat bcosHeartbeat = new BcosHeartbeat();
-                    bcosHeartbeat.setHeartBeat(Integer.parseInt(value));
-                    result = ObjectMapperFactory.getObjectMapper().writeValueAsBytes(bcosHeartbeat);
-                }
-                break;
             case VERSION_1:
                 {
                     result = value.getBytes();
                 }
                 break;
             default:
+                {
+                    BcosHeartbeat bcosHeartbeat = new BcosHeartbeat();
+                    bcosHeartbeat.setHeartBeat(Integer.parseInt(value));
+                    result = ObjectMapperFactory.getObjectMapper().writeValueAsBytes(bcosHeartbeat);
+                }
                 break;
         }
 
@@ -53,19 +51,17 @@ public class HeartBeatParser {
         BcosHeartbeat bcosHeartbeat = new BcosHeartbeat();
 
         switch (getVersion()) {
-            case VERSION_2:
-                {
-                    bcosHeartbeat =
-                            ObjectMapperFactory.getObjectMapper()
-                                    .readValue(data, BcosHeartbeat.class);
-                }
-                break;
             case VERSION_1:
                 {
                     bcosHeartbeat.setHeartBeat(Integer.parseInt(data));
                 }
                 break;
             default:
+                {
+                    bcosHeartbeat =
+                            ObjectMapperFactory.getObjectMapper()
+                                    .readValue(data, BcosHeartbeat.class);
+                }
                 break;
         }
 

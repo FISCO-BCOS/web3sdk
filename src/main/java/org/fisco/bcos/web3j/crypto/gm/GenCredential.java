@@ -74,13 +74,13 @@ public class GenCredential {
         }
     }
 
-    private static ECKeyPair createKeyPair() {
+    public static ECKeyPair createKeyPair() {
         // use guomi
         if (EncryptType.encryptType == 1) return createGuomiKeyPair();
         return createECDSAKeyPair(); // default use ECDSA
     }
 
-    private static ECKeyPair createKeyPair(String privKey) {
+    public static ECKeyPair createKeyPair(String privKey) {
         if (EncryptType.encryptType == 1) return createGuomiKeyPair(privKey);
         return createECDSAKeyPair(privKey);
     }
