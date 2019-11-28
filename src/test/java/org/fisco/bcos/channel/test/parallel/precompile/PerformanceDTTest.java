@@ -270,7 +270,11 @@ public class PerformanceDTTest {
 
             // end or not
             while (!collector.isEnd()) {
-                Thread.sleep(100);
+                Thread.sleep(2000);
+                logger.info(
+                        " received: {}, total: {}",
+                        collector.getReceived().intValue(),
+                        collector.getTotal());
             }
 
             dagUserMgr.writeDagTransferUser();
@@ -553,7 +557,11 @@ public class PerformanceDTTest {
             }
 
             while (!collector.isEnd()) {
-                Thread.sleep(1000);
+                Thread.sleep(2000);
+                logger.info(
+                        " received: {}, total: {}",
+                        collector.getReceived().intValue(),
+                        collector.getTotal());
             }
 
             logger.info("End to send");
