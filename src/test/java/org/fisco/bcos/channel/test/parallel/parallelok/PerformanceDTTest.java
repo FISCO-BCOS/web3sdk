@@ -272,6 +272,10 @@ public class PerformanceDTTest {
             // end or not
             while (!collector.isEnd()) {
                 Thread.sleep(3000);
+                logger.info(
+                        " received: {}, total: {}",
+                        collector.getReceived().intValue(),
+                        collector.getTotal());
             }
 
             dagUserMgr.setContractAddr(parallelokAddr);
@@ -384,6 +388,10 @@ public class PerformanceDTTest {
             // end or not
             while (!collector.isEnd()) {
                 Thread.sleep(3000);
+                logger.info(
+                        " received: {}, total: {}",
+                        collector.getReceived().intValue(),
+                        collector.getTotal());
             }
 
             veryTransferData(threadPool);
@@ -578,6 +586,10 @@ public class PerformanceDTTest {
 
             while (!collector.isEnd()) {
                 Thread.sleep(3000);
+                logger.info(
+                        " received: {}, total: {}",
+                        collector.getReceived().intValue(),
+                        collector.getTotal());
             }
 
             veryTransferData(threadPool);
