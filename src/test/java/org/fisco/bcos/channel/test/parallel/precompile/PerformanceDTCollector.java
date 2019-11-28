@@ -93,7 +93,8 @@ public class PerformanceDTCollector {
                     error.addAndGet(1);
                 }
             } else {
-                System.out.println("receipt error! status: " + errorInfos.get(receipt.getStatus()));
+                // System.out.println("receipt error! status: " +
+                // errorInfos.get(receipt.getStatus()));
                 error.addAndGet(1);
             }
 
