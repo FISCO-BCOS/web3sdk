@@ -46,7 +46,7 @@ public class ChannelHandlerContextHelper {
             ChannelProtocol channelProtocol = ctx.channel().attr(attributeKey).get();
 
             if (null != channelProtocol) {
-                logger.trace(" host: {}, channel protocol: {}", host, channelProtocol);
+                // logger.trace(" host: {}, channel protocol: {}", host, channelProtocol);
 
                 return channelProtocol.getEnumProtocol();
             } else {
