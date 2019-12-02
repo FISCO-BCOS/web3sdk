@@ -100,6 +100,9 @@ public class EventLogUserParams {
         }
 
         for (Object topic : getTopics()) {
+            if (topic == null) {
+                continue;
+            }
             if (topic instanceof String) {
                 // if valid topic
                 if (((String) topic).isEmpty()) {

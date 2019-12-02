@@ -38,6 +38,8 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.SendTransaction;
 import org.fisco.bcos.web3j.protocol.core.methods.response.SyncStatus;
 import org.fisco.bcos.web3j.protocol.core.methods.response.SystemConfig;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TotalTransactionCount;
+import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceiptWithProof;
+import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionWithProof;
 import org.fisco.bcos.web3j.protocol.core.methods.response.UninstallFilter;
 import org.fisco.bcos.web3j.protocol.rx.JsonRpc2_0Rx;
 import org.fisco.bcos.web3j.protocol.websocket.events.LogNotification;
@@ -242,6 +244,15 @@ public class JsonRpc2_0Web3j implements Web3j {
     }
 
     @Override
+    public Request<?, TransactionWithProof> getTransactionByHashWithProof(String transactionHash) {
+        return new Request<>(
+                "getTransactionByHashWithProof",
+                Arrays.asList(groupId, transactionHash),
+                web3jService,
+                TransactionWithProof.class);
+    }
+
+    @Override
     public Request<?, BcosTransaction> getTransactionByBlockHashAndIndex(
             String blockHash, BigInteger transactionIndex) {
         return new Request<>(
@@ -271,6 +282,16 @@ public class JsonRpc2_0Web3j implements Web3j {
                 Arrays.asList(groupId, transactionHash),
                 web3jService,
                 BcosTransactionReceipt.class);
+    }
+
+    @Override
+    public Request<?, TransactionReceiptWithProof> getTransactionReceiptByHashWithProof(
+            String transactionHash) {
+        return new Request<>(
+                "getTransactionReceiptByHashWithProof",
+                Arrays.asList(groupId, transactionHash),
+                web3jService,
+                TransactionReceiptWithProof.class);
     }
 
     @Override

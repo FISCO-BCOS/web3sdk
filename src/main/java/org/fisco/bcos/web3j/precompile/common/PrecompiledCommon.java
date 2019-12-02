@@ -19,6 +19,8 @@ public class PrecompiledCommon {
 
     // system table for authority control
     public static final String USER_TABLE_PREFIX = "_user_";
+    public static final String USER_TABLE_PREFIX_2_2_0_VERSION = "u_";
+
     public static final String SYS_TABLE = "_sys_tables_";
     public static final String SYS_TABLE_ACCESS = "_sys_table_access_";
     public static final String SYS_CONSENSUS = "_sys_consensus_";

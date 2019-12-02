@@ -3,7 +3,11 @@ package org.fisco.bcos.web3j.tx;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.math.BigInteger;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.Semaphore;
 import java.util.stream.Collectors;
 import org.fisco.bcos.channel.client.TransactionSucCallback;
@@ -23,16 +27,20 @@ import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.Web3jService;
 import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
+import org.fisco.bcos.web3j.protocol.channel.StatusCode;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameterName;
 import org.fisco.bcos.web3j.protocol.core.JsonRpc2_0Web3j;
 import org.fisco.bcos.web3j.protocol.core.RemoteCall;
 import org.fisco.bcos.web3j.protocol.core.methods.request.Transaction;
-import org.fisco.bcos.web3j.protocol.core.methods.response.*;
+import org.fisco.bcos.web3j.protocol.core.methods.response.Call;
+import org.fisco.bcos.web3j.protocol.core.methods.response.Code;
+import org.fisco.bcos.web3j.protocol.core.methods.response.Log;
+import org.fisco.bcos.web3j.protocol.core.methods.response.NodeVersion;
+import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.protocol.exceptions.TransactionException;
 import org.fisco.bcos.web3j.tx.exceptions.ContractCallException;
 import org.fisco.bcos.web3j.tx.gas.ContractGasProvider;
-import org.fisco.bcos.web3j.tx.gas.DefaultGasProvider;
 import org.fisco.bcos.web3j.tx.gas.StaticGasProvider;
 import org.fisco.bcos.web3j.tx.txdecode.TransactionDecoder;
 import org.fisco.bcos.web3j.utils.Numeric;
@@ -44,11 +52,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class Contract extends ManagedTransaction {
 
-    /**
-     * @see DefaultGasProvider
-     * @deprecated ...
-     */
-    static Logger logger = LoggerFactory.getLogger(Contract.class);
+    private static final Logger logger = LoggerFactory.getLogger(Contract.class);
 
     public static final BigInteger GAS_LIMIT = BigInteger.valueOf(4_300_000);
 
@@ -59,7 +63,6 @@ public abstract class Contract extends ManagedTransaction {
     protected String contractAddress;
     protected ContractGasProvider gasProvider;
     protected TransactionReceipt transactionReceipt;
-    protected Map<String, String> deployedAddresses;
     protected DefaultBlockParameter defaultBlockParameter = DefaultBlockParameterName.LATEST;
 
     protected Contract(
@@ -96,8 +99,9 @@ public abstract class Contract extends ManagedTransaction {
         String chainId = "1";
         String version = "";
         String supportedVersion = "";
+        NodeVersion.Version nodeVersion = null;
         try {
-            NodeVersion.Version nodeVersion = web3j.getNodeVersion().send().getNodeVersion();
+            nodeVersion = web3j.getNodeVersion().send().getNodeVersion();
             version = nodeVersion.getVersion();
             supportedVersion = nodeVersion.getSupportedVersion();
 
@@ -114,10 +118,18 @@ public abstract class Contract extends ManagedTransaction {
             logger.error("Query fisco-bcos version failed", e);
         }
 
-        return EnumNodeVersion.BCOS_2_0_0_RC1.getVersion().equals(version)
-                ? new RawTransactionManager(web3j, credentials)
-                : new ExtendedRawTransactionManager(
-                        web3j, credentials, BigInteger.valueOf(groupId), new BigInteger(chainId));
+        TransactionManager transactionManager =
+                EnumNodeVersion.BCOS_2_0_0_RC1.getVersion().equals(version)
+                        ? new RawTransactionManager(web3j, credentials)
+                        : new ExtendedRawTransactionManager(
+                                web3j,
+                                credentials,
+                                BigInteger.valueOf(groupId),
+                                new BigInteger(chainId));
+
+        transactionManager.setNodeVersion(nodeVersion);
+
+        return transactionManager;
     }
 
     @Deprecated
@@ -334,31 +346,31 @@ public abstract class Contract extends ManagedTransaction {
         return executeCall(function);
     }
 
+    class Callback extends TransactionSucCallback {
+        Callback() {
+            try {
+                semaphore.acquire(1);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+
+        @Override
+        public void onResponse(TransactionReceipt receipt) {
+            this.receipt = receipt;
+            semaphore.release();
+        }
+
+        public TransactionReceipt receipt;
+        public Semaphore semaphore = new Semaphore(1, true);
+    };
+
     protected TransactionReceipt executeTransaction(Function function)
             throws IOException, TransactionException {
 
-        class Callback extends TransactionSucCallback {
-            Callback() {
-                try {
-                    semaphore.acquire(1);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-            }
-
-            @Override
-            public void onResponse(TransactionReceipt receipt) {
-                this.receipt = receipt;
-                semaphore.release();
-            }
-
-            public TransactionReceipt receipt;
-            public Semaphore semaphore = new Semaphore(1, true);
-        };
-
         Callback callback = new Callback();
 
-        asyncExecuteTransaction(function, callback);
+        asyncExecuteTransaction(FunctionEncoder.encode(function), function.getName(), callback);
         try {
             callback.semaphore.acquire(1);
         } catch (InterruptedException e) {
@@ -380,22 +392,38 @@ public abstract class Contract extends ManagedTransaction {
     protected TransactionReceipt executeTransaction(
             String data, BigInteger weiValue, String funcName)
             throws TransactionException, IOException {
-        TransactionReceipt receipt =
-                send(
-                        contractAddress,
-                        data,
-                        weiValue,
-                        gasProvider.getGasPrice(funcName),
-                        gasProvider.getGasLimit(funcName));
 
+        Callback callback = new Callback();
+
+        asyncExecuteTransaction(data, funcName, callback);
+        try {
+            callback.semaphore.acquire(1);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+        TransactionReceipt receipt = callback.receipt;
         if (!receipt.isStatusOK()) {
             String status = receipt.getStatus();
             BigInteger gasUsed = receipt.getGasUsed();
+
+            /* String message =
+            String.format(
+                    "Transaction has failed with status: %s. "
+                            + "Gas used: %d. (not-enough gas?)",
+                    status, gasUsed);*/
             String message =
-                    String.format(
-                            "Transaction has failed with status: %s. "
-                                    + "Gas used: %d. (not-enough gas?)",
-                            status, gasUsed);
+                    StatusCode.getStatusMessage(receipt.getStatus(), receipt.getMessage())
+                            + " .gas used: "
+                            + gasUsed.toString();
+
+            logger.trace(
+                    " execute transaction not successfully, hash: {}, status: {}, message: {}, gasUsed: {}",
+                    receipt.getTransactionHash(),
+                    receipt.getStatus(),
+                    receipt.getMessage(),
+                    receipt.getGasUsed());
+
             throw new TransactionException(message, status, gasUsed, receipt.getTransactionHash());
         }
 
@@ -403,21 +431,36 @@ public abstract class Contract extends ManagedTransaction {
     }
 
     protected void asyncExecuteTransaction(Function function, TransactionSucCallback callback) {
+
         try {
-            sendOnly(
-                    contractAddress,
-                    FunctionEncoder.encode(function),
-                    BigInteger.ZERO,
-                    gasProvider.getGasPrice(function.getName()),
-                    gasProvider.getGasLimit(function.getName()),
-                    callback);
+            asyncExecuteTransaction(FunctionEncoder.encode(function), function.getName(), callback);
         } catch (IOException e) {
-            // e.print_Stack_Trace();
-            logger.error(" IOException, message:{}", e.getMessage());
+            logger.error(
+                    " IOException, contractAddress:{}, exception:{} ",
+                    getContractAddress(),
+                    e.getMessage());
         } catch (TransactionException e) {
-            // e.print_Stack_Trace();
-            logger.error(" TransactionException, message:{}", e.getMessage());
+            logger.error(
+                    " TransactionException, contractAddress:{}, transactionHash: {}, transactionStatus:{}, exception:{} ",
+                    getContractAddress(),
+                    e.getTransactionHash(),
+                    e.getStatus(),
+                    e.getMessage());
         }
+
+        // asyncExecuteTransaction(FunctionEncoder.encode(function), function.getName(), callback);
+    }
+
+    protected void asyncExecuteTransaction(
+            String data, String funName, TransactionSucCallback callback)
+            throws IOException, TransactionException {
+        sendOnly(
+                contractAddress,
+                data,
+                BigInteger.ZERO,
+                gasProvider.getGasPrice(funName),
+                gasProvider.getGasLimit(funName),
+                callback);
     }
 
     protected String createTransactionSeq(Function function) {
@@ -457,6 +500,7 @@ public abstract class Contract extends ManagedTransaction {
     private static <T extends Contract> T create(
             T contract, String binary, String encodedConstructor, BigInteger value)
             throws IOException, TransactionException {
+
         TransactionReceipt transactionReceipt =
                 contract.executeTransaction(binary + encodedConstructor, value, FUNC_DEPLOY);
 
@@ -852,32 +896,6 @@ public abstract class Contract extends ManagedTransaction {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Subclasses should implement this method to return pre-existing addresses for deployed
-     * contracts.
-     *
-     * @param networkId the network id, for example "1" for the main-net, "3" for ropsten, etc.
-     * @return the deployed address of the contract, if known, and null otherwise.
-     */
-    protected String getStaticDeployedAddress(String networkId) {
-        return null;
-    }
-
-    public final void setDeployedAddress(String networkId, String address) {
-        if (deployedAddresses == null) {
-            deployedAddresses = new HashMap<>();
-        }
-        deployedAddresses.put(networkId, address);
-    }
-
-    public final String getDeployedAddress(String networkId) {
-        String addr = null;
-        if (deployedAddresses != null) {
-            addr = deployedAddresses.get(networkId);
-        }
-        return addr == null ? getStaticDeployedAddress(networkId) : addr;
-    }
-
     /** Adds a log field to {@link EventValues}. */
     public static class EventValuesWithLog {
         private final EventValues eventValues;
@@ -902,7 +920,7 @@ public abstract class Contract extends ManagedTransaction {
     }
 
     @SuppressWarnings("unchecked")
-    protected static <S extends Type, T> List<T> convertToNative(List<S> arr) {
+    public static <S extends Type, T> List<T> convertToNative(List<S> arr) {
         List<T> out = new ArrayList<T>();
         for (Iterator<S> it = arr.iterator(); it.hasNext(); ) {
             out.add((T) it.next().getValue());

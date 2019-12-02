@@ -76,7 +76,6 @@ public class MixContractClient {
             deploymixContract();
         }
         ContractGasProvider contractGasProvider = new StaticGasProvider(gasPrice, gasLimit);
-        ;
         MixContract mixContract =
                 MixContract.load(contractAddress, web3j, credentials, contractGasProvider);
         // create table

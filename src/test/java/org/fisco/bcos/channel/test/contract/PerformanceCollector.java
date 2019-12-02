@@ -20,11 +20,11 @@ public class PerformanceCollector {
     public void onMessage(TransactionReceipt receipt, Long cost) {
         try {
             if (!receipt.isStatusOK()) {
-                System.out.println("receipt error");
+                // System.out.println("receipt error");
                 error.addAndGet(1);
             } else {
                 if (receipt.getLogs().isEmpty()) {
-                    System.out.println("receipt log error");
+                    // System.out.println("receipt log error");
                     error.addAndGet(1);
                 }
             }

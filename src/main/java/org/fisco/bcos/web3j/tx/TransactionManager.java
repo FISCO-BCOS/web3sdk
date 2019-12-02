@@ -10,6 +10,7 @@ import org.fisco.bcos.web3j.crypto.ExtendedRawTransaction;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.methods.request.Transaction;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock;
+import org.fisco.bcos.web3j.protocol.core.methods.response.NodeVersion;
 import org.fisco.bcos.web3j.protocol.core.methods.response.SendTransaction;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.protocol.exceptions.TransactionException;
@@ -29,7 +30,18 @@ public abstract class TransactionManager {
     public static final int DEFAULT_POLLING_FREQUENCY = AttemptsConf.attempts; // 15 * 100
 
     private final TransactionReceiptProcessor transactionReceiptProcessor;
+
     final Credentials credentials;
+
+    private NodeVersion.Version nodeVersion;
+
+    public NodeVersion.Version getNodeVersion() {
+        return nodeVersion;
+    }
+
+    public void setNodeVersion(NodeVersion.Version nodeVersion) {
+        this.nodeVersion = nodeVersion;
+    }
 
     protected TransactionManager(
             TransactionReceiptProcessor transactionReceiptProcessor, Credentials credentials) {
@@ -49,6 +61,7 @@ public abstract class TransactionManager {
         this(new PollingTransactionReceiptProcessor(web3j, sleepDuration, attempts), credentials);
     }
 
+    @Deprecated
     protected TransactionReceipt executeTransaction(
             BigInteger gasPrice,
             BigInteger gasLimit,
@@ -123,6 +136,7 @@ public abstract class TransactionManager {
         return credentials.getAddress();
     }
 
+    @Deprecated
     private TransactionReceipt processResponse(SendTransaction transactionResponse)
             throws IOException, TransactionException {
         if (transactionResponse.hasError()) {
