@@ -33,7 +33,7 @@ public class TransactionResource {
         }
 
         Transaction transaction = transactionWithProof.getTransactionWithProof().getTransaction();
-        logger.info("Transaction:{}", transaction);
+        logger.debug("Transaction:{}", transaction);
 
         // transaction index
         String index = transaction.getTransactionIndexRaw();
@@ -42,17 +42,14 @@ public class TransactionResource {
         String input = Numeric.toHexString(byteIndex) + transactionHash.substring(2);
         logger.info("TransWithIndex:{}", input);
 
-        String thisHash = Hash.sha3(input);
-        logger.info("ThisHash:{}", thisHash);
-
         String proof =
                 Merkle.calculateMerkleRoot(
-                        transactionWithProof.getTransactionWithProof().getTxProof(), thisHash);
+                        transactionWithProof.getTransactionWithProof().getTxProof(), input);
         //        System.out.println("MerkleRoot: " + proof);
 
         if (!proof.equals(rootHash)) {
-            logger.info("MerkleRoot:{}", proof);
-            logger.info("TransRoot :{}", rootHash);
+            logger.debug("MerkleRoot:{}", proof);
+            logger.debug("TransRoot :{}", rootHash);
             return null;
         }
         return transactionWithProof;
@@ -70,7 +67,7 @@ public class TransactionResource {
                 transactionReceiptWithProof
                         .getTransactionReceiptWithProof()
                         .getTransactionReceipt();
-        logger.info("Receipt {}", transactionReceipt.toString());
+        logger.debug("Receipt {}", transactionReceipt.toString());
 
         // transaction index
         String index = transactionReceipt.getTransactionIndexRaw();
@@ -78,26 +75,25 @@ public class TransactionResource {
         byte[] byteIndex = RlpEncoder.encode(RlpString.create(indexValue));
 
         String receiptRlp = ReceiptEncoder.encode(transactionReceipt);
-        logger.info("ReceiptRlp:{}", receiptRlp);
+        logger.debug("ReceiptRlp:{}", receiptRlp);
 
         String rlpHash = Hash.sha3(receiptRlp);
-        logger.info("ReceiptRlpHash:{}", rlpHash);
+        logger.debug("ReceiptRlpHash:{}", rlpHash);
 
         String input = Numeric.toHexString(byteIndex) + rlpHash.substring(2);
-        String thistHash = Hash.sha3(input);
-        logger.info("ThisHash:{}", thistHash);
+        logger.info("ReceiptWithIndex:{}", input);
 
         String proof =
                 Merkle.calculateMerkleRoot(
                         transactionReceiptWithProof
                                 .getTransactionReceiptWithProof()
                                 .getReceiptProof(),
-                        thistHash);
+                        input);
 
         //        System.out.println("MerkleRoot: " + proof);
         if (!proof.equals(rootHash)) {
-            logger.info("MerkleRoot:{}", proof);
-            logger.info("TransRoot :{}", rootHash);
+            logger.debug("MerkleRoot:{}", proof);
+            logger.debug("TransRoot :{}", rootHash);
             return null;
         }
         return transactionReceiptWithProof;
@@ -131,7 +127,7 @@ public class TransactionResource {
                         .getTransactionReceipt()
                         .getTransactionIndexRaw();
 
-        logger.info(
+        logger.debug(
                 "indexFromTransaction:{}, indexFromReceipt:{}",
                 indexFromTransaction,
                 indexFromReceipt);
