@@ -136,23 +136,31 @@ public class CRUDService {
         table.setTableName(PrecompiledCommon.SYS_TABLE);
 
         /** Compatible with node version 2.2.0 */
-        String supportedVersion =
-                crud.getTransactionManager().getNodeVersion().getSupportedVersion();
-        EnumNodeVersion.Version version = EnumNodeVersion.getClassVersion(supportedVersion);
+        try {
+            String supportedVersion =
+                    crud.getTransactionManager().getNodeVersion().getSupportedVersion();
+            EnumNodeVersion.Version version = EnumNodeVersion.getClassVersion(supportedVersion);
 
-        logger.debug("desc, table: {}, node version: {}", tableName, version);
+            logger.debug("desc, table: {}, node version: {}", tableName, version);
 
-        // less than 2.2.0
-        if ((version.getMajor() == 2) && (version.getMinor() < 2)) {
-            table.setKey(PrecompiledCommon.USER_TABLE_PREFIX + tableName);
-        } else {
-            table.setKey(PrecompiledCommon.USER_TABLE_PREFIX_2_2_0_VERSION + tableName);
+            // less than 2.2.0
+            if ((version.getMajor() == 2) && (version.getMinor() < 2)) {
+                table.setKey(PrecompiledCommon.USER_TABLE_PREFIX + tableName);
+            } else {
+                table.setKey(PrecompiledCommon.USER_TABLE_PREFIX_2_2_0_VERSION + tableName);
+            }
+        } catch (Exception e) {
+            throw new PrecompileMessageException(
+                    " Cannot query node version, maybe disconnect to all nodes.");
         }
 
         Condition condition = table.getCondition();
         List<Map<String, String>> userTable = select(table, condition);
         Table tableInfo = new Table();
-        if (userTable.size() != 0) {
+        if ((userTable != null)
+                && (userTable.size() != 0)
+                && (null != userTable.get(0))
+                && !userTable.get(0).isEmpty()) {
             tableInfo.setTableName(tableName);
             tableInfo.setKey(userTable.get(0).get("key_field"));
             tableInfo.setValueFields(userTable.get(0).get("value_field"));
