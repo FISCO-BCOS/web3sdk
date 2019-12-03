@@ -3,7 +3,7 @@
 set -e
 
 scan_code_script="cobra/cobra.py -f json -o /tmp/report.json -t "
-ignore_files=(PerformanceOkDSync.java SM2Algorithm.java SM2KeyGenerator.java test)
+ignore_files=(Constant.java PerformanceOkDSync.java SM2Algorithm.java SM2KeyGenerator.java test)
 
 LOG_ERROR() {
     content=${1}
