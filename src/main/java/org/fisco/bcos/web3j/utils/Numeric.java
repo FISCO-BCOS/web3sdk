@@ -3,6 +3,7 @@ package org.fisco.bcos.web3j.utils;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
+import org.apache.commons.codec.binary.Hex;
 import org.fisco.bcos.web3j.protocol.exceptions.MessageDecodingException;
 import org.fisco.bcos.web3j.protocol.exceptions.MessageEncodingException;
 
@@ -108,12 +109,12 @@ public final class Numeric {
         return HEX_PREFIX + value.toString(16);
     }
 
-    public static String toHexStringNoPrefix(BigInteger value) {
-        return value.toString(16);
+    public static String toHexStringNoPrefix(byte[] input) {
+        return Hex.encodeHexString(input);
     }
 
-    public static String toHexStringNoPrefix(byte[] input) {
-        return toHexString(input, 0, input.length, false);
+    public static String toHexStringNoPrefix(BigInteger value) {
+        return value.toString(16);
     }
 
     public static String toHexStringWithPrefixZeroPadded(BigInteger value, int size) {
@@ -207,19 +208,15 @@ public final class Numeric {
     }
 
     public static String toHexString(byte[] input, int offset, int length, boolean withPrefix) {
-        StringBuilder stringBuilder = new StringBuilder();
-        if (withPrefix) {
-            stringBuilder.append("0x");
-        }
-        for (int i = offset; i < offset + length; i++) {
-            stringBuilder.append(String.format("%02x", input[i] & 0xFF));
-        }
-
-        return stringBuilder.toString();
+        return withPrefix
+                ? toHexString(Arrays.copyOfRange(input, offset, offset + length))
+                : toHexStringNoPrefix(Arrays.copyOfRange(input, offset, offset + length));
     }
 
     public static String toHexString(byte[] input) {
-        return toHexString(input, 0, input.length, true);
+        StringBuilder stringBuilder = new StringBuilder(2 + input.length * 2);
+        stringBuilder.append("0x").append(Hex.encodeHexString(input));
+        return stringBuilder.toString();
     }
 
     public static byte asByte(int m, int n) {
