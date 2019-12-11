@@ -57,7 +57,7 @@ public class GenerateGroup {
                 web3j.generateGroup(groupID, timestamp, nodes).send();
         logger.info("  generateGroup result: {}", generateGroup);
 
-        System.out.println(" generateGroup result: " + generateGroup);
+        System.out.println(" generateGroup result: " + generateGroup.getStatus());
 
         System.exit(0);
     }
