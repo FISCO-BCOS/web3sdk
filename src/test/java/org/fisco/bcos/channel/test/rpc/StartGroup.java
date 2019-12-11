@@ -43,7 +43,7 @@ public class StartGroup {
                 web3j.startGroup(groupID).send();
         logger.info("  StartGroup result: {}", startGroup);
 
-        System.out.println(" StartGroup result: " + startGroup);
+        System.out.println(" StartGroup result: " + startGroup.getStatus());
 
         System.exit(0);
     }
