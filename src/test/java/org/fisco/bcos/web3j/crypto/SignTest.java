@@ -2,6 +2,7 @@ package org.fisco.bcos.web3j.crypto;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.security.SignatureException;
 import org.bouncycastle.math.ec.ECPoint;
@@ -51,5 +52,15 @@ public class SignTest {
     public void testPublicKeyFromPrivatePoint() {
         ECPoint point = Sign.publicPointFromPrivate(SampleKeys.PRIVATE_KEY);
         assertThat(Sign.publicFromPoint(point.getEncoded(false)), equalTo(SampleKeys.PUBLIC_KEY));
+    }
+
+    @Test
+    public void testSigData2HexString() {
+
+        Sign.SignatureData signatureData = Sign.getSignInterface().signMessage(TEST_MESSAGE,
+                SampleKeys.KEY_PAIR);
+        String hexString = signatureData.toHexString();
+        Sign.SignatureData recoverSignatureData = new Sign.SignatureData(hexString);
+        assertTrue(signatureData.equals(recoverSignatureData));
     }
 }

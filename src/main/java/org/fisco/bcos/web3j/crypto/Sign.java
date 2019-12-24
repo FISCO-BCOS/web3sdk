@@ -13,6 +13,7 @@ import org.bouncycastle.math.ec.ECAlgorithms;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.math.ec.FixedPointCombMultiplier;
 import org.bouncycastle.math.ec.custom.sec.SecP256K1Curve;
+import org.fisco.bcos.web3j.utils.Numeric;
 
 /**
  * Transaction signing logic.
@@ -307,6 +308,47 @@ public class Sign {
             this.r = r;
             this.s = s;
             this.pub = pub;
+        }
+
+        // String <==> SignatureData
+
+        public SignatureData(String hexStringSigData) {
+            byte[] byteArr = Numeric.hexStringToByteArray(hexStringSigData);
+            byte v = byteArr[0];
+            byte[] r = new byte[32];
+            byte[] s = new byte[32];
+            byte[] pub = null;
+            System.arraycopy(byteArr, 1, r, 0, r.length);
+            System.arraycopy(byteArr, 1 + r.length, s, 0, s.length);
+            if (EncryptType.encryptType == 1) {
+                pub = new byte[64];
+                System.arraycopy(byteArr, 1 + r.length + s.length, pub, 0, pub.length);
+            }
+            this.v = v;
+            this.r = r;
+            this.s = s;
+            this.pub = pub;
+        }
+
+        public String toHexString() {
+            byte[] byteArr;
+            if(EncryptType.encryptType == 1) {
+                byteArr = new byte[1 + r.length + s.length + 64];
+                byteArr[0] = v;
+                System.arraycopy(r, 0, byteArr, 1, r.length);
+                System.arraycopy(s, 0, byteArr, r.length + 1,
+                        s.length);
+                System.arraycopy(pub, 0, byteArr,
+                        s.length + r.length + 1,
+                        pub.length);
+            } else {
+                byteArr = new byte[1 + r.length + s.length];
+                byteArr[0] = v;
+                System.arraycopy(r, 0, byteArr, 1, r.length);
+                System.arraycopy(s, 0, byteArr, r.length + 1,
+                        s.length);
+            }
+            return Numeric.toHexString(byteArr, 0, byteArr.length, false);
         }
 
         public byte getV() {
