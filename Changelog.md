@@ -1,3 +1,18 @@
+### v2.2.0
+
+(2019-12-24)
+
+* 增加
+1. 新增默克尔树的验证接口
+2. 压测程序支持国密版本
+
+* 更新
+1. 优化toHexString函数为apache commons库的实现
+2. 升级netty-tcnative-boringssl-static版本为2.0.27.Final
+
+* 兼容
+1. 适配fisco-bcos 2.2.0版本，支持Channel Message v1/V2/V3协议
+
 ### v2.1.2
 
 (2019-11-14)
