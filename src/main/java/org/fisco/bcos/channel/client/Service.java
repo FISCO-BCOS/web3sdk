@@ -85,6 +85,7 @@ public class Service {
     public static final String topicNeedVerifyPrefix = "#!$TopicNeedVerify_";
 
     private Integer connectSeconds = 30;
+    private boolean setJavaOpt = true;
 
     private Integer connectSleepPerMillis = 30;
     private String orgID;
@@ -287,8 +288,19 @@ public class Service {
         addTopics(set);
     }
 
+    public void initJavaOpt() {
+        System.setProperty("jdk.tls.namedGroups", "secp256k1");
+        logger.info(
+                "set jdk.tls.namedGroups opt, value : {}",
+                System.getProperty("jdk.tls.namedGroups"));
+    }
+
     public void run() throws Exception {
         logger.debug("init ChannelService");
+
+        if (setJavaOpt) {
+            initJavaOpt();
+        }
         parseFromTopic2KeyInfo();
         int flag = 0;
 
@@ -358,6 +370,20 @@ public class Service {
                         logger.error(errorMessage);
                         throw new Exception(errorMessage);
                     }
+
+                    logger.info(
+                            " Connect to nodes ["
+                                    + channelConnections.getConnectionsStr()
+                                    + "], groupId: "
+                                    + String.valueOf(groupId)
+                                    + " ,caCert: "
+                                    + channelConnections.getCaCert()
+                                    + " ,sslKey: "
+                                    + channelConnections.getSslKey()
+                                    + " ,sslCert: "
+                                    + channelConnections.getSslCert()
+                                    + " ,java version: "
+                                    + System.getProperty("java.version"));
 
                     eventLogFilterManager.start();
                 } catch (InterruptedException e) {
@@ -1552,5 +1578,13 @@ public class Service {
 
     public void setTimeoutHandler(Timer timeoutHandler) {
         this.timeoutHandler = timeoutHandler;
+    }
+
+    public boolean isSetJavaOpt() {
+        return setJavaOpt;
+    }
+
+    public void setSetJavaOpt(boolean setJavaOpt) {
+        this.setJavaOpt = setJavaOpt;
     }
 }
