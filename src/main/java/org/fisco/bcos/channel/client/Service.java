@@ -340,10 +340,23 @@ public class Service {
 
                     if (!running) {
                         logger.error("connectSeconds = {}", connectSeconds);
-                        logger.error(
-                                "can not connect to nodes success, please checkout the node status and the sdk config!");
-                        throw new Exception(
-                                "Can not connect to nodes success, please checkout the node status and the sdk config!");
+
+                        String errorMessage =
+                                " Can not connect to nodes ["
+                                        + channelConnections.getConnectionsStr()
+                                        + "], groupId: "
+                                        + String.valueOf(groupId)
+                                        + " ,caCert: "
+                                        + channelConnections.getCaCert()
+                                        + " ,sslKey: "
+                                        + channelConnections.getSslKey()
+                                        + " ,sslCert: "
+                                        + channelConnections.getSslCert()
+                                        + " ,java version: "
+                                        + System.getProperty("java.version");
+
+                        logger.error(errorMessage);
+                        throw new Exception(errorMessage);
                     }
 
                     eventLogFilterManager.start();
