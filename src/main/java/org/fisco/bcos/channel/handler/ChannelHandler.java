@@ -4,8 +4,10 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.handler.ssl.SslCloseCompletionEvent;
 import io.netty.handler.ssl.SslHandshakeCompletionEvent;
 import io.netty.handler.timeout.IdleStateEvent;
+import java.util.Objects;
 import java.util.concurrent.RejectedExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +28,7 @@ public class ChannelHandler extends SimpleChannelInboundHandler<ByteBuf> {
                 case WRITER_IDLE:
                 case ALL_IDLE:
                     logger.error(
-                            "event:{} connect{}:{} long time Inactive，disconnect",
+                            " idle state event:{} connect{}:{} long time Inactive，disconnect",
                             e.state(),
                             host,
                             port);
@@ -38,19 +40,43 @@ public class ChannelHandler extends SimpleChannelInboundHandler<ByteBuf> {
                     break;
             }
         } else if (evt instanceof SslHandshakeCompletionEvent) {
-            logger.info(" handshake success, host: {}, port: {}", host, port);
-            // ssl handshake success.
-            try {
-                connections.setNetworkConnectionByHost(host, port, ctx);
+            SslHandshakeCompletionEvent e = (SslHandshakeCompletionEvent) evt;
+            if (e.isSuccess()) {
+                logger.info(" handshake success, host: {}, port: {}", host, port);
+                ChannelHandlerContext oldCtx =
+                        connections.setAndGetNetworkConnectionByHost(host, port, ctx);
                 connections.getCallback().onConnect(ctx);
-            } catch (Exception e) {
+
+                if (Objects.nonNull(oldCtx)) {
+                    oldCtx.close();
+                    oldCtx.disconnect();
+
+                    logger.warn(
+                            " disconnect old connection, host: {}, port: {}, ctx: {}",
+                            host,
+                            port,
+                            System.identityHashCode(ctx));
+                }
+
+            } else {
                 logger.error(
-                        " disconnect, host: {}, port: {}, error: {}", host, port, e.getMessage());
+                        " handshake failed and disconnect, host: {}, port: {}, message: {}, cause: {} ",
+                        host,
+                        port,
+                        e.cause().getMessage(),
+                        e.cause());
+
                 ctx.disconnect();
                 ctx.close();
             }
+        } else if (evt instanceof SslCloseCompletionEvent) {
+            logger.info(
+                    " ssl close completion event, host: {}, port: {}, ctx: {} ",
+                    host,
+                    port,
+                    System.identityHashCode(ctx));
         } else {
-            logger.info(" other network event, host: {}, port: {}, evt: {}", host, port, evt);
+            logger.info(" userEventTriggered event, host: {}, port: {}, evt: {}", host, port, evt);
         }
     }
 
@@ -63,25 +89,12 @@ public class ChannelHandler extends SimpleChannelInboundHandler<ByteBuf> {
             Integer port = ((SocketChannel) ctx.channel()).remoteAddress().getPort();
 
             logger.debug(
-                    "success,connected["
+                    " tcp connected success, connected["
                             + host
                             + "]:["
                             + String.valueOf(port)
                             + "],"
                             + String.valueOf(ctx.channel().isActive()));
-
-            // 更新ctx信息
-            ChannelHandlerContext connection = connections.getNetworkConnectionByHost(host, port);
-            if (connection != null && connection.channel().isActive()) {
-                logger.info("connect available, close reconnect: {}:{}", host, port);
-
-                ctx.channel().disconnect();
-                ctx.channel().close();
-            } /*else {
-                  logger.debug("client connect success {}:{}", host, port);
-                  connections.setNetworkConnectionByHost(host, port, ctx);
-                  connections.getCallback().onConnect(ctx);
-              }*/
 
         } catch (Exception e) {
             logger.error("error", e);
@@ -91,24 +104,22 @@ public class ChannelHandler extends SimpleChannelInboundHandler<ByteBuf> {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         try {
-            logger.debug("disconnect");
             // lost the connection, get ip info
             String host =
                     ((SocketChannel) ctx.channel()).remoteAddress().getAddress().getHostAddress();
             Integer port = ((SocketChannel) ctx.channel()).remoteAddress().getPort();
 
             logger.debug(
-                    "disconnect "
+                    " channelInactive, disconnect "
                             + host
                             + ":"
                             + String.valueOf(port)
                             + " ,"
                             + String.valueOf(ctx.channel().isActive()));
 
-            // set the connection disabled
-            // connections.setNetworkConnection(host, port, null)
-
+            connections.removeNetworkConnectionByHost(host, port, ctx);
             connections.getCallback().onDisconnect(ctx);
+
         } catch (Exception e) {
             logger.error("error ", e);
         }

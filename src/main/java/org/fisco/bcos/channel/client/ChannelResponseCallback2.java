@@ -78,7 +78,7 @@ public abstract class ChannelResponseCallback2 {
                 Random random = new SecureRandom();
                 Integer index = random.nextInt(fromConnectionInfos.size());
 
-                logger.debug("selected:{}", index);
+                logger.debug("selected index: {}, peer: {}", index, fromConnectionInfos.get(index));
 
                 setFromConnection(fromConnectionInfos.get(index));
 
@@ -90,7 +90,7 @@ public abstract class ChannelResponseCallback2 {
                 logger.error("Failed to send message,all retry failed");
 
                 errorCode = ChannelMessageError.NODES_UNREACHABLE.getError();
-                throw new Exception("Failed to send message,all retry failed");
+                throw new Exception(" Failed to send message,all retry failed ");
             }
 
             ChannelHandlerContext ctx =
@@ -109,7 +109,7 @@ public abstract class ChannelResponseCallback2 {
                         fromConnection.getHost(),
                         fromConnection.getPort());
             } else {
-                logger.error("sending node unavailable");
+                logger.debug("sending node unavailable");
 
                 retrySendMessage();
             }
