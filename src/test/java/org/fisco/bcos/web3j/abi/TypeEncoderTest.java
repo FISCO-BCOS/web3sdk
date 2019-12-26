@@ -1,11 +1,13 @@
 package org.fisco.bcos.web3j.abi;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.math.BigInteger;
 import org.fisco.bcos.web3j.abi.datatypes.*;
 import org.fisco.bcos.web3j.abi.datatypes.generated.*;
+import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 
 public class TypeEncoderTest {
@@ -256,5 +258,80 @@ public class TypeEncoderTest {
         assertThat(
                 TypeEncoder.encodeDynamicArray(array),
                 is("0000000000000000000000000000000000000000000000000000000000000000"));
+    }
+
+    @Test
+    public void throwsIfMaxOfU256() {
+        try {
+            Uint value = new Uint256(BigInteger.valueOf(-1));
+            TypeEncoder.encodeNumeric(value);
+        } catch (UnsupportedOperationException e) {
+            MatcherAssert.assertThat(
+                    e.getMessage(),
+                    equalTo(
+                            "Bitsize must be 8 bit aligned, and in range 0 < bitSize <= 256, and in valid range."));
+        }
+
+        try {
+            Uint value =
+                    new Uint256(
+                            new BigInteger(
+                                    "7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+                                    16));
+            TypeEncoder.encodeNumeric(value);
+        } catch (UnsupportedOperationException e) {
+            MatcherAssert.assertThat(
+                    e.getMessage(),
+                    equalTo(
+                            "Bitsize must be 8 bit aligned, and in range 0 < bitSize <= 256, and in valid range."));
+        }
+    }
+
+    @Test
+    public void throwsIfMinOfInt256() {
+        try {
+            Int value =
+                    new Int(
+                            new BigInteger(
+                                    "-ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+                                    16));
+            TypeEncoder.encodeNumeric(value);
+        } catch (UnsupportedOperationException e) {
+            MatcherAssert.assertThat(
+                    e.getMessage(),
+                    equalTo(
+                            "Bitsize must be 8 bit aligned, and in range 0 < bitSize <= 256, and in valid range."));
+        }
+
+        try {
+            Uint value =
+                    new Uint256(
+                            new BigInteger(
+                                    "-77fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+                                    16));
+            TypeEncoder.encodeNumeric(value);
+        } catch (UnsupportedOperationException e) {
+            MatcherAssert.assertThat(
+                    e.getMessage(),
+                    equalTo(
+                            "Bitsize must be 8 bit aligned, and in range 0 < bitSize <= 256, and in valid range."));
+        }
+    }
+
+    @Test
+    public void throwsIfMaxOfInt256() {
+        try {
+            Int value =
+                    new Int(
+                            new BigInteger(
+                                    "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+                                    16));
+            TypeEncoder.encodeNumeric(value);
+        } catch (UnsupportedOperationException e) {
+            MatcherAssert.assertThat(
+                    e.getMessage(),
+                    equalTo(
+                            "Bitsize must be 8 bit aligned, and in range 0 < bitSize <= 256, and in valid range."));
+        }
     }
 }

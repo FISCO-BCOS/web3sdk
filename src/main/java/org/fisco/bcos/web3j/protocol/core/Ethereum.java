@@ -1,6 +1,7 @@
 package org.fisco.bcos.web3j.protocol.core;
 
 import java.math.BigInteger;
+import java.util.List;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosFilter;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosLog;
@@ -11,6 +12,7 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.BlockNumber;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Call;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Code;
 import org.fisco.bcos.web3j.protocol.core.methods.response.ConsensusStatus;
+import org.fisco.bcos.web3j.protocol.core.methods.response.GenerateGroup;
 import org.fisco.bcos.web3j.protocol.core.methods.response.GroupList;
 import org.fisco.bcos.web3j.protocol.core.methods.response.GroupPeers;
 import org.fisco.bcos.web3j.protocol.core.methods.response.NodeIDList;
@@ -22,6 +24,7 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.PendingTransactions;
 import org.fisco.bcos.web3j.protocol.core.methods.response.PendingTxSize;
 import org.fisco.bcos.web3j.protocol.core.methods.response.SealerList;
 import org.fisco.bcos.web3j.protocol.core.methods.response.SendTransaction;
+import org.fisco.bcos.web3j.protocol.core.methods.response.StartGroup;
 import org.fisco.bcos.web3j.protocol.core.methods.response.SyncStatus;
 import org.fisco.bcos.web3j.protocol.core.methods.response.SystemConfig;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TotalTransactionCount;
@@ -93,6 +96,11 @@ public interface Ethereum {
             DefaultBlockParameter defaultBlockParameter);
 
     Request<?, SendTransaction> sendRawTransaction(String signedTransactionData);
+
+    // generateGroup
+    Request<?, GenerateGroup> generateGroup(int groupId, int timestamp, List<String> nodeList);
+
+    Request<?, StartGroup> startGroup(int groupId);
 
     // TODO
     Request<?, BcosFilter> newPendingTransactionFilter();

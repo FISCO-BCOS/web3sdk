@@ -87,6 +87,11 @@ public class ChannelEthereumService extends org.fisco.bcos.web3j.protocol.Servic
                     if (StatusCode.CallAddressError.equals(callResult.getStatus())) {
                         throw new ContractCallException("The contract address is incorrect.");
                     }
+
+                    if (!StatusCode.Success.equals(callResult.getStatus())) {
+                        throw new ContractCallException(
+                                StatusCode.getStatusMessage(callResult.getStatus()));
+                    }
                 }
                 return t;
             } catch (ContractCallException e) {
