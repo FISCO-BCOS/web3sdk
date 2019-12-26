@@ -22,17 +22,14 @@ import io.netty.handler.timeout.IdleStateHandler;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.net.ssl.SSLException;
 import org.fisco.bcos.web3j.tuples.generated.Tuple2;
 import org.slf4j.Logger;
@@ -375,27 +372,72 @@ public class ChannelConnections {
         }
     }
 
+    /**
+     * @param IP
+     * @return true if IP valid IP string otherwise false
+     */
+    public static boolean validIP(String IP) {
+        String regex = "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(IP);
+        return matcher.matches();
+    }
+
+    /**
+     * @param port
+     * @return true if port valid IP port otherwise false
+     */
+    public static boolean validPort(String port) {
+        try {
+            Integer p = Integer.parseInt(port);
+            return p > 0 && p <= 65535;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     public void init() {
         logger.debug("init connections");
-        // init connections
-        if (connectionsStr != null) {
-            for (String conn : connectionsStr) {
-                ConnectionInfo connection = new ConnectionInfo();
 
-                String[] split2 = conn.split(":");
+        if (Objects.isNull(connectionsStr) || connectionsStr.isEmpty()) {
+            throw new IllegalArgumentException(
+                    " no connection nodes, please check \"connectionsStr\" field.");
+        }
 
-                connection.setHost(split2[0]);
-                connection.setPort(Integer.parseInt(split2[1]));
+        for (String conn : connectionsStr) {
+            ConnectionInfo connection = new ConnectionInfo();
 
-                networkConnections.put(conn, null);
+            String[] split2 = conn.split(":");
 
-                logger.info(" add connected node: " + split2[0] + ":" + split2[1]);
-
-                connection.setConfig(true);
-                connections.add(connection);
+            if (split2.length < 1) {
+                throw new IllegalArgumentException(
+                        " connect peer node should in IP:Port format(eg: 127.0.0.1:1111), please check \"connectionsStr\" field");
             }
-        } else {
-            logger.warn(" connectionsStr null, check your connectionsStr list config.");
+
+            String IP = split2[0];
+            String port = split2[1];
+
+            if (!validIP(IP)) {
+                throw new IllegalArgumentException(
+                        " invalid IP string " + IP + ", please check \"connectionsStr\" field");
+            }
+
+            if (!validPort(port)) {
+                throw new IllegalArgumentException(
+                        " invalid port "
+                                + port
+                                + ", port should between 0 and 65536, please check \"connectionsStr\" field");
+            }
+
+            connection.setHost(IP);
+            connection.setPort(Integer.parseInt(port));
+
+            networkConnections.put(conn, null);
+
+            logger.info(" add connected node: " + IP + ":" + port);
+
+            connection.setConfig(true);
+            connections.add(connection);
         }
 
         initDefaultCertConfig();
