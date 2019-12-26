@@ -8,9 +8,9 @@ buildscript {
 }
 
 plugins {
-  id 'com.github.sherter.google-java-format' version '0.8'
+    id 'com.github.sherter.google-java-format' version '0.8'
 }
-    
+
 apply plugin: 'maven'
 apply plugin: 'idea'
 apply plugin: 'java'
@@ -28,35 +28,35 @@ targetCompatibility = 1.8
 // In this section you declare where to find the dependencies of your project
 repositories {
     maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
-	  maven { url 'https://dl.bintray.com/ethereum/maven/' }
+    maven { url 'https://dl.bintray.com/ethereum/maven/' }
     mavenCentral()
 }
 
 googleJavaFormat {
-  options style: 'AOSP'
-  source = sourceSets*.allJava
-  include '**/*.java'
-  exclude '**/temp/*.java'
+    options style: 'AOSP'
+    source = sourceSets*.allJava
+    include '**/*.java'
+    exclude '**/temp/*.java'
 }
 
 verifyGoogleJavaFormat {
-  source = sourceSets*.allJava
-  include '**/*.java'
-  exclude '**/temp/*.java'
+    source = sourceSets*.allJava
+    include '**/*.java'
+    exclude '**/temp/*.java'
 }
 
-def spring_version="4.3.25.RELEASE"
+def spring_version = "4.3.25.RELEASE"
 
 List logger = [
-		'org.slf4j:slf4j-log4j12:1.7.25'
-		//'org.slf4j:slf4j-api:1.7.25'
+        'org.slf4j:slf4j-log4j12:1.7.25'
+        //'org.slf4j:slf4j-api:1.7.25'
 ]
 
-List spring =[ 
-	"org.springframework:spring-core:$spring_version", 
-	"org.springframework:spring-beans:$spring_version", 
-	"org.springframework:spring-context:$spring_version", 
-	"org.springframework:spring-tx:$spring_version", 
+List spring = [
+        "org.springframework:spring-core:$spring_version",
+        "org.springframework:spring-beans:$spring_version",
+        "org.springframework:spring-context:$spring_version",
+        "org.springframework:spring-tx:$spring_version",
 ]
 
 List alibaba = [
@@ -66,19 +66,19 @@ List alibaba = [
 
 // In this section you declare the dependencies for your production and test code
 dependencies {
-   // compile files('lib/solcJ-all-0.4.25-gm.jar')
-   // compile 'org.ethereum:solcJ-all:0.5.2'
-	compile 'org.ethereum:solcJ-all:0.4.25'
-	compile logger,spring,alibaba
-	compile 'org.apache.commons:commons-lang3:3.1'
-	compile 'com.fasterxml.jackson.core:jackson-databind:2.9.9.2'
-	compile 'io.netty:netty-all:4.1.32.Final'
-	compile 'io.netty:netty-tcnative:2.0.25.Final'
-	compile 'io.netty:netty-tcnative-boringssl-static:2.0.20.Final'
-	compile 'com.google.guava:guava:28.1-jre'
-	compile 'commons-configuration:commons-configuration:1.10'
-	 // web3j
-	compile 'org.apache.httpcomponents:httpclient:4.5.5',
+    // compile files('lib/solcJ-all-0.4.25-gm.jar')
+    // compile 'org.ethereum:solcJ-all:0.5.2'
+    compile 'org.ethereum:solcJ-all:0.4.25'
+    compile logger, spring, alibaba
+    compile 'org.apache.commons:commons-lang3:3.1'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.10.0'
+    compile 'io.netty:netty-all:4.1.32.Final'
+    compile 'io.netty:netty-tcnative:2.0.25.Final'
+    compile 'io.netty:netty-tcnative-boringssl-static:2.0.27.Final'
+    compile 'com.google.guava:guava:28.1-jre'
+    compile 'commons-configuration:commons-configuration:1.10'
+    // web3j
+    compile 'org.apache.httpcomponents:httpclient:4.5.5',
             'org.bouncycastle:bcprov-jdk15on:1.60',
             'com.lambdaworks:scrypt:1.4.0',
             'com.squareup:javapoet:1.7.0',
@@ -92,8 +92,8 @@ dependencies {
             'com.github.stefanbirkner:system-rules:1.18.0',
             'junit:junit:4.12',
             'org.mockito:mockito-core:2.23.0'
-	compile 'de.vandermeer:asciitable:0.3.2'
-	compile 'org.projectlombok:lombok:1.18.2'
+    compile 'de.vandermeer:asciitable:0.3.2'
+    compile 'org.projectlombok:lombok:1.18.2'
 }
 
 //archivesBaseName = 'web3sdk'
@@ -104,19 +104,19 @@ configurations {
     integrationTestCompile.extendsFrom testCompile
     integrationTestRuntime.extendsFrom testRuntime
 }
-    
+
 // for old sdk
 sourceSets {
-	main {
-		java {
-			srcDir 'src/main/java'
-			srcDir 'src/test/java'
-		}
-		resources  {
-			srcDir 'src/test/resources'
-		}
-	}
-	integrationTest {
+    main {
+        java {
+            srcDir 'src/main/java'
+            srcDir 'src/test/java'
+        }
+        resources {
+            srcDir 'src/test/resources'
+        }
+    }
+    integrationTest {
         java {
             compileClasspath += main.output + test.output
             runtimeClasspath += main.output + test.output
@@ -139,57 +139,58 @@ check.dependsOn.remove(test)
 check.dependsOn.remove(integrationTest)
 check.dependsOn.remove(verifyGoogleJavaFormat)
 
-import org.ajoberstar.grgit.*
+
+import org.ajoberstar.grgit.Grgit
 
 def repo = null;
-try { 
-   repo = Grgit.open('.') 
-} catch(Exception e) {
-   println(" .git directory not exist."); 
+try {
+    repo = Grgit.open('.')
+} catch (Exception e) {
+    println(" .git directory not exist.");
 }
 
 //  1 dist jar
 jar {
-	destinationDir file('dist/apps')
-	archiveName project.name + '.jar'
-	exclude '**/*.xml'
-	exclude '**/*.properties'
-	exclude '**/*.crt'
-	exclude '**/*.key'
-	
-	manifest {
-		if(repo != null) {
-			attributes(["Built-By": System.getProperty("user.name"),
-					"Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-					"Git-Branch": repo.branch.getCurrent().getName(),
-                    "Git-Commit": repo.head().getAbbreviatedId(40),
-                     ])
-		}
-	} from sourceSets.main.output
+    destinationDir file('dist/apps')
+    archiveName project.name + '.jar'
+    exclude '**/*.xml'
+    exclude '**/*.properties'
+    exclude '**/*.crt'
+    exclude '**/*.key'
 
-	doLast {
-	
-		copy {
-			from file('tools/sol2java.sh')
-			into 'dist/tools/'
-		}
-		copy {
-			from configurations.runtime
-			into 'dist/lib'
-		}
-		copy {
-			from file('src/test/resources/')
-			into 'dist/conf'
-		}
-		copy {
-			from file('src/test/resources/contract/Table.sol')
-			into 'dist/tools/contracts'
-		}
-	}
+    manifest {
+        if (repo != null) {
+            attributes(["Built-By"                : System.getProperty("user.name"),
+                        "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                        "Git-Branch"              : repo.branch.getCurrent().getName(),
+                        "Git-Commit"              : repo.head().getAbbreviatedId(40),
+            ])
+        }
+    } from sourceSets.main.output
+
+    doLast {
+
+        copy {
+            from file('tools/sol2java.sh')
+            into 'dist/tools/'
+        }
+        copy {
+            from configurations.runtime
+            into 'dist/lib'
+        }
+        copy {
+            from file('src/test/resources/')
+            into 'dist/conf'
+        }
+        copy {
+            from file('src/test/resources/contract/Table.sol')
+            into 'dist/tools/contracts'
+        }
+    }
 }
 
 test {
-	testLogging.showStandardStreams = true
+    testLogging.showStandardStreams = true
 }
 // for upload to maven
 //task sourcesJar(type: Jar) {
@@ -254,4 +255,4 @@ test {
 //		}
 //	}
 //}
-mainClassName  = System.getProperty("exec.mainClass") ?:  "org.fisco.bcos.channel.test.amop.Channel2Client"
+mainClassName = System.getProperty("exec.mainClass") ?: "org.fisco.bcos.channel.test.amop.Channel2Client"

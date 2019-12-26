@@ -2,7 +2,8 @@ package org.fisco.bcos.channel.protocol;
 
 public enum EnumChannelProtocolVersion {
     VERSION_1(1), // default version
-    VERSION_2(2);
+    VERSION_2(2),
+    VERSION_3(3);
 
     private int versionNumber;
 

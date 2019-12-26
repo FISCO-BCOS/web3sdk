@@ -85,8 +85,9 @@ public class Service {
     public static final String topicNeedVerifyPrefix = "#!$TopicNeedVerify_";
 
     private Integer connectSeconds = 30;
+    private boolean setJavaOpt = true;
 
-    private Integer connectSleepPerMillis = 1;
+    private Integer connectSleepPerMillis = 30;
     private String orgID;
     private String agencyName;
     private GroupChannelConnectionsConfig allChannelConnections;
@@ -287,8 +288,19 @@ public class Service {
         addTopics(set);
     }
 
+    public void initJavaOpt() {
+        System.setProperty("jdk.tls.namedGroups", "secp256k1");
+        logger.info(
+                "set jdk.tls.namedGroups opt, value : {}",
+                System.getProperty("jdk.tls.namedGroups"));
+    }
+
     public void run() throws Exception {
         logger.debug("init ChannelService");
+
+        if (setJavaOpt) {
+            initJavaOpt();
+        }
         parseFromTopic2KeyInfo();
         int flag = 0;
 
@@ -316,13 +328,18 @@ public class Service {
                     while (true) {
                         Map<String, ChannelHandlerContext> networkConnection =
                                 channelConnections.getNetworkConnections();
-                        for (String key : networkConnection.keySet()) {
-                            if (networkConnection.get(key) != null
-                                    && ChannelHandlerContextHelper.isChannelAvailable(
-                                            networkConnection.get(key))) {
-                                running = true;
-                                break;
+                        channelConnections.getReadWriteLock().readLock().lock();
+                        try {
+                            for (String key : networkConnection.keySet()) {
+                                if (networkConnection.get(key) != null
+                                        && ChannelHandlerContextHelper.isChannelAvailable(
+                                                networkConnection.get(key))) {
+                                    running = true;
+                                    break;
+                                }
                             }
+                        } finally {
+                            channelConnections.getReadWriteLock().readLock().unlock();
                         }
 
                         if (running || sleepTime > connectSeconds * 1000) {
@@ -335,11 +352,38 @@ public class Service {
 
                     if (!running) {
                         logger.error("connectSeconds = {}", connectSeconds);
-                        logger.error(
-                                "can not connect to nodes success, please checkout the node status and the sdk config!");
-                        throw new Exception(
-                                "Can not connect to nodes success, please checkout the node status and the sdk config!");
+
+                        String errorMessage =
+                                " Can not connect to nodes "
+                                        + channelConnections.getConnectionsStr()
+                                        + " ,groupId: "
+                                        + String.valueOf(groupId)
+                                        + " ,caCert: "
+                                        + channelConnections.getCaCert()
+                                        + " ,sslKey: "
+                                        + channelConnections.getSslKey()
+                                        + " ,sslCert: "
+                                        + channelConnections.getSslCert()
+                                        + " ,java version: "
+                                        + System.getProperty("java.version");
+
+                        logger.error(errorMessage);
+                        throw new Exception(errorMessage);
                     }
+
+                    logger.info(
+                            " Connect to nodes ["
+                                    + channelConnections.getConnectionsStr()
+                                    + "], groupId: "
+                                    + String.valueOf(groupId)
+                                    + " ,caCert: "
+                                    + channelConnections.getCaCert()
+                                    + " ,sslKey: "
+                                    + channelConnections.getSslKey()
+                                    + " ,sslCert: "
+                                    + channelConnections.getSslCert()
+                                    + " ,java version: "
+                                    + System.getProperty("java.version"));
 
                     eventLogFilterManager.start();
                 } catch (InterruptedException e) {
@@ -1534,5 +1578,13 @@ public class Service {
 
     public void setTimeoutHandler(Timer timeoutHandler) {
         this.timeoutHandler = timeoutHandler;
+    }
+
+    public boolean isSetJavaOpt() {
+        return setJavaOpt;
+    }
+
+    public void setSetJavaOpt(boolean setJavaOpt) {
+        this.setJavaOpt = setJavaOpt;
     }
 }

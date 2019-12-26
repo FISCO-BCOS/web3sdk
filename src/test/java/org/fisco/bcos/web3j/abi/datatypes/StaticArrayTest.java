@@ -44,7 +44,8 @@ public class StaticArrayTest {
         } catch (UnsupportedOperationException e) {
             assertThat(
                     e.getMessage(),
-                    equalTo("Bitsize must be 8 bit aligned, and in range 0 < bitSize <= 256"));
+                    equalTo(
+                            "Bitsize must be 8 bit aligned, and in range 0 < bitSize <= 256, and in valid range."));
         }
     }
 

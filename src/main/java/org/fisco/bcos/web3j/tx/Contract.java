@@ -99,8 +99,9 @@ public abstract class Contract extends ManagedTransaction {
         String chainId = "1";
         String version = "";
         String supportedVersion = "";
+        NodeVersion.Version nodeVersion = null;
         try {
-            NodeVersion.Version nodeVersion = web3j.getNodeVersion().send().getNodeVersion();
+            nodeVersion = web3j.getNodeVersion().send().getNodeVersion();
             version = nodeVersion.getVersion();
             supportedVersion = nodeVersion.getSupportedVersion();
 
@@ -117,10 +118,18 @@ public abstract class Contract extends ManagedTransaction {
             logger.error("Query fisco-bcos version failed", e);
         }
 
-        return EnumNodeVersion.BCOS_2_0_0_RC1.getVersion().equals(version)
-                ? new RawTransactionManager(web3j, credentials)
-                : new ExtendedRawTransactionManager(
-                        web3j, credentials, BigInteger.valueOf(groupId), new BigInteger(chainId));
+        TransactionManager transactionManager =
+                EnumNodeVersion.BCOS_2_0_0_RC1.getVersion().equals(version)
+                        ? new RawTransactionManager(web3j, credentials)
+                        : new ExtendedRawTransactionManager(
+                                web3j,
+                                credentials,
+                                BigInteger.valueOf(groupId),
+                                new BigInteger(chainId));
+
+        transactionManager.setNodeVersion(nodeVersion);
+
+        return transactionManager;
     }
 
     @Deprecated
@@ -911,7 +920,7 @@ public abstract class Contract extends ManagedTransaction {
     }
 
     @SuppressWarnings("unchecked")
-    protected static <S extends Type, T> List<T> convertToNative(List<S> arr) {
+    public static <S extends Type, T> List<T> convertToNative(List<S> arr) {
         List<T> out = new ArrayList<T>();
         for (Iterator<S> it = arr.iterator(); it.hasNext(); ) {
             out.add((T) it.next().getValue());
