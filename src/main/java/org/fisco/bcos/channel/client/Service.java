@@ -27,6 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -319,6 +320,7 @@ public class Service {
                     channelConnections.setSslCert(allChannelConnections.getSslCert());
                     channelConnections.setSslKey(allChannelConnections.getSslKey());
 
+                    channelConnections.setConnectTimeout(connectSeconds * 1000);
                     channelConnections.init();
                     channelConnections.setThreadPool(threadPool);
                     channelConnections.startConnect();
@@ -328,18 +330,13 @@ public class Service {
                     while (true) {
                         Map<String, ChannelHandlerContext> networkConnection =
                                 channelConnections.getNetworkConnections();
-                        channelConnections.getReadWriteLock().readLock().lock();
-                        try {
-                            for (String key : networkConnection.keySet()) {
-                                if (networkConnection.get(key) != null
-                                        && ChannelHandlerContextHelper.isChannelAvailable(
-                                                networkConnection.get(key))) {
-                                    running = true;
-                                    break;
-                                }
+
+                        for (ChannelHandlerContext ctx : networkConnection.values()) {
+                            if (Objects.nonNull(ctx)
+                                    && ChannelHandlerContextHelper.isChannelAvailable(ctx)) {
+                                running = true;
+                                break;
                             }
-                        } finally {
-                            channelConnections.getReadWriteLock().readLock().unlock();
                         }
 
                         if (running || sleepTime > connectSeconds * 1000) {
@@ -385,18 +382,19 @@ public class Service {
                                     + " ,java version: "
                                     + System.getProperty("java.version"));
 
+                    channelConnections.startPeriodTask();
                     eventLogFilterManager.start();
                 } catch (InterruptedException e) {
-                    logger.error("system error ", e);
+                    logger.warn(" thread interrupted exception: ", e);
                     Thread.currentThread().interrupt();
                 } catch (Exception e) {
-                    logger.error("system error ", e);
+                    logger.error(" service init error: ", e);
                     throw e;
                 }
             }
         }
         if (flag == 0) {
-            throw new Exception("Please set the right groupId");
+            throw new Exception(" Please set the right groupId ");
         }
     }
 

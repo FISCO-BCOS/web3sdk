@@ -407,15 +407,7 @@ public abstract class Contract extends ManagedTransaction {
             String status = receipt.getStatus();
             BigInteger gasUsed = receipt.getGasUsed();
 
-            /* String message =
-            String.format(
-                    "Transaction has failed with status: %s. "
-                            + "Gas used: %d. (not-enough gas?)",
-                    status, gasUsed);*/
-            String message =
-                    StatusCode.getStatusMessage(receipt.getStatus(), receipt.getMessage())
-                            + " .gas used: "
-                            + gasUsed.toString();
+            String message = StatusCode.getStatusMessage(receipt.getStatus(), receipt.getMessage());
 
             logger.trace(
                     " execute transaction not successfully, hash: {}, status: {}, message: {}, gasUsed: {}",
