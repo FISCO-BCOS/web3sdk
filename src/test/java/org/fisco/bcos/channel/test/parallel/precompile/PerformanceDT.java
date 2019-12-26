@@ -1,6 +1,7 @@
 package org.fisco.bcos.channel.test.parallel.precompile;
 
 import java.math.BigInteger;
+import org.fisco.bcos.web3j.crypto.EncryptType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,6 +59,11 @@ public class PerformanceDT {
         PerformanceDTTest.setCollector(collector);
         PerformanceDTTest.setDagUserMgr(d);
         collector.setPerformanceDTTest(PerformanceDTTest);
+
+        System.out.println(
+                (EncryptType.encryptType == EncryptType.ECDSA_TYPE)
+                        ? " ===>> normal parallel "
+                        : " ===>> gm parallel ");
 
         switch (command) {
             case "add":
