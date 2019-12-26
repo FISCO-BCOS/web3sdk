@@ -354,9 +354,9 @@ public class Service {
                         logger.error("connectSeconds = {}", connectSeconds);
 
                         String errorMessage =
-                                " Can not connect to nodes ["
+                                " Can not connect to nodes "
                                         + channelConnections.getConnectionsStr()
-                                        + "], groupId: "
+                                        + " ,groupId: "
                                         + String.valueOf(groupId)
                                         + " ,caCert: "
                                         + channelConnections.getCaCert()
