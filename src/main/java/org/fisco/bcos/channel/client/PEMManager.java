@@ -25,11 +25,16 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemReader;
 import org.fisco.bcos.web3j.crypto.ECKeyPair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 
 public class PEMManager {
+
+    private static final Logger logger = LoggerFactory.getLogger(PEMManager.class);
+
     private PemObject pem;
     private String pemFile;
 
@@ -56,6 +61,9 @@ public class PEMManager {
         if (pem == null) {
             throw new IOException("The file does not represent a pem account.");
         }
+
+        logger.debug(" load pem, type: {}, header: {}", pem.getType(), pem.getHeaders());
+
         pemReader.close();
     }
 
