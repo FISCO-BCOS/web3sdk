@@ -3,6 +3,7 @@ package org.fisco.bcos.channel.handler;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -21,6 +22,7 @@ import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.SslHandler;
 import io.netty.handler.ssl.SslProvider;
 import io.netty.handler.timeout.IdleStateHandler;
+import io.netty.util.concurrent.Future;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.SecureRandom;
@@ -221,8 +223,8 @@ public class ChannelConnections {
         }
 
         if (activeConnections.isEmpty()) {
-            logger.error(" activeConnections isEmpty, maybe network connection exception ");
-            throw new Exception(" activeConnections isEmpty, maybe network connection exception");
+            logger.error(" no active connection is available, maybe network connection exception");
+            throw new Exception(" no active connection available network exception");
         }
         // select maxBlockNumber node
         List<ChannelHandlerContext> maxBlockNumberConnections =
@@ -409,7 +411,7 @@ public class ChannelConnections {
 
         if (Objects.isNull(connectionsStr) || connectionsStr.isEmpty()) {
             throw new IllegalArgumentException(
-                    " the number of nodes connected is empty, please check \"connectionsStr\" field.");
+                    " invalid configuration, the number of connected nodes is empty, please check \"connectionsStr\" field.");
         }
 
         for (String connectionStr : connectionsStr) {
@@ -419,7 +421,8 @@ public class ChannelConnections {
 
             if (stringArray.length < 1) {
                 throw new IllegalArgumentException(
-                        " connected nodes should in IP:Port format(eg: 127.0.0.1:1111), please check \"connectionsStr\" field");
+                        " invalid configuration, the value should in IP:Port format(eg: 127.0.0.1:1111), value: "
+                                + connectionStr);
             }
 
             String IP = stringArray[0];
@@ -427,22 +430,18 @@ public class ChannelConnections {
 
             if (!validIP(IP)) {
                 throw new IllegalArgumentException(
-                        " invalid IP string "
-                                + IP
-                                + "(eg: 127.0.0.1:1111), please check \"connectionsStr\" field");
+                        " invalid configuration, invalid IP string configuration, value: " + IP);
             }
 
             if (!validPort(port)) {
                 throw new IllegalArgumentException(
-                        " invalid port "
-                                + port
-                                + ", port should in range [1, 65536), please check \"connectionsStr\" field");
+                        " invalid configuration, tcp port should from 1 to 65536, value: " + port);
             }
 
             connection.setHost(IP);
             connection.setPort(Integer.parseInt(port));
 
-            logger.info(" add connected node: " + IP + ":" + port);
+            // logger.info(" add connected node: " + IP + ":" + port);
 
             connection.setConfig(true);
             connections.add(connection);
@@ -518,22 +517,39 @@ public class ChannelConnections {
         List<String> errorMessageList = new ArrayList<>();
         // Wait for all connection operations to complete
         for (Tuple3<String, Integer, ChannelFuture> tuple3 : tuple3List) {
-            ChannelFuture f = tuple3.getValue3().awaitUninterruptibly();
-            if (!f.isSuccess()) {
+            ChannelFuture connectFuture = tuple3.getValue3().awaitUninterruptibly();
+            if (!connectFuture.isSuccess()) {
                 logger.error(
                         " connect to {}:{}, error: {}",
                         tuple3.getValue1(),
                         tuple3.getValue2(),
-                        f.cause().getMessage());
-                errorMessageList.add(f.cause().getMessage());
+                        connectFuture.cause().getMessage());
+                errorMessageList.add(connectFuture.cause().getMessage());
             } else {
-                logger.info(" connect to {}:{} success", tuple3.getValue1(), tuple3.getValue2());
-                atLeastOneConnectSuccess = true;
+                // tcp connect success and waiting for SSL handshake
+                logger.debug(" connect to {}:{} success", tuple3.getValue1(), tuple3.getValue2());
+
+                SslHandler sslhandler = connectFuture.channel().pipeline().get(SslHandler.class);
+                Future<Channel> sshHandshakeFuture =
+                        sslhandler.handshakeFuture().awaitUninterruptibly();
+                if (sshHandshakeFuture.isSuccess()) {
+                    atLeastOneConnectSuccess = true;
+                    logger.debug(
+                            " handshake success {}:{}", tuple3.getValue1(), tuple3.getValue2());
+                } else {
+                    logger.error(
+                            " handshake failed {}:{}, error: {}",
+                            tuple3.getValue1(),
+                            tuple3.getValue2(),
+                            sshHandshakeFuture.cause().getMessage());
+                    errorMessageList.add(sshHandshakeFuture.cause().getMessage());
+                }
             }
         }
 
         // All connections failed
         if (!atLeastOneConnectSuccess) {
+            logger.error(" all connections have failed, " + errorMessageList.toString());
             throw new RuntimeException(errorMessageList.toString());
         }
 
@@ -550,6 +566,10 @@ public class ChannelConnections {
         /** periodically reconnected to a broken node, default period: 20s */
         scheduledExecutorService.scheduleAtFixedRate(
                 () -> reconnect(), 0, reconnectDelay, TimeUnit.MILLISECONDS);
+    }
+
+    private void checkFileExist(Resource resource) {
+        if (Objects.isNull(resource) || !resource.exists()) {}
     }
 
     private SslContext initSslContextForConnect() throws SSLException {
@@ -569,9 +589,11 @@ public class ChannelConnections {
                             .sslProvider(SslProvider.JDK)
                             .build();
         } catch (Exception e) {
-            logger.debug("SSLCONTEXT ***********" + e.getMessage());
-            throw new SSLException(
-                    "Failed to initialize the client-side SSLContext: " + e.getMessage());
+            logger.debug(
+                    " Failed to initialize the SSLContext, error mesage: {}, error: {} ",
+                    e.getMessage(),
+                    e.getCause());
+            throw new SSLException("Failed to initialize the SSLContext: " + e.getMessage());
         }
         return sslCtx;
     }
@@ -634,10 +656,7 @@ public class ChannelConnections {
             }
         }
 
-        logger.info(
-                " the list of configured connection nodes: {}, keepalive connection count: {}",
-                connections,
-                aliveConnectionCount);
+        logger.info(" Keepalive nodes count: {}", aliveConnectionCount);
 
         for (ConnectionInfo connectionInfo : connectionInfoList) {
 
@@ -650,7 +669,7 @@ public class ChannelConnections {
                             (ChannelFutureListener)
                                     future -> {
                                         if (future.isSuccess()) {
-                                            logger.debug(
+                                            logger.trace(
                                                     " reconnect to {}:{} success",
                                                     connectionInfo.getHost(),
                                                     connectionInfo.getPort());

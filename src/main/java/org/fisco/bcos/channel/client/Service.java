@@ -320,7 +320,6 @@ public class Service {
                     channelConnections.setSslCert(allChannelConnections.getSslCert());
                     channelConnections.setSslKey(allChannelConnections.getSslKey());
 
-                    channelConnections.setConnectTimeout(connectSeconds * 1000);
                     channelConnections.init();
                     channelConnections.setThreadPool(threadPool);
                     channelConnections.startConnect();
@@ -347,31 +346,10 @@ public class Service {
                         }
                     }
 
-                    if (!running) {
-                        logger.error("connectSeconds = {}", connectSeconds);
-
-                        String errorMessage =
-                                " Can not connect to nodes "
-                                        + channelConnections.getConnectionsStr()
-                                        + " ,groupId: "
-                                        + String.valueOf(groupId)
-                                        + " ,caCert: "
-                                        + channelConnections.getCaCert()
-                                        + " ,sslKey: "
-                                        + channelConnections.getSslKey()
-                                        + " ,sslCert: "
-                                        + channelConnections.getSslCert()
-                                        + " ,java version: "
-                                        + System.getProperty("java.version");
-
-                        logger.error(errorMessage);
-                        throw new Exception(errorMessage);
-                    }
-
-                    logger.info(
-                            " Connect to nodes ["
+                    String baseMessage =
+                            " nodes: "
                                     + channelConnections.getConnectionsStr()
-                                    + "], groupId: "
+                                    + " ,groupId: "
                                     + String.valueOf(groupId)
                                     + " ,caCert: "
                                     + channelConnections.getCaCert()
@@ -380,7 +358,17 @@ public class Service {
                                     + " ,sslCert: "
                                     + channelConnections.getSslCert()
                                     + " ,java version: "
-                                    + System.getProperty("java.version"));
+                                    + System.getProperty("java.version")
+                                    + " ,java vendor: "
+                                    + System.getProperty("java.vm.vendor");
+
+                    if (!running) {
+                        String errorMessage = " Can not connect to " + baseMessage;
+                        logger.error(errorMessage);
+                        throw new Exception(errorMessage);
+                    }
+
+                    logger.info(" Connect to " + baseMessage);
 
                     channelConnections.startPeriodTask();
                     eventLogFilterManager.start();
@@ -388,7 +376,8 @@ public class Service {
                     logger.warn(" thread interrupted exception: ", e);
                     Thread.currentThread().interrupt();
                 } catch (Exception e) {
-                    logger.error(" service init error: ", e);
+                    logger.error(
+                            " service init failed, error message: {}, error: ", e.getMessage(), e);
                     throw e;
                 }
             }
@@ -607,13 +596,13 @@ public class Service {
                     bcosMessage.getSeq());
 
         } catch (Exception e) {
-            logger.error("system error:{} ", e);
+            logger.error(" error message:{}, error: {} ", e.getMessage(), e);
 
             BcosResponse response = new BcosResponse();
             response.setErrorCode(-1);
             response.setErrorMessage(
                     e.getMessage()
-                            + " Requset send failed! Can not connect to nodes success, please checkout the node status and the sdk config!");
+                            + " requset send failed! please check the log file content for reasons.");
             response.setContent("");
             response.setMessageID(request.getMessageID());
 

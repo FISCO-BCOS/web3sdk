@@ -42,7 +42,11 @@ public class ChannelHandler extends SimpleChannelInboundHandler<ByteBuf> {
         } else if (evt instanceof SslHandshakeCompletionEvent) {
             SslHandshakeCompletionEvent e = (SslHandshakeCompletionEvent) evt;
             if (e.isSuccess()) {
-                logger.info(" handshake success, host: {}, port: {}", host, port);
+                logger.info(
+                        " handshake success, host: {}, port: {}, ctx: {}",
+                        host,
+                        port,
+                        System.identityHashCode(ctx));
                 ChannelHandlerContext oldCtx =
                         connections.setAndGetNetworkConnectionByHost(host, port, ctx);
                 connections.getCallback().onConnect(ctx);
@@ -60,7 +64,7 @@ public class ChannelHandler extends SimpleChannelInboundHandler<ByteBuf> {
 
             } else {
                 logger.error(
-                        " handshake failed and disconnect, host: {}, port: {}, message: {}, cause: {} ",
+                        " handshake failed, host: {}, port: {}, message: {}, cause: {} ",
                         host,
                         port,
                         e.cause().getMessage(),
@@ -76,7 +80,12 @@ public class ChannelHandler extends SimpleChannelInboundHandler<ByteBuf> {
                     port,
                     System.identityHashCode(ctx));
         } else {
-            logger.info(" userEventTriggered event, host: {}, port: {}, evt: {}", host, port, evt);
+            logger.info(
+                    " userEventTriggered event, host: {}, port: {}, evt: {}, ctx: {} ",
+                    host,
+                    port,
+                    evt,
+                    System.identityHashCode(ctx));
         }
     }
 
@@ -89,7 +98,7 @@ public class ChannelHandler extends SimpleChannelInboundHandler<ByteBuf> {
             Integer port = ((SocketChannel) ctx.channel()).remoteAddress().getPort();
 
             logger.debug(
-                    " tcp connected success, connected["
+                    " tcp connect successfully and waiting for ssl handshake, connected["
                             + host
                             + "]:["
                             + String.valueOf(port)
@@ -150,21 +159,18 @@ public class ChannelHandler extends SimpleChannelInboundHandler<ByteBuf> {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        logger.error("network error ", cause);
+        // logger.error("network error ", cause);
         // lost the connection，get ip info
         String host = ((SocketChannel) ctx.channel()).remoteAddress().getAddress().getHostAddress();
         Integer port = ((SocketChannel) ctx.channel()).remoteAddress().getPort();
 
         logger.debug(
-                "disconnect "
+                " exceptionCaught, disconnect "
                         + host
                         + ":"
                         + String.valueOf(port)
                         + " ,"
                         + String.valueOf(ctx.channel().isActive()));
-
-        // set the connection disabled
-        // connections.setNetworkConnection(host, port, null);
 
         ctx.disconnect();
         ctx.close();
