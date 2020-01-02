@@ -70,7 +70,6 @@ public class SignTest {
         String publicKey =
                 "e8c670380cb220095268f40221fc748fa6ac39d6e930e63c30da68bad97f885da6e8c9ad722c3683ab859393220d1431eb1818ed44a942efb07b261a0fc769e7";
         byte[] publicKeyBytes = Hex.decode(publicKey);
-        System.out.println("publicKey length is " + publicKeyBytes.length);
         String sign =
                 "09628650676000c8d18bf43db68e7f66dfaed230d87e6391c29eb594b7b9cc3c8d370dbd29ce62bbcf3506adb57f041d8646ae4f70a26ea5179418e738fd4372e8c670380cb220095268f40221fc748fa6ac39d6e930e63c30da68bad97f885da6e8c9ad722c3683ab859393220d1431eb1818ed44a942efb07b261a0fc769e7";
         byte[] signatureBytes = Numeric.hexStringToByteArray("0x" + sign);
