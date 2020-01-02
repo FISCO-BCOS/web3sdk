@@ -3,12 +3,46 @@ package org.fisco.bcos.web3j.protocol.core;
 import io.reactivex.Flowable;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.Web3jService;
 import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
-import org.fisco.bcos.web3j.protocol.core.methods.response.*;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosFilter;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosLog;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosSubscribe;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosTransaction;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosTransactionReceipt;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BlockHash;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BlockNumber;
+import org.fisco.bcos.web3j.protocol.core.methods.response.Call;
+import org.fisco.bcos.web3j.protocol.core.methods.response.Code;
+import org.fisco.bcos.web3j.protocol.core.methods.response.ConsensusStatus;
+import org.fisco.bcos.web3j.protocol.core.methods.response.GenerateGroup;
+import org.fisco.bcos.web3j.protocol.core.methods.response.GroupList;
+import org.fisco.bcos.web3j.protocol.core.methods.response.GroupPeers;
+import org.fisco.bcos.web3j.protocol.core.methods.response.Log;
+import org.fisco.bcos.web3j.protocol.core.methods.response.NodeIDList;
+import org.fisco.bcos.web3j.protocol.core.methods.response.NodeVersion;
+import org.fisco.bcos.web3j.protocol.core.methods.response.ObserverList;
+import org.fisco.bcos.web3j.protocol.core.methods.response.PbftView;
+import org.fisco.bcos.web3j.protocol.core.methods.response.Peers;
+import org.fisco.bcos.web3j.protocol.core.methods.response.PendingTransactions;
+import org.fisco.bcos.web3j.protocol.core.methods.response.PendingTxSize;
+import org.fisco.bcos.web3j.protocol.core.methods.response.SealerList;
+import org.fisco.bcos.web3j.protocol.core.methods.response.SendTransaction;
+import org.fisco.bcos.web3j.protocol.core.methods.response.StartGroup;
+import org.fisco.bcos.web3j.protocol.core.methods.response.SyncStatus;
+import org.fisco.bcos.web3j.protocol.core.methods.response.SystemConfig;
+import org.fisco.bcos.web3j.protocol.core.methods.response.TotalTransactionCount;
+import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceiptWithProof;
+import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionWithProof;
+import org.fisco.bcos.web3j.protocol.core.methods.response.UninstallFilter;
 import org.fisco.bcos.web3j.protocol.rx.JsonRpc2_0Rx;
 import org.fisco.bcos.web3j.protocol.websocket.events.LogNotification;
 import org.fisco.bcos.web3j.protocol.websocket.events.NewHeadsNotification;
@@ -210,6 +244,15 @@ public class JsonRpc2_0Web3j implements Web3j {
     }
 
     @Override
+    public Request<?, TransactionWithProof> getTransactionByHashWithProof(String transactionHash) {
+        return new Request<>(
+                "getTransactionByHashWithProof",
+                Arrays.asList(groupId, transactionHash),
+                web3jService,
+                TransactionWithProof.class);
+    }
+
+    @Override
     public Request<?, BcosTransaction> getTransactionByBlockHashAndIndex(
             String blockHash, BigInteger transactionIndex) {
         return new Request<>(
@@ -242,6 +285,16 @@ public class JsonRpc2_0Web3j implements Web3j {
     }
 
     @Override
+    public Request<?, TransactionReceiptWithProof> getTransactionReceiptByHashWithProof(
+            String transactionHash) {
+        return new Request<>(
+                "getTransactionReceiptByHashWithProof",
+                Arrays.asList(groupId, transactionHash),
+                web3jService,
+                TransactionReceiptWithProof.class);
+    }
+
+    @Override
     public Request<?, PendingTransactions> getPendingTransaction() {
         return new Request<>(
                 "getPendingTransactions",
@@ -269,6 +322,21 @@ public class JsonRpc2_0Web3j implements Web3j {
     public Request<?, GroupPeers> getGroupPeers() {
         return new Request<>(
                 "getGroupPeers", Arrays.asList(groupId), web3jService, GroupPeers.class);
+    }
+
+    @Override
+    public Request<?, GenerateGroup> generateGroup(
+            int groupID, int timestamp, List<String> nodeList) {
+        return new Request<>(
+                "generateGroup",
+                Arrays.asList(groupID, timestamp, nodeList),
+                web3jService,
+                GenerateGroup.class);
+    }
+
+    @Override
+    public Request<?, StartGroup> startGroup(int groupID) {
+        return new Request<>("startGroup", Arrays.asList(groupID), web3jService, StartGroup.class);
     }
 
     @Override
