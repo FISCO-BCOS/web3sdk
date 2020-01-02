@@ -98,7 +98,7 @@ public class ChannelHandler extends SimpleChannelInboundHandler<ByteBuf> {
             Integer port = ((SocketChannel) ctx.channel()).remoteAddress().getPort();
 
             logger.debug(
-                    " tcp connect successfully and waiting for ssl handshake, connected["
+                    " tcp connect success, wait for ssl handshake, connected["
                             + host
                             + "]:["
                             + String.valueOf(port)

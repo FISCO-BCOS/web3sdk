@@ -363,7 +363,7 @@ public class Service {
                                     + System.getProperty("java.vm.vendor");
 
                     if (!running) {
-                        String errorMessage = " Can not connect to " + baseMessage;
+                        String errorMessage = " Failed to connect to " + baseMessage;
                         logger.error(errorMessage);
                         throw new Exception(errorMessage);
                     }
