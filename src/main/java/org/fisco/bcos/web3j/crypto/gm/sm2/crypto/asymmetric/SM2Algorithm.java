@@ -3,6 +3,7 @@ package org.fisco.bcos.web3j.crypto.gm.sm2.crypto.asymmetric;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.SecureRandom;
+
 import org.bouncycastle.asn1.ASN1Encoding;
 import org.bouncycastle.asn1.ASN1Integer;
 import org.bouncycastle.asn1.ASN1Primitive;
@@ -425,9 +426,8 @@ public class SM2Algorithm {
         BigInteger t = r.add(s).mod(n);
         if (t.equals(BigInteger.ZERO)) return false;
         ECPoint x1y1 = g256.multiply(s);
-        ECPoint ecPoint = x1y1.normalize();
         x1y1 = x1y1.add(userKey.multiply(t));
-        BigInteger R = e.add(ecPoint.getAffineXCoord().toBigInteger()).mod(n);
+        BigInteger R = e.add(x1y1.normalize().getAffineXCoord().toBigInteger()).mod(n);
 
         return r.equals(R);
     }
