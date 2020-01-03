@@ -81,7 +81,7 @@ public class TransactionEncoder {
 
         if (signatureData != null) {
             if (EncryptType.encryptType == 1) {
-                result.add(RlpString.create(Bytes.trimLeadingZeroes(signatureData.getPub())));
+                result.add(RlpString.create(signatureData.getPub()));
                 // logger.debug("RLP-Pub:{},RLP-PubLen:{}",Hex.toHexString(signatureData.getPub()),signatureData.getPub().length);
                 result.add(RlpString.create(Bytes.trimLeadingZeroes(signatureData.getR())));
                 // logger.debug("RLP-R:{},RLP-RLen:{}",Hex.toHexString(signatureData.getR()),signatureData.getR().length);
