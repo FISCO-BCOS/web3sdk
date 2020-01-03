@@ -428,7 +428,6 @@ public class SM2Algorithm {
         x1y1 = x1y1.add(userKey.multiply(t));
         BigInteger R = e.add(x1y1.normalize().getAffineXCoord().toBigInteger()).mod(n);
 
-
         return r.equals(R);
     }
 

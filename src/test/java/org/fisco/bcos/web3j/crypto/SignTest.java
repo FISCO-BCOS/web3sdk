@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.security.SignatureException;
 import java.util.Arrays;
-
 import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1Integer;
 import org.bouncycastle.asn1.DERSequence;
@@ -63,24 +62,31 @@ public class SignTest {
         ECPoint point = Sign.publicPointFromPrivate(SampleKeys.PRIVATE_KEY);
         assertThat(Sign.publicFromPoint(point.getEncoded(false)), equalTo(SampleKeys.PUBLIC_KEY));
     }
-    
+
     @Test
     public void testGmSignVerify() throws IOException {
-        byte[] sourceData = Hex.decode("434477813974bf58f94bcf760833c2b40f77a5fc360485b0b9ed1bd9682edb45");
+        byte[] sourceData =
+                Hex.decode("434477813974bf58f94bcf760833c2b40f77a5fc360485b0b9ed1bd9682edb45");
         String publicKey =
                 "e8c670380cb220095268f40221fc748fa6ac39d6e930e63c30da68bad97f885da6e8c9ad722c3683ab859393220d1431eb1818ed44a942efb07b261a0fc769e7";
         String sign =
                 "09628650676000c8d18bf43db68e7f66dfaed230d87e6391c29eb594b7b9cc3c8d370dbd29ce62bbcf3506adb57f041d8646ae4f70a26ea5179418e738fd4372e8c670380cb220095268f40221fc748fa6ac39d6e930e63c30da68bad97f885da6e8c9ad722c3683ab859393220d1431eb1818ed44a942efb07b261a0fc769e7";
         byte[] signatureBytes = Numeric.hexStringToByteArray("0x" + sign);
 
-        ASN1Integer d_r = new ASN1Integer(new BigInteger(1, Arrays.copyOfRange(signatureBytes, 0, 32)));
-        ASN1Integer d_s = new ASN1Integer(new BigInteger(1, Arrays.copyOfRange(signatureBytes, 32, 64)));
+        ASN1Integer d_r =
+                new ASN1Integer(new BigInteger(1, Arrays.copyOfRange(signatureBytes, 0, 32)));
+        ASN1Integer d_s =
+                new ASN1Integer(new BigInteger(1, Arrays.copyOfRange(signatureBytes, 32, 64)));
         ASN1EncodableVector v2 = new ASN1EncodableVector();
         v2.add(d_r);
         v2.add(d_s);
         DERSequence der = new DERSequence(v2);
-        boolean b = SM2Algorithm.verify(sourceData, der.getEncoded(), publicKey.substring(0, 64),
-                publicKey.substring(64, 128));
+        boolean b =
+                SM2Algorithm.verify(
+                        sourceData,
+                        der.getEncoded(),
+                        publicKey.substring(0, 64),
+                        publicKey.substring(64, 128));
         assertTrue("Test sm2 verify", b);
     }
 }
