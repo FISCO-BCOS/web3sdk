@@ -81,6 +81,6 @@ public class SignTest {
         DERSequence der = new DERSequence(v2);
         boolean b = SM2Algorithm.verify(sourceData, der.getEncoded(), publicKey.substring(0, 64),
                 publicKey.substring(64, 128));
-        assertTrue(b);
+        assertTrue("Test sm2 verify", b);
     }
 }
