@@ -65,7 +65,7 @@ public class StatusCode {
                 message = "invalid format";
                 break;
             case OutOfGasIntrinsic:
-                message = "contract to deploy is too long";
+                message = "contract to deploy is too long / input data is too long";
                 break;
             case InvalidSignature:
                 message = "invalid signature";
@@ -89,7 +89,7 @@ public class StatusCode {
                 message = "bad jump destination";
                 break;
             case OutOfGas:
-                message = "out of gas";
+                message = "out-of-gas during EVM execution";
                 break;
             case OutOfStack:
                 message = "out of stack";

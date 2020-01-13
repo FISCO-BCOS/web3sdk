@@ -383,7 +383,7 @@ public class Service {
             }
         }
         if (flag == 0) {
-            throw new Exception(" Please set the right groupId ");
+            throw new Exception("Please set the right groupId ");
         }
     }
 
