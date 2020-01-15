@@ -65,7 +65,7 @@ public class StatusCode {
                 message = "invalid format";
                 break;
             case OutOfGasIntrinsic:
-                message = "contract to deploy is too long / input data is too long";
+                message = "contract to deploy is too long(or input data is too long)";
                 break;
             case InvalidSignature:
                 message = "invalid signature";
