@@ -1,5 +1,6 @@
 package org.fisco.bcos.web3j.protocol.core.methods.response;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.math.BigInteger;
 import java.util.List;
 import org.fisco.bcos.web3j.utils.Numeric;
@@ -49,6 +50,7 @@ public class Log {
         this.topics = topics;
     }
 
+    @JsonIgnore
     public boolean isRemoved() {
         return removed;
     }
@@ -61,6 +63,7 @@ public class Log {
         return convert(logIndex);
     }
 
+    @JsonIgnore
     public String getLogIndexRaw() {
         return logIndex;
     }
@@ -73,6 +76,7 @@ public class Log {
         return convert(transactionIndex);
     }
 
+    @JsonIgnore
     public String getTransactionIndexRaw() {
         return transactionIndex;
     }
@@ -101,6 +105,7 @@ public class Log {
         return convert(blockNumber);
     }
 
+    @JsonIgnore
     public String getBlockNumberRaw() {
         return blockNumber;
     }
@@ -125,6 +130,7 @@ public class Log {
         this.data = data;
     }
 
+    @JsonIgnore
     public String getType() {
         return type;
     }
