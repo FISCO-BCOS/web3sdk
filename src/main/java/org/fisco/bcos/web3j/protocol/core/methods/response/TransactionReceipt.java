@@ -1,5 +1,6 @@
 package org.fisco.bcos.web3j.protocol.core.methods.response;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.math.BigInteger;
 import java.util.List;
 import org.fisco.bcos.web3j.utils.Numeric;
@@ -71,6 +72,7 @@ public class TransactionReceipt {
         return Numeric.decodeQuantity(transactionIndex);
     }
 
+    @JsonIgnore
     public String getTransactionIndexRaw() {
         return transactionIndex;
     }
@@ -91,6 +93,7 @@ public class TransactionReceipt {
         return Numeric.decodeQuantity(blockNumber);
     }
 
+    @JsonIgnore
     public String getBlockNumberRaw() {
         return blockNumber;
     }
@@ -119,6 +122,7 @@ public class TransactionReceipt {
         return Numeric.decodeQuantity(gasUsed);
     }
 
+    @JsonIgnore
     public String getGasUsedRaw() {
         return gasUsed;
     }
@@ -159,6 +163,7 @@ public class TransactionReceipt {
         this.message = message;
     }
 
+    @JsonIgnore
     public boolean isStatusOK() {
         if (null == status) {
             return true;

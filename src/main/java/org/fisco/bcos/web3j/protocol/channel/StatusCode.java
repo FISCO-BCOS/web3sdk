@@ -59,13 +59,13 @@ public class StatusCode {
                 message = "unknown";
                 break;
             case BadRLP:
-                message = "bad RLP";
+                message = "invalid RLP";
                 break;
             case InvalidFormat:
                 message = "invalid format";
                 break;
             case OutOfGasIntrinsic:
-                message = "out of gas";
+                message = "contract to deploy is too long(or input data is too long)";
                 break;
             case InvalidSignature:
                 message = "invalid signature";
@@ -77,7 +77,7 @@ public class StatusCode {
                 message = "not enough cash";
                 break;
             case OutOfGasBase:
-                message = "out of gas base";
+                message = "input data is too long";
                 break;
             case BlockGasLimitReached:
                 message = "block gas limit reached";
@@ -89,7 +89,7 @@ public class StatusCode {
                 message = "bad jump destination";
                 break;
             case OutOfGas:
-                message = "out of gas";
+                message = "out-of-gas during EVM execution";
                 break;
             case OutOfStack:
                 message = "out of stack";
