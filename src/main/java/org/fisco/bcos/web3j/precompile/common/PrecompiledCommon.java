@@ -58,7 +58,6 @@ public class PrecompiledCommon {
     public static final int InvalidContractFrozen = -51901;
     public static final int InvalidContractAvaliable = -51902;
 
-
     public static final int TABLE_KEY_MAX_LENGTH = 255;
 
     public static String BCOS_VERSION = "";

@@ -1,5 +1,6 @@
 package org.fisco.bcos.web3j.precompile.frozen;
 
+import java.math.BigInteger;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.crypto.WalletUtils;
 import org.fisco.bcos.web3j.precompile.common.PrecompiledCommon;
@@ -9,8 +10,6 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.tuples.generated.Tuple2;
 import org.fisco.bcos.web3j.tx.gas.ContractGasProvider;
 import org.fisco.bcos.web3j.tx.gas.StaticGasProvider;
-
-import java.math.BigInteger;
 
 public class FrozenService {
     private static BigInteger gasPrice = new BigInteger("30000000000");
@@ -62,4 +61,3 @@ public class FrozenService {
         return ObjectMapperFactory.getObjectMapper().writeValueAsString(send);
     }
 }
-
