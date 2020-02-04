@@ -1,6 +1,7 @@
 package org.fisco.bcos.channel.test.parallel.precompile;
 
 import java.io.*;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
@@ -52,6 +53,19 @@ public class DagUserMgr {
 
     public DagTransferUser getNext(int idx) {
         return userList.get((idx + 1) % userList.size());
+    }
+
+    public void createUser(int userCount) {
+        userCount = (userCount > 0 ? userCount : 1);
+        long seconds = System.currentTimeMillis() / 1000L;
+        for (int i = 0; i < userCount; i++) {
+            DagTransferUser dagTransferUser = new DagTransferUser();
+            String user = Long.toHexString(seconds) + Integer.toHexString(i);
+            BigInteger amount = new BigInteger("1000000000");
+            dagTransferUser.setUser(user);
+            dagTransferUser.setAmount(amount);
+            this.getUserList().add(dagTransferUser);
+        }
     }
 
     public void writeDagTransferUser() throws IOException {

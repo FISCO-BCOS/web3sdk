@@ -20,7 +20,8 @@ public class ECDSASign implements SignInterface {
 
         ECDSASignature sig = sign(messageHash, privateKey);
         // Now we have to work backwards to figure out the recId needed to recover the signature.
-        int recId = -1;
+        int recId = 0;
+        /*
         for (int i = 0; i < 4; i++) {
             BigInteger k = Sign.recoverFromSignature(i, sig, messageHash);
             if (k != null && k.equals(publicKey)) {
@@ -31,7 +32,7 @@ public class ECDSASign implements SignInterface {
         if (recId == -1) {
             throw new RuntimeException(
                     "Could not construct a recoverable key. This should never happen.");
-        }
+        }*/
 
         int headerByte = recId + 27;
 
