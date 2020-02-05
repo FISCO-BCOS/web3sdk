@@ -182,7 +182,7 @@ public class Sign {
     }
 
     /** Decompress a compressed public key (x co-ord and low-bit of y-coord). */
-    private static ECPoint decompressKey(BigInteger xBN, boolean yBit) {
+    public static ECPoint decompressKey(BigInteger xBN, boolean yBit) {
         X9IntegerConverter x9 = new X9IntegerConverter();
         byte[] compEnc = x9.integerToBytes(xBN, 1 + x9.getByteLength(CURVE.getCurve()));
         compEnc[0] = (byte) (yBit ? 0x03 : 0x02);

@@ -1,15 +1,22 @@
 package org.fisco.bcos.web3j.crypto;
 
 import java.math.BigInteger;
+import org.bouncycastle.math.ec.ECPoint;
 
 /** An ECDSA Signature. */
 public class ECDSASignature {
-    public final BigInteger r;
-    public final BigInteger s;
+    public BigInteger r;
+    public BigInteger s;
+    public ECPoint p;
 
-    public ECDSASignature(BigInteger r, BigInteger s) {
+    public ECDSASignature(BigInteger r, BigInteger s, ECPoint p) {
         this.r = r;
         this.s = s;
+        this.p = p;
+    }
+
+    public ECDSASignature(BigInteger r, BigInteger s) {
+        this(r, s, null);
     }
 
     /**
@@ -40,7 +47,7 @@ public class ECDSASignature {
             //    N = 10
             //    s = 8, so (-8 % 10 == 2) thus both (r, 8) and (r, 2) are valid solutions.
             //    10 - 8 == 2, giving us always the latter solution, which is canonical.
-            return new ECDSASignature(r, Sign.CURVE.getN().subtract(s));
+            return new ECDSASignature(r, Sign.CURVE.getN().subtract(s), p);
         } else {
             return this;
         }
