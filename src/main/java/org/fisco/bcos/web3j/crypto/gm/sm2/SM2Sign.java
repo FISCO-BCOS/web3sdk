@@ -5,6 +5,11 @@ import java.math.BigInteger;
 import org.bouncycastle.asn1.ASN1Integer;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.ASN1Sequence;
+import org.bouncycastle.crypto.CryptoException;
+import org.bouncycastle.crypto.params.ECDomainParameters;
+import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
+import org.bouncycastle.crypto.params.ParametersWithID;
+import org.bouncycastle.crypto.params.ParametersWithRandom;
 import org.fisco.bcos.web3j.crypto.ECKeyPair;
 import org.fisco.bcos.web3j.crypto.Sign;
 import org.fisco.bcos.web3j.crypto.SignInterface;
@@ -19,9 +24,43 @@ import org.slf4j.LoggerFactory;
 public class SM2Sign implements SignInterface {
     static Logger logger = LoggerFactory.getLogger(SM2Sign.class);
 
+    private static final ECDomainParameters eCDomainParameters =
+            new ECDomainParameters(SM2Algorithm.sm2Curve, SM2Algorithm.sm2Point, SM2Algorithm.n);
+    private static final byte[] identValue =
+            org.bouncycastle.util.encoders.Hex.decode("31323334353637383132333435363738");
+
     @Override
     public Sign.SignatureData signMessage(byte[] message, ECKeyPair keyPair) {
-        return sign(message, keyPair);
+        return sign2(message, keyPair);
+    }
+
+    public static Sign.SignatureData sign2(byte[] message, ECKeyPair ecKeyPair) {
+        SM2Signer sm2Signer = new SM2Signer();
+
+        ECPrivateKeyParameters eCPrivateKeyParameters =
+                new ECPrivateKeyParameters(ecKeyPair.getPrivateKey(), eCDomainParameters);
+
+        sm2Signer.initWithCache(
+                true,
+                new ParametersWithID(new ParametersWithRandom(eCPrivateKeyParameters), identValue));
+
+        sm2Signer.updateMessage(message, 0, message.length);
+
+        byte[] r = null;
+        byte[] s = null;
+        byte[] pub = null;
+
+        try {
+            BigInteger[] bigIntegers = sm2Signer.generateSignature2();
+
+            pub = Numeric.toBytesPadded(ecKeyPair.getPublicKey(), 64);
+            r = SM2Algorithm.getEncoded(bigIntegers[0]);
+            s = SM2Algorithm.getEncoded(bigIntegers[1]);
+        } catch (CryptoException e) {
+            throw new RuntimeException(e);
+        }
+
+        return new Sign.SignatureData((byte) 0, r, s, pub);
     }
 
     public static Sign.SignatureData sign(byte[] message, ECKeyPair ecKeyPair) {
@@ -32,6 +71,7 @@ public class SM2Sign implements SignInterface {
         byte[] pub = null;
         byte v = 0;
         byte[] messageHash = sm3Digest.hash(message);
+
         try {
             byte[] signByte = SM2Algorithm.sign(messageHash, ecKeyPair.getPrivateKey());
             logger.debug("signData:{}", signByte);
@@ -42,12 +82,14 @@ public class SM2Sign implements SignInterface {
                         ((ASN1Integer) as.getObjectAt(0)).getValue(),
                         ((ASN1Integer) as.getObjectAt(1)).getValue()
                     };
+
         } catch (IOException ex) {
             logger.error("SM2 Sign ERROR");
         }
         if (rs != null) {
             r = SM2Algorithm.getEncoded(rs[0]);
             s = SM2Algorithm.getEncoded(rs[1]);
+
             /*System.out.println("publicKey:" + Hex.toHexString(Numeric.toBytesPadded(ecKeyPair.getPublicKey(),64)));
             System.out.println("publicKeyLen:" + ecKeyPair.getPublicKey().bitLength());
             System.out.println("privateKey:" + Hex.toHexString(Numeric.toBytesPadded(ecKeyPair.getPrivateKey(),32)));
