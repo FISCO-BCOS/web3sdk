@@ -39,12 +39,13 @@ public class ECDSASign implements SignInterface {
 
         int recId = affineYCoordValue.and(BigInteger.ONE).intValue();
         recId |= (affineXCoordValue.compareTo(sig.r) != 0 ? 2 : 0);
-        int recId1 = recId;
         if (sig.s.compareTo(halfCurveN) > 0) {
             sig.s = Sign.CURVE.getN().subtract(sig.s);
             recId = recId ^ 1;
         }
 
+        /** code to test if recId value is correct */
+        /*
         int recId0 = -1;
         for (int i = 0; i < 4; i++) {
             BigInteger k = Sign.recoverFromSignature(i, sig, messageHash);
@@ -62,18 +63,17 @@ public class ECDSASign implements SignInterface {
         if (recId != recId0) {
             if (logger.isErrorEnabled()) {
                 logger.error(
-                        " invalid recId value111, recId={}, recIdOld={}, recId1={}, s={}, r={}, x={}, y={} ",
+                        " invalid recId value111, recId={}, recIdOld={}, s={}, r={}, x={}, y={} ",
                         recId,
-                        recId0,
-                        recId1,
+                        recIdOld,
                         sig.s,
                         sig.r,
                         affineXCoordValue,
                         affineYCoordValue);
             }
         }
+        */
 
-        // int headerByte = recId + 27;
         int headerByte = recId + 27;
 
         // 1 header + 32 bytes for R + 32 bytes for S
