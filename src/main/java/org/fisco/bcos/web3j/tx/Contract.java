@@ -534,6 +534,7 @@ public abstract class Contract extends ManagedTransaction {
         } catch (TransactionException e) {
             throw e;
         } catch (Exception e) {
+            logger.debug("e: {}", e);
             throw new RuntimeException(e);
         }
     }
