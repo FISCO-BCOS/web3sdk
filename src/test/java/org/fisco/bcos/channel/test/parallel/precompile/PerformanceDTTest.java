@@ -22,6 +22,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.crypto.gm.GenCredential;
+import org.fisco.bcos.web3j.crypto.gm.sm2.SM2Sign;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
@@ -377,7 +378,12 @@ public class PerformanceDTTest {
                         + totalSignedTxCount
                         + " ,sps = "
                         + (totalSignedTxCount.intValue() / elapsed));
+
         System.out.println("");
+
+        if (SM2Sign.isOpenSM2SignerCache()) {
+            System.out.println("SM2Signer Object Count => " + SM2Sign.getsM2SignerCache().size());
+        }
 
         System.exit(0);
     }

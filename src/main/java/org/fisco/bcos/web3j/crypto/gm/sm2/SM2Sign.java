@@ -2,6 +2,8 @@ package org.fisco.bcos.web3j.crypto.gm.sm2;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import org.bouncycastle.asn1.ASN1Integer;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.ASN1Sequence;
@@ -24,10 +26,31 @@ import org.slf4j.LoggerFactory;
 public class SM2Sign implements SignInterface {
     static Logger logger = LoggerFactory.getLogger(SM2Sign.class);
 
+    /** Whether to cache objects, improve object reuse, reduce new objects */
+    private static boolean openSM2SignerCache = false;
+
+    private static ConcurrentLinkedDeque<SM2Signer> sM2SignerCache =
+            new ConcurrentLinkedDeque<SM2Signer>();
+
     private static final ECDomainParameters eCDomainParameters =
             new ECDomainParameters(SM2Algorithm.sm2Curve, SM2Algorithm.sm2Point, SM2Algorithm.n);
     private static final byte[] identValue =
             org.bouncycastle.util.encoders.Hex.decode("31323334353637383132333435363738");
+
+    private static SM2Signer getSM2SM2SignerFromCache() {
+        SM2Signer sm2Signer = null;
+        try {
+            sm2Signer = sM2SignerCache.pop();
+        } catch (Exception e) {
+            // list empty?
+        }
+
+        return sm2Signer;
+    }
+
+    private static void addSM2SignerToCache(SM2Signer sm2Signer) {
+        sM2SignerCache.addLast(sm2Signer);
+    }
 
     @Override
     public Sign.SignatureData signMessage(byte[] message, ECKeyPair keyPair) {
@@ -35,7 +58,15 @@ public class SM2Sign implements SignInterface {
     }
 
     public static Sign.SignatureData sign2(byte[] message, ECKeyPair ecKeyPair) {
-        SM2Signer sm2Signer = new SM2Signer();
+
+        SM2Signer sm2Signer = null;
+        if (openSM2SignerCache) {
+            sm2Signer = getSM2SM2SignerFromCache();
+        }
+
+        if (Objects.isNull(sm2Signer)) {
+            sm2Signer = new SM2Signer();
+        }
 
         ECPrivateKeyParameters eCPrivateKeyParameters =
                 new ECPrivateKeyParameters(ecKeyPair.getPrivateKey(), eCDomainParameters);
@@ -58,6 +89,10 @@ public class SM2Sign implements SignInterface {
             s = SM2Algorithm.getEncoded(bigIntegers[1]);
         } catch (CryptoException e) {
             throw new RuntimeException(e);
+        }
+
+        if (openSM2SignerCache) {
+            addSM2SignerToCache(sm2Signer);
         }
 
         return new Sign.SignatureData((byte) 0, r, s, pub);
@@ -101,5 +136,21 @@ public class SM2Sign implements SignInterface {
             // System.out.println("SM2 SignPublic:" + Hex.toHexString(pub));
         }
         return new Sign.SignatureData(v, r, s, pub);
+    }
+
+    public static boolean isOpenSM2SignerCache() {
+        return openSM2SignerCache;
+    }
+
+    public static void setOpenSM2SignerCache(boolean openSM2SignerCache) {
+        SM2Sign.openSM2SignerCache = openSM2SignerCache;
+    }
+
+    public static ConcurrentLinkedDeque<SM2Signer> getsM2SignerCache() {
+        return sM2SignerCache;
+    }
+
+    public static void setsM2SignerCache(ConcurrentLinkedDeque<SM2Signer> sM2SignerCache) {
+        SM2Sign.sM2SignerCache = sM2SignerCache;
     }
 }

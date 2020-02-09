@@ -2,6 +2,7 @@ package org.fisco.bcos.channel.test.parallel.precompile;
 
 import java.math.BigInteger;
 import org.fisco.bcos.web3j.crypto.EncryptType;
+import org.fisco.bcos.web3j.crypto.gm.sm2.SM2Sign;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,7 +12,7 @@ public class transferSign {
     public static void Usage() {
         System.out.println(" Usage:");
         System.out.println(
-                " \t java -cp conf/:lib/*:apps/* org.fisco.bcos.channel.test.parallel.parallelok.transferSign txCount ThreadCount GMOrNot.");
+                " \t java -cp conf/:lib/*:apps/* org.fisco.bcos.channel.test.parallel.parallelok.transferSign txCount ThreadCount GMOrNot CacheOrNot.");
         System.exit(0);
     }
 
@@ -29,10 +30,19 @@ public class transferSign {
                 EncryptType encryptType = new EncryptType(0);
             }
 
+            if (args.length > 3 && args[3].equals("cache")) {
+                SM2Sign.setOpenSM2SignerCache(true);
+            }
+
             System.out.println(
                     (EncryptType.encryptType == EncryptType.ECDSA_TYPE)
                             ? " ===>> normal transfer sign test "
                             : " ===>> sm transfer sign test ");
+
+            System.out.println(
+                    SM2Sign.isOpenSM2SignerCache()
+                            ? " ===>> Cache SM2Signer"
+                            : " ===>> Not Cache SM2Signer");
 
             logger.info(" transfer tx sign test, txCount: {}, threadCount: {}", count, threadCount);
 
@@ -43,6 +53,7 @@ public class transferSign {
             performanceDTTest.setDagUserMgr(d);
 
             performanceDTTest.userTransferSignTxPerfTest(count, threadCount.intValue());
+
         } catch (Exception e) {
             e.printStackTrace();
         }
