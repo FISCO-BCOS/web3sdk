@@ -64,11 +64,14 @@ import org.slf4j.LoggerFactory;
 public class SolidityFunctionWrapper extends Generator {
     private static final int maxSolidityBinSize = 0x40000;
     private static final String BINARY = "BINARY";
+    private static final String BINARY_METHOD = "getBinary()";
+    private static final String SM_BINARY = "SM_BINARY";
     private static final String WEB3J = "web3j";
     private static final String CREDENTIALS = "credentials";
     private static final String CONTRACT_GAS_PROVIDER = "contractGasProvider";
     private static final String TRANSACTION_MANAGER = "transactionManager";
     private static final String TRANSACTION_DECODER = "transactionDecoder";
+    private static final String GET_BINARY = "getBinary";
     private static final String INITIAL_VALUE = "initialWeiValue";
     private static final String CONTRACT_ADDRESS = "contractAddress";
     private static final String GAS_PRICE = "gasPrice";
@@ -114,10 +117,24 @@ public class SolidityFunctionWrapper extends Generator {
             String destinationDir,
             String basePackageName)
             throws IOException, ClassNotFoundException {
+
+        generateJavaFiles(contractName, bin, null, abi, destinationDir, basePackageName);
+    }
+
+    public void generateJavaFiles(
+            String contractName,
+            String bin,
+            String smBin,
+            String abi,
+            String destinationDir,
+            String basePackageName)
+            throws IOException, ClassNotFoundException {
         abiContent = abi;
+
         generateJavaFiles(
                 contractName,
                 bin,
+                smBin,
                 loadContractDefinition(abi),
                 destinationDir,
                 basePackageName,
@@ -132,6 +149,18 @@ public class SolidityFunctionWrapper extends Generator {
             String basePackageName,
             Map<String, String> addresses)
             throws IOException, ClassNotFoundException, UnsupportedOperationException {
+        generateJavaFiles(contractName, bin, null, abi, destinationDir, basePackageName, addresses);
+    }
+
+    void generateJavaFiles(
+            String contractName,
+            String bin,
+            String smBin,
+            List<AbiDefinition> abi,
+            String destinationDir,
+            String basePackageName,
+            Map<String, String> addresses)
+            throws IOException, ClassNotFoundException, UnsupportedOperationException {
         String className = Strings.capitaliseFirstLetter(contractName);
 
         if (bin.length() > maxSolidityBinSize) {
@@ -140,8 +169,9 @@ public class SolidityFunctionWrapper extends Generator {
                             + Integer.valueOf(bin.length()));
         }
 
-        TypeSpec.Builder classBuilder = createClassBuilder(className, bin, abi);
+        TypeSpec.Builder classBuilder = createClassBuilder(className, bin, smBin, abi);
 
+        classBuilder.addMethod(buildBinaryMethod(smBin));
         classBuilder.addMethod(buildReturnTransactionDecoder());
         classBuilder.addMethod(buildConstructor(Credentials.class, CREDENTIALS, false));
         classBuilder.addMethod(buildConstructor(Credentials.class, CREDENTIALS, true));
@@ -165,21 +195,27 @@ public class SolidityFunctionWrapper extends Generator {
     }
 
     private TypeSpec.Builder createClassBuilder(
-            String className, String binary, List<AbiDefinition> abi) {
+            String className, String binary, String smBinary, List<AbiDefinition> abi) {
 
         String javadoc = CODEGEN_WARNING + getWeb3jVersion();
+        TypeSpec.Builder builder =
+                TypeSpec.classBuilder(className)
+                        .addModifiers(Modifier.PUBLIC)
+                        .addJavadoc(javadoc)
+                        .superclass(Contract.class)
+                        .addAnnotation(
+                                AnnotationSpec.builder(SuppressWarnings.class)
+                                        .addMember("value", "$S", "unchecked")
+                                        .build())
+                        .addField(createBinaryDefinition(binary))
+                        .addField(createABIDefinition(abi))
+                        .addField(createTransactionDecoderDefinition());
 
-        return TypeSpec.classBuilder(className)
-                .addModifiers(Modifier.PUBLIC)
-                .addJavadoc(javadoc)
-                .superclass(Contract.class)
-                .addAnnotation(
-                        AnnotationSpec.builder(SuppressWarnings.class)
-                                .addMember("value", "$S", "unchecked")
-                                .build())
-                .addField(createBinaryDefinition(binary))
-                .addField(createABIDefinition(abi))
-                .addField(createTransactionDecoderDefinition());
+        if (!smBinary.equals(Contract.BIN_NOT_PROVIDED)) {
+            builder.addField(createSMBinaryDefinition(smBinary));
+        }
+
+        return builder;
     }
 
     private String getWeb3jVersion() {
@@ -206,6 +242,15 @@ public class SolidityFunctionWrapper extends Generator {
     private FieldSpec createBinaryDefinition(String binary) {
 
         return FieldSpec.builder(String.class, BINARY)
+                .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+                // .addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC)
+                .initializer("$S", binary)
+                .build();
+    }
+
+    private FieldSpec createSMBinaryDefinition(String binary) {
+
+        return FieldSpec.builder(String.class, SM_BINARY)
                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
                 // .addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC)
                 .initializer("$S", binary)
@@ -413,6 +458,25 @@ public class SolidityFunctionWrapper extends Generator {
         return toReturn.build();
     }
 
+    private static MethodSpec buildBinaryMethod(String sm_binary) {
+
+        MethodSpec.Builder toReturn =
+                MethodSpec.methodBuilder("getBinary")
+                        .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+                        .returns(String.class);
+
+        if (sm_binary.equals(Contract.BIN_NOT_PROVIDED)) {
+            toReturn.addStatement("return $N", BINARY);
+        } else {
+            toReturn.addStatement(
+                    "return (EncryptType.encryptType == EncryptType.ECDSA_TYPE ? $N : $N)",
+                    BINARY,
+                    SM_BINARY);
+        }
+
+        return toReturn.build();
+    }
+
     private static MethodSpec buildConstructor(
             Class authType, String authName, boolean withGasProvider) {
         MethodSpec.Builder toReturn =
@@ -426,7 +490,7 @@ public class SolidityFunctionWrapper extends Generator {
             toReturn.addParameter(ContractGasProvider.class, CONTRACT_GAS_PROVIDER)
                     .addStatement(
                             "super($N, $N, $N, $N, $N)",
-                            BINARY,
+                            BINARY_METHOD,
                             CONTRACT_ADDRESS,
                             WEB3J,
                             authName,
@@ -436,7 +500,7 @@ public class SolidityFunctionWrapper extends Generator {
                     .addParameter(BigInteger.class, GAS_LIMIT)
                     .addStatement(
                             "super($N, $N, $N, $N, $N, $N)",
-                            BINARY,
+                            BINARY_METHOD,
                             CONTRACT_ADDRESS,
                             WEB3J,
                             authName,
@@ -494,7 +558,7 @@ public class SolidityFunctionWrapper extends Generator {
                     authName,
                     GAS_PRICE,
                     GAS_LIMIT,
-                    BINARY,
+                    BINARY_METHOD,
                     INITIAL_VALUE);
             methodBuilder.addAnnotation(Deprecated.class);
         } else if (isPayable && withGasProvider) {
@@ -505,7 +569,7 @@ public class SolidityFunctionWrapper extends Generator {
                     WEB3J,
                     authName,
                     CONTRACT_GAS_PROVIDER,
-                    BINARY,
+                    BINARY_METHOD,
                     INITIAL_VALUE);
         } else if (!isPayable && !withGasProvider) {
             methodBuilder.addStatement(
@@ -515,7 +579,7 @@ public class SolidityFunctionWrapper extends Generator {
                     authName,
                     GAS_PRICE,
                     GAS_LIMIT,
-                    BINARY);
+                    BINARY_METHOD);
             methodBuilder.addAnnotation(Deprecated.class);
         } else {
             methodBuilder.addStatement(
@@ -524,7 +588,7 @@ public class SolidityFunctionWrapper extends Generator {
                     WEB3J,
                     authName,
                     CONTRACT_GAS_PROVIDER,
-                    BINARY);
+                    BINARY_METHOD);
         }
 
         return methodBuilder.build();
@@ -544,7 +608,7 @@ public class SolidityFunctionWrapper extends Generator {
                     authName,
                     GAS_PRICE,
                     GAS_LIMIT,
-                    BINARY,
+                    BINARY_METHOD,
                     INITIAL_VALUE);
             methodBuilder.addAnnotation(Deprecated.class);
         } else if (isPayable && withGasPRovider) {
@@ -554,7 +618,7 @@ public class SolidityFunctionWrapper extends Generator {
                     WEB3J,
                     authName,
                     CONTRACT_GAS_PROVIDER,
-                    BINARY,
+                    BINARY_METHOD,
                     INITIAL_VALUE);
         } else if (!isPayable && !withGasPRovider) {
             methodBuilder.addStatement(
@@ -564,7 +628,7 @@ public class SolidityFunctionWrapper extends Generator {
                     authName,
                     GAS_PRICE,
                     GAS_LIMIT,
-                    BINARY);
+                    BINARY_METHOD);
             methodBuilder.addAnnotation(Deprecated.class);
         } else {
             methodBuilder.addStatement(
@@ -573,7 +637,7 @@ public class SolidityFunctionWrapper extends Generator {
                     WEB3J,
                     authName,
                     CONTRACT_GAS_PROVIDER,
-                    BINARY);
+                    BINARY_METHOD);
         }
 
         return methodBuilder.build();

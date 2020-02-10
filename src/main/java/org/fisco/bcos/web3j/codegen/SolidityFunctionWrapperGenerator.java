@@ -41,6 +41,7 @@ public class SolidityFunctionWrapperGenerator extends FunctionWrapperGenerator {
      */
 
     private final File binFile;
+    private final File smBinFile;
     private final File abiFile;
 
     private SolidityFunctionWrapperGenerator(
@@ -49,9 +50,20 @@ public class SolidityFunctionWrapperGenerator extends FunctionWrapperGenerator {
             File destinationDir,
             String basePackageName,
             boolean useJavaNativeTypes) {
+        this(binFile, null, abiFile, destinationDir, basePackageName, useJavaNativeTypes);
+    }
+
+    private SolidityFunctionWrapperGenerator(
+            File binFile,
+            File smBinFile,
+            File abiFile,
+            File destinationDir,
+            String basePackageName,
+            boolean useJavaNativeTypes) {
 
         super(destinationDir, basePackageName, useJavaNativeTypes);
         this.binFile = binFile;
+        this.smBinFile = smBinFile;
         this.abiFile = abiFile;
     }
 
@@ -63,9 +75,15 @@ public class SolidityFunctionWrapperGenerator extends FunctionWrapperGenerator {
 
     private void generate() throws IOException, ClassNotFoundException {
         String binary = Contract.BIN_NOT_PROVIDED;
+        String smBinary = Contract.BIN_NOT_PROVIDED;
         if (binFile != null) {
             byte[] bytes = Files.readBytes(binFile);
             binary = new String(bytes);
+        }
+
+        if (smBinFile != null) {
+            byte[] bytes = Files.readBytes(smBinFile);
+            smBinary = new String(bytes);
         }
 
         byte[] bytes = Files.readBytes(abiFile);
@@ -81,6 +99,7 @@ public class SolidityFunctionWrapperGenerator extends FunctionWrapperGenerator {
                     .generateJavaFiles(
                             contractName,
                             binary,
+                            smBinary,
                             abi,
                             destinationDirLocation.toString(),
                             basePackageName);
