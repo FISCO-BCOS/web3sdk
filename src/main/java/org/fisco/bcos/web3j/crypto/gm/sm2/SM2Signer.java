@@ -36,6 +36,11 @@ import org.bouncycastle.util.encoders.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Copy from bc library, file: org.bouncycastle.crypto.signers.SM2Signer Only simple
+ * modifications(Add initWithCache method) were made to optimize the optimize the calculation of z
+ */
+
 /** The SM2 Digital Signature algorithm. */
 public class SM2Signer implements Signer, ECConstants {
 
@@ -49,6 +54,7 @@ public class SM2Signer implements Signer, ECConstants {
     private ECKeyParameters ecKey;
     private byte[] z;
 
+    /** z value cache. key: privateKey value: z value */
     private static Map<BigInteger, byte[]> zValueCache = new ConcurrentHashMap<>();
 
     @Override
@@ -92,6 +98,13 @@ public class SM2Signer implements Signer, ECConstants {
         digest.update(z, 0, z.length);
     }
 
+    /**
+     * The same as init method with better performance by adding the cache for the z value
+     * corresponding to the privateKey value
+     *
+     * @param forSigning
+     * @param param
+     */
     public void initWithCache(boolean forSigning, CipherParameters param) {
         CipherParameters baseParam;
         byte[] userID;

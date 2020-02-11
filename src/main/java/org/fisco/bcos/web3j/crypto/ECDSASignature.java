@@ -7,6 +7,10 @@ import org.bouncycastle.math.ec.ECPoint;
 public class ECDSASignature {
     public BigInteger r;
     public BigInteger s;
+    /**
+     * The value of p is used to assist in calculating the value of recvID and it's value is
+     * generated during the signature process
+     */
     public ECPoint p;
 
     public ECDSASignature(BigInteger r, BigInteger s, ECPoint p) {

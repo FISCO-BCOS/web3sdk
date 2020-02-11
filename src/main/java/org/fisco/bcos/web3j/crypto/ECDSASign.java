@@ -12,7 +12,6 @@ import org.fisco.bcos.web3j.utils.Numeric;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Created by websterchen on 2018/4/25. */
 public class ECDSASign implements SignInterface {
 
     private static final Logger logger = LoggerFactory.getLogger(ECDSASign.class);
@@ -33,6 +32,8 @@ public class ECDSASign implements SignInterface {
         ECDSASignature sig = sign(messageHash, privateKey);
 
         // Now we have to work backwards to figure out the recId needed to recover the signature.
+
+        /** Optimize the algorithm for calculating the recId value */
         ECPoint ecPoint = sig.p;
         BigInteger affineXCoordValue = ecPoint.normalize().getAffineXCoord().toBigInteger();
         BigInteger affineYCoordValue = ecPoint.normalize().getAffineYCoord().toBigInteger();
@@ -44,7 +45,10 @@ public class ECDSASign implements SignInterface {
             recId = recId ^ 1;
         }
 
-        /** code to test if recId value is correct */
+        /**
+         * The algorithm that calculated the recId value before and can be used to test if recId
+         * value is correct
+         */
         /*
         int recId0 = -1;
         for (int i = 0; i < 4; i++) {
@@ -90,12 +94,6 @@ public class ECDSASign implements SignInterface {
         ECPrivateKeyParameters privKey = new ECPrivateKeyParameters(privateKey, CURVE);
         signer.init(true, privKey);
         Object[] components = signer.generateSignature2(transactionHash);
-        /*
-        return new ECDSASignature(
-                        (BigInteger) components[0],
-                        (BigInteger) components[1],
-                        (ECPoint) components[2])
-                .toCanonicalised();*/
         return new ECDSASignature(
                 (BigInteger) components[0], (BigInteger) components[1], (ECPoint) components[2]);
     }

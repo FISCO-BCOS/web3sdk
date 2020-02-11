@@ -55,6 +55,11 @@ public class DagUserMgr {
         return userList.get((idx + 1) % userList.size());
     }
 
+    /**
+     * Create the specified number of users
+     *
+     * @param userCount
+     */
     public void createUser(int userCount) {
         userCount = (userCount > 0 ? userCount : 1);
         long seconds = System.currentTimeMillis() / 1000L;

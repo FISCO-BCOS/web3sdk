@@ -291,6 +291,13 @@ public class PerformanceDTTest {
         }
     }
 
+    /**
+     * Stress tests that create tx and sign them
+     *
+     * @param totalSignedTxCount
+     * @param threadC
+     * @throws InterruptedException
+     */
     public void userTransferSignTxPerfTest(BigInteger totalSignedTxCount, int threadC)
             throws InterruptedException {
 

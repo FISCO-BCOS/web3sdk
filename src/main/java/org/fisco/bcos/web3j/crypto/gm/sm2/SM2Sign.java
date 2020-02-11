@@ -28,7 +28,7 @@ public class SM2Sign implements SignInterface {
 
     /** Whether to cache objects, improve object reuse, reduce new objects */
     private static boolean openSM2SignerCache = false;
-
+    /** SM2Signer cache list */
     private static ConcurrentLinkedDeque<SM2Signer> sM2SignerCache =
             new ConcurrentLinkedDeque<SM2Signer>();
 
@@ -57,6 +57,13 @@ public class SM2Sign implements SignInterface {
         return sign2(message, keyPair);
     }
 
+    /**
+     * The new sm2 signature algorithm with better performance
+     *
+     * @param message
+     * @param ecKeyPair
+     * @return
+     */
     public static Sign.SignatureData sign2(byte[] message, ECKeyPair ecKeyPair) {
 
         SM2Signer sm2Signer = null;
