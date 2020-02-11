@@ -57,7 +57,8 @@ public class RawTransactionManager extends TransactionManager {
         this(web3j, credentials, ChainId.NONE, attempts, sleepDuration);
     }
 
-    BigInteger getBlockLimit() throws IOException {
+    @Override
+    protected BigInteger getBlockLimit() throws IOException {
         return web3j.getBlockNumberCache();
     }
 

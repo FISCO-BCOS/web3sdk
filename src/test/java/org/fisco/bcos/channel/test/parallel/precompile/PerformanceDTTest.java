@@ -22,6 +22,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.crypto.gm.GenCredential;
+import org.fisco.bcos.web3j.crypto.gm.sm2.SM2Sign;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
@@ -57,6 +58,10 @@ public class PerformanceDTTest {
     public PerformanceDTTest(String groupID) throws Exception {
         groupId = groupID;
         initialize(groupId);
+    }
+
+    public PerformanceDTTest() throws Exception {
+        groupId = "";
     }
 
     public DagUserMgr getDagUserMgr() {
@@ -284,6 +289,110 @@ public class PerformanceDTTest {
             e.printStackTrace();
             System.exit(0);
         }
+    }
+
+    /**
+     * Stress tests that create tx and sign them
+     *
+     * @param totalSignedTxCount
+     * @param threadC
+     * @throws InterruptedException
+     */
+    public void userTransferSignTxPerfTest(BigInteger totalSignedTxCount, int threadC)
+            throws InterruptedException {
+
+        ThreadPoolTaskExecutor threadPool = new ThreadPoolTaskExecutor();
+
+        threadPool.setCorePoolSize(threadC > 0 ? threadC : 10);
+        threadPool.setMaxPoolSize(threadC > 0 ? threadC : 10);
+        threadPool.setQueueCapacity(threadC > 0 ? threadC : 10);
+        threadPool.initialize();
+
+        Credentials credentials = GenCredential.create();
+
+        TransferSignTransactionManager extendedRawTransactionManager =
+                new TransferSignTransactionManager(
+                        null, credentials, BigInteger.ONE, BigInteger.ONE);
+
+        dagTransfer =
+                DagTransfer.load(
+                        dagTransferAddr,
+                        null,
+                        extendedRawTransactionManager,
+                        new StaticGasProvider(
+                                new BigInteger("30000000"), new BigInteger("30000000")));
+
+        AtomicLong signed = new AtomicLong(0);
+
+        long startTime = System.currentTimeMillis();
+        System.out.println(" => " + dateFormat.format(new Date()));
+
+        for (int i = 0; i < threadC; i++) {
+            threadPool.execute(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            while (true) {
+
+                                long index = signed.incrementAndGet();
+                                if (index > totalSignedTxCount.intValue()) {
+                                    break;
+                                }
+                                DagTransferUser from = dagUserMgr.getFrom((int) index);
+                                DagTransferUser to = dagUserMgr.getTo((int) index);
+
+                                Random random = new Random();
+                                int r = random.nextInt(100) + 1;
+                                BigInteger amount = BigInteger.valueOf(r);
+
+                                try {
+                                    String signedTransaction =
+                                            dagTransfer.userTransferSeq(
+                                                    from.getUser(), to.getUser(), amount);
+
+                                    if (index % (totalSignedTxCount.longValue() / 10) == 0) {
+                                        System.out.println(
+                                                "Signed transaction: "
+                                                        + String.valueOf(
+                                                                index
+                                                                        * 100
+                                                                        / totalSignedTxCount
+                                                                                .longValue())
+                                                        + "%");
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                    System.exit(-1);
+                                }
+                            }
+                        }
+                    });
+        }
+
+        while (signed.get() < totalSignedTxCount.intValue()) {
+            Thread.sleep(10);
+        }
+
+        long endTime = System.currentTimeMillis();
+        double elapsed = (endTime - startTime) / 1000.0;
+
+        System.out.println(" => " + dateFormat.format(new Date()));
+
+        System.out.print(
+                " sign transactions finished, elapse time: "
+                        + elapsed
+                        + ", tx count = "
+                        + totalSignedTxCount
+                        + " ,sps = "
+                        + (totalSignedTxCount.intValue() / elapsed));
+
+        System.out.println("");
+
+        if (SM2Sign.isOpenSM2SignerCache()) {
+            System.out.println("SM2Signer Object Count => " + SM2Sign.getsM2SignerCache().size());
+        }
+
+        System.exit(0);
     }
 
     public void userTransferTest(BigInteger count, BigInteger qps, BigInteger deci) {

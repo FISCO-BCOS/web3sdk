@@ -95,12 +95,13 @@ public abstract class Contract extends ManagedTransaction {
     public static TransactionManager getTheTransactionManager(
             Web3j web3j, Credentials credentials) {
         JsonRpc2_0Web3j jsonRpc2_0Web3j = (JsonRpc2_0Web3j) web3j;
-        int groupId = jsonRpc2_0Web3j.getGroupId();
         String chainId = "1";
+        int groupId = 1;
         String version = "";
         String supportedVersion = "";
         NodeVersion.Version nodeVersion = null;
         try {
+            groupId = jsonRpc2_0Web3j.getGroupId();
             nodeVersion = web3j.getNodeVersion().send().getNodeVersion();
             version = nodeVersion.getVersion();
             supportedVersion = nodeVersion.getSupportedVersion();
@@ -114,7 +115,7 @@ public abstract class Contract extends ManagedTransaction {
                 logger.debug(
                         "fisco-bcos version:{}, supported version:{}", version, supportedVersion);
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("Query fisco-bcos version failed", e);
         }
 
@@ -533,6 +534,7 @@ public abstract class Contract extends ManagedTransaction {
         } catch (TransactionException e) {
             throw e;
         } catch (Exception e) {
+            logger.debug("e: {}", e);
             throw new RuntimeException(e);
         }
     }
