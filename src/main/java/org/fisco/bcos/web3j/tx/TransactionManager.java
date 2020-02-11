@@ -57,6 +57,8 @@ public abstract class TransactionManager {
         this(new PollingTransactionReceiptProcessor(web3j, sleepDuration, attempts), credentials);
     }
 
+    protected abstract BigInteger getBlockLimit() throws IOException;
+
     @Deprecated
     protected TransactionReceipt executeTransaction(
             BigInteger gasPrice,
