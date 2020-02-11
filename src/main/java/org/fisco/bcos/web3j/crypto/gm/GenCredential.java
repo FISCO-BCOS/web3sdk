@@ -91,6 +91,11 @@ public class GenCredential {
             if (keyPair == null) return null;
 
             Credentials credentials = Credentials.create(keyPair);
+            logger.debug(
+                    " privateKey: {}, publicKey: {}, address: {}",
+                    credentials.getEcKeyPair().getPrivateKey(),
+                    credentials.getEcKeyPair().getPrivateKey(),
+                    credentials.getAddress());
             return credentials;
         } catch (Exception e) {
             System.out.println("init credential failed");

@@ -34,8 +34,8 @@ public class SM2Algorithm {
     public static final BigInteger gy =
             new BigInteger("BC3736A2F4F6779C59BDCEE36B692153D0A9877CC62A474002DF32E52139F0A0", 16);
 
-    private static final ECCurve sm2Curve = new ECCurve.Fp(p, a, b);
-    private static final ECPoint sm2Point = sm2Curve.createPoint(gx, gy);
+    public static final ECCurve sm2Curve = new ECCurve.Fp(p, a, b);
+    public static final ECPoint sm2Point = sm2Curve.createPoint(gx, gy);
 
     /*
      * SM2加密
@@ -323,10 +323,10 @@ public class SM2Algorithm {
     ////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////
 
-    private static byte[] USER_ID = KeyUtils.hex2byte("31323334353637383132333435363738");
+    public static byte[] USER_ID = KeyUtils.hex2byte("31323334353637383132333435363738");
     private static int mFieldSizeInBytes;
-    private static ECCurve curve256;
-    private static ECPoint g256;
+    public static ECCurve curve256;
+    public static ECPoint g256;
 
     // 初始化曲线G
     static {
