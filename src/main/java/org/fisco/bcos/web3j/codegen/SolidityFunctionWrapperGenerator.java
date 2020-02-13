@@ -31,6 +31,8 @@ public class SolidityFunctionWrapperGenerator extends FunctionWrapperGenerator {
      * -a, --abiFile=<abiFile>    abi file with contract definition.
      * -b, --binFile=<binFile>    bin file with contract compiled code in order to
      * generate deploy methods.
+     * -s, --smBinFile=<binFile>  sm bin file with contract compiled code in order to
+     * generate deploy methods.
      * -o, --outputDir=<destinationFileDir>
      * destination base directory.
      * -p, --package=<packageName>
@@ -139,6 +141,14 @@ public class SolidityFunctionWrapperGenerator extends FunctionWrapperGenerator {
         private File binFile;
 
         @Option(
+                names = {"-s", "--smBinFile"},
+                description =
+                        "sm bin file with contract compiled code "
+                                + "in order to generate deploy methods.",
+                required = false)
+        private File smBinFile;
+
+        @Option(
                 names = {"-o", "--outputDir"},
                 description = "destination base directory.",
                 required = true)
@@ -170,7 +180,12 @@ public class SolidityFunctionWrapperGenerator extends FunctionWrapperGenerator {
                 // simply check if solidityTypes were requested
                 boolean useJavaTypes = !(solidityTypes);
                 new SolidityFunctionWrapperGenerator(
-                                binFile, abiFile, destinationFileDir, packageName, useJavaTypes)
+                                binFile,
+                                smBinFile,
+                                abiFile,
+                                destinationFileDir,
+                                packageName,
+                                useJavaTypes)
                         .generate();
             } catch (Exception e) {
                 exitError(e);
