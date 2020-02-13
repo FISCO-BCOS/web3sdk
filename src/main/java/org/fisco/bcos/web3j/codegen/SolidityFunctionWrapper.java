@@ -41,6 +41,7 @@ import org.fisco.bcos.web3j.abi.datatypes.Type;
 import org.fisco.bcos.web3j.abi.datatypes.Utf8String;
 import org.fisco.bcos.web3j.abi.datatypes.generated.AbiTypes;
 import org.fisco.bcos.web3j.crypto.Credentials;
+import org.fisco.bcos.web3j.crypto.EncryptType;
 import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.RemoteCall;
@@ -469,7 +470,9 @@ public class SolidityFunctionWrapper extends Generator {
             toReturn.addStatement("return $N", BINARY);
         } else {
             toReturn.addStatement(
-                    "return (EncryptType.encryptType == EncryptType.ECDSA_TYPE ? $N : $N)",
+                    "return ($T.encryptType == $T.ECDSA_TYPE ? $N : $N)",
+                    EncryptType.class,
+                    EncryptType.class,
                     BINARY,
                     SM_BINARY);
         }
