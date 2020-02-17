@@ -57,7 +57,6 @@ web3sdk/dist/apps/web3sdk.jar
   - If this project is useful to you, please star us on GitHub project page.
   - Pull requests. See [CONTRIBUTING](CONTRIBUTING.md).
   - Report bugs, issues or feature requests. Using [GitHub issues](https://github.com/FISCO-BCOS/web3sdk/issues/new).
-  - If you find any security vulnerabilities, please [report them](https://security.webank.com) here!
 
 ## Join Our Community
 
