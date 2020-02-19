@@ -1,9 +1,11 @@
 package org.fisco.bcos.web3j.precompile.frozen;
 
 import java.math.BigInteger;
+import java.util.List;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.crypto.WalletUtils;
 import org.fisco.bcos.web3j.precompile.common.PrecompiledCommon;
+import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.tuples.generated.Tuple2;
@@ -59,6 +61,23 @@ public class FrozenService {
         }
 
         Tuple2<BigInteger, String> send = frozen.queryStatus(addr).send();
+        if (!send.getValue1().equals(PrecompiledCommon.Success)) {
+            return PrecompiledCommon.transferToJson(send.getValue1().intValue());
+        }
         return send.getValue2();
+    }
+
+    public String queryAuthority(String addr) throws Exception {
+        if (!WalletUtils.isValidAddress(addr)) {
+            return PrecompiledCommon.transferToJson(PrecompiledCommon.InvalidAddress);
+        }
+
+        Tuple2<BigInteger, List<String>> send = frozen.queryAuthority(addr).send();
+
+        if (!send.getValue1().equals(PrecompiledCommon.Success)) {
+            return PrecompiledCommon.transferToJson(send.getValue1().intValue());
+        }
+
+        return ObjectMapperFactory.getObjectMapper().writeValueAsString(send.getValue2());
     }
 }
