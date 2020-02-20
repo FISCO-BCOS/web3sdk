@@ -61,7 +61,7 @@ public class FrozenService {
         }
 
         Tuple2<BigInteger, String> send = frozen.queryStatus(addr).send();
-        if (!send.getValue1().equals(PrecompiledCommon.Success)) {
+        if (!(send.getValue1().intValue() == PrecompiledCommon.Success)) {
             return PrecompiledCommon.transferToJson(send.getValue1().intValue());
         }
         return send.getValue2();
@@ -74,7 +74,7 @@ public class FrozenService {
 
         Tuple2<BigInteger, List<String>> send = frozen.queryAuthority(addr).send();
 
-        if (!send.getValue1().equals(PrecompiledCommon.Success)) {
+        if (!(send.getValue1().intValue() == PrecompiledCommon.Success)) {
             return PrecompiledCommon.transferToJson(send.getValue1().intValue());
         }
 
