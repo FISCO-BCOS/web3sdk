@@ -1179,7 +1179,7 @@ public class Service {
 
                         push.setSeq(message.getSeq());
                         push.setMessageID(message.getSeq());
-                        logger.info("msg:{}", Arrays.toString(message.getData()));
+                        logger.debug("msg:{}", Arrays.toString(message.getData()));
                         push.setContent(message.getData());
                         pushCallback.onPush(push);
                     } else {
@@ -1191,7 +1191,7 @@ public class Service {
             }
 
         } else if (message.getType() == ChannelMessageType.AMOP_RESPONSE.getType()) {
-            logger.info("channel message:{}", message.getSeq());
+            logger.debug("channel message:{}", message.getSeq());
             if (callback != null) {
                 logger.debug("found callback response");
 
