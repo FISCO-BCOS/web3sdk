@@ -77,7 +77,6 @@ public class CallContract {
                         funcName,
                         Arrays.<Type>asList(args),
                         Collections.<TypeReference<?>>emptyList());
-
         TransactionReceipt transactionReceipt = new TransactionReceipt();
         try {
             ExecuteTransaction executeTransaction =
