@@ -19,6 +19,8 @@ public class PrecompiledCommon {
 
     // system table for authority control
     public static final String USER_TABLE_PREFIX = "_user_";
+    public static final String USER_TABLE_PREFIX_2_2_0_VERSION = "u_";
+
     public static final String SYS_TABLE = "_sys_tables_";
     public static final String SYS_TABLE_ACCESS = "_sys_table_access_";
     public static final String SYS_CONSENSUS = "_sys_consensus_";
@@ -37,6 +39,7 @@ public class PrecompiledCommon {
     public static final int TableNameAndAddressNotExist_RC1 = 57;
     public static final int TableNameAndAddressNotExist = 51001;
     public static final int TableNameAndAddressNotExist_RC3 = -51001;
+    public static final int TableNameLengthOverflow = -51002;
     public static final int InvalidNodeId = -51100;
     public static final int LastSealer_RC1 = 100;
     public static final int LastSealer = 51101;
@@ -50,6 +53,11 @@ public class PrecompiledCommon {
     public static final int InvalidKey_RC1 = 157;
     public static final int InvalidKey = 51300;
     public static final int InvalidKey_RC3 = -51300;
+
+    public static final int InvalidAddress = -50102;
+    public static final int InvalidContractKill = -51900;
+    public static final int InvalidContractFrozen = -51901;
+    public static final int InvalidContractAvaliable = -51902;
 
     public static final int TABLE_KEY_MAX_LENGTH = 255;
 
@@ -116,7 +124,18 @@ public class PrecompiledCommon {
             msg = "contract name and version already exist";
         } else if (code == VersionExceeds) {
             msg = "version string length exceeds the maximum limit";
+        } else if (code == TableNameLengthOverflow) {
+            msg = "tablename string length exceeds the maximum limit";
+        } else if (code == InvalidAddress) {
+            msg = "invalid address format";
+        } else if (code == InvalidContractKill) {
+            msg = "the contract has been killed";
+        } else if (code == InvalidContractFrozen) {
+            msg = "the contract has been frozen";
+        } else if (code == InvalidContractAvaliable) {
+            msg = "the contract has been unfrozen";
         }
+
         ObjectMapper mapper = ObjectMapperFactory.getObjectMapper();
         return mapper.writeValueAsString(new PrecompiledResponse(code, msg));
     }

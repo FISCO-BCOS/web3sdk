@@ -29,6 +29,22 @@ public class StatusCode {
     public static final String AddressAlreadyUsed = "0x18";
     public static final String PermissionDenied = "0x19";
     public static final String CallAddressError = "0x1a";
+    public static final String GasOverflow = "0x1b";
+    public static final String TxPoolIsFull = "0x1c";
+    public static final String TransactionRefused = "0x1d";
+    public static final String ContractFrozen = "0x1e";
+
+    // extension
+    public static final String ExceptionCatched = "0x30";
+    public static final String ErrorInRPC = "0x31";
+
+    /// txPool related errors
+    public static final String AlreadyKnown = "0x2710";
+    public static final String AlreadyInChain = "0x2711";
+    public static final String InvalidTxChainId = "0x2712";
+    public static final String InvalidTxGroupId = "0x2713";
+    public static final String RequestNotBelongToTheGroup = "0x2714";
+    public static final String MalformedTx = "0x2715";
 
     public static String getStatusMessage(String status) {
         return getStatusMessage(status, " Error code: " + status);
@@ -44,13 +60,13 @@ public class StatusCode {
                 message = "unknown";
                 break;
             case BadRLP:
-                message = "bad RLP";
+                message = "invalid RLP";
                 break;
             case InvalidFormat:
                 message = "invalid format";
                 break;
             case OutOfGasIntrinsic:
-                message = "out of gas intrinsic";
+                message = "contract to deploy is too long(or input data is too long)";
                 break;
             case InvalidSignature:
                 message = "invalid signature";
@@ -62,7 +78,7 @@ public class StatusCode {
                 message = "not enough cash";
                 break;
             case OutOfGasBase:
-                message = "out of gas base";
+                message = "input data is too long";
                 break;
             case BlockGasLimitReached:
                 message = "block gas limit reached";
@@ -74,7 +90,7 @@ public class StatusCode {
                 message = "bad jump destination";
                 break;
             case OutOfGas:
-                message = "out of gas";
+                message = "out-of-gas during EVM execution";
                 break;
             case OutOfStack:
                 message = "out of stack";
@@ -117,6 +133,39 @@ public class StatusCode {
                 break;
             case CallAddressError:
                 message = "call address error";
+                break;
+            case GasOverflow:
+                message = "gas over flow";
+                break;
+            case TxPoolIsFull:
+                message = "transaction pool is full";
+                break;
+            case TransactionRefused:
+                message = "transaction refuesd";
+                break;
+            case ErrorInRPC:
+                message = "error in RPC";
+                break;
+            case AlreadyKnown:
+                message = "transaction already known";
+                break;
+            case AlreadyInChain:
+                message = "transaction already in chain";
+                break;
+            case InvalidTxChainId:
+                message = "invalid chain id";
+                break;
+            case InvalidTxGroupId:
+                message = "invalid group id";
+                break;
+            case RequestNotBelongToTheGroup:
+                message = "request not belong to the group";
+                break;
+            case MalformedTx:
+                message = "malformed transaction";
+                break;
+            case ContractFrozen:
+                message = "contract has been frozen";
                 break;
             default:
                 message = errorMessage;

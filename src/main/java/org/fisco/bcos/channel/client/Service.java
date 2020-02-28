@@ -27,6 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -85,8 +86,9 @@ public class Service {
     public static final String topicNeedVerifyPrefix = "#!$TopicNeedVerify_";
 
     private Integer connectSeconds = 30;
+    private boolean setJavaOpt = true;
 
-    private Integer connectSleepPerMillis = 1;
+    private Integer connectSleepPerMillis = 30;
     private String orgID;
     private String agencyName;
     private GroupChannelConnectionsConfig allChannelConnections;
@@ -287,8 +289,19 @@ public class Service {
         addTopics(set);
     }
 
+    public void initJavaOpt() {
+        System.setProperty("jdk.tls.namedGroups", "secp256k1");
+        logger.info(
+                "set jdk.tls.namedGroups opt, value : {}",
+                System.getProperty("jdk.tls.namedGroups"));
+    }
+
     public void run() throws Exception {
         logger.debug("init ChannelService");
+
+        if (setJavaOpt) {
+            initJavaOpt();
+        }
         parseFromTopic2KeyInfo();
         int flag = 0;
 
@@ -316,10 +329,10 @@ public class Service {
                     while (true) {
                         Map<String, ChannelHandlerContext> networkConnection =
                                 channelConnections.getNetworkConnections();
-                        for (String key : networkConnection.keySet()) {
-                            if (networkConnection.get(key) != null
-                                    && ChannelHandlerContextHelper.isChannelAvailable(
-                                            networkConnection.get(key))) {
+
+                        for (ChannelHandlerContext ctx : networkConnection.values()) {
+                            if (Objects.nonNull(ctx)
+                                    && ChannelHandlerContextHelper.isChannelAvailable(ctx)) {
                                 running = true;
                                 break;
                             }
@@ -333,26 +346,44 @@ public class Service {
                         }
                     }
 
+                    String baseMessage =
+                            " nodes: "
+                                    + channelConnections.getConnectionsStr()
+                                    + " ,groupId: "
+                                    + String.valueOf(groupId)
+                                    + " ,caCert: "
+                                    + channelConnections.getCaCert()
+                                    + " ,sslKey: "
+                                    + channelConnections.getSslKey()
+                                    + " ,sslCert: "
+                                    + channelConnections.getSslCert()
+                                    + " ,java version: "
+                                    + System.getProperty("java.version")
+                                    + " ,java vendor: "
+                                    + System.getProperty("java.vm.vendor");
+
                     if (!running) {
-                        logger.error("connectSeconds = {}", connectSeconds);
-                        logger.error(
-                                "can not connect to nodes success, please checkout the node status and the sdk config!");
-                        throw new Exception(
-                                "Can not connect to nodes success, please checkout the node status and the sdk config!");
+                        String errorMessage = " Failed to connect to " + baseMessage;
+                        logger.error(errorMessage);
+                        throw new Exception(errorMessage);
                     }
 
+                    logger.info(" Connect to " + baseMessage);
+
+                    channelConnections.startPeriodTask();
                     eventLogFilterManager.start();
                 } catch (InterruptedException e) {
-                    logger.error("system error ", e);
+                    logger.warn(" thread interrupted exception: ", e);
                     Thread.currentThread().interrupt();
                 } catch (Exception e) {
-                    logger.error("system error ", e);
+                    logger.error(
+                            " service init failed, error message: {}, error: ", e.getMessage(), e);
                     throw e;
                 }
             }
         }
         if (flag == 0) {
-            throw new Exception("Please set the right groupId");
+            throw new Exception("Please set the right groupId ");
         }
     }
 
@@ -565,13 +596,13 @@ public class Service {
                     bcosMessage.getSeq());
 
         } catch (Exception e) {
-            logger.error("system error:{} ", e);
+            logger.error(" error message:{}, error: {} ", e.getMessage(), e);
 
             BcosResponse response = new BcosResponse();
             response.setErrorCode(-1);
             response.setErrorMessage(
                     e.getMessage()
-                            + " Requset send failed! Can not connect to nodes success, please checkout the node status and the sdk config!");
+                            + " requset send failed! please check the log file content for reasons.");
             response.setContent("");
             response.setMessageID(request.getMessageID());
 
@@ -682,6 +713,52 @@ public class Service {
             }
         } catch (Exception e) {
             logger.error("system error", e);
+        }
+    }
+
+    /**
+     * When SDK start, the initial subscribed topics information set by user will be sent to the
+     * node. User can update subscribed topics again by following steps: 1. Set the topics you want
+     * to subscribe to again Service service // Servcie object Set<String> topics // topics that
+     * subscribe again service.setTopics(topics) 2. send update topics message to all nodes
+     * service.updateTopicsToNode();
+     */
+    public void updateTopicsToNode() {
+
+        logger.info(" updateTopicToNode, groupId: {}, topics: {}", groupId, getTopics());
+
+        // select send node
+        ChannelConnections channelConnections =
+                allChannelConnections
+                        .getAllChannelConnections()
+                        .stream()
+                        .filter(x -> x.getGroupId() == groupId)
+                        .findFirst()
+                        .get();
+
+        if (Objects.isNull(channelConnections)) {
+            throw new IllegalArgumentException(
+                    " No group configuration was found, groupId: " + groupId);
+        }
+
+        ConnectionCallback callback = (ConnectionCallback) channelConnections.getCallback();
+        if (Objects.isNull(callback)) {
+            throw new IllegalArgumentException(
+                    " No callback was found for ChannelConnections, service is not initialized");
+        }
+        callback.setTopics(getTopics());
+
+        /** send update topic message to all connected nodes */
+        Map<String, ChannelHandlerContext> networkConnections =
+                channelConnections.getNetworkConnections();
+        for (ChannelHandlerContext ctx : networkConnections.values()) {
+            if (Objects.nonNull(ctx) && ChannelHandlerContextHelper.isChannelAvailable(ctx)) {
+                try {
+                    callback.sendUpdateTopicMessage(ctx);
+                } catch (Exception e) {
+                    logger.debug(" e: ", e);
+                }
+            }
         }
     }
 
@@ -1102,7 +1179,7 @@ public class Service {
 
                         push.setSeq(message.getSeq());
                         push.setMessageID(message.getSeq());
-                        logger.info("msg:{}", Arrays.toString(message.getData()));
+                        logger.debug("msg:{}", Arrays.toString(message.getData()));
                         push.setContent(message.getData());
                         pushCallback.onPush(push);
                     } else {
@@ -1114,7 +1191,7 @@ public class Service {
             }
 
         } else if (message.getType() == ChannelMessageType.AMOP_RESPONSE.getType()) {
-            logger.info("channel message:{}", message.getSeq());
+            logger.debug("channel message:{}", message.getSeq());
             if (callback != null) {
                 logger.debug("found callback response");
 
@@ -1534,5 +1611,13 @@ public class Service {
 
     public void setTimeoutHandler(Timer timeoutHandler) {
         this.timeoutHandler = timeoutHandler;
+    }
+
+    public boolean isSetJavaOpt() {
+        return setJavaOpt;
+    }
+
+    public void setSetJavaOpt(boolean setJavaOpt) {
+        this.setJavaOpt = setJavaOpt;
     }
 }

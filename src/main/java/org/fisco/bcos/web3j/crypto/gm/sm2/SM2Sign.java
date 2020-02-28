@@ -2,9 +2,16 @@ package org.fisco.bcos.web3j.crypto.gm.sm2;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import org.bouncycastle.asn1.ASN1Integer;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.ASN1Sequence;
+import org.bouncycastle.crypto.CryptoException;
+import org.bouncycastle.crypto.params.ECDomainParameters;
+import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
+import org.bouncycastle.crypto.params.ParametersWithID;
+import org.bouncycastle.crypto.params.ParametersWithRandom;
 import org.fisco.bcos.web3j.crypto.ECKeyPair;
 import org.fisco.bcos.web3j.crypto.Sign;
 import org.fisco.bcos.web3j.crypto.SignInterface;
@@ -19,9 +26,90 @@ import org.slf4j.LoggerFactory;
 public class SM2Sign implements SignInterface {
     static Logger logger = LoggerFactory.getLogger(SM2Sign.class);
 
+    /** Whether to cache objects, improve object reuse, reduce new objects */
+    private static boolean openSM2SignerCache = false;
+    /** SM2Signer cache list */
+    private static ConcurrentLinkedDeque<SM2Signer> sM2SignerCache =
+            new ConcurrentLinkedDeque<SM2Signer>();
+
+    private static final ECDomainParameters eCDomainParameters =
+            new ECDomainParameters(SM2Algorithm.sm2Curve, SM2Algorithm.sm2Point, SM2Algorithm.n);
+    private static final byte[] identValue =
+            org.bouncycastle.util.encoders.Hex.decode("31323334353637383132333435363738");
+
+    private static SM2Signer getSM2SM2SignerFromCache() {
+        SM2Signer sm2Signer = null;
+        try {
+            sm2Signer = sM2SignerCache.pop();
+        } catch (Exception e) {
+            // list empty?
+        }
+
+        return sm2Signer;
+    }
+
+    private static void addSM2SignerToCache(SM2Signer sm2Signer) {
+        sM2SignerCache.addLast(sm2Signer);
+    }
+
     @Override
     public Sign.SignatureData signMessage(byte[] message, ECKeyPair keyPair) {
-        return sign(message, keyPair);
+        return sign2(message, keyPair);
+    }
+
+    /**
+     * The new sm2 signature algorithm with better performance
+     *
+     * @param message
+     * @param ecKeyPair
+     * @return
+     */
+    public static Sign.SignatureData sign2(byte[] message, ECKeyPair ecKeyPair) {
+
+        SM2Signer sm2Signer = null;
+        if (openSM2SignerCache) {
+            sm2Signer = getSM2SM2SignerFromCache();
+        }
+
+        if (Objects.isNull(sm2Signer)) {
+            sm2Signer = new SM2Signer();
+        }
+
+        ECPrivateKeyParameters eCPrivateKeyParameters =
+                new ECPrivateKeyParameters(ecKeyPair.getPrivateKey(), eCDomainParameters);
+
+        sm2Signer.initWithCache(
+                true,
+                new ParametersWithID(new ParametersWithRandom(eCPrivateKeyParameters), identValue));
+
+        org.bouncycastle.crypto.digests.SM3Digest sm3Digest =
+                new org.bouncycastle.crypto.digests.SM3Digest();
+
+        byte[] md = new byte[sm3Digest.getDigestSize()];
+        sm3Digest.update(message, 0, message.length);
+        sm3Digest.doFinal(md, 0);
+
+        sm2Signer.update(md, 0, md.length);
+
+        byte[] r = null;
+        byte[] s = null;
+        byte[] pub = null;
+
+        try {
+            BigInteger[] bigIntegers = sm2Signer.generateSignature2();
+
+            pub = Numeric.toBytesPadded(ecKeyPair.getPublicKey(), 64);
+            r = SM2Algorithm.getEncoded(bigIntegers[0]);
+            s = SM2Algorithm.getEncoded(bigIntegers[1]);
+        } catch (CryptoException e) {
+            throw new RuntimeException(e);
+        }
+
+        if (openSM2SignerCache) {
+            addSM2SignerToCache(sm2Signer);
+        }
+
+        return new Sign.SignatureData((byte) 0, r, s, pub);
     }
 
     public static Sign.SignatureData sign(byte[] message, ECKeyPair ecKeyPair) {
@@ -32,6 +120,7 @@ public class SM2Sign implements SignInterface {
         byte[] pub = null;
         byte v = 0;
         byte[] messageHash = sm3Digest.hash(message);
+
         try {
             byte[] signByte = SM2Algorithm.sign(messageHash, ecKeyPair.getPrivateKey());
             logger.debug("signData:{}", signByte);
@@ -42,12 +131,14 @@ public class SM2Sign implements SignInterface {
                         ((ASN1Integer) as.getObjectAt(0)).getValue(),
                         ((ASN1Integer) as.getObjectAt(1)).getValue()
                     };
+
         } catch (IOException ex) {
             logger.error("SM2 Sign ERROR");
         }
         if (rs != null) {
             r = SM2Algorithm.getEncoded(rs[0]);
             s = SM2Algorithm.getEncoded(rs[1]);
+
             /*System.out.println("publicKey:" + Hex.toHexString(Numeric.toBytesPadded(ecKeyPair.getPublicKey(),64)));
             System.out.println("publicKeyLen:" + ecKeyPair.getPublicKey().bitLength());
             System.out.println("privateKey:" + Hex.toHexString(Numeric.toBytesPadded(ecKeyPair.getPrivateKey(),32)));
@@ -59,5 +150,21 @@ public class SM2Sign implements SignInterface {
             // System.out.println("SM2 SignPublic:" + Hex.toHexString(pub));
         }
         return new Sign.SignatureData(v, r, s, pub);
+    }
+
+    public static boolean isOpenSM2SignerCache() {
+        return openSM2SignerCache;
+    }
+
+    public static void setOpenSM2SignerCache(boolean openSM2SignerCache) {
+        SM2Sign.openSM2SignerCache = openSM2SignerCache;
+    }
+
+    public static ConcurrentLinkedDeque<SM2Signer> getsM2SignerCache() {
+        return sM2SignerCache;
+    }
+
+    public static void setsM2SignerCache(ConcurrentLinkedDeque<SM2Signer> sM2SignerCache) {
+        SM2Sign.sM2SignerCache = sM2SignerCache;
     }
 }
