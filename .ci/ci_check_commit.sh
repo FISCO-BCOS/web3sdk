@@ -47,7 +47,7 @@ scan_code()
 }
 
 install_cobra() {
-   git clone https://github.com/WhaleShark-Team/cobra.git
+   git clone https://github.com/ywy2090/cobra.git
    pip install -r cobra/requirements.txt
    cp cobra/config.template cobra/config
 }
