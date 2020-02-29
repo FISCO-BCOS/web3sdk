@@ -3,7 +3,7 @@
 set -e
 
 scan_code_script="cobra/cobra.py -f json -o /tmp/report.json -t "
-ignore_files=(Frozen.java ECDSASign.java Constant.java PerformanceOkDSync.java SM2Algorithm.java SM2KeyGenerator.java test)
+ignore_files=()
 
 LOG_ERROR() {
     content=${1}
@@ -47,7 +47,7 @@ scan_code()
 }
 
 install_cobra() {
-   git clone https://github.com/WhaleShark-Team/cobra.git
+   git clone https://github.com/ywy2090/cobra.git
    pip install -r cobra/requirements.txt
    cp cobra/config.template cobra/config
 }
