@@ -36,7 +36,7 @@ import org.fisco.bcos.web3j.tx.txdecode.TransactionDecoder;
  * or the org.fisco.bcos.web3j.codegen.SolidityFunctionWrapperGenerator in the <a
  * href="https://github.com/web3j/web3j/tree/master/codegen">codegen module</a> to update.
  *
- * <p>Generated with web3j version none.
+ * <p>Generated with web3j version none. sssss
  */
 @SuppressWarnings("unchecked")
 public class Frozen extends Contract {
