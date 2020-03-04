@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 public class PerformanceDTCallback extends TransactionSucCallback {
 
-    private Long startTime = 0;
+    private Long startTime;
 
     private PerformanceDTCollector collector = null;
     private DagUserMgr dagUserMgr = null;
