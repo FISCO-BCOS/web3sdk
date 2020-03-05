@@ -36,14 +36,14 @@ public class ChannelMessage2 extends Message {
     @Override
     public void writeHeader(ByteBuf out) {
         // total length
-        length = Message.HEADER_LENGTH + 1 + topic.length() + data.length;
+        length = Message.HEADER_LENGTH + 1 + topic.getBytes().length + data.length;
 
         super.writeHeader(out);
     }
 
     @Override
     public void writeExtra(ByteBuf out) {
-        out.writeByte(1 + topic.length());
+        out.writeByte(1 + topic.getBytes().length);
         out.writeBytes(topic.getBytes());
 
         out.writeBytes(data);
