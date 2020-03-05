@@ -1,6 +1,7 @@
 package org.fisco.bcos.channel.dto;
 
 import io.netty.buffer.ByteBuf;
+import java.io.UnsupportedEncodingException;
 import org.fisco.bcos.channel.handler.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,14 +37,22 @@ public class ChannelMessage2 extends Message {
     @Override
     public void writeHeader(ByteBuf out) {
         // total length
-        length = Message.HEADER_LENGTH + 1 + topic.length() + data.length;
+        try {
+            length = Message.HEADER_LENGTH + 1 + topic.getBytes("utf-8").length + data.length;
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(" topic string to utf8 failed, topic: " + topic);
+        }
 
         super.writeHeader(out);
     }
 
     @Override
     public void writeExtra(ByteBuf out) {
-        out.writeByte(1 + topic.length());
+        try {
+            out.writeByte(1 + topic.getBytes("utf-8").length);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(" topic string to utf8 failed, topic: " + topic);
+        }
         out.writeBytes(topic.getBytes());
 
         out.writeBytes(data);
