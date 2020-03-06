@@ -22,7 +22,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.crypto.gm.GenCredential;
-import org.fisco.bcos.web3j.crypto.gm.sm2.SM2Sign;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
@@ -387,12 +386,6 @@ public class PerformanceDTTest {
                         + " ,sps = "
                         + (totalSignedTxCount.intValue() / elapsed));
 
-        System.out.println("");
-
-        if (SM2Sign.isOpenSM2SignerCache()) {
-            System.out.println("SM2Signer Object Count => " + SM2Sign.getsM2SignerCache().size());
-        }
-
         System.exit(0);
     }
 
@@ -490,13 +483,12 @@ public class PerformanceDTTest {
 
                 Lock fileLock = new ReentrantLock();
                 BufferedWriter writer = null;
-
+                AtomicLong writed = new AtomicLong(0);
+                final int totalWrite = end - start;
                 try {
                     writer = new BufferedWriter(new FileWriter(fileName));
-                    AtomicLong writed = new AtomicLong(0);
                     for (int j = start; j < end; ++j) {
                         final int index = j;
-                        final int totalWrite = end - start;
                         final BufferedWriter finalWriter = writer;
                         threadPool.execute(
                                 new Runnable() {
@@ -564,6 +556,11 @@ public class PerformanceDTTest {
 
                     e.printStackTrace();
                     System.exit(0);
+                } finally {
+                    if ((writed.get() >= totalWrite) && (writer != null)) {
+                        writer.close();
+                        writer = null;
+                    }
                 }
             }
 
