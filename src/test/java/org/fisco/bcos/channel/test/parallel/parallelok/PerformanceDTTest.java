@@ -242,6 +242,7 @@ public class PerformanceDTTest {
                                     callback.setCallBackType("set");
 
                                     try {
+                                        callback.recordStartTime();
                                         parallelok.set(user, amount, callback);
                                         success = true;
                                     } catch (Exception e) {
@@ -371,6 +372,7 @@ public class PerformanceDTTest {
                                     System.out.println(info);
 
                                     try {
+                                        callback.recordStartTime();
                                         parallelok.transferWithRevert(
                                                 from.getUser(), to.getUser(), amount, callback);
                                         success = true;
@@ -499,6 +501,7 @@ public class PerformanceDTTest {
                                     callback.setAmount(amount);
 
                                     try {
+                                        callback.recordStartTime();
                                         String signedTransaction =
                                                 parallelok.transferSeq(
                                                         from.getUser(), to.getUser(), amount);
@@ -551,6 +554,7 @@ public class PerformanceDTTest {
                             public void run() {
                                 while (true) {
                                     try {
+                                        callbacks.get(index).recordStartTime();
                                         transactionManager.sendTransaction(
                                                 signedTransactions.get(index),
                                                 callbacks.get(index));

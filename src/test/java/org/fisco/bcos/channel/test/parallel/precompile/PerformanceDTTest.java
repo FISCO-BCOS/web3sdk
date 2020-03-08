@@ -249,6 +249,7 @@ public class PerformanceDTTest {
                                 callback.setCallBackType("add");
 
                                 try {
+                                    callback.recordStartTime();
                                     dagTransfer.userAdd(user, amount, callback);
                                 } catch (Exception e) {
                                     TransactionReceipt receipt = new TransactionReceipt();
@@ -625,6 +626,7 @@ public class PerformanceDTTest {
                                     public void run() {
                                         while (true) {
                                             try {
+                                                callbacks.get(index).recordStartTime();
                                                 transactionManager.sendTransaction(
                                                         signedTransactions.get(index),
                                                         callbacks.get(index));
