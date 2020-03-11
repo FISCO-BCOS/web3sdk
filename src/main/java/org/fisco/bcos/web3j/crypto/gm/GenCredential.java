@@ -30,15 +30,10 @@ public class GenCredential {
             final byte[] publicKey = pk.getEncoded();
             final byte[] privateKey = vk.getEncoded();
 
-            // System.out.println("===public:" + Hex.toHexString(publicKey));
-            // System.out.println("===private:" + Hex.toHexString(privateKey));
             BigInteger biPublic = new BigInteger(Hex.toHexString(publicKey), 16);
             BigInteger biPrivate = new BigInteger(Hex.toHexString(privateKey), 16);
 
-            // System.out.println("---public:" + biPublic.toString(16));
-            // System.out.println("---private:" + biPrivate.toString(16));
-
-            ECKeyPair keyPair = new ECKeyPair(biPrivate, biPublic);
+            ECKeyPair keyPair = new ECKeyPair(biPrivate, biPublic, keyPairData);
             return keyPair;
         } catch (Exception e) {
             logger.error("create ec_keypair of guomi failed, error msg:" + e.getMessage());
