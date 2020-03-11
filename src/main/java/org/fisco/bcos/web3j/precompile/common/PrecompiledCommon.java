@@ -40,6 +40,7 @@ public class PrecompiledCommon {
     public static final int TableNameAndAddressNotExist = 51001;
     public static final int TableNameAndAddressNotExist_RC3 = -51001;
     public static final int TableNameLengthOverflow = -51002;
+    public static final int ContractNotExist = -51003;
     public static final int InvalidNodeId = -51100;
     public static final int LastSealer_RC1 = 100;
     public static final int LastSealer = 51101;
@@ -104,6 +105,8 @@ public class PrecompiledCommon {
                 msg = "the last sealer cannot be removed";
             } else if (code == TableExist_RC3) {
                 msg = "table already exist";
+            } else if (code == ContractNotExist) {
+                msg = "contract not exist";
             } else if (code == InvalidKey_RC3) {
                 msg = "invalid configuration entry";
             }
