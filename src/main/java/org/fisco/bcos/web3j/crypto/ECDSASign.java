@@ -22,6 +22,13 @@ public class ECDSASign implements SignInterface {
                     Hex.decode("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141"));
     private static final BigInteger halfCurveN = curveN.shiftRight(1);
 
+    /**
+     * Sign the message with ECDSA algorithm
+     *
+     * @param message
+     * @param keyPair
+     * @return
+     */
     @Override
     public Sign.SignatureData signMessage(byte[] message, ECKeyPair keyPair) {
         BigInteger privateKey = keyPair.getPrivateKey();
@@ -86,6 +93,24 @@ public class ECDSASign implements SignInterface {
         byte[] s = Numeric.toBytesPadded(sig.s, 32);
 
         return new Sign.SignatureData(v, r, s);
+    }
+
+    /**
+     * Verify the ECDSA signature
+     *
+     * @param hash
+     * @param publicKey
+     * @param signatureData
+     * @return
+     */
+    public boolean verify(byte[] hash, BigInteger publicKey, Sign.SignatureData signatureData) {
+        ECDSASignature sig =
+                new ECDSASignature(
+                        Numeric.toBigInt(signatureData.getR()),
+                        Numeric.toBigInt(signatureData.getS()));
+
+        BigInteger k = Sign.recoverFromSignature(signatureData.getV() - 27, sig, hash);
+        return publicKey.equals(k);
     }
 
     public static ECDSASignature sign(byte[] transactionHash, BigInteger privateKey) {
