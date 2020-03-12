@@ -13,9 +13,13 @@ public class ECKeyPairTest {
     @Test
     public void encryptECKeyPairTest() throws Exception {
         ECKeyPair ecKeyPair = Keys.createEcKeyPair();
+
+        ECKeyPair encryptECKeyPair = new ECKeyPair(null, ecKeyPair.getPublicKey());
+        ECKeyPair decryptECKeyPair = new ECKeyPair(ecKeyPair.getPrivateKey(), null);
+
         String message = "ecc encrpyt test";
-        byte[] encryptData = ecKeyPair.encrypt(message.getBytes("utf-8"));
-        byte[] decryptData = ecKeyPair.decrypt(encryptData);
+        byte[] encryptData = encryptECKeyPair.encrypt(message.getBytes("utf-8"));
+        byte[] decryptData = decryptECKeyPair.decrypt(encryptData);
 
         String decrpptMessage = new String(decryptData, "utf-8");
         assertEquals(message, decrpptMessage);
@@ -25,9 +29,13 @@ public class ECKeyPairTest {
     public void encryptECKeyPairTestEmptyString() throws Exception {
         Credentials credentials = GenCredential.create();
         ECKeyPair ecKeyPair = credentials.getEcKeyPair();
+
+        ECKeyPair encryptECKeyPair = new ECKeyPair(null, ecKeyPair.getPublicKey());
+        ECKeyPair decryptECKeyPair = new ECKeyPair(ecKeyPair.getPrivateKey(), null);
+
         String message = "";
-        byte[] encryptData = ecKeyPair.encrypt(message.getBytes("utf-8"));
-        byte[] decryptData = ecKeyPair.decrypt(encryptData);
+        byte[] encryptData = encryptECKeyPair.encrypt(message.getBytes("utf-8"));
+        byte[] decryptData = decryptECKeyPair.decrypt(encryptData);
         assertEquals(message, new String(decryptData, "utf-8"));
     }
 
@@ -39,11 +47,14 @@ public class ECKeyPairTest {
         // test p12
         P12Manager p12 = context.getBean(P12Manager.class);
 
-        ECKeyPair ecKeyPair1 = p12.getECKeyPair();
+        ECKeyPair ecKeyPair = p12.getECKeyPair();
+
+        ECKeyPair encryptECKeyPair = new ECKeyPair(null, ecKeyPair.getPublicKey());
+        ECKeyPair decryptECKeyPair = new ECKeyPair(ecKeyPair.getPrivateKey(), null);
 
         String message = "ecc encrpyt test";
-        byte[] encryptData = ecKeyPair1.encrypt(message.getBytes("utf-8"));
-        byte[] decryptData = ecKeyPair1.decrypt(encryptData);
+        byte[] encryptData = encryptECKeyPair.encrypt(message.getBytes("utf-8"));
+        byte[] decryptData = decryptECKeyPair.decrypt(encryptData);
         assertEquals(message, new String(decryptData, "utf-8"));
     }
 
