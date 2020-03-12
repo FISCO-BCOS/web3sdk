@@ -92,34 +92,41 @@ public class ECKeyPair {
      */
     private KeyPair createKeyPairFromKey(BigInteger privateKey, BigInteger publicKey) {
         try {
-            // Handle public key.
-            String publicKeyValue = publicKey.toString(16);
-            String prePublicKeyStr = publicKeyValue.substring(0, 64);
-            String postPublicKeyStr = publicKeyValue.substring(64);
-            SecP256K1Curve secP256K1Curve = new SecP256K1Curve();
-            SecP256K1Point secP256K1Point =
-                    (SecP256K1Point)
-                            secP256K1Curve.createPoint(
-                                    new BigInteger(prePublicKeyStr, 16),
-                                    new BigInteger(postPublicKeyStr, 16));
-            SecP256K1Point secP256K1PointG =
-                    (SecP256K1Point) secP256K1Curve.createPoint(POINTG_PRE, POINTG_POST);
+            BCECPublicKey bcecPublicKey = null;
+            BCECPrivateKey bcecPrivateKey = null;
+            if (!Objects.isNull(publicKey)) {
+                // Handle public key.
+                String publicKeyValue = publicKey.toString(16);
+                String prePublicKeyStr = publicKeyValue.substring(0, 64);
+                String postPublicKeyStr = publicKeyValue.substring(64);
+                SecP256K1Curve secP256K1Curve = new SecP256K1Curve();
+                SecP256K1Point secP256K1Point =
+                        (SecP256K1Point)
+                                secP256K1Curve.createPoint(
+                                        new BigInteger(prePublicKeyStr, 16),
+                                        new BigInteger(postPublicKeyStr, 16));
+                SecP256K1Point secP256K1PointG =
+                        (SecP256K1Point) secP256K1Curve.createPoint(POINTG_PRE, POINTG_POST);
 
-            ECDomainParameters domainParameters =
-                    new ECDomainParameters(secP256K1Curve, secP256K1PointG, FACTOR_N);
-            ECPublicKeyParameters publicKeyParameters =
-                    new ECPublicKeyParameters(secP256K1Point, domainParameters);
-            BCECPublicKey bcecPublicKey =
-                    new BCECPublicKey(
-                            "ECDSA",
-                            publicKeyParameters,
-                            ecNamedCurveSpec,
-                            BouncyCastleProvider.CONFIGURATION);
+                ECDomainParameters domainParameters =
+                        new ECDomainParameters(secP256K1Curve, secP256K1PointG, FACTOR_N);
+                ECPublicKeyParameters publicKeyParameters =
+                        new ECPublicKeyParameters(secP256K1Point, domainParameters);
+                bcecPublicKey =
+                        new BCECPublicKey(
+                                "ECDSA",
+                                publicKeyParameters,
+                                ecNamedCurveSpec,
+                                BouncyCastleProvider.CONFIGURATION);
+            }
 
-            // Handle secret key
-            ECPrivateKeySpec secretKeySpec = new ECPrivateKeySpec(privateKey, ecNamedCurveSpec);
-            BCECPrivateKey bcecPrivateKey =
-                    new BCECPrivateKey("ECDSA", secretKeySpec, BouncyCastleProvider.CONFIGURATION);
+            if (!Objects.isNull(privateKey)) {
+                // Handle secret key
+                ECPrivateKeySpec secretKeySpec = new ECPrivateKeySpec(privateKey, ecNamedCurveSpec);
+                bcecPrivateKey =
+                        new BCECPrivateKey(
+                                "ECDSA", secretKeySpec, BouncyCastleProvider.CONFIGURATION);
+            }
 
             return new KeyPair(bcecPublicKey, bcecPrivateKey);
 
@@ -223,7 +230,7 @@ public class ECKeyPair {
             throws NoSuchPaddingException, NoSuchAlgorithmException, NoSuchProviderException,
                     BadPaddingException, IllegalBlockSizeException,
                     InvalidAlgorithmParameterException, InvalidKeyException {
-        if (Objects.isNull(getKeyPair())) {
+        if (Objects.isNull(getKeyPair()) || Objects.isNull(getKeyPair().getPublic())) {
             throw new UnsupportedOperationException(" Not support operation. ");
         }
         // Encrypt data.
@@ -250,7 +257,7 @@ public class ECKeyPair {
             throws NoSuchPaddingException, NoSuchAlgorithmException, NoSuchProviderException,
                     InvalidAlgorithmParameterException, InvalidKeyException, BadPaddingException,
                     IllegalBlockSizeException {
-        if (Objects.isNull(getKeyPair())) {
+        if (Objects.isNull(getKeyPair()) || Objects.isNull(getKeyPair().getPrivate())) {
             throw new UnsupportedOperationException(" Not support operation. ");
         }
         Cipher cipher = Cipher.getInstance("ECIES", "BC");
