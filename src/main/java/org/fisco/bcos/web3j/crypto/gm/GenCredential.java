@@ -33,7 +33,7 @@ public class GenCredential {
             BigInteger biPublic = new BigInteger(Hex.toHexString(publicKey), 16);
             BigInteger biPrivate = new BigInteger(Hex.toHexString(privateKey), 16);
 
-            ECKeyPair keyPair = new ECKeyPair(biPrivate, biPublic, keyPairData);
+            ECKeyPair keyPair = new ECKeyPair(biPrivate, biPublic);
             return keyPair;
         } catch (Exception e) {
             logger.error("create ec_keypair of guomi failed, error msg:" + e.getMessage());

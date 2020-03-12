@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.fisco.bcos.channel.client.P12Manager;
 import org.fisco.bcos.web3j.crypto.gm.GenCredential;
+import org.fisco.bcos.web3j.crypto.tool.ECCDecrypt;
+import org.fisco.bcos.web3j.crypto.tool.ECCEncrypt;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -14,12 +16,12 @@ public class ECKeyPairTest {
     public void encryptECKeyPairTest() throws Exception {
         ECKeyPair ecKeyPair = Keys.createEcKeyPair();
 
-        ECKeyPair encryptECKeyPair = new ECKeyPair(null, ecKeyPair.getPublicKey());
-        ECKeyPair decryptECKeyPair = new ECKeyPair(ecKeyPair.getPrivateKey(), null);
+        ECCEncrypt encrypt = new ECCEncrypt(ecKeyPair.getPublicKey());
+        ECCDecrypt decrypt = new ECCDecrypt(ecKeyPair.getPrivateKey());
 
-        String message = "ecc encrpyt test";
-        byte[] encryptData = encryptECKeyPair.encrypt(message.getBytes("utf-8"));
-        byte[] decryptData = decryptECKeyPair.decrypt(encryptData);
+        String message = "ecc encrypt test";
+        byte[] encryptData = encrypt.encrypt(message.getBytes("utf-8"));
+        byte[] decryptData = decrypt.decrypt(encryptData);
 
         String decrpptMessage = new String(decryptData, "utf-8");
         assertEquals(message, decrpptMessage);
@@ -30,12 +32,13 @@ public class ECKeyPairTest {
         Credentials credentials = GenCredential.create();
         ECKeyPair ecKeyPair = credentials.getEcKeyPair();
 
-        ECKeyPair encryptECKeyPair = new ECKeyPair(null, ecKeyPair.getPublicKey());
-        ECKeyPair decryptECKeyPair = new ECKeyPair(ecKeyPair.getPrivateKey(), null);
+        ECCEncrypt encrypt = new ECCEncrypt(ecKeyPair.getPublicKey());
+        ECCDecrypt decrypt = new ECCDecrypt(ecKeyPair.getPrivateKey());
 
         String message = "";
-        byte[] encryptData = encryptECKeyPair.encrypt(message.getBytes("utf-8"));
-        byte[] decryptData = decryptECKeyPair.decrypt(encryptData);
+        byte[] encryptData = encrypt.encrypt(message.getBytes("utf-8"));
+        byte[] decryptData = decrypt.decrypt(encryptData);
+
         assertEquals(message, new String(decryptData, "utf-8"));
     }
 
@@ -49,12 +52,13 @@ public class ECKeyPairTest {
 
         ECKeyPair ecKeyPair = p12.getECKeyPair();
 
-        ECKeyPair encryptECKeyPair = new ECKeyPair(null, ecKeyPair.getPublicKey());
-        ECKeyPair decryptECKeyPair = new ECKeyPair(ecKeyPair.getPrivateKey(), null);
+        ECCEncrypt encrypt = new ECCEncrypt(ecKeyPair.getPublicKey());
+        ECCDecrypt decrypt = new ECCDecrypt(ecKeyPair.getPrivateKey());
 
-        String message = "ecc encrpyt test";
-        byte[] encryptData = encryptECKeyPair.encrypt(message.getBytes("utf-8"));
-        byte[] decryptData = decryptECKeyPair.decrypt(encryptData);
+        String message = "";
+        byte[] encryptData = encrypt.encrypt(message.getBytes("utf-8"));
+        byte[] decryptData = decrypt.decrypt(encryptData);
+
         assertEquals(message, new String(decryptData, "utf-8"));
     }
 
