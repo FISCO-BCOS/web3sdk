@@ -179,8 +179,8 @@ public class SolidityFunctionWrapper extends Generator {
                                 .build())
                 .addField(createBinaryArrayDefinition(binary))
                 .addField(createBinaryDefinition())
-                .addField(createABIArrayDefinition(abi))
-                .addField(createABIDefinition(abi))
+                .addField(createABIArrayDefinition())
+                .addField(createABIDefinition())
                 .addField(createTransactionDecoderDefinition());
     }
 
@@ -238,7 +238,7 @@ public class SolidityFunctionWrapper extends Generator {
                 .build();
     }
 
-    private FieldSpec createABIArrayDefinition(List<AbiDefinition> abi) {
+    private FieldSpec createABIArrayDefinition() {
         int maxField = 8 * 1024; // 8k for each field
 
         List<String> format = new ArrayList<String>();
@@ -264,7 +264,7 @@ public class SolidityFunctionWrapper extends Generator {
                 .build();
     }
 
-    private FieldSpec createABIDefinition(List<AbiDefinition> abi) {
+    private FieldSpec createABIDefinition() {
         return FieldSpec.builder(String.class, "ABI")
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC)
                 .initializer("String.join(\"\", ABI_ARRAY)")
