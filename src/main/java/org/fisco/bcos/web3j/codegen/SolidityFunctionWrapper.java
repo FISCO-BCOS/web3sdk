@@ -177,7 +177,9 @@ public class SolidityFunctionWrapper extends Generator {
                         AnnotationSpec.builder(SuppressWarnings.class)
                                 .addMember("value", "$S", "unchecked")
                                 .build())
-                .addField(createBinaryDefinition(binary))
+                .addField(createBinaryArrayDefinition(binary))
+                .addField(createBinaryDefinition())
+                .addField(createABIArrayDefinition(abi))
                 .addField(createABIDefinition(abi))
                 .addField(createTransactionDecoderDefinition());
     }
@@ -203,19 +205,69 @@ public class SolidityFunctionWrapper extends Generator {
                 .build();
     }
 
-    private FieldSpec createBinaryDefinition(String binary) {
+    private FieldSpec createBinaryArrayDefinition(String binary) {
+        int maxField = 8 * 1024; // 8k for each field
 
+        List<String> format = new ArrayList<String>();
+        List<String> binaryArray = new ArrayList<String>();
+
+        for (int offset = 0; offset < binary.length(); ) {
+            format.add("$S");
+
+            int length = binary.length() - offset;
+            if (length > maxField) {
+                length = maxField;
+            }
+
+            String item = binary.substring(offset, offset + length);
+
+            binaryArray.add(item);
+            offset += item.length();
+        }
+
+        return FieldSpec.builder(String[].class, "BINARY_ARRAY")
+                .addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC)
+                .initializer("{" + String.join(",", format) + "}", binaryArray.toArray())
+                .build();
+    }
+
+    private FieldSpec createBinaryDefinition() {
         return FieldSpec.builder(String.class, BINARY)
-                .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
-                // .addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC)
-                .initializer("$S", binary)
+                .addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC)
+                .initializer("String.join(\"\", BINARY_ARRAY)")
+                .build();
+    }
+
+    private FieldSpec createABIArrayDefinition(List<AbiDefinition> abi) {
+        int maxField = 8 * 1024; // 8k for each field
+
+        List<String> format = new ArrayList<String>();
+        List<String> abiArray = new ArrayList<String>();
+
+        for (int offset = 0; offset < abiContent.length(); ) {
+            format.add("$S");
+
+            int length = abiContent.length() - offset;
+            if (length > maxField) {
+                length = maxField;
+            }
+
+            String item = abiContent.substring(offset, offset + length);
+
+            abiArray.add(item);
+            offset += item.length();
+        }
+
+        return FieldSpec.builder(String[].class, "ABI_ARRAY")
+                .addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC)
+                .initializer("{" + String.join(",", format) + "}", abiArray.toArray())
                 .build();
     }
 
     private FieldSpec createABIDefinition(List<AbiDefinition> abi) {
         return FieldSpec.builder(String.class, "ABI")
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC)
-                .initializer("$S", abiContent)
+                .initializer("String.join(\"\", ABI_ARRAY)")
                 .build();
     }
 
