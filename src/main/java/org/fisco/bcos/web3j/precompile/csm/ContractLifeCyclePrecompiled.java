@@ -14,7 +14,6 @@ import org.fisco.bcos.web3j.abi.datatypes.Function;
 import org.fisco.bcos.web3j.abi.datatypes.Type;
 import org.fisco.bcos.web3j.abi.datatypes.Utf8String;
 import org.fisco.bcos.web3j.abi.datatypes.generated.Int256;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Uint256;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.RemoteCall;
@@ -38,15 +37,18 @@ import org.fisco.bcos.web3j.tx.txdecode.TransactionDecoder;
  * <p>Generated with web3j version none.
  */
 @SuppressWarnings("unchecked")
-public class ContractStatusPrecompiled extends Contract {
-    public static String BINARY = "";
+public class ContractLifeCyclePrecompiled extends Contract {
+    public static final String[] BINARY_ARRAY = {};
 
-    public static final String ABI =
-            "[{\"constant\":false,\"inputs\":[{\"name\":\"addr\",\"type\":\"address\"}],\"name\":\"destroy\",\"outputs\":[{\"name\":\"\",\"type\":\"int256\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"addr\",\"type\":\"address\"}],\"name\":\"getStatus\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"},{\"name\":\"\",\"type\":\"string\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"addr\",\"type\":\"address\"}],\"name\":\"unfreeze\",\"outputs\":[{\"name\":\"\",\"type\":\"int256\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"addr\",\"type\":\"address\"}],\"name\":\"freeze\",\"outputs\":[{\"name\":\"\",\"type\":\"int256\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"contractAddr\",\"type\":\"address\"},{\"name\":\"userAddr\",\"type\":\"address\"}],\"name\":\"grantManager\",\"outputs\":[{\"name\":\"\",\"type\":\"int256\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"addr\",\"type\":\"address\"}],\"name\":\"listManager\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"},{\"name\":\"\",\"type\":\"address[]\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"}]";
+    public static final String BINARY = String.join("", BINARY_ARRAY);
+
+    public static final String[] ABI_ARRAY = {
+        "[{\"constant\":true,\"inputs\":[{\"name\":\"addr\",\"type\":\"address\"}],\"name\":\"getStatus\",\"outputs\":[{\"name\":\"\",\"type\":\"int256\"},{\"name\":\"\",\"type\":\"string\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"addr\",\"type\":\"address\"}],\"name\":\"unfreeze\",\"outputs\":[{\"name\":\"\",\"type\":\"int256\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"addr\",\"type\":\"address\"}],\"name\":\"freeze\",\"outputs\":[{\"name\":\"\",\"type\":\"int256\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"contractAddr\",\"type\":\"address\"},{\"name\":\"userAddr\",\"type\":\"address\"}],\"name\":\"grantManager\",\"outputs\":[{\"name\":\"\",\"type\":\"int256\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"addr\",\"type\":\"address\"}],\"name\":\"listManager\",\"outputs\":[{\"name\":\"\",\"type\":\"int256\"},{\"name\":\"\",\"type\":\"address[]\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"}]"
+    };
+
+    public static final String ABI = String.join("", ABI_ARRAY);
 
     public static final TransactionDecoder transactionDecoder = new TransactionDecoder(ABI, BINARY);
-
-    public static final String FUNC_DESTROY = "destroy";
 
     public static final String FUNC_GETSTATUS = "getStatus";
 
@@ -59,7 +61,7 @@ public class ContractStatusPrecompiled extends Contract {
     public static final String FUNC_LISTMANAGER = "listManager";
 
     @Deprecated
-    protected ContractStatusPrecompiled(
+    protected ContractLifeCyclePrecompiled(
             String contractAddress,
             Web3j web3j,
             Credentials credentials,
@@ -68,7 +70,7 @@ public class ContractStatusPrecompiled extends Contract {
         super(BINARY, contractAddress, web3j, credentials, gasPrice, gasLimit);
     }
 
-    protected ContractStatusPrecompiled(
+    protected ContractLifeCyclePrecompiled(
             String contractAddress,
             Web3j web3j,
             Credentials credentials,
@@ -77,7 +79,7 @@ public class ContractStatusPrecompiled extends Contract {
     }
 
     @Deprecated
-    protected ContractStatusPrecompiled(
+    protected ContractLifeCyclePrecompiled(
             String contractAddress,
             Web3j web3j,
             TransactionManager transactionManager,
@@ -86,7 +88,7 @@ public class ContractStatusPrecompiled extends Contract {
         super(BINARY, contractAddress, web3j, transactionManager, gasPrice, gasLimit);
     }
 
-    protected ContractStatusPrecompiled(
+    protected ContractLifeCyclePrecompiled(
             String contractAddress,
             Web3j web3j,
             TransactionManager transactionManager,
@@ -98,64 +100,13 @@ public class ContractStatusPrecompiled extends Contract {
         return transactionDecoder;
     }
 
-    public RemoteCall<TransactionReceipt> destroy(String addr) {
-        final Function function =
-                new Function(
-                        FUNC_DESTROY,
-                        Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Address(addr)),
-                        Collections.<TypeReference<?>>emptyList());
-        return executeRemoteCallTransaction(function);
-    }
-
-    public void destroy(String addr, TransactionSucCallback callback) {
-        final Function function =
-                new Function(
-                        FUNC_DESTROY,
-                        Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Address(addr)),
-                        Collections.<TypeReference<?>>emptyList());
-        asyncExecuteTransaction(function, callback);
-    }
-
-    public String destroySeq(String addr) {
-        final Function function =
-                new Function(
-                        FUNC_DESTROY,
-                        Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Address(addr)),
-                        Collections.<TypeReference<?>>emptyList());
-        return createTransactionSeq(function);
-    }
-
-    public Tuple1<String> getDestroyInput(TransactionReceipt transactionReceipt) {
-        String data = transactionReceipt.getInput().substring(10);
-        final Function function =
-                new Function(
-                        FUNC_DESTROY,
-                        Arrays.<Type>asList(),
-                        Arrays.<TypeReference<?>>asList(new TypeReference<Address>() {}));
-        List<Type> results = FunctionReturnDecoder.decode(data, function.getOutputParameters());
-        ;
-        return new Tuple1<String>((String) results.get(0).getValue());
-    }
-
-    public Tuple1<BigInteger> getDestroyOutput(TransactionReceipt transactionReceipt) {
-        String data = transactionReceipt.getOutput();
-        final Function function =
-                new Function(
-                        FUNC_DESTROY,
-                        Arrays.<Type>asList(),
-                        Arrays.<TypeReference<?>>asList(new TypeReference<Int256>() {}));
-        List<Type> results = FunctionReturnDecoder.decode(data, function.getOutputParameters());
-        ;
-        return new Tuple1<BigInteger>((BigInteger) results.get(0).getValue());
-    }
-
     public RemoteCall<Tuple2<BigInteger, String>> getStatus(String addr) {
         final Function function =
                 new Function(
                         FUNC_GETSTATUS,
                         Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Address(addr)),
                         Arrays.<TypeReference<?>>asList(
-                                new TypeReference<Uint256>() {},
+                                new TypeReference<Int256>() {},
                                 new TypeReference<Utf8String>() {}));
         return new RemoteCall<Tuple2<BigInteger, String>>(
                 new Callable<Tuple2<BigInteger, String>>() {
@@ -337,7 +288,7 @@ public class ContractStatusPrecompiled extends Contract {
                         FUNC_LISTMANAGER,
                         Arrays.<Type>asList(new org.fisco.bcos.web3j.abi.datatypes.Address(addr)),
                         Arrays.<TypeReference<?>>asList(
-                                new TypeReference<Uint256>() {},
+                                new TypeReference<Int256>() {},
                                 new TypeReference<DynamicArray<Address>>() {}));
         return new RemoteCall<Tuple2<BigInteger, List<String>>>(
                 new Callable<Tuple2<BigInteger, List<String>>>() {
@@ -352,49 +303,49 @@ public class ContractStatusPrecompiled extends Contract {
     }
 
     @Deprecated
-    public static ContractStatusPrecompiled load(
+    public static ContractLifeCyclePrecompiled load(
             String contractAddress,
             Web3j web3j,
             Credentials credentials,
             BigInteger gasPrice,
             BigInteger gasLimit) {
-        return new ContractStatusPrecompiled(
+        return new ContractLifeCyclePrecompiled(
                 contractAddress, web3j, credentials, gasPrice, gasLimit);
     }
 
     @Deprecated
-    public static ContractStatusPrecompiled load(
+    public static ContractLifeCyclePrecompiled load(
             String contractAddress,
             Web3j web3j,
             TransactionManager transactionManager,
             BigInteger gasPrice,
             BigInteger gasLimit) {
-        return new ContractStatusPrecompiled(
+        return new ContractLifeCyclePrecompiled(
                 contractAddress, web3j, transactionManager, gasPrice, gasLimit);
     }
 
-    public static ContractStatusPrecompiled load(
+    public static ContractLifeCyclePrecompiled load(
             String contractAddress,
             Web3j web3j,
             Credentials credentials,
             ContractGasProvider contractGasProvider) {
-        return new ContractStatusPrecompiled(
+        return new ContractLifeCyclePrecompiled(
                 contractAddress, web3j, credentials, contractGasProvider);
     }
 
-    public static ContractStatusPrecompiled load(
+    public static ContractLifeCyclePrecompiled load(
             String contractAddress,
             Web3j web3j,
             TransactionManager transactionManager,
             ContractGasProvider contractGasProvider) {
-        return new ContractStatusPrecompiled(
+        return new ContractLifeCyclePrecompiled(
                 contractAddress, web3j, transactionManager, contractGasProvider);
     }
 
-    public static RemoteCall<ContractStatusPrecompiled> deploy(
+    public static RemoteCall<ContractLifeCyclePrecompiled> deploy(
             Web3j web3j, Credentials credentials, ContractGasProvider contractGasProvider) {
         return deployRemoteCall(
-                ContractStatusPrecompiled.class,
+                ContractLifeCyclePrecompiled.class,
                 web3j,
                 credentials,
                 contractGasProvider,
@@ -403,10 +354,10 @@ public class ContractStatusPrecompiled extends Contract {
     }
 
     @Deprecated
-    public static RemoteCall<ContractStatusPrecompiled> deploy(
+    public static RemoteCall<ContractLifeCyclePrecompiled> deploy(
             Web3j web3j, Credentials credentials, BigInteger gasPrice, BigInteger gasLimit) {
         return deployRemoteCall(
-                ContractStatusPrecompiled.class,
+                ContractLifeCyclePrecompiled.class,
                 web3j,
                 credentials,
                 gasPrice,
@@ -415,12 +366,12 @@ public class ContractStatusPrecompiled extends Contract {
                 "");
     }
 
-    public static RemoteCall<ContractStatusPrecompiled> deploy(
+    public static RemoteCall<ContractLifeCyclePrecompiled> deploy(
             Web3j web3j,
             TransactionManager transactionManager,
             ContractGasProvider contractGasProvider) {
         return deployRemoteCall(
-                ContractStatusPrecompiled.class,
+                ContractLifeCyclePrecompiled.class,
                 web3j,
                 transactionManager,
                 contractGasProvider,
@@ -429,13 +380,13 @@ public class ContractStatusPrecompiled extends Contract {
     }
 
     @Deprecated
-    public static RemoteCall<ContractStatusPrecompiled> deploy(
+    public static RemoteCall<ContractLifeCyclePrecompiled> deploy(
             Web3j web3j,
             TransactionManager transactionManager,
             BigInteger gasPrice,
             BigInteger gasLimit) {
         return deployRemoteCall(
-                ContractStatusPrecompiled.class,
+                ContractLifeCyclePrecompiled.class,
                 web3j,
                 transactionManager,
                 gasPrice,

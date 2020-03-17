@@ -56,10 +56,10 @@ public class PrecompiledCommon {
     public static final int InvalidKey_RC3 = -51300;
 
     public static final int InvalidAddress = -50102;
-    public static final int InvalidContractDestroyed = -51900;
-    public static final int InvalidContractFrozen = -51901;
-    public static final int InvalidContractAvailable = -51902;
-    public static final int InvalidContractRepeatAuthorization = -51903;
+    public static final int InvalidContractFrozen = -51900;
+    public static final int InvalidContractAvailable = -51901;
+    public static final int InvalidContractRepeatAuthorization = -51902;
+    public static final int InvalidContractAddress = -51903;
 
     public static final int TABLE_KEY_MAX_LENGTH = 255;
 
@@ -132,14 +132,14 @@ public class PrecompiledCommon {
             msg = "tablename string length exceeds the maximum limit";
         } else if (code == InvalidAddress) {
             msg = "invalid address format";
-        } else if (code == InvalidContractDestroyed) {
-            msg = "the contract has been destroyed";
         } else if (code == InvalidContractFrozen) {
             msg = "the contract has been frozen";
         } else if (code == InvalidContractAvailable) {
             msg = "the contract is available";
         } else if (code == InvalidContractRepeatAuthorization) {
             msg = "the contract has been granted authorization with same user";
+        } else if (code == InvalidContractAddress) {
+            msg = "the contract address is invalid";
         }
 
         ObjectMapper mapper = ObjectMapperFactory.getObjectMapper();
