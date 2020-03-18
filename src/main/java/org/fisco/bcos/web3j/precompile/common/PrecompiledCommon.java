@@ -60,6 +60,8 @@ public class PrecompiledCommon {
     public static final int InvalidContractAvailable = -51901;
     public static final int InvalidContractRepeatAuthorization = -51902;
     public static final int InvalidContractAddress = -51903;
+    public static final int InvalidTableNotExist = -50104;
+    public static final int InvalidAuthorized = -50105;
 
     public static final int TABLE_KEY_MAX_LENGTH = 255;
 
@@ -140,6 +142,10 @@ public class PrecompiledCommon {
             msg = "the contract has been granted authorization with same user";
         } else if (code == InvalidContractAddress) {
             msg = "the contract address is invalid";
+        } else if (code == InvalidTableNotExist) {
+            msg = "the address is not exist";
+        } else if (code == InvalidAuthorized) {
+            msg = "this operation has no permissions";
         }
 
         ObjectMapper mapper = ObjectMapperFactory.getObjectMapper();
