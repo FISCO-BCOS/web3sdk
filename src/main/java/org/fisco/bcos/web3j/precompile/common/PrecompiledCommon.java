@@ -60,8 +60,8 @@ public class PrecompiledCommon {
     public static final int InvalidContractAvailable = -51901;
     public static final int InvalidContractRepeatAuthorization = -51902;
     public static final int InvalidContractAddress = -51903;
-    public static final int InvalidTableNotExist = -50104;
-    public static final int InvalidAuthorized = -50105;
+    public static final int InvalidTableNotExist = -51904;
+    public static final int InvalidAuthorized = -51905;
 
     public static final int TABLE_KEY_MAX_LENGTH = 255;
 
