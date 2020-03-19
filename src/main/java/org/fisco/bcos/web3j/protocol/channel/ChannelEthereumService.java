@@ -11,6 +11,8 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.Call.CallOutput;
 import org.fisco.bcos.web3j.protocol.core.methods.response.SendTransaction;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.protocol.exceptions.MessageDecodingException;
+import org.fisco.bcos.web3j.tuples.generated.Tuple2;
+import org.fisco.bcos.web3j.tx.RevertResolver;
 import org.fisco.bcos.web3j.tx.exceptions.ContractCallException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,17 +82,26 @@ public class ChannelEthereumService extends org.fisco.bcos.web3j.protocol.Servic
                 }
                 if (t.getResult() instanceof CallOutput) {
                     CallOutput callResult = (CallOutput) t.getResult();
-                    if (StatusCode.RevertInstruction.equals(callResult.getStatus())) {
-                        throw new ContractCallException(
-                                "The execution of the contract rolled back.");
-                    }
-                    if (StatusCode.CallAddressError.equals(callResult.getStatus())) {
-                        throw new ContractCallException("The contract address is incorrect.");
-                    }
 
-                    if (!StatusCode.Success.equals(callResult.getStatus())) {
-                        throw new ContractCallException(
-                                StatusCode.getStatusMessage(callResult.getStatus()));
+                    Tuple2<Boolean, String> revertMessage =
+                            RevertResolver.tryResolveTxReceiptRevertMessage(
+                                    callResult.getStatus(), callResult.getOutput());
+                    if (revertMessage.getValue1()) {
+                        logger.debug(" revert message: {}", revertMessage.getValue2());
+                        throw new ContractCallException(revertMessage.getValue2());
+                    } else {
+                        if (StatusCode.RevertInstruction.equals(callResult.getStatus())) {
+                            throw new ContractCallException(
+                                    "The execution of the contract rolled back.");
+                        }
+                        if (StatusCode.CallAddressError.equals(callResult.getStatus())) {
+                            throw new ContractCallException("The contract address is incorrect.");
+                        }
+
+                        if (!StatusCode.Success.equals(callResult.getStatus())) {
+                            throw new ContractCallException(
+                                    StatusCode.getStatusMessage(callResult.getStatus()));
+                        }
                     }
                 }
                 return t;

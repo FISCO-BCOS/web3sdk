@@ -71,6 +71,8 @@ import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Log;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.protocol.exceptions.TransactionException;
+import org.fisco.bcos.web3j.tuples.generated.Tuple2;
+import org.fisco.bcos.web3j.tx.RevertResolver;
 import org.fisco.bcos.web3j.tx.txdecode.LogResult;
 import org.fisco.bcos.web3j.utils.Strings;
 import org.slf4j.Logger;
@@ -1548,6 +1550,12 @@ public class Service {
             }
 
             try {
+                Tuple2<Boolean, String> revertMessage =
+                        RevertResolver.tryResolveTxReceiptRevertMessage(receipt);
+                if (revertMessage.getValue1()) {
+                    logger.debug(" revert message: {}", revertMessage.getValue2());
+                    receipt.setMessage(revertMessage.getValue2());
+                }
                 callback.onResponse(receipt);
             } catch (Exception e) {
                 logger.error("Error process transactionMessage: ", e);
