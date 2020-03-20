@@ -88,20 +88,24 @@ public class ChannelEthereumService extends org.fisco.bcos.web3j.protocol.Servic
                                     callResult.getStatus(), callResult.getOutput());
                     if (revertMessage.getValue1()) {
                         logger.debug(" revert message: {}", revertMessage.getValue2());
-                        throw new ContractCallException(revertMessage.getValue2());
-                    } else {
-                        if (StatusCode.RevertInstruction.equals(callResult.getStatus())) {
-                            throw new ContractCallException(
-                                    "The execution of the contract rolled back.");
-                        }
-                        if (StatusCode.CallAddressError.equals(callResult.getStatus())) {
-                            throw new ContractCallException("The contract address is incorrect.");
-                        }
+                        // throw new ContractCallException(revertMessage.getValue2());
+                    }
 
-                        if (!StatusCode.Success.equals(callResult.getStatus())) {
-                            throw new ContractCallException(
-                                    StatusCode.getStatusMessage(callResult.getStatus()));
-                        }
+                    if (StatusCode.RevertInstruction.equals(callResult.getStatus())) {
+                        throw new ContractCallException(
+                                "The execution of the contract rolled back"
+                                        + (revertMessage.getValue1()
+                                                ? ", " + revertMessage.getValue2()
+                                                : "")
+                                        + ".");
+                    }
+                    if (StatusCode.CallAddressError.equals(callResult.getStatus())) {
+                        throw new ContractCallException("The contract address is incorrect.");
+                    }
+
+                    if (!StatusCode.Success.equals(callResult.getStatus())) {
+                        throw new ContractCallException(
+                                StatusCode.getStatusMessage(callResult.getStatus()));
                     }
                 }
                 return t;
