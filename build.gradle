@@ -150,6 +150,10 @@ try {
     println(" .git directory not exist.");
 }
 
+tasks.withType(Test) {
+    maxParallelForks = 1
+}
+
 //  1 dist jar
 jar {
     destinationDir file('dist/apps')

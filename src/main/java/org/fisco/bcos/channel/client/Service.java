@@ -718,13 +718,6 @@ public class Service {
         }
     }
 
-    /**
-     * When SDK start, the initial subscribed topics information set by user will be sent to the
-     * node. User can update subscribed topics again by following steps: 1. Set the topics you want
-     * to subscribe to again Service service // Servcie object Set<String> topics // topics that
-     * subscribe again service.setTopics(topics) 2. send update topics message to all nodes
-     * service.updateTopicsToNode();
-     */
     public void updateTopicsToNode() {
 
         logger.info(" updateTopicToNode, groupId: {}, topics: {}", groupId, getTopics());
@@ -1551,7 +1544,7 @@ public class Service {
 
             try {
                 Tuple2<Boolean, String> revertMessage =
-                        RevertResolver.tryResolveTxReceiptRevertMessage(receipt);
+                        RevertResolver.tryResolveRevertMessage(receipt);
                 if (revertMessage.getValue1()) {
                     logger.debug(" revert message: {}", revertMessage.getValue2());
                     receipt.setMessage(revertMessage.getValue2());

@@ -84,7 +84,7 @@ public class ChannelEthereumService extends org.fisco.bcos.web3j.protocol.Servic
                     CallOutput callResult = (CallOutput) t.getResult();
 
                     Tuple2<Boolean, String> revertMessage =
-                            RevertResolver.tryResolveTxReceiptRevertMessage(
+                            RevertResolver.tryResolveRevertMessage(
                                     callResult.getStatus(), callResult.getOutput());
                     if (revertMessage.getValue1()) {
                         logger.debug(" revert message: {}", revertMessage.getValue2());
