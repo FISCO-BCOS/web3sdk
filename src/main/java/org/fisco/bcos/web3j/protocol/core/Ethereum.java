@@ -1,7 +1,9 @@
 package org.fisco.bcos.web3j.protocol.core;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.List;
+import org.fisco.bcos.channel.client.TransactionSucCallback;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosFilter;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosLog;
@@ -96,6 +98,9 @@ public interface Ethereum {
             DefaultBlockParameter defaultBlockParameter);
 
     Request<?, SendTransaction> sendRawTransaction(String signedTransactionData);
+
+    void sendRawTransaction(String signedTransactionData, TransactionSucCallback callback)
+            throws IOException;
 
     // generateGroup
     Request<?, GenerateGroup> generateGroup(int groupId, int timestamp, List<String> nodeList);
