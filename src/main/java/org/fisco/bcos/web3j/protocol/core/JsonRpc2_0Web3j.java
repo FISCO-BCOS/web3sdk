@@ -326,7 +326,7 @@ public class JsonRpc2_0Web3j implements Web3j {
 
     @Override
     public Request<?, GenerateGroup> generateGroup(
-            int groupID, int timestamp, List<String> nodeList) {
+            int groupID, long timestamp, List<String> nodeList) {
         return new Request<>(
                 "generateGroup",
                 Arrays.asList(groupID, timestamp, nodeList),
