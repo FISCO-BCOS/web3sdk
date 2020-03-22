@@ -15,6 +15,8 @@ import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPublicKey;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.math.ec.custom.sec.SecP256K1Curve;
 import org.bouncycastle.math.ec.custom.sec.SecP256K1Point;
+import org.fisco.bcos.web3j.crypto.Keys;
+import org.fisco.bcos.web3j.utils.Numeric;
 
 /** ECC encrpt utils */
 public class ECCEncrypt {
@@ -43,7 +45,8 @@ public class ECCEncrypt {
      */
     private BCECPublicKey createBCECPublicKey(BigInteger publicKey) {
         // Handle public key.
-        String publicKeyValue = publicKey.toString(16);
+        String publicKeyValue =
+                Numeric.toHexStringNoPrefixZeroPadded(publicKey, Keys.PUBLIC_KEY_LENGTH_IN_HEX);
         String prePublicKeyStr = publicKeyValue.substring(0, 64);
         String postPublicKeyStr = publicKeyValue.substring(64);
         SecP256K1Curve secP256K1Curve = new SecP256K1Curve();
