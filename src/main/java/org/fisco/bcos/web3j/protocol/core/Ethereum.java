@@ -22,9 +22,13 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.PbftView;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Peers;
 import org.fisco.bcos.web3j.protocol.core.methods.response.PendingTransactions;
 import org.fisco.bcos.web3j.protocol.core.methods.response.PendingTxSize;
+import org.fisco.bcos.web3j.protocol.core.methods.response.QueryGroupStatus;
+import org.fisco.bcos.web3j.protocol.core.methods.response.RecoverGroup;
+import org.fisco.bcos.web3j.protocol.core.methods.response.RemoveGroup;
 import org.fisco.bcos.web3j.protocol.core.methods.response.SealerList;
 import org.fisco.bcos.web3j.protocol.core.methods.response.SendTransaction;
 import org.fisco.bcos.web3j.protocol.core.methods.response.StartGroup;
+import org.fisco.bcos.web3j.protocol.core.methods.response.StopGroup;
 import org.fisco.bcos.web3j.protocol.core.methods.response.SyncStatus;
 import org.fisco.bcos.web3j.protocol.core.methods.response.SystemConfig;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TotalTransactionCount;
@@ -101,6 +105,14 @@ public interface Ethereum {
     Request<?, GenerateGroup> generateGroup(int groupId, long timestamp, List<String> nodeList);
 
     Request<?, StartGroup> startGroup(int groupId);
+
+    Request<?, StopGroup> stopGroup(int groupId);
+
+    Request<?, RemoveGroup> removeGroup(int groupId);
+
+    Request<?, RecoverGroup> recoverGroup(int groupId);
+
+    Request<?, QueryGroupStatus> queryGroupStatus(int groupId);
 
     // TODO
     Request<?, BcosFilter> newPendingTransactionFilter();
