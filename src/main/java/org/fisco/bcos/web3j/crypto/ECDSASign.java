@@ -9,8 +9,16 @@ import org.bouncycastle.crypto.signers.ECDSASigner;
 import org.bouncycastle.crypto.signers.HMacDSAKCalculator;
 import org.fisco.bcos.web3j.utils.Numeric;
 
-/** Created by websterchen on 2018/4/25. */
+/** ECDSA Sign */
 public class ECDSASign implements SignInterface {
+
+    /**
+     * Sign the message with ECDSA algorithm
+     *
+     * @param message
+     * @param keyPair
+     * @return
+     */
     @Override
     public Sign.SignatureData signMessage(byte[] message, ECKeyPair keyPair) {
         BigInteger privateKey = keyPair.getPrivateKey();
@@ -41,6 +49,24 @@ public class ECDSASign implements SignInterface {
         byte[] s = Numeric.toBytesPadded(sig.s, 32);
 
         return new Sign.SignatureData(v, r, s);
+    }
+
+    /**
+     * Verify the ECDSA signature
+     *
+     * @param hash
+     * @param publicKey
+     * @param signatureData
+     * @return
+     */
+    public boolean verify(byte[] hash, BigInteger publicKey, Sign.SignatureData signatureData) {
+        ECDSASignature sig =
+                new ECDSASignature(
+                        Numeric.toBigInt(signatureData.getR()),
+                        Numeric.toBigInt(signatureData.getS()));
+
+        BigInteger k = Sign.recoverFromSignature(signatureData.getV() - 27, sig, hash);
+        return publicKey.equals(k);
     }
 
     public static ECDSASignature sign(byte[] transactionHash, BigInteger privateKey) {
