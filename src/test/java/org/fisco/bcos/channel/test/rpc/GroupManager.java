@@ -138,7 +138,7 @@ public class GroupManager {
                     groupManager.stopGroup(groupID);
                     break;
                 case "removeGroup":
-                    groupManager.recoverGroup(groupID);
+                    groupManager.removeGroup(groupID);
                     break;
                 case "recoverGroup":
                     groupManager.recoverGroup(groupID);
