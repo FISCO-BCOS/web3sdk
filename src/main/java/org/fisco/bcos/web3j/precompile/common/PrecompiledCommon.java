@@ -53,6 +53,14 @@ public class PrecompiledCommon {
     public static final int InvalidKey = 51300;
     public static final int InvalidKey_RC3 = -51300;
 
+    public static final int InvalidAddress = -50102;
+    public static final int InvalidContractFrozen = -51900;
+    public static final int InvalidContractAvailable = -51901;
+    public static final int InvalidContractRepeatAuthorization = -51902;
+    public static final int InvalidContractAddress = -51903;
+    public static final int InvalidTableNotExist = -51904;
+    public static final int InvalidAuthorized = -51905;
+
     public static final int TABLE_KEY_MAX_LENGTH = 255;
 
     public static String BCOS_VERSION = "";
@@ -118,6 +126,20 @@ public class PrecompiledCommon {
             msg = "contract name and version already exist";
         } else if (code == VersionExceeds) {
             msg = "version string length exceeds the maximum limit";
+        } else if (code == InvalidAddress) {
+            msg = "invalid address format";
+        } else if (code == InvalidContractFrozen) {
+            msg = "the contract has been frozen";
+        } else if (code == InvalidContractAvailable) {
+            msg = "the contract is available";
+        } else if (code == InvalidContractRepeatAuthorization) {
+            msg = "the contract has been granted authorization with same user";
+        } else if (code == InvalidContractAddress) {
+            msg = "the contract address is invalid";
+        } else if (code == InvalidTableNotExist) {
+            msg = "the address is not exist";
+        } else if (code == InvalidAuthorized) {
+            msg = "this operation has no permissions";
         }
         ObjectMapper mapper = ObjectMapperFactory.getObjectMapper();
         return mapper.writeValueAsString(new PrecompiledResponse(code, msg));
