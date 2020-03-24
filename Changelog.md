@@ -1,4 +1,14 @@
-### v2.2.1
+### v2.2.3
+
+(2020-03-03)
+
+* 新增
+1. Service对象添加updateTopicsToNode接口，SDK可以运行时更新订阅的topic
+
+* 兼容
+1. 适配fisco-bcos 2.2.0版本，支持Channel Message v1/V2/V3协议
+
+### v2.2.2
 
 (2020-01-17)
 
