@@ -92,7 +92,7 @@ public class ECKeyPairTest {
 
         ECKeyPair ecKeyPair = p12.getECKeyPair();
 
-        String message = "ecc encrpyt test";
+        String message = "ecc encrypt test";
         ECDSASignature signature = ecKeyPair.sign(message.getBytes());
         boolean verify = ecKeyPair.verify(message.getBytes(), signature);
 
