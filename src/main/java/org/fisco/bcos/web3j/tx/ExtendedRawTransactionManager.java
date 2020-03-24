@@ -2,8 +2,8 @@ package org.fisco.bcos.web3j.tx;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.security.SecureRandom;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import org.fisco.bcos.channel.client.TransactionSucCallback;
 import org.fisco.bcos.web3j.crypto.*;
 import org.fisco.bcos.web3j.protocol.Web3j;
@@ -76,7 +76,8 @@ public class ExtendedRawTransactionManager extends TransactionManager {
         this(web3j, credentials, ChainId.NONE, attempts, sleepDuration, groupId, fiscoChainId);
     }
 
-    BigInteger getBlockLimit() throws IOException {
+    @Override
+    protected BigInteger getBlockLimit() throws IOException {
         return web3j.getBlockNumberCache();
     }
 
@@ -97,7 +98,8 @@ public class ExtendedRawTransactionManager extends TransactionManager {
             BigInteger value,
             String extraData)
             throws IOException {
-        Random r = new SecureRandom();
+        // Random r = new SecureRandom();
+        Random r = ThreadLocalRandom.current();
         BigInteger randomid = new BigInteger(250, r);
         BigInteger blockLimit = getBlockLimit();
         ExtendedRawTransaction rawTransaction =

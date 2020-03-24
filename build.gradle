@@ -96,6 +96,7 @@ dependencies {
     compile 'org.projectlombok:lombok:1.18.2'
 }
 
+
 //archivesBaseName = 'web3sdk'
 //group = 'org.fisco-bcos'
 //version = '2.0.5'
@@ -147,6 +148,10 @@ try {
     repo = Grgit.open('.')
 } catch (Exception e) {
     println(" .git directory not exist.");
+}
+
+tasks.withType(Test) {
+    maxParallelForks = 1
 }
 
 //  1 dist jar
