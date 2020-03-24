@@ -664,7 +664,7 @@ public class ChannelConnections {
             }
         }
 
-        logger.info(" Keepalive nodes count: {}", aliveConnectionCount);
+        logger.trace(" Keepalive nodes count: {}", aliveConnectionCount);
 
         for (ConnectionInfo connectionInfo : connectionInfoList) {
 
