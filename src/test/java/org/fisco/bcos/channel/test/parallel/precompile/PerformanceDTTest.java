@@ -59,6 +59,10 @@ public class PerformanceDTTest {
         initialize(groupId);
     }
 
+    public PerformanceDTTest() throws Exception {
+        groupId = "";
+    }
+
     public DagUserMgr getDagUserMgr() {
         return dagUserMgr;
     }
@@ -245,6 +249,7 @@ public class PerformanceDTTest {
                                 callback.setCallBackType("add");
 
                                 try {
+                                    callback.recordStartTime();
                                     dagTransfer.userAdd(user, amount, callback);
                                 } catch (Exception e) {
                                     TransactionReceipt receipt = new TransactionReceipt();
@@ -284,6 +289,104 @@ public class PerformanceDTTest {
             e.printStackTrace();
             System.exit(0);
         }
+    }
+
+    /**
+     * Stress tests that create tx and sign them
+     *
+     * @param totalSignedTxCount
+     * @param threadC
+     * @throws InterruptedException
+     */
+    public void userTransferSignTxPerfTest(BigInteger totalSignedTxCount, int threadC)
+            throws InterruptedException {
+
+        ThreadPoolTaskExecutor threadPool = new ThreadPoolTaskExecutor();
+
+        threadPool.setCorePoolSize(threadC > 0 ? threadC : 10);
+        threadPool.setMaxPoolSize(threadC > 0 ? threadC : 10);
+        threadPool.setQueueCapacity(threadC > 0 ? threadC : 10);
+        threadPool.initialize();
+
+        Credentials credentials = GenCredential.create();
+
+        TransferSignTransactionManager extendedRawTransactionManager =
+                new TransferSignTransactionManager(
+                        null, credentials, BigInteger.ONE, BigInteger.ONE);
+
+        dagTransfer =
+                DagTransfer.load(
+                        dagTransferAddr,
+                        null,
+                        extendedRawTransactionManager,
+                        new StaticGasProvider(
+                                new BigInteger("30000000"), new BigInteger("30000000")));
+
+        AtomicLong signed = new AtomicLong(0);
+
+        long startTime = System.currentTimeMillis();
+        System.out.println(" => " + dateFormat.format(new Date()));
+
+        for (int i = 0; i < threadC; i++) {
+            threadPool.execute(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            while (true) {
+
+                                long index = signed.incrementAndGet();
+                                if (index > totalSignedTxCount.intValue()) {
+                                    break;
+                                }
+                                DagTransferUser from = dagUserMgr.getFrom((int) index);
+                                DagTransferUser to = dagUserMgr.getTo((int) index);
+
+                                Random random = new Random();
+                                int r = random.nextInt(100) + 1;
+                                BigInteger amount = BigInteger.valueOf(r);
+
+                                try {
+                                    String signedTransaction =
+                                            dagTransfer.userTransferSeq(
+                                                    from.getUser(), to.getUser(), amount);
+
+                                    if (index % (totalSignedTxCount.longValue() / 10) == 0) {
+                                        System.out.println(
+                                                "Signed transaction: "
+                                                        + String.valueOf(
+                                                                index
+                                                                        * 100
+                                                                        / totalSignedTxCount
+                                                                                .longValue())
+                                                        + "%");
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                    System.exit(-1);
+                                }
+                            }
+                        }
+                    });
+        }
+
+        while (signed.get() < totalSignedTxCount.intValue()) {
+            Thread.sleep(10);
+        }
+
+        long endTime = System.currentTimeMillis();
+        double elapsed = (endTime - startTime) / 1000.0;
+
+        System.out.println(" => " + dateFormat.format(new Date()));
+
+        System.out.print(
+                " sign transactions finished, elapse time: "
+                        + elapsed
+                        + ", tx count = "
+                        + totalSignedTxCount
+                        + " ,sps = "
+                        + (totalSignedTxCount.intValue() / elapsed));
+
+        System.exit(0);
     }
 
     public void userTransferTest(BigInteger count, BigInteger qps, BigInteger deci) {
@@ -380,13 +483,12 @@ public class PerformanceDTTest {
 
                 Lock fileLock = new ReentrantLock();
                 BufferedWriter writer = null;
-
+                AtomicLong writed = new AtomicLong(0);
+                final int totalWrite = end - start;
                 try {
                     writer = new BufferedWriter(new FileWriter(fileName));
-                    AtomicLong writed = new AtomicLong(0);
                     for (int j = start; j < end; ++j) {
                         final int index = j;
-                        final int totalWrite = end - start;
                         final BufferedWriter finalWriter = writer;
                         threadPool.execute(
                                 new Runnable() {
@@ -454,6 +556,11 @@ public class PerformanceDTTest {
 
                     e.printStackTrace();
                     System.exit(0);
+                } finally {
+                    if ((writed.get() >= totalWrite) && (writer != null)) {
+                        writer.close();
+                        writer = null;
+                    }
                 }
             }
 
@@ -519,6 +626,7 @@ public class PerformanceDTTest {
                                     public void run() {
                                         while (true) {
                                             try {
+                                                callbacks.get(index).recordStartTime();
                                                 transactionManager.sendTransaction(
                                                         signedTransactions.get(index),
                                                         callbacks.get(index));

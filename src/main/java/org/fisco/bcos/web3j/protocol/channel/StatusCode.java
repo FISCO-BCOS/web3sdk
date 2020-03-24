@@ -32,6 +32,7 @@ public class StatusCode {
     public static final String GasOverflow = "0x1b";
     public static final String TxPoolIsFull = "0x1c";
     public static final String TransactionRefused = "0x1d";
+    public static final String ContractFrozen = "0x1e";
 
     // extension
     public static final String ExceptionCatched = "0x30";
@@ -162,6 +163,9 @@ public class StatusCode {
                 break;
             case MalformedTx:
                 message = "malformed transaction";
+                break;
+            case ContractFrozen:
+                message = "contract has been frozen";
                 break;
             default:
                 message = errorMessage;

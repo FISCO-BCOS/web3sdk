@@ -39,6 +39,8 @@ public class PrecompiledCommon {
     public static final int TableNameAndAddressNotExist_RC1 = 57;
     public static final int TableNameAndAddressNotExist = 51001;
     public static final int TableNameAndAddressNotExist_RC3 = -51001;
+    public static final int TableNameLengthOverflow = -51002;
+    public static final int ContractNotExist = -51003;
     public static final int InvalidNodeId = -51100;
     public static final int LastSealer_RC1 = 100;
     public static final int LastSealer = 51101;
@@ -52,6 +54,14 @@ public class PrecompiledCommon {
     public static final int InvalidKey_RC1 = 157;
     public static final int InvalidKey = 51300;
     public static final int InvalidKey_RC3 = -51300;
+
+    public static final int InvalidAddress = -50102;
+    public static final int InvalidContractFrozen = -51900;
+    public static final int InvalidContractAvailable = -51901;
+    public static final int InvalidContractRepeatAuthorization = -51902;
+    public static final int InvalidContractAddress = -51903;
+    public static final int InvalidTableNotExist = -51904;
+    public static final int InvalidAuthorized = -51905;
 
     public static final int TABLE_KEY_MAX_LENGTH = 255;
 
@@ -98,6 +108,8 @@ public class PrecompiledCommon {
                 msg = "the last sealer cannot be removed";
             } else if (code == TableExist_RC3) {
                 msg = "table already exist";
+            } else if (code == ContractNotExist) {
+                msg = "contract not exist";
             } else if (code == InvalidKey_RC3) {
                 msg = "invalid configuration entry";
             }
@@ -118,7 +130,24 @@ public class PrecompiledCommon {
             msg = "contract name and version already exist";
         } else if (code == VersionExceeds) {
             msg = "version string length exceeds the maximum limit";
+        } else if (code == TableNameLengthOverflow) {
+            msg = "tablename string length exceeds the maximum limit";
+        } else if (code == InvalidAddress) {
+            msg = "invalid address format";
+        } else if (code == InvalidContractFrozen) {
+            msg = "the contract has been frozen";
+        } else if (code == InvalidContractAvailable) {
+            msg = "the contract is available";
+        } else if (code == InvalidContractRepeatAuthorization) {
+            msg = "the contract has been granted authorization with same user";
+        } else if (code == InvalidContractAddress) {
+            msg = "the contract address is invalid";
+        } else if (code == InvalidTableNotExist) {
+            msg = "the address is not exist";
+        } else if (code == InvalidAuthorized) {
+            msg = "this operation has no permissions";
         }
+
         ObjectMapper mapper = ObjectMapperFactory.getObjectMapper();
         return mapper.writeValueAsString(new PrecompiledResponse(code, msg));
     }

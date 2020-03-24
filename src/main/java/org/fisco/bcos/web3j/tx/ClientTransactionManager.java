@@ -97,7 +97,8 @@ public class ClientTransactionManager extends TransactionManager {
         return sendTransaction;
     }
 
-    BigInteger getBlockLimit() throws IOException {
+    @Override
+    protected BigInteger getBlockLimit() throws IOException {
         return web3j.getBlockNumberCache();
     }
 }

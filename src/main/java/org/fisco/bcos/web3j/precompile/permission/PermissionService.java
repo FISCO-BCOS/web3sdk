@@ -30,6 +30,26 @@ public class PermissionService {
         this.credentials = credentials;
     }
 
+    public List<PermissionInfo> queryPermission(String address) throws Exception {
+        String permissionyInfo = permission.queryPermission(address).send();
+        ObjectMapper objectMapper = ObjectMapperFactory.getObjectMapper();
+        return objectMapper.readValue(
+                permissionyInfo,
+                objectMapper
+                        .getTypeFactory()
+                        .constructCollectionType(List.class, PermissionInfo.class));
+    }
+
+    public String grantWrite(String address, String user) throws Exception {
+        TransactionReceipt receipt = permission.grantWrite(address, user).send();
+        return PrecompiledCommon.handleTransactionReceipt(receipt, web3j);
+    }
+
+    public String revokeWrite(String address, String user) throws Exception {
+        TransactionReceipt receipt = permission.revokeWrite(address, user).send();
+        return PrecompiledCommon.handleTransactionReceipt(receipt, web3j);
+    }
+
     public String grantUserTableManager(String tableName, String grantress) throws Exception {
         CRUDService crudSerivce = new CRUDService(web3j, credentials);
         crudSerivce.desc(tableName);
