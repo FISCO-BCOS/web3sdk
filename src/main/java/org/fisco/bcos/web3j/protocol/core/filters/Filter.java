@@ -16,6 +16,7 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.BcosLog;
 import org.fisco.bcos.web3j.protocol.core.methods.response.UninstallFilter;
 
 /** Class for creating managed filter requests with callbacks. */
+@Deprecated
 public abstract class Filter<T> {
 
     final Web3j web3j;

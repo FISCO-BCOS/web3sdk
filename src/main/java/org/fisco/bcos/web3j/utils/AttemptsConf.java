@@ -1,5 +1,6 @@
 package org.fisco.bcos.web3j.utils;
 
+@Deprecated
 public class AttemptsConf {
     public static Integer sleepDuration = 1500;
     public static Integer attempts = 40;

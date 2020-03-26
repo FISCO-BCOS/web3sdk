@@ -91,6 +91,7 @@ public class JsonRpc2_0Web3j implements Web3j {
         this.groupId = groupId;
     }
 
+    @Deprecated
     public JsonRpc2_0Web3j(
             Web3jService web3jService,
             long pollingInterval,
@@ -351,6 +352,7 @@ public class JsonRpc2_0Web3j implements Web3j {
     }
 
     @Override
+    @Deprecated
     public Request<?, BcosFilter> newPendingTransactionFilter() {
         return new Request<>(
                 "newPendingTransactionFilter",
@@ -360,12 +362,14 @@ public class JsonRpc2_0Web3j implements Web3j {
     }
 
     @Override
+    @Deprecated
     public Request<?, BcosFilter> newBlockFilter() {
         return new Request<>(
                 "newBlockFilter", Arrays.asList(groupId), web3jService, BcosFilter.class);
     }
 
     @Override
+    @Deprecated
     public Request<?, BcosLog> getFilterChanges(BigInteger filterId) {
         return new Request<>(
                 "getFilterChanges",
@@ -375,6 +379,7 @@ public class JsonRpc2_0Web3j implements Web3j {
     }
 
     @Override
+    @Deprecated
     public Request<?, UninstallFilter> getUninstallFilter(BigInteger filterId) {
         return new Request<>(
                 "getUninstallFilter",
@@ -384,6 +389,7 @@ public class JsonRpc2_0Web3j implements Web3j {
     }
 
     @Override
+    @Deprecated
     public Request<?, BcosFilter> newFilter(
             org.fisco.bcos.web3j.protocol.core.methods.request.BcosFilter filter) {
         return new Request<>(
@@ -391,6 +397,7 @@ public class JsonRpc2_0Web3j implements Web3j {
     }
 
     @Override
+    @Deprecated
     public Flowable<NewHeadsNotification> newHeadsNotifications() {
         return web3jService.subscribe(
                 new Request<>(
@@ -403,6 +410,7 @@ public class JsonRpc2_0Web3j implements Web3j {
     }
 
     @Override
+    @Deprecated
     public Flowable<LogNotification> logsNotifications(
             List<String> addresses, List<String> topics) {
 
@@ -430,34 +438,40 @@ public class JsonRpc2_0Web3j implements Web3j {
     }
 
     @Override
+    @Deprecated
     public Flowable<String> blockHashFlowable() {
         return web3jRx.blockHashFlowable(blockTime);
     }
 
     @Override
+    @Deprecated
     public Flowable<String> pendingTransactionHashFlowable() {
         return web3jRx.pendingTransactionHashFlowable(blockTime);
     }
 
     @Override
+    @Deprecated
     public Flowable<Log> logFlowable(
             org.fisco.bcos.web3j.protocol.core.methods.request.BcosFilter filter) {
         return web3jRx.logFlowable(filter, blockTime);
     }
 
     @Override
+    @Deprecated
     public Flowable<org.fisco.bcos.web3j.protocol.core.methods.response.Transaction>
             transactionFlowable() {
         return web3jRx.transactionFlowable(blockTime);
     }
 
     @Override
+    @Deprecated
     public Flowable<org.fisco.bcos.web3j.protocol.core.methods.response.Transaction>
             pendingTransactionFlowable() {
         return web3jRx.pendingTransactionFlowable(blockTime);
     }
 
     @Override
+    @Deprecated
     public Flowable<BcosBlock> blockFlowable(boolean fullTransactionObjects) {
         return web3jRx.blockFlowable(fullTransactionObjects, blockTime);
     }
@@ -490,12 +504,14 @@ public class JsonRpc2_0Web3j implements Web3j {
     }
 
     @Override
+    @Deprecated
     public Flowable<BcosBlock> replayPastBlocksFlowable(
             DefaultBlockParameter startBlock, boolean fullTransactionObjects) {
         return web3jRx.replayPastBlocksFlowable(startBlock, fullTransactionObjects);
     }
 
     @Override
+    @Deprecated
     public Flowable<org.fisco.bcos.web3j.protocol.core.methods.response.Transaction>
             replayPastTransactionsFlowable(
                     DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
@@ -503,12 +519,14 @@ public class JsonRpc2_0Web3j implements Web3j {
     }
 
     @Override
+    @Deprecated
     public Flowable<org.fisco.bcos.web3j.protocol.core.methods.response.Transaction>
             replayPastTransactionsFlowable(DefaultBlockParameter startBlock) {
         return web3jRx.replayPastTransactionsFlowable(startBlock);
     }
 
     @Override
+    @Deprecated
     public Flowable<BcosBlock> replayPastAndFutureBlocksFlowable(
             DefaultBlockParameter startBlock, boolean fullTransactionObjects) {
         return web3jRx.replayPastAndFutureBlocksFlowable(
@@ -516,6 +534,7 @@ public class JsonRpc2_0Web3j implements Web3j {
     }
 
     @Override
+    @Deprecated
     public Flowable<org.fisco.bcos.web3j.protocol.core.methods.response.Transaction>
             replayPastAndFutureTransactionsFlowable(DefaultBlockParameter startBlock) {
         return web3jRx.replayPastAndFutureTransactionsFlowable(startBlock, blockTime);

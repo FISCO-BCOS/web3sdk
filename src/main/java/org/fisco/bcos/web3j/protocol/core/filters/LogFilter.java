@@ -10,6 +10,7 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.BcosLog;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Log;
 
 /** Log filter handler. */
+@Deprecated
 public class LogFilter extends Filter<Log> {
 
     private final org.fisco.bcos.web3j.protocol.core.methods.request.BcosFilter ethFilter;

@@ -25,6 +25,7 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
 import org.fisco.bcos.web3j.utils.Flowables;
 
 /** web3j reactive API implementation. */
+@Deprecated
 public class JsonRpc2_0Rx {
 
     private final Web3j web3j;

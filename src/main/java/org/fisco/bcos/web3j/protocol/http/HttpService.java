@@ -17,6 +17,7 @@ import org.fisco.bcos.web3j.protocol.core.Request;
 import org.fisco.bcos.web3j.protocol.core.Response;
 
 /** HTTP implementation of our services API. */
+@Deprecated
 public class HttpService extends Service {
 
     public static final String DEFAULT_URL = "http://localhost:8545/";

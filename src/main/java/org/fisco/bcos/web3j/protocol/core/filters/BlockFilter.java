@@ -10,6 +10,7 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.BcosFilter;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosLog;
 
 /** Handler for working with block filter requests. */
+@Deprecated
 public class BlockFilter extends Filter<String> {
 
     public BlockFilter(Web3j web3j, Callback<String> callback) {

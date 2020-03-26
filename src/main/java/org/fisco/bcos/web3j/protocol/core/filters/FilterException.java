@@ -1,6 +1,7 @@
 package org.fisco.bcos.web3j.protocol.core.filters;
 
 /** Filter exception wrapper. */
+@Deprecated
 public class FilterException extends RuntimeException {
 
     public FilterException(String message) {

@@ -107,15 +107,19 @@ public interface Ethereum {
 
     Request<?, StartGroup> startGroup(int groupId);
 
-    // TODO
+    @Deprecated
     Request<?, BcosFilter> newPendingTransactionFilter();
 
+    @Deprecated
     Request<?, BcosFilter> newBlockFilter();
 
+    @Deprecated
     Request<?, BcosLog> getFilterChanges(BigInteger filterId);
 
+    @Deprecated
     Request<?, UninstallFilter> getUninstallFilter(BigInteger filterId);
 
+    @Deprecated
     Request<?, BcosFilter> newFilter(
             org.fisco.bcos.web3j.protocol.core.methods.request.BcosFilter ethFilter);
 }
