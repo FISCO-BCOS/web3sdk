@@ -1,7 +1,9 @@
 plugins {
     id 'java'
     id 'idea'
+    id 'signing'
     id 'java-library'
+    id 'maven-publish'
     id 'org.ajoberstar.grgit' version '4.0.1'
     id 'com.github.sherter.google-java-format' version '0.8'
 }
@@ -11,12 +13,6 @@ targetCompatibility = 1.8
 
 [compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
 
-repositories {
-    maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
-    maven { url 'https://dl.bintray.com/ethereum/maven/' }
-    mavenCentral()
-}
-
 //configurations.all.resolutionStrategy {
 //    // 版本冲突时直接构建失败
 //    // failOnVersionConflict()
@@ -24,6 +20,15 @@ repositories {
 //    // 缓存有效时间
 //    // cacheChangingModulesFor 0,'seconds'
 //}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+
+    maven { url 'https://dl.bintray.com/ethereum/maven/' }
+    maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
+}
 
 googleJavaFormat {
     options style: 'AOSP'
@@ -41,8 +46,8 @@ verifyGoogleJavaFormat {
 def spring_version = "4.3.25.RELEASE"
 
 List logger = [
-        'org.slf4j:slf4j-log4j12:1.7.25'
-        // 'org.slf4j:slf4j-api:1.7.25'
+        // 'org.slf4j:slf4j-log4j12:1.7.25'
+         'org.slf4j:slf4j-api:1.7.25'
 ]
 
 List spring = [
@@ -57,13 +62,6 @@ List alibaba = [
         'com.alibaba:fastjson:1.2.60'
 ]
 
-configurations {
-    integrationTestCompile.extendsFrom testCompile
-    integrationTestRuntime.extendsFrom testRuntime
-}
-
-
-// In this section you declare the dependencies for your production and test code
 dependencies {
     // compile files('lib/solcJ-all-0.4.25-gm.jar')
     // compile 'org.ethereum:solcJ-all:0.5.2'
@@ -81,61 +79,46 @@ dependencies {
     compile 'org.apache.commons:commons-collections4:4.0'
     compile 'commons-io:commons-io:2.4'
     compile 'org.projectlombok:lombok:1.18.2'
+    compile 'org.slf4j:slf4j-api:1.7.25'
     compile 'com.lambdaworks:scrypt:1.4.0'
     compile 'com.squareup:javapoet:1.7.0'
     compile 'io.reactivex:rxjava:1.2.4'
     compile 'io.reactivex.rxjava2:rxjava:2.2.2'
-    compile 'com.github.jnr:jnr-unixsocket:0.15'
+
     compile 'info.picocli:picocli:3.6.0'
     compile 'org.java-websocket:Java-WebSocket:1.3.8'
 
-    // 'com.github.stefanbirkner:system-rules:1.18.0',
     // compile 'de.vandermeer:asciitable:0.3.2'
+    // compile 'com.github.jnr:jnr-unixsocket:0.15'
 
-    compile 'junit:junit:4.12'
-    compile 'org.mockito:mockito-core:2.23.0'
-
-    integrationTestCompile 'junit:junit:4.12'
-    integrationTestCompile 'org.mockito:mockito-core:2.23.0'
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.mockito:mockito-core:2.23.0'
+    testCompile 'org.slf4j:slf4j-log4j12:1.7.25'
 }
 
 archivesBaseName = 'web3sdk'
 group = 'org.fisco-bcos'
-version = '2.3.0'
+version = '2.3.0-SNAPSHOT'
 
-sourceSets {
-    main {
-        java {
-            srcDir 'src/main/java'
-            srcDir 'src/test/java'
-        }
+// Additional attribute definition
 
-        resources {
-            srcDir 'src/test/resources'
-        }
+ext {
+    if (!project.hasProperty("ossrhUsername")) {
+        ossrhUsername="xxx"
     }
-    integrationTest {
-        java {
-            compileClasspath += main.output + test.output
-            runtimeClasspath += main.output + test.output
-            srcDir file('src/integration-test/java')
-        }
-        resources.srcDir file('src/integration-test/resources')
+
+    if (!project.hasProperty("ossrhPassword")) {
+        ossrhPassword="xxx"
     }
 }
 
-task integrationTest(type: Test) {
-    testClassesDirs = sourceSets.integrationTest.output.classesDirs
-    classpath = sourceSets.integrationTest.runtimeClasspath
-    outputs.upToDateWhen { false }
+// Test related configuration
+test {
+    testLogging {
+        // showStandardStreams = true
+        events "started","passed","skipped","failed"
+    }
 }
-
-check.dependsOn integrationTest
-integrationTest.mustRunAfter test
-
-check.dependsOn.remove(test)
-check.dependsOn.remove(integrationTest)
-check.dependsOn.remove(verifyGoogleJavaFormat)
 
 jar {
     // destinationDir file('dist/apps')
@@ -174,21 +157,87 @@ jar {
             from destinationDir
             into 'dist/apps'
         }
+
         copy {
             from configurations.runtime
             into 'dist/lib'
         }
+
         copy {
-            from file('src/test/resources/')
+            from file('src/test/resources/log4j.properties')
             into 'dist/conf'
         }
     }
 }
 
-test {
-    testLogging {
-        // showStandardStreams = true
-        // events "started","passed","skipped","failed"
-        events "passed","skipped","failed"
+javadoc {
+    options.addStringOption('Xdoclint:none', '-quiet')
+    options.addStringOption('encoding', 'UTF-8')
+    options.addStringOption('charSet', 'UTF-8')
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allJava
+    archiveClassifier = 'sources'
+}
+
+task javadocJar(type: Jar) {
+    from javadoc
+    archiveClassifier = 'javadoc'
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+
+            artifactId project.name
+            groupId project.group
+            version project.version
+
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+
+            pom {
+                name = 'fisco-bcos'
+                description = 'fisco-bcos web3sdk'
+                url = 'http://www.fisco-bcos.org'
+
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'zhangsan'
+                        name = 'zhangsan'
+                        email = 'zhangsan@example.com'
+                    }
+                }
+                scm {
+                    connection = 'https://github.com/FISCO-BCOS/web3sdk.git'
+                    url = 'https://github.com/FISCO-BCOS/web3sdk.git'
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            def releasesRepoURL = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+            def snapshotsRepoURL = "https://oss.sonatype.org/content/repositories/snapshots"
+            url = !version.endsWith("SNAPSHOT") ? releasesRepoURL : snapshotsRepoURL
+
+            credentials {
+                username ossrhUsername
+                password ossrhPassword
+            }
+        }
+    }
+
+    signing {
+        sign publishing.publications.mavenJava
     }
 }
+
