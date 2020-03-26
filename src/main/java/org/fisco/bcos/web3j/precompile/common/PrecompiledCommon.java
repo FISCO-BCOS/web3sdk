@@ -63,6 +63,20 @@ public class PrecompiledCommon {
     public static final int InvalidTableNotExist = -51904;
     public static final int InvalidAuthorized = -51905;
 
+    public static final int InvalidAccountFrozen = -52011;
+    public static final int InvalidCurrentIsExpectedValue = -52012;
+    public static final int InvalidAccountAlreadyAvailable = -52010;
+    public static final int InvalidAccountAddress = -52009;
+    public static final int InvalidAccountNotExist = -52008;
+    public static final int InvalidOperatorNotExist = -52007;
+    public static final int InvalidOperatorAlreadyExist = -52006;
+    public static final int InvalidCommitteeMemberCannotBeOperator = -52005;
+    public static final int InvalidOperatorCannotBeCommitteeMember = -52004;
+    public static final int InvalidThreshold = -52003;
+    public static final int InvalidRequestPermissionDeny = -52002;
+    public static final int InvalidCommitteeMemberNotExist = -52001;
+    public static final int InvalidCommitteeMemberAlreadyExist = -52000;
+
     public static final int TABLE_KEY_MAX_LENGTH = 255;
 
     public static String BCOS_VERSION = "";
@@ -146,6 +160,32 @@ public class PrecompiledCommon {
             msg = "the address is not exist";
         } else if (code == InvalidAuthorized) {
             msg = "this operation has no permissions";
+        } else if (code == InvalidAccountFrozen) {
+            msg = "the account is frozen";
+        } else if (code == InvalidAccountAlreadyAvailable) {
+            msg = "the account is already available";
+        } else if (code == InvalidCurrentIsExpectedValue) {
+            msg = "the current value is expected";
+        } else if (code == InvalidAccountAddress) {
+            msg = "invalid account address";
+        } else if (code == InvalidAccountNotExist) {
+            msg = "account not exist";
+        } else if (code == InvalidOperatorNotExist) {
+            msg = "operator not exist";
+        } else if (code == InvalidOperatorAlreadyExist) {
+            msg = "operator already exist";
+        } else if (code == InvalidCommitteeMemberCannotBeOperator) {
+            msg = "committee member cannot be operator";
+        } else if (code == InvalidOperatorCannotBeCommitteeMember) {
+            msg = "operator cannot be committee member";
+        } else if (code == InvalidThreshold) {
+            msg = "operator cannot be committee member";
+        } else if (code == InvalidRequestPermissionDeny) {
+            msg = " invalid request with permission deny";
+        } else if (code == InvalidCommitteeMemberNotExist) {
+            msg = "committee member not exist";
+        } else if (code == InvalidCommitteeMemberAlreadyExist) {
+            msg = "committee member already exist";
         }
 
         ObjectMapper mapper = ObjectMapperFactory.getObjectMapper();

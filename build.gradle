@@ -130,6 +130,15 @@ task integrationTest(type: Test) {
     outputs.upToDateWhen { false }
 }
 
+// clean dist and log dir
+task cleanBuildArtifacts(type: Delete) {
+    delete 'dist'
+    delete 'log'
+    delete 'out'
+}
+
+tasks.clean.dependsOn(tasks.cleanBuildArtifacts)
+
 check.dependsOn integrationTest
 integrationTest.mustRunAfter test
 
