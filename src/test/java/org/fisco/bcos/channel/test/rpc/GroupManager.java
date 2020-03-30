@@ -42,10 +42,11 @@ public class GroupManager {
         return web3j;
     }
 
-    public void generateGroup(int groupId, long timestamp, List<String> nodeList)
+    public void generateGroup(
+            int groupId, long timestamp, boolean enableFreeStorage, List<String> nodeList)
             throws IOException {
         org.fisco.bcos.web3j.protocol.core.methods.response.GenerateGroup generateGroup =
-                web3j.generateGroup(groupId, timestamp, nodeList).send();
+                web3j.generateGroup(groupId, timestamp, enableFreeStorage, nodeList).send();
         logger.info("  generateGroup result: {}", generateGroup.getResult());
 
         System.out.println(" generateGroup result: " + generateGroup.getResult());
@@ -94,7 +95,7 @@ public class GroupManager {
     public static void Usage() {
         System.out.println(" Usage:");
         System.out.println(
-                " \t java -cp conf/:lib/*:apps/* org.fisco.bcos.channel.test.rpc.GroupManager generateGroup groupID timestamp node0 node1...nodeN");
+                " \t java -cp conf/:lib/*:apps/* org.fisco.bcos.channel.test.rpc.GroupManager generateGroup groupID timestamp enableFreeStorage node0 node1...nodeN");
         System.out.println(
                 " \t java -cp conf/:lib/*:apps/* org.fisco.bcos.channel.test.rpc.GroupManager startGroup groupID");
         System.out.println(
@@ -121,15 +122,16 @@ public class GroupManager {
 
             switch (method) {
                 case "generateGroup":
-                    if (args.length < 4) {
+                    if (args.length < 5) {
                         Usage();
                     }
                     long timestamp = Long.valueOf(args[2]);
+                    boolean enableFreeStorage = Boolean.valueOf(args[3]);
                     List<String> nodes = new ArrayList<>();
-                    for (int i = 3; i < args.length; ++i) {
+                    for (int i = 4; i < args.length; ++i) {
                         nodes.add(args[i]);
                     }
-                    groupManager.generateGroup(groupID, timestamp, nodes);
+                    groupManager.generateGroup(groupID, timestamp, enableFreeStorage, nodes);
                     break;
                 case "startGroup":
                     groupManager.startGroup(groupID);

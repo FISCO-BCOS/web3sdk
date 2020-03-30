@@ -102,7 +102,8 @@ public interface Ethereum {
     Request<?, SendTransaction> sendRawTransaction(String signedTransactionData);
 
     // generateGroup
-    Request<?, GenerateGroup> generateGroup(int groupId, long timestamp, List<String> nodeList);
+    Request<?, GenerateGroup> generateGroup(
+            int groupId, long timestamp, boolean enableFreeStorage, List<String> nodeList);
 
     Request<?, StartGroup> startGroup(int groupId);
 
