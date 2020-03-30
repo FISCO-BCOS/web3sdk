@@ -12,6 +12,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.Web3jService;
 import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
+import org.fisco.bcos.web3j.protocol.core.methods.request.GenerateGroupParams;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosFilter;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosLog;
@@ -330,10 +331,13 @@ public class JsonRpc2_0Web3j implements Web3j {
 
     @Override
     public Request<?, GenerateGroup> generateGroup(
-            int groupID, long timestamp, List<String> nodeList) {
+            int groupID, long timestamp, boolean enableFreeStorage, List<String> nodeList) {
         return new Request<>(
                 "generateGroup",
-                Arrays.asList(groupID, timestamp, nodeList),
+                Arrays.asList(
+                        groupID,
+                        new GenerateGroupParams(
+                                String.valueOf(timestamp), enableFreeStorage, nodeList)),
                 web3jService,
                 GenerateGroup.class);
     }
