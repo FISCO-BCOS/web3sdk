@@ -3,7 +3,11 @@ package org.fisco.bcos.web3j.crypto.gm.sm2.crypto.asymmetric;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.SecureRandom;
-import org.bouncycastle.asn1.*;
+import org.bouncycastle.asn1.ASN1Encoding;
+import org.bouncycastle.asn1.ASN1Integer;
+import org.bouncycastle.asn1.ASN1Primitive;
+import org.bouncycastle.asn1.ASN1Sequence;
+import org.bouncycastle.asn1.DERSequence;
 import org.bouncycastle.math.ec.ECCurve;
 import org.bouncycastle.math.ec.ECPoint;
 import org.fisco.bcos.web3j.crypto.gm.sm2.crypto.digests.SM3Digest;
@@ -30,8 +34,8 @@ public class SM2Algorithm {
     public static final BigInteger gy =
             new BigInteger("BC3736A2F4F6779C59BDCEE36B692153D0A9877CC62A474002DF32E52139F0A0", 16);
 
-    private static final ECCurve sm2Curve = new ECCurve.Fp(p, a, b);
-    private static final ECPoint sm2Point = sm2Curve.createPoint(gx, gy);
+    public static final ECCurve sm2Curve = new ECCurve.Fp(p, a, b);
+    public static final ECPoint sm2Point = sm2Curve.createPoint(gx, gy);
 
     /*
      * SM2加密
@@ -114,8 +118,10 @@ public class SM2Algorithm {
         ECPoint s =
                 calculateS(
                         new BigInteger(pbX, 16), new BigInteger(pbY, 16), new BigInteger(pvk, 16));
-        BigInteger x2 = s.getAffineXCoord().toBigInteger();
-        BigInteger y2 = s.getAffineYCoord().toBigInteger();
+
+        ECPoint ecPoint = s.normalize();
+        BigInteger x2 = ecPoint.getAffineXCoord().toBigInteger();
+        BigInteger y2 = ecPoint.getAffineYCoord().toBigInteger();
 
         byte[] t = kdf(x2, y2, c2.length);
         if (isEmpty(t)) {
@@ -183,11 +189,13 @@ public class SM2Algorithm {
      * 第4步:计算 [k]Pb=(x2,y2)
      */
     private static BigInteger calculateX2(ECPoint s) {
-        return s.getAffineXCoord().toBigInteger();
+        ECPoint ecPoint = s.normalize();
+        return ecPoint.getAffineXCoord().toBigInteger();
     }
 
     private static BigInteger calculateY2(ECPoint s) {
-        return s.getAffineYCoord().toBigInteger();
+        ECPoint ecPoint = s.normalize();
+        return ecPoint.getAffineYCoord().toBigInteger();
     }
 
     /*
@@ -269,8 +277,9 @@ public class SM2Algorithm {
     private static byte[] getC(ECPoint c1, byte[] c3, byte[] c2) {
         byte[] c = new byte[64 + c3.length + c2.length];
 
-        byte[] c1xBuf = padding(c1.getAffineXCoord().toBigInteger().toByteArray());
-        byte[] c1yBuf = padding(c1.getAffineYCoord().toBigInteger().toByteArray());
+        ECPoint ecPoint = c1.normalize();
+        byte[] c1xBuf = padding(ecPoint.getAffineXCoord().toBigInteger().toByteArray());
+        byte[] c1yBuf = padding(ecPoint.getAffineYCoord().toBigInteger().toByteArray());
 
         System.arraycopy(c1xBuf, 0, c, 0, 32);
         System.arraycopy(c1yBuf, 0, c, 32, 32);
@@ -314,10 +323,10 @@ public class SM2Algorithm {
     ////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////
 
-    private static byte[] USER_ID = KeyUtils.hex2byte("31323334353637383132333435363738");
+    public static byte[] USER_ID = KeyUtils.hex2byte("31323334353637383132333435363738");
     private static int mFieldSizeInBytes;
-    private static ECCurve curve256;
-    private static ECPoint g256;
+    public static ECCurve curve256;
+    public static ECPoint g256;
 
     // 初始化曲线G
     static {
@@ -367,7 +376,8 @@ public class SM2Algorithm {
             do {
                 k = createRandom();
                 kp = g256.multiply(k);
-                r = e.add(kp.getAffineXCoord().toBigInteger());
+                ECPoint ecPoint = kp.normalize();
+                r = e.add(ecPoint.getAffineXCoord().toBigInteger());
                 r = r.mod(n);
             } while (r.equals(BigInteger.ZERO) || r.add(k).equals(n));
             BigInteger da_1 = userD.add(BigInteger.ONE).modInverse(n);
@@ -416,7 +426,7 @@ public class SM2Algorithm {
         if (t.equals(BigInteger.ZERO)) return false;
         ECPoint x1y1 = g256.multiply(s);
         x1y1 = x1y1.add(userKey.multiply(t));
-        BigInteger R = e.add(x1y1.getAffineXCoord().toBigInteger()).mod(n);
+        BigInteger R = e.add(x1y1.normalize().getAffineXCoord().toBigInteger()).mod(n);
 
         return r.equals(R);
     }
@@ -460,8 +470,10 @@ public class SM2Algorithm {
         sm3BlockUpdate(sm3, getEncoded(b));
         sm3BlockUpdate(sm3, getEncoded(gx));
         sm3BlockUpdate(sm3, getEncoded(gy));
-        sm3BlockUpdate(sm3, getEncoded(publicKey.getAffineXCoord().toBigInteger()));
-        sm3BlockUpdate(sm3, getEncoded(publicKey.getAffineYCoord().toBigInteger()));
+
+        ECPoint ecPoint = publicKey.normalize();
+        sm3BlockUpdate(sm3, getEncoded(ecPoint.getAffineXCoord().toBigInteger()));
+        sm3BlockUpdate(sm3, getEncoded(ecPoint.getAffineYCoord().toBigInteger()));
 
         byte[] md = new byte[sm3.getDigestSize()];
         sm3.doFinal(md, 0);

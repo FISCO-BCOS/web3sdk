@@ -1,6 +1,5 @@
 package org.fisco.bcos.channel.client;
 
-import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,11 +10,15 @@ import org.fisco.bcos.web3j.abi.FunctionEncoder;
 import org.fisco.bcos.web3j.abi.FunctionReturnDecoder;
 import org.fisco.bcos.web3j.abi.TypeReference;
 import org.fisco.bcos.web3j.abi.Utils;
+import org.fisco.bcos.web3j.abi.datatypes.DynamicArray;
 import org.fisco.bcos.web3j.abi.datatypes.Function;
 import org.fisco.bcos.web3j.abi.datatypes.StaticArray;
 import org.fisco.bcos.web3j.abi.datatypes.Type;
+import org.fisco.bcos.web3j.abi.datatypes.Utf8String;
+import org.fisco.bcos.web3j.abi.datatypes.generated.Int256;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.protocol.Web3j;
+import org.fisco.bcos.web3j.protocol.channel.StatusCode;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameterName;
 import org.fisco.bcos.web3j.protocol.core.methods.request.Transaction;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Call;
@@ -49,15 +52,21 @@ public class CallContract {
                                             credentials.getAddress(), contractAddress, data),
                                     DefaultBlockParameterName.LATEST)
                             .send();
-        } catch (IOException e) {
-            return new CallResult("IOException", e.getMessage(), "");
+        } catch (Exception e) {
+            return new CallResult(StatusCode.ExceptionCatched, e.getMessage(), "0x");
         }
 
         Call.CallOutput callOutput = ethCall.getValue();
         if (callOutput != null) {
-            return new CallResult(callOutput.getStatus(), "", callOutput.getOutput());
+            return new CallResult(
+                    callOutput.getStatus(),
+                    StatusCode.getStatusMessage(callOutput.getStatus()),
+                    callOutput.getOutput());
         } else {
-            return new CallResult("RpcError", "", "");
+            return new CallResult(
+                    StatusCode.ErrorInRPC,
+                    StatusCode.getStatusMessage(StatusCode.ErrorInRPC),
+                    "0x");
         }
     }
 
@@ -69,10 +78,21 @@ public class CallContract {
                         Arrays.<Type>asList(args),
                         Collections.<TypeReference<?>>emptyList());
 
-        ExecuteTransaction executeTransaction =
-                new ExecuteTransaction(contractAddress, web3j, credentials, gasPrice, gasLimit);
+        TransactionReceipt transactionReceipt = new TransactionReceipt();
+        try {
+            ExecuteTransaction executeTransaction =
+                    new ExecuteTransaction(contractAddress, web3j, credentials, gasPrice, gasLimit);
 
-        return executeTransaction.send(function);
+            transactionReceipt = executeTransaction.send(function);
+            String status = transactionReceipt.getStatus();
+            transactionReceipt.setMessage(StatusCode.getStatusMessage(status));
+
+        } catch (Exception e) {
+            transactionReceipt.setStatus(StatusCode.ExceptionCatched);
+            transactionReceipt.setMessage(e.getMessage());
+            transactionReceipt.setOutput("0x");
+        }
+        return transactionReceipt;
     }
 
     public TransactionReceipt sendTransaction(
@@ -86,11 +106,21 @@ public class CallContract {
                         funcName,
                         Arrays.<Type>asList(args),
                         Collections.<TypeReference<?>>emptyList());
+        TransactionReceipt transactionReceipt = new TransactionReceipt();
+        try {
+            ExecuteTransaction executeTransaction =
+                    new ExecuteTransaction(contractAddress, web3j, credentials, gasPrice, gasLimit);
+            transactionReceipt = executeTransaction.send(function);
 
-        ExecuteTransaction executeTransaction =
-                new ExecuteTransaction(contractAddress, web3j, credentials, gasPrice, gasLimit);
+            String status = transactionReceipt.getStatus();
+            transactionReceipt.setMessage(StatusCode.getStatusMessage(status));
 
-        return executeTransaction.send(function);
+        } catch (Exception e) {
+            transactionReceipt.setStatus(StatusCode.ExceptionCatched);
+            transactionReceipt.setMessage(e.getMessage());
+            transactionReceipt.setOutput("0x");
+        }
+        return transactionReceipt;
     }
 
     public void asyncSendTransaction(
@@ -133,6 +163,99 @@ public class CallContract {
         if (data.isEmpty() || data.equals("0x")) return null;
         List<TypeReference<?>> typeReferencesList = Arrays.<TypeReference<?>>asList(typeReferences);
         return FunctionReturnDecoder.decode(data, Utils.convert(typeReferencesList));
+    }
+
+    public List<Object> decode(String data, String retType) throws Exception {
+        List<Object> result = new ArrayList<>();
+        if (!retType.equals("") && data != null) {
+            String types[] = retType.split(",");
+            List<TypeReference<?>> references = getTypeReferenceList(types);
+
+            List<Type> returns = FunctionReturnDecoder.decode(data, Utils.convert(references));
+
+            result = types2Objects(returns, types);
+        }
+        return result;
+    }
+
+    private List<TypeReference<?>> getTypeReferenceList(String types[]) throws Exception {
+        List<TypeReference<?>> result = new ArrayList<>();
+        for (String type : types) {
+            switch (type.trim()) {
+                case "Int":
+                    {
+                        result.add(new TypeReference<Int256>() {});
+                        break;
+                    }
+                case "String":
+                    {
+                        result.add(new TypeReference<Utf8String>() {});
+                        break;
+                    }
+                case "IntArray":
+                    {
+                        result.add(new TypeReference<DynamicArray<Int256>>() {});
+                        break;
+                    }
+                case "StringArray":
+                    {
+                        result.add(new TypeReference<DynamicArray<Utf8String>>() {});
+                        break;
+                    }
+                default:
+                    {
+                        throw new Exception("Unsupported type :" + type.trim());
+                    }
+            }
+        }
+        return result;
+    }
+
+    public List<Object> types2Objects(List<Type> datas, String javaTypes[]) throws Exception {
+        if (datas.size() != javaTypes.length) {
+            throw new Exception("The number of data and types is different.");
+        }
+
+        List<Object> result = new ArrayList<>();
+        for (int i = 0; i < datas.size(); ++i) {
+            result.add(type2Object(datas.get(i), javaTypes[i]));
+        }
+
+        return result;
+    }
+
+    public Object type2Object(Type data, String javaType) throws Exception {
+        switch (javaType) {
+            case "Int":
+                {
+                    return ((BigInteger) data.getValue()).intValue();
+                }
+            case "String":
+                {
+                    return (String) data.getValue();
+                }
+            case "IntArray":
+                {
+                    List<BigInteger> bigIntegers = convertList((List<Int256>) data.getValue());
+                    return bigIntegerstoIntegers(bigIntegers);
+                }
+            case "StringArray":
+                {
+                    return convertList((List<Utf8String>) data.getValue());
+                }
+            default:
+                {
+                    throw new Exception("Unsupported type :" + javaType);
+                }
+        }
+    }
+
+    public List<Integer> bigIntegerstoIntegers(List<BigInteger> bigIntegers) {
+        List<Integer> integers = new ArrayList<>();
+        for (BigInteger bigInteger : bigIntegers) {
+            integers.add(bigInteger.intValue());
+        }
+        return integers;
     }
 
     @SuppressWarnings("unchecked")

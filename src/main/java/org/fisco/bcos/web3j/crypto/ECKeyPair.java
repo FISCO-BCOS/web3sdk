@@ -3,16 +3,23 @@ package org.fisco.bcos.web3j.crypto;
 import java.math.BigInteger;
 import java.security.KeyPair;
 import java.util.Arrays;
+import java.util.Objects;
 import org.bouncycastle.crypto.digests.SHA256Digest;
 import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
+import org.bouncycastle.crypto.params.ECPublicKeyParameters;
 import org.bouncycastle.crypto.signers.ECDSASigner;
 import org.bouncycastle.crypto.signers.HMacDSAKCalculator;
 import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPrivateKey;
 import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPublicKey;
 import org.fisco.bcos.web3j.utils.Numeric;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Elliptic Curve SECP-256k1 generated key pair. */
 public class ECKeyPair {
+
+    private static final Logger logger = LoggerFactory.getLogger(ECKeyPair.class);
+
     private final BigInteger privateKey;
     private final BigInteger publicKey;
 
@@ -30,21 +37,11 @@ public class ECKeyPair {
     }
 
     /**
-     * Sign a hash with the private key of this key pair.
+     * create ECKeyPair from KeyPair
      *
-     * @param transactionHash the hash to sign
-     * @return An {@link ECDSASignature} of the hash
+     * @param keyPair
+     * @return
      */
-    public ECDSASignature sign(byte[] transactionHash) {
-        ECDSASigner signer = new ECDSASigner(new HMacDSAKCalculator(new SHA256Digest()));
-
-        ECPrivateKeyParameters privKey = new ECPrivateKeyParameters(privateKey, Sign.CURVE);
-        signer.init(true, privKey);
-        BigInteger[] components = signer.generateSignature(transactionHash);
-
-        return new ECDSASignature(components[0], components[1]).toCanonicalised();
-    }
-
     public static ECKeyPair create(KeyPair keyPair) {
         BCECPrivateKey privateKey = (BCECPrivateKey) keyPair.getPrivate();
         BCECPublicKey publicKey = (BCECPublicKey) keyPair.getPublic();
@@ -58,43 +55,75 @@ public class ECKeyPair {
         BigInteger publicKeyValue =
                 new BigInteger(1, Arrays.copyOfRange(publicKeyBytes, 1, publicKeyBytes.length));
 
-        return new ECKeyPair(privateKeyValue, publicKeyValue);
+        ECKeyPair ecKeyPair = new ECKeyPair(privateKeyValue, publicKeyValue);
+        return ecKeyPair;
     }
 
+    /**
+     * create ECKeyPair from privateKey
+     *
+     * @param privateKey
+     * @return
+     */
     public static ECKeyPair create(BigInteger privateKey) {
         return new ECKeyPair(privateKey, Sign.publicKeyFromPrivate(privateKey));
     }
 
+    /**
+     * create ECKeyPair from privateKey
+     *
+     * @param privateKey
+     * @return
+     */
     public static ECKeyPair create(byte[] privateKey) {
         return create(Numeric.toBigInt(privateKey));
     }
 
+    /**
+     * Sign a hash with the private key of this key pair.
+     *
+     * @param hash the hash to sign
+     * @return An {@link ECDSASignature} of the hash
+     */
+    public ECDSASignature sign(byte[] hash) {
+
+        ECDSASigner signer = new ECDSASigner(new HMacDSAKCalculator(new SHA256Digest()));
+
+        ECPrivateKeyParameters privKey = new ECPrivateKeyParameters(privateKey, Sign.CURVE);
+        signer.init(true, privKey);
+        BigInteger[] components = signer.generateSignature(hash);
+
+        return new ECDSASignature(components[0], components[1]).toCanonicalised();
+    }
+
+    /**
+     * Verify a hash with the private key of this key pair.
+     *
+     * @param hash
+     * @param signature
+     * @return
+     */
+    public boolean verify(byte[] hash, ECDSASignature signature) {
+        ECDSASigner signer = new ECDSASigner();
+        // not for signing...
+        signer.init(
+                false,
+                new ECPublicKeyParameters(
+                        Sign.publicPointFromPrivate(getPrivateKey()), Sign.CURVE));
+        return signer.verifySignature(hash, signature.r, signature.s);
+    }
+
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
         ECKeyPair ecKeyPair = (ECKeyPair) o;
-
-        if (privateKey != null
-                ? !privateKey.equals(ecKeyPair.privateKey)
-                : ecKeyPair.privateKey != null) {
-            return false;
-        }
-
-        return publicKey != null
-                ? publicKey.equals(ecKeyPair.publicKey)
-                : ecKeyPair.publicKey == null;
+        return Objects.equals(privateKey, ecKeyPair.privateKey)
+                && Objects.equals(publicKey, ecKeyPair.publicKey);
     }
 
     @Override
     public int hashCode() {
-        int result = privateKey != null ? privateKey.hashCode() : 0;
-        result = 31 * result + (publicKey != null ? publicKey.hashCode() : 0);
-        return result;
+        return Objects.hash(privateKey, publicKey);
     }
 }

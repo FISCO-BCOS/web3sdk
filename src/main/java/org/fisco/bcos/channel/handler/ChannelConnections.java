@@ -3,7 +3,9 @@ package org.fisco.bcos.channel.handler;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
@@ -17,21 +19,28 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.SslHandler;
 import io.netty.handler.ssl.SslProvider;
 import io.netty.handler.timeout.IdleStateHandler;
+import io.netty.util.concurrent.Future;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.net.ssl.SSLException;
+import org.fisco.bcos.web3j.tuples.generated.Tuple2;
+import org.fisco.bcos.web3j.tuples.generated.Tuple3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -56,11 +65,17 @@ public class ChannelConnections {
     private ThreadPoolTaskExecutor threadPool;
     private long idleTimeout = (long) 10000;
     private long heartBeatDelay = (long) 2000;
+    private long reconnectDelay = (long) 20000;
+    private long connectTimeout = (long) 10000;
+    private long sslHandShakeTimeout = (long) 10000;
+
     public Map<String, ChannelHandlerContext> networkConnections =
-            new HashMap<String, ChannelHandlerContext>();
+            new ConcurrentHashMap<String, ChannelHandlerContext>();
     private int groupId;
     private Bootstrap bootstrap = new Bootstrap();
     ServerBootstrap serverBootstrap = new ServerBootstrap();
+
+    private ScheduledExecutorService scheduledExecutorService = new ScheduledThreadPoolExecutor(1);
 
     private void initDefaultCertConfig() {
         if (getCaCert() == null) {
@@ -201,17 +216,15 @@ public class ChannelConnections {
             ConcurrentHashMap<String, BigInteger> nodeToBlockNumberMap) throws Exception {
         List<ChannelHandlerContext> activeConnections = new ArrayList<ChannelHandlerContext>();
 
-        for (String key : networkConnections.keySet()) {
-            if (networkConnections.get(key) != null
-                    && ChannelHandlerContextHelper.isChannelAvailable(
-                            networkConnections.get(key))) {
-                activeConnections.add(networkConnections.get(key));
+        for (ChannelHandlerContext ctx : networkConnections.values()) {
+            if (Objects.nonNull(ctx) && ChannelHandlerContextHelper.isChannelAvailable(ctx)) {
+                activeConnections.add(ctx);
             }
         }
 
         if (activeConnections.isEmpty()) {
-            logger.error("activeConnections isEmpty");
-            throw new Exception("activeConnections isEmpty");
+            logger.error(" no active connection is available, maybe network connection exception");
+            throw new Exception(" no active connection available network exception");
         }
         // select maxBlockNumber node
         List<ChannelHandlerContext> maxBlockNumberConnections =
@@ -260,6 +273,7 @@ public class ChannelConnections {
         return selectedNodeChannelHandlerContext;
     }
 
+    @Deprecated
     public ConnectionInfo getConnectionInfo(String host, Integer port) {
         for (ConnectionInfo info : connections) {
             if (info.getHost().equals(host) && info.getPort().equals(port)) {
@@ -276,22 +290,39 @@ public class ChannelConnections {
 
     public ChannelHandlerContext getNetworkConnectionByHost(String host, Integer port) {
         String endpoint = host + ":" + port;
-
         return networkConnections.get(endpoint);
     }
 
-    public void setNetworkConnectionByHost(String host, Integer port, ChannelHandlerContext ctx) {
+    /**
+     * description : Associates the specified IP:port with the ChannelHandlerContext object in the
+     * map and return the previous value(if not have one ,null will be return)
+     *
+     * @param host remote ip
+     * @param port remote port
+     * @param ctx ChannelHandlerContext
+     * @return
+     */
+    public ChannelHandlerContext setAndGetNetworkConnectionByHost(
+            String host, Integer port, ChannelHandlerContext ctx) {
         String endpoint = host + ":" + port;
-
-        networkConnections.put(endpoint, ctx);
+        return networkConnections.put(endpoint, ctx);
     }
 
-    public void removeNetworkConnectionByHost(String host, Integer port) {
+    public void removeNetworkConnectionByHost(
+            String host, Integer port, ChannelHandlerContext ctx) {
         String endpoint = host + ":" + port;
-
-        networkConnections.remove(endpoint);
+        Boolean result = networkConnections.remove(endpoint, ctx);
+        if (logger.isDebugEnabled()) {
+            logger.debug(
+                    " result: {}, host: {}, port: {}, ctx: {}",
+                    result,
+                    host,
+                    port,
+                    System.identityHashCode(ctx));
+        }
     }
 
+    @Deprecated
     public void startListen(Integer port) throws SSLException {
         if (running) {
             logger.debug("running");
@@ -323,12 +354,14 @@ public class ChannelConnections {
                                      */
                                     ChannelHandler handler = new ChannelHandler();
                                     handler.setConnections(selfService);
-                                    handler.setIsServer(true);
                                     handler.setThreadPool(selfThreadPool);
+
+                                    SslHandler sslHandler = sslCtx.newHandler(ch.alloc());
+                                    sslHandler.setHandshakeTimeoutMillis(sslHandShakeTimeout);
 
                                     ch.pipeline()
                                             .addLast(
-                                                    sslCtx.newHandler(ch.alloc()),
+                                                    sslHandler,
                                                     new LengthFieldBasedFrameDecoder(
                                                             Integer.MAX_VALUE, 0, 4, -4, 0),
                                                     new IdleStateHandler(
@@ -349,28 +382,72 @@ public class ChannelConnections {
         }
     }
 
+    /**
+     * @param IP
+     * @return true if IP valid IP string otherwise false
+     */
+    public static boolean validIP(String IP) {
+        String regex = "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(IP);
+        return matcher.matches();
+    }
+
+    /**
+     * @param port
+     * @return true if port valid IP port otherwise false
+     */
+    public static boolean validPort(String port) {
+        try {
+            Integer p = Integer.parseInt(port);
+            return p > 0 && p <= 65535;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     public void init() {
         logger.debug("init connections");
-        // init connections
-        if (connectionsStr != null) {
-            for (String conn : connectionsStr) {
-                ConnectionInfo connection = new ConnectionInfo();
 
-                String[] split2 = conn.split(":");
-
-                connection.setHost(split2[0]);
-                connection.setPort(Integer.parseInt(split2[1]));
-
-                networkConnections.put(conn, null);
-
-                logger.info(" add connected node: " + split2[0] + ":" + split2[1]);
-
-                connection.setConfig(true);
-                connections.add(connection);
-            }
-        } else {
-            logger.warn(" connectionsStr null, check your connectionsStr list config.");
+        if (Objects.isNull(connectionsStr) || connectionsStr.isEmpty()) {
+            throw new IllegalArgumentException(
+                    " Invalid configuration, the number of connected nodes is empty, please check \"connectionsStr\" field.");
         }
+
+        for (String connectionStr : connectionsStr) {
+            ConnectionInfo connection = new ConnectionInfo();
+
+            String[] stringArray = connectionStr.split(":");
+
+            if (stringArray.length < 1) {
+                throw new IllegalArgumentException(
+                        " Invalid configuration, the value should in IP:Port format(eg: 127.0.0.1:1111), value: "
+                                + connectionStr);
+            }
+
+            String IP = stringArray[0];
+            String port = stringArray[1];
+
+            if (!validIP(IP)) {
+                throw new IllegalArgumentException(
+                        " Invalid configuration, invalid IP string format, value: " + IP);
+            }
+
+            if (!validPort(port)) {
+                throw new IllegalArgumentException(
+                        " Invalid configuration, tcp port should from 1 to 65535, value: " + port);
+            }
+
+            connection.setHost(IP);
+            connection.setPort(Integer.parseInt(port));
+
+            // logger.info(" add connected node: " + IP + ":" + port);
+
+            connection.setConfig(true);
+            connections.add(connection);
+        }
+
+        logger.info(" all connections: {}", connections);
 
         initDefaultCertConfig();
     }
@@ -381,13 +458,15 @@ public class ChannelConnections {
             return;
         }
 
-        logger.debug("init connections connect");
+        logger.debug(" start connect. ");
         // init netty
         EventLoopGroup workerGroup = new NioEventLoopGroup();
 
         bootstrap.group(workerGroup);
         bootstrap.channel(NioSocketChannel.class);
         bootstrap.option(ChannelOption.SO_KEEPALIVE, true);
+        // set connect timeout
+        bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, (int) connectTimeout);
 
         final ChannelConnections selfService = this;
         final ThreadPoolTaskExecutor selfThreadPool = threadPool;
@@ -404,12 +483,15 @@ public class ChannelConnections {
                          */
                         ChannelHandler handler = new ChannelHandler();
                         handler.setConnections(selfService);
-                        handler.setIsServer(false);
                         handler.setThreadPool(selfThreadPool);
+
+                        SslHandler sslHandler = sslCtx.newHandler(ch.alloc());
+                        /** set ssl handshake timeout */
+                        sslHandler.setHandshakeTimeoutMillis(sslHandShakeTimeout);
 
                         ch.pipeline()
                                 .addLast(
-                                        sslCtx.newHandler(ch.alloc()),
+                                        sslHandler,
                                         new LengthFieldBasedFrameDecoder(
                                                 Integer.MAX_VALUE, 0, 4, -4, 0),
                                         new IdleStateHandler(
@@ -421,29 +503,81 @@ public class ChannelConnections {
                     }
                 });
 
+        List<Tuple3<String, Integer, ChannelFuture>> tuple3List = new ArrayList<>();
+        // try to connect to all nodes
+        for (ConnectionInfo connectionInfo : connections) {
+            String IP = connectionInfo.getHost();
+            Integer port = connectionInfo.getPort();
+
+            ChannelFuture channelFuture = bootstrap.connect(IP, port);
+            tuple3List.add(new Tuple3<>(IP, port, channelFuture));
+        }
+
+        boolean atLeastOneConnectSuccess = false;
+        List<String> errorMessageList = new ArrayList<>();
+        // Wait for all connection operations to complete
+        for (Tuple3<String, Integer, ChannelFuture> tuple3 : tuple3List) {
+            ChannelFuture connectFuture = tuple3.getValue3().awaitUninterruptibly();
+            if (!connectFuture.isSuccess()) {
+                logger.error(
+                        " connect to {}:{}, error: {}",
+                        tuple3.getValue1(),
+                        tuple3.getValue2(),
+                        connectFuture.cause().getMessage());
+
+                String connectFailedMessage =
+                        Objects.isNull(connectFuture.cause())
+                                ? "connect to "
+                                        + tuple3.getValue1()
+                                        + ":"
+                                        + tuple3.getValue2()
+                                        + " failed"
+                                : connectFuture.cause().getMessage();
+                errorMessageList.add(connectFailedMessage);
+            } else {
+                // tcp connect success and waiting for SSL handshake
+                logger.trace(" connect to {}:{} success", tuple3.getValue1(), tuple3.getValue2());
+
+                SslHandler sslhandler = connectFuture.channel().pipeline().get(SslHandler.class);
+                Future<Channel> sshHandshakeFuture =
+                        sslhandler.handshakeFuture().awaitUninterruptibly();
+                if (sshHandshakeFuture.isSuccess()) {
+                    atLeastOneConnectSuccess = true;
+                    logger.trace(
+                            " ssl handshake success {}:{}", tuple3.getValue1(), tuple3.getValue2());
+                } else {
+
+                    String sslHandshakeFailedMessage =
+                            " ssl handshake failed:/"
+                                    + tuple3.getValue1()
+                                    + ":"
+                                    + tuple3.getValue2();
+
+                    errorMessageList.add(sslHandshakeFailedMessage);
+                }
+            }
+        }
+
+        // All connections failed
+        if (!atLeastOneConnectSuccess) {
+            logger.error(" all connections have failed, " + errorMessageList.toString());
+            throw new RuntimeException(
+                    " Failed to connect to nodes: " + errorMessageList.toString());
+        }
+
         running = true;
+        logger.debug(" start connect end. ");
+    }
 
-        Thread loop =
-                new Thread() {
-                    public void run() {
-                        try {
-                            while (true) {
-                                if (!running) {
-                                    return;
-                                }
+    public void startPeriodTask() {
 
-                                // attempt to reconnect
-                                reconnect();
-                                Thread.sleep(heartBeatDelay);
-                            }
-                        } catch (InterruptedException e) {
-                            logger.error("error", e);
-                            Thread.currentThread().interrupt();
-                        }
-                    }
-                };
+        /** periodically send heartbeat message to all connected node, default period : 2s */
+        scheduledExecutorService.scheduleAtFixedRate(
+                () -> heartbeat(), 0, heartBeatDelay, TimeUnit.MILLISECONDS);
 
-        loop.start();
+        /** periodically reconnected to a broken node, default period: 20s */
+        scheduledExecutorService.scheduleAtFixedRate(
+                () -> reconnect(), 0, reconnectDelay, TimeUnit.MILLISECONDS);
     }
 
     private SslContext initSslContextForConnect() throws SSLException {
@@ -463,13 +597,16 @@ public class ChannelConnections {
                             .sslProvider(SslProvider.JDK)
                             .build();
         } catch (Exception e) {
-            logger.debug("SSLCONTEXT ***********" + e.getMessage());
-            throw new SSLException(
-                    "Failed to initialize the client-side SSLContext: " + e.getMessage());
+            logger.error(
+                    " Failed to initialize the SSLContext, error mesage: {}, error: {} ",
+                    e.getMessage(),
+                    e.getCause());
+            throw new SSLException(" Failed to initialize the SSLContext: " + e.getMessage());
         }
         return sslCtx;
     }
 
+    @Deprecated
     private SslContext initSslContextForListening() throws SSLException {
         SslContext sslCtx;
         try {
@@ -493,32 +630,85 @@ public class ChannelConnections {
         return sslCtx;
     }
 
-    public void reconnect() {
-        for (Entry<String, ChannelHandlerContext> ctx : networkConnections.entrySet()) {
-            if (ctx.getValue() == null || !ctx.getValue().channel().isActive()) {
-                String[] split = ctx.getKey().split(":");
+    public void heartbeat() {
 
-                String host = split[0];
-                Integer port = Integer.parseInt(split[1]);
-                logger.info("try connect to: {}:{}", host, port);
+        List<Tuple2<String, ChannelHandlerContext>> tuple2List = new ArrayList<>();
 
-                bootstrap.connect(host, port);
-                // logger.debug("connect to: {}:{} success", host, port);
-            } else {
-                if (ChannelHandlerContextHelper.isChannelAvailable(ctx.getValue())) {
-                    logger.trace("send heart beat to {}", ctx.getKey());
-                    callback.sendHeartbeat(ctx.getValue());
-                } else {
-                    logger.debug(
-                            " socket channel active, channel protocol handshake not finished, host: {}, ctx: {}",
-                            ctx.getKey(),
-                            System.identityHashCode(ctx.getValue()));
-                }
+        for (ConnectionInfo connectionInfo : connections) {
+            String peer = connectionInfo.getHost() + ":" + connectionInfo.getPort();
+            ChannelHandlerContext ctx = networkConnections.get(peer);
+            if (Objects.nonNull(ctx)
+                    && ctx.channel().isActive()
+                    && ChannelHandlerContextHelper.isChannelAvailable(ctx)) {
+                tuple2List.add(new Tuple2<>(peer, ctx));
             }
+        }
+
+        for (Tuple2<String, ChannelHandlerContext> tuple2 : tuple2List) {
+            logger.trace(" send heart beat to {}", tuple2.getValue1());
+            callback.sendHeartbeat(tuple2.getValue2());
+        }
+    }
+
+    public void reconnect() {
+
+        List<ConnectionInfo> connectionInfoList = new ArrayList<>();
+        int aliveConnectionCount = 0;
+        for (ConnectionInfo connectionInfo : connections) {
+            String peer = connectionInfo.getHost() + ":" + connectionInfo.getPort();
+            ChannelHandlerContext ctx = networkConnections.get(peer);
+            if (Objects.isNull(ctx) || !ctx.channel().isActive()) {
+                connectionInfoList.add(connectionInfo);
+            } else {
+                aliveConnectionCount += 1;
+            }
+        }
+
+        logger.trace(" Keepalive nodes count: {}", aliveConnectionCount);
+
+        for (ConnectionInfo connectionInfo : connectionInfoList) {
+
+            logger.debug(
+                    " try reconnect to {}:{}", connectionInfo.getHost(), connectionInfo.getPort());
+
+            bootstrap
+                    .connect(connectionInfo.getHost(), connectionInfo.getPort())
+                    .addListener(
+                            (ChannelFutureListener)
+                                    future -> {
+                                        if (future.isSuccess()) {
+                                            logger.trace(
+                                                    " reconnect to {}:{} success",
+                                                    connectionInfo.getHost(),
+                                                    connectionInfo.getPort());
+                                        } else {
+                                            logger.error(
+                                                    " reconnect to {}:{}, error: {}",
+                                                    connectionInfo.getHost(),
+                                                    connectionInfo.getPort(),
+                                                    future.cause().getMessage());
+                                        }
+                                    });
         }
     }
 
     public void onReceiveMessage(ChannelHandlerContext ctx, ByteBuf message) {
         callback.onMessage(ctx, message);
+    }
+
+    public long getConnectTimeout() {
+        return connectTimeout;
+    }
+
+    public void setConnectTimeout(long connectTimeout) {
+        this.connectTimeout = connectTimeout;
+    }
+
+    public long getSslHandShakeTimeout() {
+        return sslHandShakeTimeout;
+    }
+
+    public void setSslHandShakeTimeout(long sslHandShakeTimeout) {
+        this.sslHandShakeTimeout = sslHandShakeTimeout;
     }
 }

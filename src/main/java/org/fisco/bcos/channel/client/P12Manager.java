@@ -23,11 +23,16 @@ import java.util.Collections;
 import org.bouncycastle.jcajce.provider.keystore.pkcs12.PKCS12KeyStoreSpi;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.fisco.bcos.web3j.crypto.ECKeyPair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 
 public class P12Manager {
+
+    private static final Logger logger = LoggerFactory.getLogger(P12Manager.class);
+
     private String p12File;
     private final String NAME = "key";
     private String password;
@@ -47,6 +52,8 @@ public class P12Manager {
         Resource keyStoreResource = resolver.getResource(p12File);
 
         keyStore.load(keyStoreResource.getInputStream(), password.toCharArray());
+
+        // logger.debug(" p12 load, keyStore: {}", keyStore);
     }
 
     public void load(InputStream in, String password)
@@ -54,6 +61,8 @@ public class P12Manager {
                     NoSuchProviderException {
         keyStore = KeyStore.getInstance("PKCS12", "BC");
         keyStore.load(in, password.toCharArray());
+
+        // logger.debug(" p12 load, keyStore: {}", keyStore);
     }
 
     public PrivateKey getPrivateKey()
