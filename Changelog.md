@@ -1,3 +1,83 @@
+### v2.3.0
+
+(2020-03-27)
+
+* 新增
+1. 新增ECC加密/解密工具，具体参考ECCEncrypt/ECCDecrypt类
+2. 添加RevertResolver工具，解析solidity require语句的提示信息
+3. 添加合约状态管理, 实现对合约的冻结解冻、状态查询等操作，以及上述操作的权限管理
+
+* 修复
+1. solidity编译bin或abi信息超过64k导致Java文件编译报错的问题
+2. 修复AMOP不支持中文topic的问题
+
+* 兼容
+1. 适配fisco-bcos 2.3.0版本，支持Channel Message v1/V2/V3协议
+
+### v2.2.3
+
+(2020-03-03)
+
+* 新增
+1. Service对象添加updateTopicsToNode接口，SDK可以运行时更新订阅的topic
+
+* 兼容
+1. 适配fisco-bcos 2.2.0版本，支持Channel Message v1/V2/V3协议
+
+### v2.2.2
+
+(2020-01-17)
+
+* 更新
+1. 添加网络模块的异常处理，给出更详细的错误信息
+
+* 修复
+1. 修正国密签名验签的bug
+2. 修复国密交易RLP编码pub成员首部空字符被清理的bug
+
+* 兼容
+1. 适配fisco-bcos 2.2.0版本，支持Channel Message v1/V2/V3协议
+
+
+### v2.2.0
+
+(2019-12-24)
+
+* 增加
+1. 新增默克尔树的验证接口
+2. 压测程序支持国密版本
+
+* 更新
+1. 优化toHexString函数为apache commons库的实现
+2. 升级netty-tcnative-boringssl-static版本为2.0.27.Final
+
+* 兼容
+1. 适配fisco-bcos 2.2.0版本，支持Channel Message v1/V2/V3协议
+
+### v2.1.2
+
+(2019-11-14)
+* 修复
+1. 修复国密服务无法使用的bug.
+
+
+### v2.1.1
+
+(2019-10-29)
+
+* 增加
+1. 生成`java`合约代码添加`input`和`output`的解析接口
+
+* 更新
+1. 修复`SDK`与节点握手协议的漏洞
+2. 部署合约`SDK`时不再通过轮询方式判断是否成功
+3. 修复`TransactionReceipt`类的`isStatusOK`接口抛出异常的问题
+
+* 兼容
+
+1. 兼容Channel Message v1协议
+2. 兼容FISCO BCOS 2.1以下的sdk证书名node.crt和node.key
+
 ### v2.1.0
 
 (2019-09-17)

@@ -12,9 +12,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.locks.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.web3j.crypto.Credentials;
+import org.fisco.bcos.web3j.crypto.gm.GenCredential;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
 import org.fisco.bcos.web3j.tx.Contract;
@@ -171,9 +173,7 @@ public class PerformanceDTTest {
                         15 * 100,
                         scheduledExecutorService,
                         Integer.parseInt(groupId));
-        credentials =
-                Credentials.create(
-                        "b83261efa42895c38c6c2364ca878f43e77f3cddbc922bf57d0d48070f79feb6");
+        credentials = GenCredential.create();
         transactionManager = Contract.getTheTransactionManager(web3, credentials);
     }
 
@@ -191,9 +191,7 @@ public class PerformanceDTTest {
             System.out.println("Deploying contract ");
             System.out.println(
                     "===================================================================");
-            credentials =
-                    Credentials.create(
-                            "b83261efa42895c38c6c2364ca878f43e77f3cddbc922bf57d0d48070f79feb6");
+
             parallelok =
                     ParallelOk.deploy(
                                     web3,
@@ -244,6 +242,7 @@ public class PerformanceDTTest {
                                     callback.setCallBackType("set");
 
                                     try {
+                                        callback.recordStartTime();
                                         parallelok.set(user, amount, callback);
                                         success = true;
                                     } catch (Exception e) {
@@ -272,6 +271,10 @@ public class PerformanceDTTest {
             // end or not
             while (!collector.isEnd()) {
                 Thread.sleep(3000);
+                logger.info(
+                        " received: {}, total: {}",
+                        collector.getReceived().intValue(),
+                        collector.getTotal());
             }
 
             dagUserMgr.setContractAddr(parallelokAddr);
@@ -369,6 +372,7 @@ public class PerformanceDTTest {
                                     System.out.println(info);
 
                                     try {
+                                        callback.recordStartTime();
                                         parallelok.transferWithRevert(
                                                 from.getUser(), to.getUser(), amount, callback);
                                         success = true;
@@ -384,6 +388,10 @@ public class PerformanceDTTest {
             // end or not
             while (!collector.isEnd()) {
                 Thread.sleep(3000);
+                logger.info(
+                        " received: {}, total: {}",
+                        collector.getReceived().intValue(),
+                        collector.getTotal());
             }
 
             veryTransferData(threadPool);
@@ -493,6 +501,7 @@ public class PerformanceDTTest {
                                     callback.setAmount(amount);
 
                                     try {
+                                        callback.recordStartTime();
                                         String signedTransaction =
                                                 parallelok.transferSeq(
                                                         from.getUser(), to.getUser(), amount);
@@ -545,6 +554,7 @@ public class PerformanceDTTest {
                             public void run() {
                                 while (true) {
                                     try {
+                                        callbacks.get(index).recordStartTime();
                                         transactionManager.sendTransaction(
                                                 signedTransactions.get(index),
                                                 callbacks.get(index));
@@ -578,6 +588,10 @@ public class PerformanceDTTest {
 
             while (!collector.isEnd()) {
                 Thread.sleep(3000);
+                logger.info(
+                        " received: {}, total: {}",
+                        collector.getReceived().intValue(),
+                        collector.getTotal());
             }
 
             veryTransferData(threadPool);

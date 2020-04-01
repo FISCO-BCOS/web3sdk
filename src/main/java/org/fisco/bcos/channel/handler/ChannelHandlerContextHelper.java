@@ -45,13 +45,16 @@ public class ChannelHandlerContextHelper {
         if (ctx.channel().hasAttr(attributeKey)) {
             ChannelProtocol channelProtocol = ctx.channel().attr(attributeKey).get();
 
-            logger.trace(" host: {}, channel protocol: {}", host, channelProtocol);
+            if (null != channelProtocol) {
+                // logger.trace(" host: {}, channel protocol: {}", host, channelProtocol);
 
-            return channelProtocol.getEnumProtocol();
-
-        } else { // default channel version
-            return null;
+                return channelProtocol.getEnumProtocol();
+            } else {
+                logger.debug(" channel has attr but get null, host: {}", host);
+            }
         }
+
+        return null;
     }
 
     public static String getPeerHost(ChannelHandlerContext ctx) {

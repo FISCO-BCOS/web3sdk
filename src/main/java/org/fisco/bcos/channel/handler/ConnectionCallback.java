@@ -177,7 +177,7 @@ public class ConnectionCallback implements ChannelConnections.Callback {
                                             .set(channelProtocol);
 
                                     //
-                                    subBlockNotification(ctx);
+                                    sendUpdateTopicMessage(ctx);
                                     queryBlockNumber(ctx);
                                     // channelService.getEventLogFilterManager().sendFilter();
 
@@ -234,7 +234,7 @@ public class ConnectionCallback implements ChannelConnections.Callback {
                                 logger.info(
                                         " query node version timeout, content: {}",
                                         response.getContent());
-                                subBlockNotification(ctx);
+                                sendUpdateTopicMessage(ctx);
                                 queryBlockNumber(ctx);
                                 return;
                             } else if (response.getErrorCode() != 0) {
@@ -282,7 +282,7 @@ public class ConnectionCallback implements ChannelConnections.Callback {
                                         nodeVersion.getResult(),
                                         response.getContent());
 
-                                subBlockNotification(ctx);
+                                sendUpdateTopicMessage(ctx);
                                 queryBlockNumber(ctx);
                                 // channelService.getEventLogFilterManager().sendFilter();
                             }
@@ -316,7 +316,7 @@ public class ConnectionCallback implements ChannelConnections.Callback {
         channelService.getSeq2Callback().put(seq, callback);
     }
 
-    private void subBlockNotification(ChannelHandlerContext ctx) throws JsonProcessingException {
+    public void sendUpdateTopicMessage(ChannelHandlerContext ctx) throws JsonProcessingException {
 
         Message message = new Message();
         message.setResult(0);
@@ -336,7 +336,7 @@ public class ConnectionCallback implements ChannelConnections.Callback {
         ctx.writeAndFlush(out);
 
         logger.info(
-                " send sub block notification request, seq: {}, content: {}",
+                " send update topic message request, seq: {}, content: {}",
                 message.getSeq(),
                 content);
     }

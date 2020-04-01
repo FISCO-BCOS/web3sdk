@@ -42,7 +42,8 @@ public class ReceiptEncoder {
         List<Log> logs = transactionReceipt.getLogs();
         List<RlpType> logList = new ArrayList<>();
         for (Log log : logs) {
-            logList.add(RlpString.create(Numeric.hexStringToByteArray(log.getAddress())));
+            List<RlpType> logUnit = new ArrayList<>();
+            logUnit.add(RlpString.create(Numeric.hexStringToByteArray(log.getAddress())));
 
             List<String> topics = log.getTopics();
             List<RlpType> topicList = new ArrayList<>();
@@ -50,13 +51,13 @@ public class ReceiptEncoder {
                 topicList.add(RlpString.create(Numeric.hexStringToByteArray(topic)));
             }
             RlpList topicRlpList = new RlpList(topicList);
-            logList.add(topicRlpList);
 
-            logList.add(RlpString.create(Numeric.hexStringToByteArray(log.getData())));
+            logUnit.add(topicRlpList);
+            logUnit.add(RlpString.create(Numeric.hexStringToByteArray(log.getData())));
+            logList.add(new RlpList(logUnit));
         }
         RlpList logRlpList = new RlpList(logList);
         result.add(logRlpList);
-
         return result;
     }
 }
