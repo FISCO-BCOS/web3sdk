@@ -96,22 +96,24 @@ public class PerformanceDTCollector {
                 less50.incrementAndGet();
             } else if (cost < 100) {
                 less100.incrementAndGet();
-                ;
             } else if (cost < 200) {
                 less200.incrementAndGet();
-                ;
             } else if (cost < 400) {
                 less400.incrementAndGet();
-                ;
             } else if (cost < 1000) {
                 less1000.incrementAndGet();
-                ;
             } else if (cost < 2000) {
                 less2000.incrementAndGet();
-                ;
+            } else if (cost < 5000) {
+                less5000.incrementAndGet();
+            } else if (cost < 10000) {
+                less10000.incrementAndGet();
+            } else if (cost < 30000) {
+                less30000.incrementAndGet();
+            } else if (cost < 60000) {
+                less60000.incrementAndGet();
             } else {
-                timeout2000.incrementAndGet();
-                ;
+                timeout60000.incrementAndGet();
             }
 
             totalCost.addAndGet(cost);
@@ -173,16 +175,40 @@ public class PerformanceDTCollector {
                                 + String.valueOf((double) less1000.get() / total * 100)
                                 + "%");
                 System.out.println(
-                        "1000 < time <  2000ms : "
+                        "1 < time <  2s : "
                                 + String.valueOf(less2000)
                                 + "  : "
                                 + String.valueOf((double) less2000.get() / total * 100)
                                 + "%");
                 System.out.println(
-                        "2000 < time           : "
-                                + String.valueOf(timeout2000)
+                        "2 < time <  5s : "
+                                + String.valueOf(less5000)
                                 + "  : "
-                                + String.valueOf((double) timeout2000.get() / total * 100)
+                                + String.valueOf((double) less5000.get() / total * 100)
+                                + "%");
+                System.out.println(
+                        "5 < time <  10s : "
+                                + String.valueOf(less10000)
+                                + "  : "
+                                + String.valueOf((double) less10000.get() / total * 100)
+                                + "%");
+                System.out.println(
+                        "10 < time <  30s : "
+                                + String.valueOf(less30000)
+                                + "  : "
+                                + String.valueOf((double) less30000.get() / total * 100)
+                                + "%");
+                System.out.println(
+                        "30 < time <  60s : "
+                                + String.valueOf(less60000)
+                                + "  : "
+                                + String.valueOf((double) less60000.get() / total * 100)
+                                + "%");
+                System.out.println(
+                        "time > 60s           : "
+                                + String.valueOf(timeout60000)
+                                + "  : "
+                                + String.valueOf((double) timeout60000.get() / total * 100)
                                 + "%");
             }
 
@@ -198,7 +224,11 @@ public class PerformanceDTCollector {
     private AtomicLong less400 = new AtomicLong(0);
     private AtomicLong less1000 = new AtomicLong(0);
     private AtomicLong less2000 = new AtomicLong(0);
-    private AtomicLong timeout2000 = new AtomicLong(0);
+    private AtomicLong less5000 = new AtomicLong(0);
+    private AtomicLong less10000 = new AtomicLong(0);
+    private AtomicLong less30000 = new AtomicLong(0);
+    private AtomicLong less60000 = new AtomicLong(0);
+    private AtomicLong timeout60000 = new AtomicLong(0);
     private AtomicLong totalCost = new AtomicLong(0);
 
     private AtomicInteger received = new AtomicInteger(0);

@@ -151,7 +151,7 @@ public class EventLogFilterManager {
                                         Thread.currentThread().interrupt();
                                     }
 
-                                    logger.debug(
+                                    logger.trace(
                                             " event filter manager, filter: {}, callback: {}",
                                             registerIDToFilter.size(),
                                             filterIDToCallback.size());

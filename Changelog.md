@@ -1,3 +1,44 @@
+### v2.3.0
+
+(2020-03-27)
+
+* 新增
+1. 新增ECC加密/解密工具，具体参考ECCEncrypt/ECCDecrypt类
+2. 添加RevertResolver工具，解析solidity require语句的提示信息
+3. 添加合约状态管理, 实现对合约的冻结解冻、状态查询等操作，以及上述操作的权限管理
+
+* 修复
+1. solidity编译bin或abi信息超过64k导致Java文件编译报错的问题
+2. 修复AMOP不支持中文topic的问题
+
+* 兼容
+1. 适配fisco-bcos 2.3.0版本，支持Channel Message v1/V2/V3协议
+
+### v2.2.3
+
+(2020-03-03)
+
+* 新增
+1. Service对象添加updateTopicsToNode接口，SDK可以运行时更新订阅的topic
+
+* 兼容
+1. 适配fisco-bcos 2.2.0版本，支持Channel Message v1/V2/V3协议
+
+### v2.2.2
+
+(2020-01-17)
+
+* 更新
+1. 添加网络模块的异常处理，给出更详细的错误信息
+
+* 修复
+1. 修正国密签名验签的bug
+2. 修复国密交易RLP编码pub成员首部空字符被清理的bug
+
+* 兼容
+1. 适配fisco-bcos 2.2.0版本，支持Channel Message v1/V2/V3协议
+
+
 ### v2.2.0
 
 (2019-12-24)

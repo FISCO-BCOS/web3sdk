@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ConnectionInfo {
+    @Deprecated
     public String getNodeID() {
         return nodeID;
     }
 
+    @Deprecated
     public void setNodeID(String nodeID) {
         this.nodeID = nodeID;
     }
@@ -28,10 +30,12 @@ public class ConnectionInfo {
         this.port = port;
     }
 
+    @Deprecated
     public Boolean getConfig() {
         return config;
     }
 
+    @Deprecated
     public void setConfig(Boolean config) {
         this.config = config;
     }
@@ -44,10 +48,16 @@ public class ConnectionInfo {
         this.topics = topics;
     }
 
-    private String nodeID = "";
+    @Deprecated private String nodeID = "";
+    @Deprecated private Boolean config = false;
+
     private String host = "";
     private Integer port = 0;
-    private Boolean config = false;
 
     private List<String> topics = new ArrayList<String>();
+
+    @Override
+    public String toString() {
+        return "ConnectionInfo{" + "host='" + host + '\'' + ", port=" + port + '}';
+    }
 }
