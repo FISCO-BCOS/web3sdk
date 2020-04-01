@@ -3,8 +3,6 @@ package org.fisco.bcos.web3j.crypto.gm.sm2.util;
 import java.io.FileInputStream;
 import java.security.Key;
 import java.security.KeyStore;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.security.cert.Certificate;
 
 public class KeyUtils {
@@ -245,56 +243,6 @@ public class KeyUtils {
         for (int j = 0; j < aBuf.length; j++) outBuf[j] = (byte) (aBuf[j] ^ bBuf[j]);
 
         return bcdhex_to_aschex(outBuf);
-    }
-
-    /**
-     * * sha1
-     *
-     * @param inStr
-     * @return
-     */
-    public static String sha1String(String inStr) {
-        MessageDigest md = null;
-        String outStr = null;
-        try {
-            md = MessageDigest.getInstance("SHA-1"); // 选择SHA-1
-            byte[] data = null;
-            try {
-                data = inStr.getBytes(DEFAUTL_CHARTSET);
-            } catch (Exception e) {
-                data = inStr.getBytes();
-            }
-            byte[] digest = md.digest(data); // 返回的是byet[]，要转化为String存储比较方便
-            outStr = bcdhex_to_aschex(digest);
-        } catch (NoSuchAlgorithmException nsae) {
-            nsae.printStackTrace();
-        }
-        return outStr;
-    }
-
-    /**
-     * md5
-     *
-     * @param inStr
-     * @return
-     */
-    public static String md5String(String inStr) {
-        MessageDigest md = null;
-        String outStr = null;
-        try {
-            md = MessageDigest.getInstance("MD5"); // 选择MD5
-            byte[] data = null;
-            try {
-                data = inStr.getBytes(DEFAUTL_CHARTSET);
-            } catch (Exception e) {
-                data = inStr.getBytes();
-            }
-            byte[] digest = md.digest(data); // 返回的是byet[]，要转化为String存储比较方便
-            outStr = bcdhex_to_aschex(digest);
-        } catch (NoSuchAlgorithmException nsae) {
-            nsae.printStackTrace();
-        }
-        return outStr;
     }
 
     /**

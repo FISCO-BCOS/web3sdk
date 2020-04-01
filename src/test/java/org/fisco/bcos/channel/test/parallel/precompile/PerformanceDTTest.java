@@ -17,9 +17,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.locks.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.web3j.crypto.Credentials;
+import org.fisco.bcos.web3j.crypto.gm.GenCredential;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
@@ -55,6 +57,10 @@ public class PerformanceDTTest {
     public PerformanceDTTest(String groupID) throws Exception {
         groupId = groupID;
         initialize(groupId);
+    }
+
+    public PerformanceDTTest() throws Exception {
+        groupId = "";
     }
 
     public DagUserMgr getDagUserMgr() {
@@ -189,9 +195,7 @@ public class PerformanceDTTest {
                         scheduledExecutorService,
                         Integer.parseInt(groupId));
 
-        Credentials credentials =
-                Credentials.create(
-                        "b83261efa42895c38c6c2364ca878f43e77f3cddbc922bf57d0d48070f79feb6");
+        Credentials credentials = GenCredential.create();
 
         dagTransfer =
                 DagTransfer.load(
@@ -245,6 +249,7 @@ public class PerformanceDTTest {
                                 callback.setCallBackType("add");
 
                                 try {
+                                    callback.recordStartTime();
                                     dagTransfer.userAdd(user, amount, callback);
                                 } catch (Exception e) {
                                     TransactionReceipt receipt = new TransactionReceipt();
@@ -270,7 +275,11 @@ public class PerformanceDTTest {
 
             // end or not
             while (!collector.isEnd()) {
-                Thread.sleep(100);
+                Thread.sleep(2000);
+                logger.info(
+                        " received: {}, total: {}",
+                        collector.getReceived().intValue(),
+                        collector.getTotal());
             }
 
             dagUserMgr.writeDagTransferUser();
@@ -280,6 +289,104 @@ public class PerformanceDTTest {
             e.printStackTrace();
             System.exit(0);
         }
+    }
+
+    /**
+     * Stress tests that create tx and sign them
+     *
+     * @param totalSignedTxCount
+     * @param threadC
+     * @throws InterruptedException
+     */
+    public void userTransferSignTxPerfTest(BigInteger totalSignedTxCount, int threadC)
+            throws InterruptedException {
+
+        ThreadPoolTaskExecutor threadPool = new ThreadPoolTaskExecutor();
+
+        threadPool.setCorePoolSize(threadC > 0 ? threadC : 10);
+        threadPool.setMaxPoolSize(threadC > 0 ? threadC : 10);
+        threadPool.setQueueCapacity(threadC > 0 ? threadC : 10);
+        threadPool.initialize();
+
+        Credentials credentials = GenCredential.create();
+
+        TransferSignTransactionManager extendedRawTransactionManager =
+                new TransferSignTransactionManager(
+                        null, credentials, BigInteger.ONE, BigInteger.ONE);
+
+        dagTransfer =
+                DagTransfer.load(
+                        dagTransferAddr,
+                        null,
+                        extendedRawTransactionManager,
+                        new StaticGasProvider(
+                                new BigInteger("30000000"), new BigInteger("30000000")));
+
+        AtomicLong signed = new AtomicLong(0);
+
+        long startTime = System.currentTimeMillis();
+        System.out.println(" => " + dateFormat.format(new Date()));
+
+        for (int i = 0; i < threadC; i++) {
+            threadPool.execute(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            while (true) {
+
+                                long index = signed.incrementAndGet();
+                                if (index > totalSignedTxCount.intValue()) {
+                                    break;
+                                }
+                                DagTransferUser from = dagUserMgr.getFrom((int) index);
+                                DagTransferUser to = dagUserMgr.getTo((int) index);
+
+                                Random random = new Random();
+                                int r = random.nextInt(100) + 1;
+                                BigInteger amount = BigInteger.valueOf(r);
+
+                                try {
+                                    String signedTransaction =
+                                            dagTransfer.userTransferSeq(
+                                                    from.getUser(), to.getUser(), amount);
+
+                                    if (index % (totalSignedTxCount.longValue() / 10) == 0) {
+                                        System.out.println(
+                                                "Signed transaction: "
+                                                        + String.valueOf(
+                                                                index
+                                                                        * 100
+                                                                        / totalSignedTxCount
+                                                                                .longValue())
+                                                        + "%");
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                    System.exit(-1);
+                                }
+                            }
+                        }
+                    });
+        }
+
+        while (signed.get() < totalSignedTxCount.intValue()) {
+            Thread.sleep(10);
+        }
+
+        long endTime = System.currentTimeMillis();
+        double elapsed = (endTime - startTime) / 1000.0;
+
+        System.out.println(" => " + dateFormat.format(new Date()));
+
+        System.out.print(
+                " sign transactions finished, elapse time: "
+                        + elapsed
+                        + ", tx count = "
+                        + totalSignedTxCount
+                        + " ,sps = "
+                        + (totalSignedTxCount.intValue() / elapsed));
+
+        System.exit(0);
     }
 
     public void userTransferTest(BigInteger count, BigInteger qps, BigInteger deci) {
@@ -376,68 +483,84 @@ public class PerformanceDTTest {
 
                 Lock fileLock = new ReentrantLock();
                 BufferedWriter writer = null;
-
-                writer = new BufferedWriter(new FileWriter(fileName));
-
                 AtomicLong writed = new AtomicLong(0);
-                for (int j = start; j < end; ++j) {
-                    final int index = j;
-                    final int totalWrite = end - start;
-                    final BufferedWriter finalWriter = writer;
-                    threadPool.execute(
-                            new Runnable() {
-                                @Override
-                                public void run() {
-                                    while (true) {
-                                        DagTransferUser from = dagUserMgr.getFrom(index);
-                                        DagTransferUser to = dagUserMgr.getTo(index);
-                                        if ((deci.intValue() > 0)
-                                                && (deci.intValue() >= (index % 10 + 1))) {
-                                            to = dagUserMgr.getNext(index);
-                                        }
-
-                                        Random random = new Random();
-                                        int r = random.nextInt(100) + 1;
-                                        BigInteger amount = BigInteger.valueOf(r);
-
-                                        try {
-                                            String signedTransaction =
-                                                    dagTransfer.userTransferSeq(
-                                                            from.getUser(), to.getUser(), amount);
-                                            String content =
-                                                    String.format(
-                                                            "%s %d %d%n",
-                                                            signedTransaction, index, r);
-                                            fileLock.lock();
-                                            finalWriter.write(content);
-
-                                            long totalSigned = signed.incrementAndGet();
-                                            if (totalSigned % (count.longValue() / 10) == 0) {
-                                                System.out.println(
-                                                        "Signed transaction: "
-                                                                + String.valueOf(
-                                                                        totalSigned
-                                                                                * 100
-                                                                                / count.longValue())
-                                                                + "%");
+                final int totalWrite = end - start;
+                try {
+                    writer = new BufferedWriter(new FileWriter(fileName));
+                    for (int j = start; j < end; ++j) {
+                        final int index = j;
+                        final BufferedWriter finalWriter = writer;
+                        threadPool.execute(
+                                new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        while (true) {
+                                            DagTransferUser from = dagUserMgr.getFrom(index);
+                                            DagTransferUser to = dagUserMgr.getTo(index);
+                                            if ((deci.intValue() > 0)
+                                                    && (deci.intValue() >= (index % 10 + 1))) {
+                                                to = dagUserMgr.getNext(index);
                                             }
 
-                                            long writedCount = writed.incrementAndGet();
-                                            totalWrited.incrementAndGet();
-                                            if (writedCount >= totalWrite) {
-                                                finalWriter.close();
-                                            }
+                                            Random random = new Random();
+                                            int r = random.nextInt(100) + 1;
+                                            BigInteger amount = BigInteger.valueOf(r);
 
-                                            break;
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
-                                            continue;
-                                        } finally {
-                                            fileLock.unlock();
+                                            try {
+                                                String signedTransaction =
+                                                        dagTransfer.userTransferSeq(
+                                                                from.getUser(),
+                                                                to.getUser(),
+                                                                amount);
+                                                String content =
+                                                        String.format(
+                                                                "%s %d %d%n",
+                                                                signedTransaction, index, r);
+                                                fileLock.lock();
+                                                finalWriter.write(content);
+
+                                                long totalSigned = signed.incrementAndGet();
+                                                if (totalSigned % (count.longValue() / 10) == 0) {
+                                                    System.out.println(
+                                                            "Signed transaction: "
+                                                                    + String.valueOf(
+                                                                            totalSigned
+                                                                                    * 100
+                                                                                    / count
+                                                                                            .longValue())
+                                                                    + "%");
+                                                }
+
+                                                long writedCount = writed.incrementAndGet();
+                                                totalWrited.incrementAndGet();
+                                                if (writedCount >= totalWrite) {
+                                                    finalWriter.close();
+                                                }
+
+                                                break;
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
+                                                continue;
+                                            } finally {
+                                                fileLock.unlock();
+                                            }
                                         }
                                     }
-                                }
-                            });
+                                });
+                    }
+                } catch (Exception e) {
+
+                    if (writer != null) {
+                        writer.close();
+                    }
+
+                    e.printStackTrace();
+                    System.exit(0);
+                } finally {
+                    if ((writed.get() >= totalWrite) && (writer != null)) {
+                        writer.close();
+                        writer = null;
+                    }
                 }
             }
 
@@ -503,6 +626,7 @@ public class PerformanceDTTest {
                                     public void run() {
                                         while (true) {
                                             try {
+                                                callbacks.get(index).recordStartTime();
                                                 transactionManager.sendTransaction(
                                                         signedTransactions.get(index),
                                                         callbacks.get(index));
@@ -530,6 +654,9 @@ public class PerformanceDTTest {
                                     + " transactions"
                                     + ",QPS="
                                     + sendSpeed);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.exit(0);
                 } finally {
                     if (reader != null) {
                         reader.close();
@@ -538,7 +665,11 @@ public class PerformanceDTTest {
             }
 
             while (!collector.isEnd()) {
-                Thread.sleep(1000);
+                Thread.sleep(2000);
+                logger.info(
+                        " received: {}, total: {}",
+                        collector.getReceived().intValue(),
+                        collector.getTotal());
             }
 
             logger.info("End to send");

@@ -30,13 +30,8 @@ public class GenCredential {
             final byte[] publicKey = pk.getEncoded();
             final byte[] privateKey = vk.getEncoded();
 
-            // System.out.println("===public:" + Hex.toHexString(publicKey));
-            // System.out.println("===private:" + Hex.toHexString(privateKey));
             BigInteger biPublic = new BigInteger(Hex.toHexString(publicKey), 16);
             BigInteger biPrivate = new BigInteger(Hex.toHexString(privateKey), 16);
-
-            // System.out.println("---public:" + biPublic.toString(16));
-            // System.out.println("---private:" + biPrivate.toString(16));
 
             ECKeyPair keyPair = new ECKeyPair(biPrivate, biPublic);
             return keyPair;
@@ -74,13 +69,13 @@ public class GenCredential {
         }
     }
 
-    private static ECKeyPair createKeyPair() {
+    public static ECKeyPair createKeyPair() {
         // use guomi
         if (EncryptType.encryptType == 1) return createGuomiKeyPair();
         return createECDSAKeyPair(); // default use ECDSA
     }
 
-    private static ECKeyPair createKeyPair(String privKey) {
+    public static ECKeyPair createKeyPair(String privKey) {
         if (EncryptType.encryptType == 1) return createGuomiKeyPair(privKey);
         return createECDSAKeyPair(privKey);
     }
@@ -91,6 +86,11 @@ public class GenCredential {
             if (keyPair == null) return null;
 
             Credentials credentials = Credentials.create(keyPair);
+            logger.debug(
+                    " privateKey: {}, publicKey: {}, address: {}",
+                    credentials.getEcKeyPair().getPrivateKey(),
+                    credentials.getEcKeyPair().getPrivateKey(),
+                    credentials.getAddress());
             return credentials;
         } catch (Exception e) {
             System.out.println("init credential failed");

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
+import org.fisco.bcos.fisco.EnumNodeVersion;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.precompile.common.PrecompiledCommon;
 import org.fisco.bcos.web3j.precompile.exception.PrecompileMessageException;
@@ -12,8 +13,13 @@ import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.tx.gas.ContractGasProvider;
 import org.fisco.bcos.web3j.tx.gas.StaticGasProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CRUDService {
+
+    private static final Logger logger = LoggerFactory.getLogger(CRUDService.class);
+
     private static BigInteger gasPrice = new BigInteger("300000000");
     private static BigInteger gasLimit = new BigInteger("300000000");
     private static final String TableFactoryPrecompileAddress =
@@ -128,11 +134,33 @@ public class CRUDService {
     public Table desc(String tableName) throws Exception {
         Table table = new Table();
         table.setTableName(PrecompiledCommon.SYS_TABLE);
-        table.setKey(PrecompiledCommon.USER_TABLE_PREFIX + tableName);
+
+        /** Compatible with node version 2.2.0 */
+        try {
+            String supportedVersion =
+                    crud.getTransactionManager().getNodeVersion().getSupportedVersion();
+            EnumNodeVersion.Version version = EnumNodeVersion.getClassVersion(supportedVersion);
+
+            logger.debug("desc, table: {}, node version: {}", tableName, version);
+
+            // less than 2.2.0
+            if ((version.getMajor() == 2) && (version.getMinor() < 2)) {
+                table.setKey(PrecompiledCommon.USER_TABLE_PREFIX + tableName);
+            } else {
+                table.setKey(PrecompiledCommon.USER_TABLE_PREFIX_2_2_0_VERSION + tableName);
+            }
+        } catch (Exception e) {
+            throw new PrecompileMessageException(
+                    " Cannot query node version, maybe disconnect to all nodes.");
+        }
+
         Condition condition = table.getCondition();
         List<Map<String, String>> userTable = select(table, condition);
         Table tableInfo = new Table();
-        if (userTable.size() != 0) {
+        if ((userTable != null)
+                && (userTable.size() != 0)
+                && (null != userTable.get(0))
+                && !userTable.get(0).isEmpty()) {
             tableInfo.setTableName(tableName);
             tableInfo.setKey(userTable.get(0).get("key_field"));
             tableInfo.setValueFields(userTable.get(0).get("value_field"));

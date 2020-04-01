@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
+import org.fisco.bcos.channel.client.TransactionSucCallback;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.Web3jService;
 import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
@@ -23,6 +24,7 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.BlockNumber;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Call;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Code;
 import org.fisco.bcos.web3j.protocol.core.methods.response.ConsensusStatus;
+import org.fisco.bcos.web3j.protocol.core.methods.response.GenerateGroup;
 import org.fisco.bcos.web3j.protocol.core.methods.response.GroupList;
 import org.fisco.bcos.web3j.protocol.core.methods.response.GroupPeers;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Log;
@@ -35,6 +37,7 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.PendingTransactions;
 import org.fisco.bcos.web3j.protocol.core.methods.response.PendingTxSize;
 import org.fisco.bcos.web3j.protocol.core.methods.response.SealerList;
 import org.fisco.bcos.web3j.protocol.core.methods.response.SendTransaction;
+import org.fisco.bcos.web3j.protocol.core.methods.response.StartGroup;
 import org.fisco.bcos.web3j.protocol.core.methods.response.SyncStatus;
 import org.fisco.bcos.web3j.protocol.core.methods.response.SystemConfig;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TotalTransactionCount;
@@ -317,9 +320,34 @@ public class JsonRpc2_0Web3j implements Web3j {
     }
 
     @Override
+    public void sendRawTransaction(String signedTransactionData, TransactionSucCallback callback)
+            throws IOException {
+        Request<?, SendTransaction> request = sendRawTransaction(signedTransactionData);
+        request.setNeedTransCallback(true);
+        request.setTransactionSucCallback(callback);
+
+        request.sendOnly();
+    }
+
+    @Override
     public Request<?, GroupPeers> getGroupPeers() {
         return new Request<>(
                 "getGroupPeers", Arrays.asList(groupId), web3jService, GroupPeers.class);
+    }
+
+    @Override
+    public Request<?, GenerateGroup> generateGroup(
+            int groupID, int timestamp, List<String> nodeList) {
+        return new Request<>(
+                "generateGroup",
+                Arrays.asList(groupID, timestamp, nodeList),
+                web3jService,
+                GenerateGroup.class);
+    }
+
+    @Override
+    public Request<?, StartGroup> startGroup(int groupID) {
+        return new Request<>("startGroup", Arrays.asList(groupID), web3jService, StartGroup.class);
     }
 
     @Override
