@@ -60,7 +60,6 @@ web3sdk/dist/apps/web3sdk.jar
 - 如项目对您有帮助，欢迎点亮我们的小星星(点击项目左上方Star按钮)。
 - 提交代码(Pull requests)，参考我们的[代码贡献流程](CONTRIBUTING_CN.md)。
 - [提问和提交BUG](https://github.com/FISCO-BCOS/web3sdk/issues/new)。
-- 如果发现代码存在安全漏洞，请在[这里](https://security.webank.com)上报。
 
 ## 加入我们的社区
 

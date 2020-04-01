@@ -32,6 +32,7 @@ public class StatusCode {
     public static final String GasOverflow = "0x1b";
     public static final String TxPoolIsFull = "0x1c";
     public static final String TransactionRefused = "0x1d";
+    public static final String ContractFrozen = "0x1e";
 
     // extension
     public static final String ExceptionCatched = "0x30";
@@ -59,13 +60,13 @@ public class StatusCode {
                 message = "unknown";
                 break;
             case BadRLP:
-                message = "bad RLP";
+                message = "invalid RLP";
                 break;
             case InvalidFormat:
                 message = "invalid format";
                 break;
             case OutOfGasIntrinsic:
-                message = "out of gas";
+                message = "contract to deploy is too long(or input data is too long)";
                 break;
             case InvalidSignature:
                 message = "invalid signature";
@@ -77,7 +78,7 @@ public class StatusCode {
                 message = "not enough cash";
                 break;
             case OutOfGasBase:
-                message = "out of gas base";
+                message = "input data is too long";
                 break;
             case BlockGasLimitReached:
                 message = "block gas limit reached";
@@ -89,7 +90,7 @@ public class StatusCode {
                 message = "bad jump destination";
                 break;
             case OutOfGas:
-                message = "out of gas";
+                message = "out-of-gas during EVM execution";
                 break;
             case OutOfStack:
                 message = "out of stack";
@@ -162,6 +163,9 @@ public class StatusCode {
                 break;
             case MalformedTx:
                 message = "malformed transaction";
+                break;
+            case ContractFrozen:
+                message = "contract has been frozen";
                 break;
             default:
                 message = errorMessage;

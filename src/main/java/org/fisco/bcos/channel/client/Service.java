@@ -27,6 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -70,6 +71,8 @@ import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Log;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.protocol.exceptions.TransactionException;
+import org.fisco.bcos.web3j.tuples.generated.Tuple2;
+import org.fisco.bcos.web3j.tx.RevertResolver;
 import org.fisco.bcos.web3j.tx.txdecode.LogResult;
 import org.fisco.bcos.web3j.utils.Strings;
 import org.slf4j.Logger;
@@ -328,18 +331,13 @@ public class Service {
                     while (true) {
                         Map<String, ChannelHandlerContext> networkConnection =
                                 channelConnections.getNetworkConnections();
-                        channelConnections.getReadWriteLock().readLock().lock();
-                        try {
-                            for (String key : networkConnection.keySet()) {
-                                if (networkConnection.get(key) != null
-                                        && ChannelHandlerContextHelper.isChannelAvailable(
-                                                networkConnection.get(key))) {
-                                    running = true;
-                                    break;
-                                }
+
+                        for (ChannelHandlerContext ctx : networkConnection.values()) {
+                            if (Objects.nonNull(ctx)
+                                    && ChannelHandlerContextHelper.isChannelAvailable(ctx)) {
+                                running = true;
+                                break;
                             }
-                        } finally {
-                            channelConnections.getReadWriteLock().readLock().unlock();
                         }
 
                         if (running || sleepTime > connectSeconds * 1000) {
@@ -350,31 +348,10 @@ public class Service {
                         }
                     }
 
-                    if (!running) {
-                        logger.error("connectSeconds = {}", connectSeconds);
-
-                        String errorMessage =
-                                " Can not connect to nodes "
-                                        + channelConnections.getConnectionsStr()
-                                        + " ,groupId: "
-                                        + String.valueOf(groupId)
-                                        + " ,caCert: "
-                                        + channelConnections.getCaCert()
-                                        + " ,sslKey: "
-                                        + channelConnections.getSslKey()
-                                        + " ,sslCert: "
-                                        + channelConnections.getSslCert()
-                                        + " ,java version: "
-                                        + System.getProperty("java.version");
-
-                        logger.error(errorMessage);
-                        throw new Exception(errorMessage);
-                    }
-
-                    logger.info(
-                            " Connect to nodes ["
+                    String baseMessage =
+                            " nodes: "
                                     + channelConnections.getConnectionsStr()
-                                    + "], groupId: "
+                                    + " ,groupId: "
                                     + String.valueOf(groupId)
                                     + " ,caCert: "
                                     + channelConnections.getCaCert()
@@ -383,20 +360,32 @@ public class Service {
                                     + " ,sslCert: "
                                     + channelConnections.getSslCert()
                                     + " ,java version: "
-                                    + System.getProperty("java.version"));
+                                    + System.getProperty("java.version")
+                                    + " ,java vendor: "
+                                    + System.getProperty("java.vm.vendor");
 
+                    if (!running) {
+                        String errorMessage = " Failed to connect to " + baseMessage;
+                        logger.error(errorMessage);
+                        throw new Exception(errorMessage);
+                    }
+
+                    logger.info(" Connect to " + baseMessage);
+
+                    channelConnections.startPeriodTask();
                     eventLogFilterManager.start();
                 } catch (InterruptedException e) {
-                    logger.error("system error ", e);
+                    logger.warn(" thread interrupted exception: ", e);
                     Thread.currentThread().interrupt();
                 } catch (Exception e) {
-                    logger.error("system error ", e);
+                    logger.error(
+                            " service init failed, error message: {}, error: ", e.getMessage(), e);
                     throw e;
                 }
             }
         }
         if (flag == 0) {
-            throw new Exception("Please set the right groupId");
+            throw new Exception("Please set the right groupId ");
         }
     }
 
@@ -609,13 +598,13 @@ public class Service {
                     bcosMessage.getSeq());
 
         } catch (Exception e) {
-            logger.error("system error:{} ", e);
+            logger.error(" error message:{}, error: {} ", e.getMessage(), e);
 
             BcosResponse response = new BcosResponse();
             response.setErrorCode(-1);
             response.setErrorMessage(
                     e.getMessage()
-                            + " Requset send failed! Can not connect to nodes success, please checkout the node status and the sdk config!");
+                            + " requset send failed! please check the log file content for reasons.");
             response.setContent("");
             response.setMessageID(request.getMessageID());
 
@@ -726,6 +715,45 @@ public class Service {
             }
         } catch (Exception e) {
             logger.error("system error", e);
+        }
+    }
+
+    public void updateTopicsToNode() {
+
+        logger.info(" updateTopicToNode, groupId: {}, topics: {}", groupId, getTopics());
+
+        // select send node
+        ChannelConnections channelConnections =
+                allChannelConnections
+                        .getAllChannelConnections()
+                        .stream()
+                        .filter(x -> x.getGroupId() == groupId)
+                        .findFirst()
+                        .get();
+
+        if (Objects.isNull(channelConnections)) {
+            throw new IllegalArgumentException(
+                    " No group configuration was found, groupId: " + groupId);
+        }
+
+        ConnectionCallback callback = (ConnectionCallback) channelConnections.getCallback();
+        if (Objects.isNull(callback)) {
+            throw new IllegalArgumentException(
+                    " No callback was found for ChannelConnections, service is not initialized");
+        }
+        callback.setTopics(getTopics());
+
+        /** send update topic message to all connected nodes */
+        Map<String, ChannelHandlerContext> networkConnections =
+                channelConnections.getNetworkConnections();
+        for (ChannelHandlerContext ctx : networkConnections.values()) {
+            if (Objects.nonNull(ctx) && ChannelHandlerContextHelper.isChannelAvailable(ctx)) {
+                try {
+                    callback.sendUpdateTopicMessage(ctx);
+                } catch (Exception e) {
+                    logger.debug(" e: ", e);
+                }
+            }
         }
     }
 
@@ -1146,7 +1174,7 @@ public class Service {
 
                         push.setSeq(message.getSeq());
                         push.setMessageID(message.getSeq());
-                        logger.info("msg:{}", Arrays.toString(message.getData()));
+                        logger.debug("msg:{}", Arrays.toString(message.getData()));
                         push.setContent(message.getData());
                         pushCallback.onPush(push);
                     } else {
@@ -1158,7 +1186,7 @@ public class Service {
             }
 
         } else if (message.getType() == ChannelMessageType.AMOP_RESPONSE.getType()) {
-            logger.info("channel message:{}", message.getSeq());
+            logger.debug("channel message:{}", message.getSeq());
             if (callback != null) {
                 logger.debug("found callback response");
 
@@ -1515,6 +1543,12 @@ public class Service {
             }
 
             try {
+                Tuple2<Boolean, String> revertMessage =
+                        RevertResolver.tryResolveRevertMessage(receipt);
+                if (revertMessage.getValue1()) {
+                    logger.debug(" revert message: {}", revertMessage.getValue2());
+                    receipt.setMessage(revertMessage.getValue2());
+                }
                 callback.onResponse(receipt);
             } catch (Exception e) {
                 logger.error("Error process transactionMessage: ", e);

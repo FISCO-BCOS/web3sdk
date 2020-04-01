@@ -1,5 +1,6 @@
 package org.fisco.bcos.web3j.abi.datatypes;
 
+import java.util.Collections;
 import java.util.List;
 import org.fisco.bcos.web3j.abi.TypeReference;
 import org.fisco.bcos.web3j.abi.Utils;
@@ -15,6 +16,12 @@ public class Function {
         this.name = name;
         this.inputParameters = inputParameters;
         this.outputParameters = Utils.convert(outputParameters);
+    }
+
+    public Function() {
+        this.name = "";
+        this.inputParameters = Collections.<Type>emptyList();
+        this.outputParameters = Collections.<TypeReference<Type>>emptyList();
     }
 
     public String getName() {

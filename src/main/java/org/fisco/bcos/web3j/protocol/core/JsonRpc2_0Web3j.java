@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
+import org.fisco.bcos.channel.client.TransactionSucCallback;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.Web3jService;
 import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
@@ -321,6 +322,16 @@ public class JsonRpc2_0Web3j implements Web3j {
                 Arrays.asList(groupId, signedTransactionData),
                 web3jService,
                 SendTransaction.class);
+    }
+
+    @Override
+    public void sendRawTransaction(String signedTransactionData, TransactionSucCallback callback)
+            throws IOException {
+        Request<?, SendTransaction> request = sendRawTransaction(signedTransactionData);
+        request.setNeedTransCallback(true);
+        request.setTransactionSucCallback(callback);
+
+        request.sendOnly();
     }
 
     @Override

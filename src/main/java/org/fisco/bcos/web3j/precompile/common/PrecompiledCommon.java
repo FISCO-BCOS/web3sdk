@@ -39,6 +39,8 @@ public class PrecompiledCommon {
     public static final int TableNameAndAddressNotExist_RC1 = 57;
     public static final int TableNameAndAddressNotExist = 51001;
     public static final int TableNameAndAddressNotExist_RC3 = -51001;
+    public static final int TableNameLengthOverflow = -51002;
+    public static final int ContractNotExist = -51003;
     public static final int InvalidNodeId = -51100;
     public static final int LastSealer_RC1 = 100;
     public static final int LastSealer = 51101;
@@ -106,6 +108,8 @@ public class PrecompiledCommon {
                 msg = "the last sealer cannot be removed";
             } else if (code == TableExist_RC3) {
                 msg = "table already exist";
+            } else if (code == ContractNotExist) {
+                msg = "contract not exist";
             } else if (code == InvalidKey_RC3) {
                 msg = "invalid configuration entry";
             }
@@ -126,6 +130,8 @@ public class PrecompiledCommon {
             msg = "contract name and version already exist";
         } else if (code == VersionExceeds) {
             msg = "version string length exceeds the maximum limit";
+        } else if (code == TableNameLengthOverflow) {
+            msg = "tablename string length exceeds the maximum limit";
         } else if (code == InvalidAddress) {
             msg = "invalid address format";
         } else if (code == InvalidContractFrozen) {
@@ -141,6 +147,7 @@ public class PrecompiledCommon {
         } else if (code == InvalidAuthorized) {
             msg = "this operation has no permissions";
         }
+
         ObjectMapper mapper = ObjectMapperFactory.getObjectMapper();
         return mapper.writeValueAsString(new PrecompiledResponse(code, msg));
     }
