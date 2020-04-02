@@ -354,6 +354,12 @@ public class JsonRpc2_0Web3j implements Web3j {
     }
 
     @Override
+    public Request<?, GenerateGroup> generateGroup(
+            int groupId, long timestamp, List<String> nodeList) {
+        return generateGroup(groupId, timestamp, false, nodeList);
+    }
+
+    @Override
     public Request<?, StartGroup> startGroup(int groupID) {
         return new Request<>("startGroup", Arrays.asList(groupID), web3jService, StartGroup.class);
     }

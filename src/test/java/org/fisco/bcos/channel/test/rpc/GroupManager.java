@@ -126,12 +126,25 @@ public class GroupManager {
                         Usage();
                     }
                     long timestamp = Long.valueOf(args[2]);
-                    boolean enableFreeStorage = Boolean.valueOf(args[3]);
-                    List<String> nodes = new ArrayList<>();
-                    for (int i = 4; i < args.length; ++i) {
-                        nodes.add(args[i]);
+
+                    if (args[3].equals("true") || args[3].equals("false")) {
+                        boolean enableFreeStorage = Boolean.valueOf(args[3]);
+                        List<String> nodes = new ArrayList<>();
+                        for (int i = 4; i < args.length; ++i) {
+                            nodes.add(args[i]);
+                        }
+
+                        groupManager.generateGroup(groupID, timestamp, enableFreeStorage, nodes);
+                    } else {
+                        boolean enableFreeStorage = false;
+                        List<String> nodes = new ArrayList<>();
+                        for (int i = 3; i < args.length; ++i) {
+                            nodes.add(args[i]);
+                        }
+
+                        groupManager.generateGroup(groupID, timestamp, enableFreeStorage, nodes);
                     }
-                    groupManager.generateGroup(groupID, timestamp, enableFreeStorage, nodes);
+
                     break;
                 case "startGroup":
                     groupManager.startGroup(groupID);

@@ -110,6 +110,9 @@ public interface Ethereum {
     Request<?, GenerateGroup> generateGroup(
             int groupId, long timestamp, boolean enableFreeStorage, List<String> nodeList);
 
+    // generateGroup
+    Request<?, GenerateGroup> generateGroup(int groupId, long timestamp, List<String> nodeList);
+
     Request<?, StartGroup> startGroup(int groupId);
 
     Request<?, StopGroup> stopGroup(int groupId);
