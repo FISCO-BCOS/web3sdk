@@ -3,6 +3,7 @@ package org.fisco.bcos.web3j.protocol.websocket;
 import java.io.IOException;
 
 /** A listener used to notify about about new WebSocket messages. */
+@Deprecated
 public interface WebSocketListener {
 
     /**

@@ -10,6 +10,7 @@ import java.util.List;
  * href="https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_newfilter">docs</a>
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Deprecated
 public abstract class Filter<T extends Filter> {
 
     private T thisObj;
