@@ -7,6 +7,7 @@ import java.util.concurrent.CompletableFuture;
  *
  * @param <T> type of a data item that should be returned by the sent request
  */
+@Deprecated
 class WebSocketRequest<T> {
     private CompletableFuture<T> onReply;
     private Class<T> responseType;

@@ -3,6 +3,7 @@ package org.fisco.bcos.web3j.utils;
 import java.math.BigDecimal;
 
 /** Ethereum unit conversion functions. */
+@Deprecated
 public final class Convert {
     private Convert() {}
 
