@@ -11,21 +11,12 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.SendTransaction;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.protocol.exceptions.TransactionException;
 import org.fisco.bcos.web3j.tx.exceptions.TxHashMismatchException;
-import org.fisco.bcos.web3j.tx.response.PollingTransactionReceiptProcessor;
-import org.fisco.bcos.web3j.tx.response.TransactionReceiptProcessor;
-import org.fisco.bcos.web3j.utils.AttemptsConf;
 
 /**
  * Transaction manager abstraction for executing transactions with Ethereum client via various
  * mechanisms.
  */
 public abstract class TransactionManager {
-
-    // configurable
-    public static final int DEFAULT_POLLING_ATTEMPTS_PER_TX_HASH = AttemptsConf.sleepDuration;
-    public static final int DEFAULT_POLLING_FREQUENCY = AttemptsConf.attempts; // 15 * 100
-
-    private final TransactionReceiptProcessor transactionReceiptProcessor;
 
     final Credentials credentials;
 
@@ -39,22 +30,18 @@ public abstract class TransactionManager {
         this.nodeVersion = nodeVersion;
     }
 
-    protected TransactionManager(
-            TransactionReceiptProcessor transactionReceiptProcessor, Credentials credentials) {
-        this.transactionReceiptProcessor = transactionReceiptProcessor;
+    protected TransactionManager(Credentials credentials) {
         this.credentials = credentials;
     }
 
-    protected TransactionManager(Web3j web3j, Credentials credentials) {
-        this(
-                new PollingTransactionReceiptProcessor(
-                        web3j, DEFAULT_POLLING_ATTEMPTS_PER_TX_HASH, DEFAULT_POLLING_FREQUENCY),
-                credentials);
-    }
-
+    @Deprecated
     protected TransactionManager(
             Web3j web3j, int attempts, long sleepDuration, Credentials credentials) {
-        this(new PollingTransactionReceiptProcessor(web3j, sleepDuration, attempts), credentials);
+        this(credentials);
+    }
+
+    protected TransactionManager(Web3j web3j, Credentials credentials) {
+        this(credentials);
     }
 
     protected abstract BigInteger getBlockLimit() throws IOException;
@@ -136,6 +123,6 @@ public abstract class TransactionManager {
 
         String transactionHash = transactionResponse.getTransactionHash();
 
-        return transactionReceiptProcessor.waitForTransactionReceipt(transactionHash);
+        return null;
     }
 }

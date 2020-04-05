@@ -24,13 +24,14 @@ public class ExtendedRawTransactionManager extends TransactionManager {
     private final Web3j web3j;
     final Credentials credentials;
 
-    private final byte chainId;
+    @Deprecated private final byte chainId;
 
     private final BigInteger groupId;
     private final BigInteger fiscoChainId;
 
     protected TxHashVerifier txHashVerifier = new TxHashVerifier();
 
+    @Deprecated
     public ExtendedRawTransactionManager(
             Web3j web3j,
             Credentials credentials,
@@ -45,6 +46,7 @@ public class ExtendedRawTransactionManager extends TransactionManager {
         this.fiscoChainId = fiscoChainId;
     }
 
+    @Deprecated
     public ExtendedRawTransactionManager(
             Web3j web3j,
             Credentials credentials,
@@ -63,9 +65,15 @@ public class ExtendedRawTransactionManager extends TransactionManager {
 
     public ExtendedRawTransactionManager(
             Web3j web3j, Credentials credentials, BigInteger groupId, BigInteger fiscoChainId) {
-        this(web3j, credentials, ChainId.NONE, groupId, fiscoChainId);
+        super(web3j, credentials);
+        this.web3j = web3j;
+        this.credentials = credentials;
+        this.groupId = groupId;
+        this.fiscoChainId = fiscoChainId;
+        this.chainId = ChainId.NONE;
     }
 
+    @Deprecated
     public ExtendedRawTransactionManager(
             Web3j web3j,
             Credentials credentials,

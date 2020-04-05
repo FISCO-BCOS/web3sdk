@@ -27,10 +27,11 @@ public class RawTransactionManager extends TransactionManager {
     private final Web3j web3j;
     final Credentials credentials;
 
-    private final byte chainId;
+    @Deprecated private final byte chainId;
 
     protected TxHashVerifier txHashVerifier = new TxHashVerifier();
 
+    @Deprecated
     public RawTransactionManager(Web3j web3j, Credentials credentials, byte chainId) {
         super(web3j, credentials);
         this.web3j = web3j;
@@ -39,6 +40,7 @@ public class RawTransactionManager extends TransactionManager {
         this.chainId = chainId;
     }
 
+    @Deprecated
     public RawTransactionManager(
             Web3j web3j, Credentials credentials, byte chainId, int attempts, int sleepDuration) {
         super(web3j, attempts, sleepDuration, credentials);
@@ -48,13 +50,17 @@ public class RawTransactionManager extends TransactionManager {
         this.chainId = chainId;
     }
 
-    public RawTransactionManager(Web3j web3j, Credentials credentials) {
-        this(web3j, credentials, ChainId.NONE);
-    }
-
+    @Deprecated
     public RawTransactionManager(
             Web3j web3j, Credentials credentials, int attempts, int sleepDuration) {
         this(web3j, credentials, ChainId.NONE, attempts, sleepDuration);
+    }
+
+    public RawTransactionManager(Web3j web3j, Credentials credentials) {
+        super(web3j, credentials);
+        this.web3j = web3j;
+        this.credentials = credentials;
+        this.chainId = ChainId.NONE;
     }
 
     @Override

@@ -31,6 +31,7 @@ public interface Web3jService {
      * @param <T> type of incoming event objects
      * @return a {@link Flowable} instance that emits incoming events
      */
+    @Deprecated
     <T extends Notification<?>> Flowable<T> subscribe(
             Request request, String unsubscribeMethod, Class<T> responseType);
 

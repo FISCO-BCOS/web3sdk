@@ -9,7 +9,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 import org.fisco.bcos.web3j.protocol.core.methods.response.AbiDefinition;
-import org.fisco.bcos.web3j.tx.ChainId;
 import org.fisco.bcos.web3j.utils.Collection;
 import org.fisco.bcos.web3j.utils.Strings;
 
@@ -277,12 +276,7 @@ public class TruffleJsonFunctionWrapperGenerator extends FunctionWrapperGenerato
          * This should be updated with https://github.com/web3j/web3j/issues/234
          */
         enum Network {
-            olympic(0),
-            mainnet(ChainId.MAINNET),
-            morden(ChainId.EXPANSE_MAINNET),
-            ropsten(ChainId.ROPSTEN),
-            rinkeby(ChainId.RINKEBY),
-            kovan(ChainId.KOVAN);
+            olympic(0);
 
             public final long id;
 
