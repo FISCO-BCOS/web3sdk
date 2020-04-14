@@ -27,7 +27,7 @@ Web3SDK为[FISCO BCOS](https://github.com/FISCO-BCOS/FISCO-BCOS/tree/master)提�
 ## 源码编译
 
 **环境要求**:
-  - [JDK8及以上](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/sdk/sdk.html#id1)
+  - [JDK8及以上](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/sdk/java_sdk.html#id1)
   - Gradle 5.0及以上
 
 **编译运行如下命令**:
@@ -42,8 +42,8 @@ web3sdk/dist/apps/web3sdk.jar
 ```
 
 ## 文档
-- [**英文**](https://fisco-bcos-documentation.readthedocs.io/en/latest/docs/sdk/sdk.html)
-- [**中文**](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/sdk/sdk.html)
+- [**英文**](https://fisco-bcos-documentation.readthedocs.io/en/latest/docs/sdk/java_sdk.html)
+- [**中文**](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/sdk/java_sdk.html)
 
 
 ## 快速入门
