@@ -18,15 +18,15 @@ Web3SDK provides the Java API for [FISCO-BCOS](https://github.com/FISCO-BCOS/FIS
 
 ## Features
 
-- Implement [JSON-RPC](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/api.html) of FISCO BCOS.
-- Provide [precompiled contracts](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/manual/smart_contract.html#precompiled-contract-development) to manage the blockchain. 
-- Implement [AMOP](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/manual/amop_protocol.html)(Advanced Messages Onchain Protocol) to provide a secure and efficient message channel for the consortium blockchain.
-- Provide [OSCCA-approved cryptography](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/manual/guomi_crypto.html) to send transactions.
+- Implement [JSON-RPC](https://fisco-bcos-documentation.readthedocs.io/en/latest/docs/api.html) of FISCO BCOS.
+- Provide [precompiled contracts](https://fisco-bcos-documentation.readthedocs.io/en/latest/docs/manual/smart_contract.html#precompiled-contract-development) to manage the blockchain. 
+- Implement [AMOP](https://fisco-bcos-documentation.readthedocs.io/en/latest/docs/manual/amop_protocol.html)(Advanced Messages Onchain Protocol) to provide a secure and efficient message channel for the consortium blockchain.
+- Provide [OSCCA-approved cryptography](https://fisco-bcos-documentation.readthedocs.io/en/latest/docs/manual/guomi_crypto.html) to send transactions.
 
 ## Compile
 
 **Environmental requirements**:
-- [JDK8 or above](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/sdk/sdk.html#environment-requirements)
+- [JDK8 or above](https://fisco-bcos-documentation.readthedocs.io/en/latest/docs/sdk/java_sdk.html#environment-requirements)
 - Gradle 5.0 or above
 
 **Compile web3sdk using the following command**:
