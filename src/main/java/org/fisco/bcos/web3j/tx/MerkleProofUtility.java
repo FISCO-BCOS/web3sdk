@@ -1,12 +1,13 @@
 package org.fisco.bcos.web3j.tx;
 
 import java.math.BigInteger;
+import java.util.List;
 import org.fisco.bcos.channel.client.Merkle;
 import org.fisco.bcos.channel.client.ReceiptEncoder;
 import org.fisco.bcos.web3j.crypto.Hash;
+import org.fisco.bcos.web3j.protocol.core.methods.response.MerkleProofUnit;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
-import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceiptWithProof;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionWithProof;
 import org.fisco.bcos.web3j.rlp.RlpEncoder;
 import org.fisco.bcos.web3j.rlp.RlpString;
@@ -17,24 +18,6 @@ import org.slf4j.LoggerFactory;
 public class MerkleProofUtility {
 
     private static final Logger logger = LoggerFactory.getLogger(MerkleProofUtility.class);
-
-    /**
-     * Verify transaction and transaction receipt merkle proof
-     *
-     * @param transactionRoot
-     * @param receiptRoot
-     * @param transAndProof
-     * @param receiptAndProof
-     * @return
-     */
-    public static boolean verify(
-            String transactionRoot,
-            String receiptRoot,
-            TransactionWithProof.TransAndProof transAndProof,
-            TransactionReceiptWithProof.ReceiptAndProof receiptAndProof) {
-        return verifyTransaction(transactionRoot, transAndProof)
-                && verifyTransactionReceipt(receiptRoot, receiptAndProof);
-    }
 
     /**
      * Verify transaction merkle proof
@@ -63,17 +46,39 @@ public class MerkleProofUtility {
         return proof.equals(transactionRoot);
     }
 
+    public static boolean verifyTransaction(
+            String transactionHash,
+            BigInteger index,
+            String transactionRoot,
+            List<MerkleProofUnit> txProof) {
+        String input =
+                Numeric.toHexString(RlpEncoder.encode(RlpString.create(index)))
+                        + transactionHash.substring(2);
+        String proof = Merkle.calculateMerkleRoot(txProof, input);
+
+        logger.debug(
+                " transaction hash: {}, transaction index: {}, txProof: {}, transactionRoot: {}, proof: {}",
+                transactionHash,
+                index,
+                txProof,
+                transactionRoot,
+                proof);
+
+        return proof.equals(transactionRoot);
+    }
+
     /**
      * Verify transaction receipt merkle proof
      *
      * @param receiptRoot
-     * @param receiptAndProof
+     * @param transactionReceipt
+     * @param receiptProof
      * @return
      */
     public static boolean verifyTransactionReceipt(
-            String receiptRoot, TransactionReceiptWithProof.ReceiptAndProof receiptAndProof) {
-
-        TransactionReceipt transactionReceipt = receiptAndProof.getTransactionReceipt();
+            String receiptRoot,
+            TransactionReceipt transactionReceipt,
+            List<MerkleProofUnit> receiptProof) {
 
         if (!transactionReceipt.getGasUsedRaw().startsWith("0x")) {
             transactionReceipt.setGasUsed("0x" + transactionReceipt.getGasUsed().toString(16));
@@ -87,13 +92,13 @@ public class MerkleProofUtility {
         String rlpHash = Hash.sha3(receiptRlp);
         String input = Numeric.toHexString(byteIndex) + rlpHash.substring(2);
 
-        String proof = Merkle.calculateMerkleRoot(receiptAndProof.getReceiptProof(), input);
+        String proof = Merkle.calculateMerkleRoot(receiptProof, input);
 
         logger.debug(
-                " transaction hash: {}, receipt index: {}, gasUsed: {}, root: {}, proof: {}",
+                " transaction hash: {}, transactionReceipt: {}, receiptProof: {}, receiptRoot: {}, proof: {}",
                 transactionReceipt.getTransactionHash(),
-                transactionReceipt.getTransactionIndex(),
-                transactionReceipt.getGasUsed(),
+                transactionReceipt,
+                receiptProof,
                 receiptRoot,
                 proof);
 

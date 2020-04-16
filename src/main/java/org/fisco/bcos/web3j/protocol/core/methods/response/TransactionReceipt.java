@@ -24,8 +24,8 @@ public class TransactionReceipt {
     private String output;
     private List<Log> logs;
     private String logsBloom;
-    private TransactionWithProof.TransAndProof txProof;
-    private TransactionReceiptWithProof.ReceiptAndProof receiptProof;
+    private List<MerkleProofUnit> txProof;
+    private List<MerkleProofUnit> receiptProof;
 
     public TransactionReceipt() {}
 
@@ -211,19 +211,19 @@ public class TransactionReceipt {
         this.logsBloom = logsBloom;
     }
 
-    public TransactionWithProof.TransAndProof getTxProof() {
+    public List<MerkleProofUnit> getTxProof() {
         return txProof;
     }
 
-    public void setTxProof(TransactionWithProof.TransAndProof txProof) {
+    public void setTxProof(List<MerkleProofUnit> txProof) {
         this.txProof = txProof;
     }
 
-    public TransactionReceiptWithProof.ReceiptAndProof getReceiptProof() {
+    public List<MerkleProofUnit> getReceiptProof() {
         return receiptProof;
     }
 
-    public void setReceiptProof(TransactionReceiptWithProof.ReceiptAndProof receiptProof) {
+    public void setReceiptProof(List<MerkleProofUnit> receiptProof) {
         this.receiptProof = receiptProof;
     }
 
