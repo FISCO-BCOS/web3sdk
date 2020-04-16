@@ -31,6 +31,14 @@ public class ExtendedRawTransactionManager extends TransactionManager {
 
     protected TxHashVerifier txHashVerifier = new TxHashVerifier();
 
+    public Web3j getWeb3j() {
+        return web3j;
+    }
+
+    public Credentials getCredentials() {
+        return credentials;
+    }
+
     public ExtendedRawTransactionManager(
             Web3j web3j,
             Credentials credentials,

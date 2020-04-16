@@ -1562,7 +1562,7 @@ public class Service {
 
     public String newSeq() {
         String seq = UUID.randomUUID().toString().replaceAll("-", "");
-        logger.debug("New Seq：{}", seq);
+        logger.debug("New Seq: {}", seq);
         return seq;
     }
 
