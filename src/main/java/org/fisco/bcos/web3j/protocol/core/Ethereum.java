@@ -106,6 +106,11 @@ public interface Ethereum {
     void sendRawTransaction(String signedTransactionData, TransactionSucCallback callback)
             throws IOException;
 
+    Request<?, SendTransaction> sendRawTransactionAndGetProof(String signedTransactionData);
+
+    void sendRawTransactionAndGetProof(
+            String signedTransactionData, TransactionSucCallback callback) throws IOException;
+
     // generateGroup
     Request<?, GenerateGroup> generateGroup(
             int groupId, long timestamp, boolean enableFreeStorage, List<String> nodeList);
