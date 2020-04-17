@@ -335,6 +335,25 @@ public class JsonRpc2_0Web3j implements Web3j {
     }
 
     @Override
+    public Request<?, SendTransaction> sendRawTransactionAndGetProof(String signedTransactionData) {
+        return new Request<>(
+                "sendRawTransactionAndGetProof",
+                Arrays.asList(groupId, signedTransactionData),
+                web3jService,
+                SendTransaction.class);
+    }
+
+    @Override
+    public void sendRawTransactionAndGetProof(
+            String signedTransactionData, TransactionSucCallback callback) throws IOException {
+        Request<?, SendTransaction> request = sendRawTransactionAndGetProof(signedTransactionData);
+        request.setNeedTransCallback(true);
+        request.setTransactionSucCallback(callback);
+
+        request.sendOnly();
+    }
+
+    @Override
     public Request<?, GroupPeers> getGroupPeers() {
         return new Request<>(
                 "getGroupPeers", Arrays.asList(groupId), web3jService, GroupPeers.class);
