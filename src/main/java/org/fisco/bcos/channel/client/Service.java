@@ -1192,10 +1192,18 @@ public class Service {
 
                 ChannelResponse response = new ChannelResponse();
                 if (message.getResult() != 0) {
-                    response.setErrorCode(message.getResult());
                     response.setErrorMessage("response errors");
                 }
-
+                // 103: the AMOP_requests or the AMOP_multicast_requests have been rejected due to
+                // over bandwidth limit
+                if (message.getResult()
+                        == ChannelMessageError.REJECT_AMOP_REQ_FOR_OVER_BANDWIDTHLIMIT.getError()) {
+                    logger.debug(
+                            "AMOP request was rejected due to over bandwidth limit, message: {}",
+                            message.getSeq());
+                    response.setErrorMessage(
+                            "AMOP request was rejected due to over bandwidth limit");
+                }
                 response.setErrorCode(message.getResult());
                 response.setMessageID(message.getSeq());
                 if (message.getData() != null) {
