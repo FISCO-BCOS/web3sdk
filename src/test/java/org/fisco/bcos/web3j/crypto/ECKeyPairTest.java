@@ -115,6 +115,22 @@ public class ECKeyPairTest {
     }
 
     @Test
+    public void verifySecp256ECDSASignTest() throws Exception {
+        ECKeyPair ecKeyPair = Keys.createEcKeyPair();
+        ECDSASign ecdsaSign = new ECDSASign();
+        String message = "message";
+        Sign.SignatureData signatureData =
+                ecdsaSign.secp256SignMessage(message.getBytes(), ecKeyPair);
+
+        SHA3Digest sha3Digest = new SHA3Digest();
+        byte[] hash = sha3Digest.hash(message.getBytes());
+
+        boolean verify = ecdsaSign.secp256Verify(hash, ecKeyPair.getPublicKey(), signatureData);
+
+        assertEquals(verify, true);
+    }
+
+    @Test
     public void verifyECDSASignTest0() throws Exception {
         ApplicationContext context =
                 new ClassPathXmlApplicationContext(
@@ -136,6 +152,28 @@ public class ECKeyPairTest {
     }
 
     @Test
+    public void verifySecp256ECDSASignTest0() throws Exception {
+        ApplicationContext context =
+                new ClassPathXmlApplicationContext(
+                        "classpath:applicationContext-keystore-sample.xml");
+        // test p12
+        P12Manager p12 = context.getBean(P12Manager.class);
+        ECKeyPair ecKeyPair = p12.getECKeyPair();
+
+        ECDSASign ecdsaSign = new ECDSASign();
+        String message = "message";
+        Sign.SignatureData signatureData =
+                ecdsaSign.secp256SignMessage(message.getBytes(), ecKeyPair);
+
+        SHA3Digest sha3Digest = new SHA3Digest();
+        byte[] hash = sha3Digest.hash(message.getBytes());
+
+        boolean verify = ecdsaSign.secp256Verify(hash, ecKeyPair.getPublicKey(), signatureData);
+
+        assertEquals(verify, true);
+    }
+
+    @Test
     public void verifyECDSASignTest1() throws Exception {
 
         ECKeyPair ecKeyPair = Keys.createEcKeyPair();
@@ -148,6 +186,24 @@ public class ECKeyPairTest {
         byte[] hash = sha3Digest.hash(message.getBytes());
 
         boolean verify = ecdsaSign.verify(hash, ecKeyPair.getPublicKey(), signatureData);
+
+        assertEquals(verify, true);
+    }
+
+    @Test
+    public void verifySecp256ECDSASignTest1() throws Exception {
+
+        ECKeyPair ecKeyPair = Keys.createEcKeyPair();
+
+        ECDSASign ecdsaSign = new ECDSASign();
+        String message = "message";
+        Sign.SignatureData signatureData =
+                ecdsaSign.secp256SignMessage(message.getBytes(), ecKeyPair);
+
+        SHA3Digest sha3Digest = new SHA3Digest();
+        byte[] hash = sha3Digest.hash(message.getBytes());
+
+        boolean verify = ecdsaSign.secp256Verify(hash, ecKeyPair.getPublicKey(), signatureData);
 
         assertEquals(verify, true);
     }
