@@ -61,7 +61,10 @@ public interface Ethereum {
 
     Request<?, SystemConfig> getSystemConfigByKey(String key);
 
+    @Deprecated
     Request<?, Code> getCode(String address, DefaultBlockParameter defaultBlockParameter);
+
+    Request<?, Code> getCode(String address);
 
     Request<?, TotalTransactionCount> getTotalTransactionCount();
 
@@ -93,9 +96,13 @@ public interface Ethereum {
 
     Request<?, PendingTxSize> getPendingTxSize();
 
+    @Deprecated
     Request<?, Call> call(
             org.fisco.bcos.web3j.protocol.core.methods.request.Transaction transaction,
             DefaultBlockParameter defaultBlockParameter);
+
+    Request<?, Call> call(
+            org.fisco.bcos.web3j.protocol.core.methods.request.Transaction transaction);
 
     Request<?, SendTransaction> sendRawTransaction(String signedTransactionData);
 

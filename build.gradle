@@ -89,8 +89,8 @@ dependencies {
     compile 'info.picocli:picocli:3.6.0'
     compile 'org.java-websocket:Java-WebSocket:1.3.8'
 
-    // 'com.github.stefanbirkner:system-rules:1.18.0',
-    // compile 'de.vandermeer:asciitable:0.3.2'
+    compile 'com.github.stefanbirkner:system-rules:1.18.0'
+    compile 'de.vandermeer:asciitable:0.3.2'
 
     compile 'junit:junit:4.12'
     compile 'org.mockito:mockito-core:2.23.0'
@@ -129,6 +129,15 @@ task integrationTest(type: Test) {
     classpath = sourceSets.integrationTest.runtimeClasspath
     outputs.upToDateWhen { false }
 }
+
+// clean dist and log dir
+task cleanBuildArtifacts(type: Delete) {
+    delete 'dist'
+    delete 'log'
+    delete 'out'
+}
+
+tasks.clean.dependsOn(tasks.cleanBuildArtifacts)
 
 check.dependsOn integrationTest
 integrationTest.mustRunAfter test
