@@ -183,8 +183,14 @@ public class JsonRpc2_0Web3j implements Web3j {
                 ConsensusStatus.class);
     }
 
+    @Deprecated
     @Override
     public Request<?, Code> getCode(String address, DefaultBlockParameter defaultBlockParameter) {
+        return new Request<>("getCode", Arrays.asList(groupId, address), web3jService, Code.class);
+    }
+
+    @Override
+    public Request<?, Code> getCode(String address) {
         return new Request<>("getCode", Arrays.asList(groupId, address), web3jService, Code.class);
     }
 
@@ -197,10 +203,17 @@ public class JsonRpc2_0Web3j implements Web3j {
                 TotalTransactionCount.class);
     }
 
+    @Deprecated
     @Override
     public Request<?, Call> call(
             org.fisco.bcos.web3j.protocol.core.methods.request.Transaction transaction,
             DefaultBlockParameter defaultBlockParameter) {
+        return new Request<>("call", Arrays.asList(groupId, transaction), web3jService, Call.class);
+    }
+
+    @Override
+    public Request<?, Call> call(
+            org.fisco.bcos.web3j.protocol.core.methods.request.Transaction transaction) {
         return new Request<>("call", Arrays.asList(groupId, transaction), web3jService, Call.class);
     }
 
