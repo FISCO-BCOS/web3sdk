@@ -24,6 +24,8 @@ public class TransactionReceipt {
     private String output;
     private List<Log> logs;
     private String logsBloom;
+    private List<MerkleProofUnit> txProof;
+    private List<MerkleProofUnit> receiptProof;
 
     public TransactionReceipt() {}
 
@@ -209,6 +211,22 @@ public class TransactionReceipt {
         this.logsBloom = logsBloom;
     }
 
+    public List<MerkleProofUnit> getTxProof() {
+        return txProof;
+    }
+
+    public void setTxProof(List<MerkleProofUnit> txProof) {
+        this.txProof = txProof;
+    }
+
+    public List<MerkleProofUnit> getReceiptProof() {
+        return receiptProof;
+    }
+
+    public void setReceiptProof(List<MerkleProofUnit> receiptProof) {
+        this.receiptProof = receiptProof;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -324,6 +342,9 @@ public class TransactionReceipt {
                 + ", status='"
                 + status
                 + '\''
+                + ", message='"
+                + message
+                + '\''
                 + ", from='"
                 + from
                 + '\''
@@ -341,6 +362,10 @@ public class TransactionReceipt {
                 + ", logsBloom='"
                 + logsBloom
                 + '\''
+                + ", transAndProof="
+                + txProof
+                + ", receiptAndProof="
+                + receiptProof
                 + '}';
     }
 }
