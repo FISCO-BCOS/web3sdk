@@ -13,6 +13,7 @@ import org.fisco.bcos.channel.client.TransactionSucCallback;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.Web3jService;
 import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
+import org.fisco.bcos.web3j.protocol.core.methods.request.GenerateGroupParams;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosFilter;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosLog;
@@ -35,9 +36,13 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.PbftView;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Peers;
 import org.fisco.bcos.web3j.protocol.core.methods.response.PendingTransactions;
 import org.fisco.bcos.web3j.protocol.core.methods.response.PendingTxSize;
+import org.fisco.bcos.web3j.protocol.core.methods.response.QueryGroupStatus;
+import org.fisco.bcos.web3j.protocol.core.methods.response.RecoverGroup;
+import org.fisco.bcos.web3j.protocol.core.methods.response.RemoveGroup;
 import org.fisco.bcos.web3j.protocol.core.methods.response.SealerList;
 import org.fisco.bcos.web3j.protocol.core.methods.response.SendTransaction;
 import org.fisco.bcos.web3j.protocol.core.methods.response.StartGroup;
+import org.fisco.bcos.web3j.protocol.core.methods.response.StopGroup;
 import org.fisco.bcos.web3j.protocol.core.methods.response.SyncStatus;
 import org.fisco.bcos.web3j.protocol.core.methods.response.SystemConfig;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TotalTransactionCount;
@@ -330,6 +335,25 @@ public class JsonRpc2_0Web3j implements Web3j {
     }
 
     @Override
+    public Request<?, SendTransaction> sendRawTransactionAndGetProof(String signedTransactionData) {
+        return new Request<>(
+                "sendRawTransactionAndGetProof",
+                Arrays.asList(groupId, signedTransactionData),
+                web3jService,
+                SendTransaction.class);
+    }
+
+    @Override
+    public void sendRawTransactionAndGetProof(
+            String signedTransactionData, TransactionSucCallback callback) throws IOException {
+        Request<?, SendTransaction> request = sendRawTransactionAndGetProof(signedTransactionData);
+        request.setNeedTransCallback(true);
+        request.setTransactionSucCallback(callback);
+
+        request.sendOnly();
+    }
+
+    @Override
     public Request<?, GroupPeers> getGroupPeers() {
         return new Request<>(
                 "getGroupPeers", Arrays.asList(groupId), web3jService, GroupPeers.class);
@@ -337,10 +361,13 @@ public class JsonRpc2_0Web3j implements Web3j {
 
     @Override
     public Request<?, GenerateGroup> generateGroup(
-            int groupID, int timestamp, List<String> nodeList) {
+            int groupID, long timestamp, boolean enableFreeStorage, List<String> nodeList) {
         return new Request<>(
                 "generateGroup",
-                Arrays.asList(groupID, timestamp, nodeList),
+                Arrays.asList(
+                        groupID,
+                        new GenerateGroupParams(
+                                String.valueOf(timestamp), enableFreeStorage, nodeList)),
                 web3jService,
                 GenerateGroup.class);
     }
@@ -348,6 +375,29 @@ public class JsonRpc2_0Web3j implements Web3j {
     @Override
     public Request<?, StartGroup> startGroup(int groupID) {
         return new Request<>("startGroup", Arrays.asList(groupID), web3jService, StartGroup.class);
+    }
+
+    @Override
+    public Request<?, StopGroup> stopGroup(int groupID) {
+        return new Request<>("stopGroup", Arrays.asList(groupID), web3jService, StopGroup.class);
+    }
+
+    @Override
+    public Request<?, RemoveGroup> removeGroup(int groupID) {
+        return new Request<>(
+                "removeGroup", Arrays.asList(groupID), web3jService, RemoveGroup.class);
+    }
+
+    @Override
+    public Request<?, RecoverGroup> recoverGroup(int groupID) {
+        return new Request<>(
+                "recoverGroup", Arrays.asList(groupID), web3jService, RecoverGroup.class);
+    }
+
+    @Override
+    public Request<?, QueryGroupStatus> queryGroupStatus(int groupID) {
+        return new Request<>(
+                "queryGroupStatus", Arrays.asList(groupID), web3jService, QueryGroupStatus.class);
     }
 
     @Override
