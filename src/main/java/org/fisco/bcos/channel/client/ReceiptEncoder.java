@@ -51,7 +51,6 @@ public class ReceiptEncoder {
                 topicList.add(RlpString.create(Numeric.hexStringToByteArray(topic)));
             }
             RlpList topicRlpList = new RlpList(topicList);
-
             logUnit.add(topicRlpList);
             logUnit.add(RlpString.create(Numeric.hexStringToByteArray(log.getData())));
             logList.add(new RlpList(logUnit));
