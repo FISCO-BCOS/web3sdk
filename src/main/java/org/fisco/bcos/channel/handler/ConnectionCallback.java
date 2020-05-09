@@ -419,7 +419,23 @@ public class ConnectionCallback implements ChannelConnections.Callback {
     public void onMessage(ChannelHandlerContext ctx, ByteBuf message) {
         try {
             Message msg = new Message();
-            msg.readHeader(message);
+
+            try {
+                msg.readHeader(message);
+            } catch (Exception e) {
+                String host =
+                        ((SocketChannel) ctx.channel())
+                                .remoteAddress()
+                                .getAddress()
+                                .getHostAddress();
+                Integer port = ((SocketChannel) ctx.channel()).remoteAddress().getPort();
+
+                logger.error(
+                        " Maybe p2p port is used to channel connection, please check the configuration, peer {}:{}",
+                        host,
+                        port);
+                throw new RuntimeException(e.getCause());
+            }
 
             logger.trace(
                     "onMessage, seq:{}, type: {}, result: {}",

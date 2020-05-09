@@ -1,3 +1,18 @@
+### v2.4.0
+
+(2020-04-30)
+
+* 新增
+1. 添加generateGroup/startGroup/stopGroup/removeGroup/recoverGroup/queryGroupStatus群组动态管理的RPC接口
+2. 添加sendRawTransactionAndGetProof RPC接口，在交易回执TransactionReceipt中添加交易及交易回执的Merkle证明
+3. ECDSASign添加secp256SignMessage/secp256Verify接口，具体可以参考实现
+
+* 更新
+1. fastjson版本升级至1.2.67
+
+* 兼容
+1. 适配fisco-bcos 2.4.0版本，支持Channel Message v1/V2/V3协议
+
 ### v2.3.0
 
 (2020-03-27)
