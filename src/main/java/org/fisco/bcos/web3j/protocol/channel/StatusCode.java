@@ -45,6 +45,7 @@ public class StatusCode {
     public static final String InvalidTxGroupId = "0x2713";
     public static final String RequestNotBelongToTheGroup = "0x2714";
     public static final String MalformedTx = "0x2715";
+    public static final String OverGroupMemoryLimit = "0x2716";
 
     public static String getStatusMessage(String status) {
         return getStatusMessage(status, " Error code: " + status);
@@ -163,6 +164,9 @@ public class StatusCode {
                 break;
             case MalformedTx:
                 message = "malformed transaction";
+                break;
+            case OverGroupMemoryLimit:
+                message = "Exceeded the group transaction pool capacity limit";
                 break;
             case ContractFrozen:
                 message = "contract has been frozen";
