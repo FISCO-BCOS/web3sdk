@@ -385,7 +385,6 @@ public class PerformanceDTTest {
                         + totalSignedTxCount
                         + " ,sps = "
                         + (totalSignedTxCount.intValue() / elapsed));
-
         System.exit(0);
     }
 
