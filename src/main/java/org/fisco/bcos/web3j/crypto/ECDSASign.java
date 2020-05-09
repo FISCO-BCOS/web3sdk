@@ -23,6 +23,38 @@ public class ECDSASign implements SignInterface {
     private static final BigInteger halfCurveN = curveN.shiftRight(1);
 
     /**
+     * Sign the message with ECDSA algorithm without add 27 to v
+     *
+     * @param message
+     * @param keyPair
+     * @return
+     */
+    public Sign.SignatureData secp256SignMessage(byte[] message, ECKeyPair keyPair) {
+        Sign.SignatureData signatureData = signMessage(message, keyPair);
+        return new Sign.SignatureData(
+                (byte) (signatureData.getV() - 27), signatureData.getR(), signatureData.getS());
+    }
+
+    /**
+     * Verify the ECDSA signature with sub 27 from v before
+     *
+     * @param hash
+     * @param publicKey
+     * @param signatureData
+     * @return
+     */
+    public boolean secp256Verify(
+            byte[] hash, BigInteger publicKey, Sign.SignatureData signatureData) {
+        return verify(
+                hash,
+                publicKey,
+                new Sign.SignatureData(
+                        (byte) (signatureData.getV() + 27),
+                        signatureData.getR(),
+                        signatureData.getS()));
+    }
+
+    /**
      * Sign the message with ECDSA algorithm
      *
      * @param message

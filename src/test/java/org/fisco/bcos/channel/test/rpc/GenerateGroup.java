@@ -27,7 +27,7 @@ public class GenerateGroup {
         }
 
         int groupID = Integer.valueOf(args[0]);
-        int timestamp = Integer.valueOf(args[1]);
+        long timestamp = Long.valueOf(args[1]);
         List<String> nodes = new ArrayList<>();
 
         for (int i = 2; i < args.length; ++i) {
@@ -54,7 +54,7 @@ public class GenerateGroup {
         Web3j web3j = Web3j.build(channelEthereumService, 1);
 
         org.fisco.bcos.web3j.protocol.core.methods.response.GenerateGroup generateGroup =
-                web3j.generateGroup(groupID, timestamp, nodes).send();
+                web3j.generateGroup(groupID, timestamp, false, nodes).send();
         logger.info("  generateGroup result: {}", generateGroup);
 
         System.out.println(" generateGroup result: " + generateGroup.getStatus());
