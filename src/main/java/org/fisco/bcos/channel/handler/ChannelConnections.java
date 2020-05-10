@@ -12,20 +12,23 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
-import io.netty.handler.logging.LogLevel;
-import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.ssl.SMSslClientContextFactory;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.SslHandler;
 import io.netty.handler.ssl.SslProvider;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.Future;
+import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
+import java.security.cert.CertificateException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -36,11 +39,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.net.ssl.SSLException;
+import org.fisco.bcos.web3j.crypto.EncryptType;
 import org.fisco.bcos.web3j.tuples.generated.Tuple2;
 import org.fisco.bcos.web3j.tuples.generated.Tuple3;
+import org.fisco.bcos.web3j.utils.Host;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -53,13 +56,30 @@ public class ChannelConnections {
     private Callback callback;
     private List<String> connectionsStr;
 
+    /** SSL connection default configuration */
     private static final String CA_CERT = "classpath:ca.crt";
+
     private static final String SSL_CERT = "classpath:node.crt";
     private static final String SSL_KEY = "classpath:node.key";
+
+    /** SM SSL connection default configuration */
+    private static final String GM_CA_CERT = "classpath:gmca.crt";
+
+    private static final String GM_EN_SSL_CERT = "classpath:gmensdk.crt";
+    private static final String GM_EN_SSL_KEY = "classpath:gmensdk.key";
+    private static final String GM_SSL_CERT = "classpath:gmsdk.crt";
+    private static final String GM_SSL_KEY = "classpath:gmsdk.key";
 
     private Resource caCert;
     private Resource sslCert;
     private Resource sslKey;
+
+    private Resource gmCaCert;
+    private Resource gmSslCert;
+    private Resource gmSslKey;
+    private Resource gmEnSslCert;
+    private Resource gmEnSslKey;
+
     private List<ConnectionInfo> connections = new ArrayList<ConnectionInfo>();
     private Boolean running = false;
     private ThreadPoolTaskExecutor threadPool;
@@ -76,51 +96,6 @@ public class ChannelConnections {
     ServerBootstrap serverBootstrap = new ServerBootstrap();
 
     private ScheduledExecutorService scheduledExecutorService = new ScheduledThreadPoolExecutor(1);
-
-    private void initDefaultCertConfig() {
-        if (getCaCert() == null) {
-            PathMatchingResourcePatternResolver resolver =
-                    new PathMatchingResourcePatternResolver();
-            setCaCert(resolver.getResource(CA_CERT));
-        }
-
-        // dafault value is node.crt & node.key
-        if (getSslCert() == null || !getSslCert().exists()) {
-
-            if (getSslCert() == null) {
-                logger.info(
-                        " sslCert not configured in applicationContext.xml, use default setting: {}  ",
-                        SSL_CERT);
-            } else {
-                logger.info(
-                        " sslCert:{} configured in applicationContext.xml not exist, use default setting: {}  ",
-                        getSslCert().getFilename(),
-                        SSL_CERT);
-            }
-
-            PathMatchingResourcePatternResolver resolver =
-                    new PathMatchingResourcePatternResolver();
-            setSslCert(resolver.getResource(SSL_CERT));
-        }
-
-        if (getSslKey() == null || !getSslKey().exists()) {
-
-            if (getSslKey() == null) {
-                logger.info(
-                        " sslKey not configured in applicationContext.xml, use default setting: {}  ",
-                        SSL_KEY);
-            } else {
-                logger.info(
-                        " sslKey:{} configured in applicationContext.xml not exist, use default setting: {}  ",
-                        getSslKey().getFilename(),
-                        SSL_KEY);
-            }
-
-            PathMatchingResourcePatternResolver resolver =
-                    new PathMatchingResourcePatternResolver();
-            setSslKey(resolver.getResource(SSL_KEY));
-        }
-    }
 
     public Resource getCaCert() {
         return caCert;
@@ -273,17 +248,6 @@ public class ChannelConnections {
         return selectedNodeChannelHandlerContext;
     }
 
-    @Deprecated
-    public ConnectionInfo getConnectionInfo(String host, Integer port) {
-        for (ConnectionInfo info : connections) {
-            if (info.getHost().equals(host) && info.getPort().equals(port)) {
-                return info;
-            }
-        }
-
-        return null;
-    }
-
     public Map<String, ChannelHandlerContext> getNetworkConnections() {
         return networkConnections;
     }
@@ -322,90 +286,6 @@ public class ChannelConnections {
         }
     }
 
-    @Deprecated
-    public void startListen(Integer port) throws SSLException {
-        if (running) {
-            logger.debug("running");
-            return;
-        }
-
-        logger.debug("init connections listen");
-
-        EventLoopGroup bossGroup = new NioEventLoopGroup();
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
-
-        final ChannelConnections selfService = this;
-        final ThreadPoolTaskExecutor selfThreadPool = threadPool;
-
-        SslContext sslCtx = initSslContextForListening();
-        logger.debug("listening sslcontext init success");
-        try {
-            serverBootstrap
-                    .group(bossGroup, workerGroup)
-                    .channel(NioServerSocketChannel.class)
-                    .option(ChannelOption.SO_BACKLOG, 100)
-                    .handler(new LoggingHandler(LogLevel.INFO))
-                    .childHandler(
-                            new ChannelInitializer<SocketChannel>() {
-                                @Override
-                                public void initChannel(SocketChannel ch) throws Exception {
-                                    /*
-                                     * Each connection is fetched from the socketChannel, using the new handler connection information
-                                     */
-                                    ChannelHandler handler = new ChannelHandler();
-                                    handler.setConnections(selfService);
-                                    handler.setThreadPool(selfThreadPool);
-
-                                    SslHandler sslHandler = sslCtx.newHandler(ch.alloc());
-                                    sslHandler.setHandshakeTimeoutMillis(sslHandShakeTimeout);
-
-                                    ch.pipeline()
-                                            .addLast(
-                                                    sslHandler,
-                                                    new LengthFieldBasedFrameDecoder(
-                                                            Integer.MAX_VALUE, 0, 4, -4, 0),
-                                                    new IdleStateHandler(
-                                                            idleTimeout,
-                                                            idleTimeout,
-                                                            idleTimeout,
-                                                            TimeUnit.MILLISECONDS),
-                                                    handler);
-                                }
-                            });
-
-            ChannelFuture future = serverBootstrap.bind(port);
-            future.get();
-
-            running = true;
-        } catch (Exception e) {
-            logger.error("error ", e);
-        }
-    }
-
-    /**
-     * @param IP
-     * @return true if IP valid IP string otherwise false
-     */
-    public static boolean validIP(String IP) {
-        String regex = "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(IP);
-        return matcher.matches();
-    }
-
-    /**
-     * @param port
-     * @return true if port valid IP port otherwise false
-     */
-    public static boolean validPort(String port) {
-        try {
-            Integer p = Integer.parseInt(port);
-            return p > 0 && p <= 65535;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
     public void init() {
         logger.debug("init connections");
 
@@ -428,12 +308,12 @@ public class ChannelConnections {
             String IP = stringArray[0];
             String port = stringArray[1];
 
-            if (!validIP(IP)) {
+            if (!Host.validIP(IP)) {
                 throw new IllegalArgumentException(
                         " Invalid configuration, invalid IP string format, value: " + IP);
             }
 
-            if (!validPort(port)) {
+            if (!Host.validPort(port)) {
                 throw new IllegalArgumentException(
                         " Invalid configuration, tcp port should from 1 to 65535, value: " + port);
             }
@@ -443,16 +323,15 @@ public class ChannelConnections {
 
             // logger.info(" add connected node: " + IP + ":" + port);
 
-            connection.setConfig(true);
             connections.add(connection);
         }
 
         logger.info(" all connections: {}", connections);
 
-        initDefaultCertConfig();
+        // initDefaultCertConfig();
     }
 
-    public void startConnect() throws SSLException {
+    public void startConnect() throws Exception {
         if (running) {
             logger.debug("running");
             return;
@@ -471,9 +350,12 @@ public class ChannelConnections {
         final ChannelConnections selfService = this;
         final ThreadPoolTaskExecutor selfThreadPool = threadPool;
 
-        SslContext sslCtx = initSslContextForConnect();
-        logger.debug(" connect sslcontext init success");
+        SslContext sslContext =
+                (EncryptType.encryptType == EncryptType.ECDSA_TYPE)
+                        ? initSslContext()
+                        : initSMSslContext();
 
+        SslContext finalSslContext = sslContext;
         bootstrap.handler(
                 new ChannelInitializer<SocketChannel>() {
                     @Override
@@ -485,7 +367,7 @@ public class ChannelConnections {
                         handler.setConnections(selfService);
                         handler.setThreadPool(selfThreadPool);
 
-                        SslHandler sslHandler = sslCtx.newHandler(ch.alloc());
+                        SslHandler sslHandler = finalSslContext.newHandler(ch.alloc());
                         /** set ssl handshake timeout */
                         sslHandler.setHandshakeTimeoutMillis(sslHandShakeTimeout);
 
@@ -580,9 +462,41 @@ public class ChannelConnections {
                 () -> reconnect(), 0, reconnectDelay, TimeUnit.MILLISECONDS);
     }
 
-    private SslContext initSslContextForConnect() throws SSLException {
+    /**
+     * init sm ssl context object
+     *
+     * @return
+     * @throws IOException
+     */
+    public SslContext initSMSslContext()
+            throws IOException, InvalidKeySpecException, CertificateException,
+                    NoSuchAlgorithmException, NoSuchProviderException {
+
+        // The client's SM SSL certificate exists
+        if ((getGmCaCert() != null && getGmCaCert().getFile().exists())
+                || (getGmEnSslCert() != null && getGmEnSslCert().getFile().exists())
+                || (getGmEnSslKey() != null && getGmEnSslKey().getFile().exists())
+                || (getGmSslCert() != null && getGmSslCert().getFile().exists())
+                || (getGmSslKey() != null && getGmSslKey().getFile().exists())) {
+            return SMSslClientContextFactory.build(
+                    getGmCaCert().getInputStream(),
+                    getGmEnSslCert().getInputStream(),
+                    getGmEnSslKey().getInputStream(),
+                    getGmSslCert().getInputStream(),
+                    getGmSslKey().getInputStream());
+        }
+
+        // The client's SM SSL certificate not exists or not configured correctly
+        return initSslContext();
+    }
+
+    private SslContext initSslContext() throws SSLException {
         SslContext sslCtx;
         try {
+
+            PathMatchingResourcePatternResolver resolver =
+                    new PathMatchingResourcePatternResolver();
+
             Resource caResource = getCaCert();
             InputStream caInputStream = caResource.getInputStream();
             Resource keystorecaResource = getSslCert();
@@ -602,30 +516,6 @@ public class ChannelConnections {
                     e.getMessage(),
                     e.getCause());
             throw new SSLException(" Failed to initialize the SSLContext: " + e.getMessage());
-        }
-        return sslCtx;
-    }
-
-    @Deprecated
-    private SslContext initSslContextForListening() throws SSLException {
-        SslContext sslCtx;
-        try {
-            Resource caResource = getCaCert();
-            InputStream caInputStream = caResource.getInputStream();
-            Resource keystorecaResource = getSslCert();
-            Resource keystorekeyResource = getSslKey();
-            sslCtx =
-                    SslContextBuilder.forServer(
-                                    keystorecaResource.getInputStream(),
-                                    keystorekeyResource.getInputStream())
-                            .trustManager(caInputStream)
-                            .sslProvider(SslProvider.JDK)
-                            .build();
-        } catch (Exception e) {
-            logger.debug("SSLCONTEXT ***********" + e.getMessage());
-            throw new SSLException(
-                    "Failed to initialize the client-side SSLContext, please checkout ca.crt File!",
-                    e);
         }
         return sslCtx;
     }
@@ -664,7 +554,7 @@ public class ChannelConnections {
             }
         }
 
-        logger.trace(" Keepalive nodes count: {}", aliveConnectionCount);
+        logger.trace(" Keep alive nodes count: {}", aliveConnectionCount);
 
         for (ConnectionInfo connectionInfo : connectionInfoList) {
 
@@ -710,5 +600,45 @@ public class ChannelConnections {
 
     public void setSslHandShakeTimeout(long sslHandShakeTimeout) {
         this.sslHandShakeTimeout = sslHandShakeTimeout;
+    }
+
+    public Resource getGmCaCert() {
+        return gmCaCert;
+    }
+
+    public void setGmCaCert(Resource gmCaCert) {
+        this.gmCaCert = gmCaCert;
+    }
+
+    public Resource getGmSslCert() {
+        return gmSslCert;
+    }
+
+    public void setGmSslCert(Resource gmSslCert) {
+        this.gmSslCert = gmSslCert;
+    }
+
+    public Resource getGmSslKey() {
+        return gmSslKey;
+    }
+
+    public void setGmSslKey(Resource gmSslKey) {
+        this.gmSslKey = gmSslKey;
+    }
+
+    public Resource getGmEnSslCert() {
+        return gmEnSslCert;
+    }
+
+    public void setGmEnSslCert(Resource gmEnSslCert) {
+        this.gmEnSslCert = gmEnSslCert;
+    }
+
+    public Resource getGmEnSslKey() {
+        return gmEnSslKey;
+    }
+
+    public void setGmEnSslKey(Resource gmEnSslKey) {
+        this.gmEnSslKey = gmEnSslKey;
     }
 }
