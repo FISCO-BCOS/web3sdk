@@ -9,7 +9,8 @@ echo "127.0.0.1:4 agency1 1,2,3" > ipconf
 ./nodes/127.0.0.1/start_all.sh
 ./nodes/127.0.0.1/fisco-bcos -v
 cp nodes/127.0.0.1/sdk/* src/integration-test/resources/
-mv src/integration-test/resources/applicationContext-sample.xml src/integration-test/resources/applicationContext.xml
+cp src/test/resources/applicationContext-sample.xml src/integration-test/resources/applicationContext.xml
+cp src/test/resources/log4j.properties src/integration-test/resources/
 ./gradlew verifyGoogleJavaFormat
 ./gradlew build
 ./gradlew test

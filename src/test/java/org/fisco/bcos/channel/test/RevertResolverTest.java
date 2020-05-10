@@ -52,7 +52,7 @@ public class RevertResolverTest {
 
     @Test
     public void hasRevertMessageSMTest() throws IOException {
-        EncryptType encryptType = new EncryptType(EncryptType.SM2_TYPE);
+        EncryptType.setEncryptType(EncryptType.SM2_TYPE);
         String revertMessage = "RevertMessage";
         Function revertFunction = newFunction("Error", revertMessage);
         String revertABI = FunctionEncoder.encode(revertFunction);
@@ -73,7 +73,7 @@ public class RevertResolverTest {
         assertFalse(RevertResolver.hasRevertMessage("0x0", testABI));
         assertFalse(RevertResolver.hasRevertMessage("0x1", testABI));
         assertFalse(RevertResolver.hasRevertMessage(null, testABI));
-        EncryptType encryptType0 = new EncryptType(EncryptType.ECDSA_TYPE);
+        EncryptType.setEncryptType(EncryptType.ECDSA_TYPE);
     }
 
     @Test
@@ -93,7 +93,7 @@ public class RevertResolverTest {
 
     @Test
     public void isOutputStartWithRevertMethodSMTest() {
-        EncryptType encryptType = new EncryptType(EncryptType.SM2_TYPE);
+        EncryptType.setEncryptType(EncryptType.SM2_TYPE);
         String revertMessage = "isOutputStartWithRevertMethodTest";
         Function revertFunction = newFunction("Error", revertMessage);
         String revertABI = FunctionEncoder.encode(revertFunction);
@@ -105,7 +105,7 @@ public class RevertResolverTest {
         assertFalse(RevertResolver.isOutputStartWithRevertMethod(testABI));
         assertTrue(RevertResolver.isOutputStartWithRevertMethod(revertABI));
         assertFalse(RevertResolver.isOutputStartWithRevertMethod(testABI));
-        EncryptType encryptType0 = new EncryptType(EncryptType.ECDSA_TYPE);
+        EncryptType.setEncryptType(EncryptType.ECDSA_TYPE);
     }
 
     @Test
@@ -141,7 +141,7 @@ public class RevertResolverTest {
 
     @Test
     public void tryResolveRevertMessageSMTest() throws IOException {
-        EncryptType encryptType = new EncryptType(EncryptType.SM2_TYPE);
+        EncryptType.setEncryptType(EncryptType.SM2_TYPE);
         String revertMessage = "RevertMessage";
         Function revertFunction = newFunction("Error", revertMessage);
         String revertABI = FunctionEncoder.encode(revertFunction);
@@ -169,7 +169,7 @@ public class RevertResolverTest {
                 RevertResolver.tryResolveRevertMessage("0x1", revertABI);
         assertTrue(booleanStringTuple23.getValue1());
         assertEquals(booleanStringTuple23.getValue2(), revertMessage);
-        EncryptType encryptType0 = new EncryptType(EncryptType.ECDSA_TYPE);
+        EncryptType.setEncryptType(EncryptType.ECDSA_TYPE);
     }
 
     @Test
@@ -205,7 +205,7 @@ public class RevertResolverTest {
 
     @Test
     public void tryResolveRevertMessageSMTest0() throws IOException {
-        EncryptType encryptType = new EncryptType(EncryptType.SM2_TYPE);
+        EncryptType.setEncryptType(EncryptType.SM2_TYPE);
         String revertMessage = "";
         Function revertFunction = newFunction("Error", revertMessage);
         String revertABI = FunctionEncoder.encode(revertFunction);
@@ -233,7 +233,6 @@ public class RevertResolverTest {
                 RevertResolver.tryResolveRevertMessage("0x1", revertABI);
         assertTrue(booleanStringTuple23.getValue1());
         assertEquals(booleanStringTuple23.getValue2(), revertMessage);
-
-        EncryptType encryptType0 = new EncryptType(EncryptType.ECDSA_TYPE);
+        EncryptType.setEncryptType(EncryptType.ECDSA_TYPE);
     }
 }
