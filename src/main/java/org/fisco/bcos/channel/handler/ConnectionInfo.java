@@ -21,10 +21,12 @@ public class ConnectionInfo {
         this.port = port;
     }
 
+    @Deprecated
     public List<String> getTopics() {
         return topics;
     }
 
+    @Deprecated
     public void setTopics(List<String> topics) {
         this.topics = topics;
     }
@@ -32,7 +34,7 @@ public class ConnectionInfo {
     private String host = "";
     private Integer port = 0;
 
-    private List<String> topics = new ArrayList<String>();
+    @Deprecated private List<String> topics = new ArrayList<String>();
 
     @Override
     public String toString() {

@@ -22,7 +22,6 @@ import io.netty.handler.ssl.SslProvider;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.Future;
 import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
@@ -61,14 +60,6 @@ public class ChannelConnections {
 
     private static final String SSL_CERT = "classpath:node.crt";
     private static final String SSL_KEY = "classpath:node.key";
-
-    /** SM SSL connection default configuration */
-    private static final String GM_CA_CERT = "classpath:gmca.crt";
-
-    private static final String GM_EN_SSL_CERT = "classpath:gmensdk.crt";
-    private static final String GM_EN_SSL_KEY = "classpath:gmensdk.key";
-    private static final String GM_SSL_CERT = "classpath:gmsdk.crt";
-    private static final String GM_SSL_KEY = "classpath:gmsdk.key";
 
     private Resource caCert;
     private Resource sslCert;
@@ -321,8 +312,6 @@ public class ChannelConnections {
             connection.setHost(IP);
             connection.setPort(Integer.parseInt(port));
 
-            // logger.info(" add connected node: " + IP + ":" + port);
-
             connections.add(connection);
         }
 
@@ -473,11 +462,11 @@ public class ChannelConnections {
                     NoSuchAlgorithmException, NoSuchProviderException {
 
         // The client's SM SSL certificate exists
-        if ((getGmCaCert() != null && getGmCaCert().getFile().exists())
-                || (getGmEnSslCert() != null && getGmEnSslCert().getFile().exists())
-                || (getGmEnSslKey() != null && getGmEnSslKey().getFile().exists())
-                || (getGmSslCert() != null && getGmSslCert().getFile().exists())
-                || (getGmSslKey() != null && getGmSslKey().getFile().exists())) {
+        if ((getGmCaCert() != null && getGmCaCert().exists())
+                || (getGmEnSslCert() != null && getGmEnSslCert().exists())
+                || (getGmEnSslKey() != null && getGmEnSslKey().exists())
+                || (getGmSslCert() != null && getGmSslCert().exists())
+                || (getGmSslKey() != null && getGmSslKey().exists())) {
             return SMSslClientContextFactory.build(
                     getGmCaCert().getInputStream(),
                     getGmEnSslCert().getInputStream(),
@@ -485,6 +474,8 @@ public class ChannelConnections {
                     getGmSslCert().getInputStream(),
                     getGmSslKey().getInputStream());
         }
+
+        logger.info(" Has no SM Ssl certificate configuration ");
 
         // The client's SM SSL certificate not exists or not configured correctly
         return initSslContext();
@@ -497,24 +488,62 @@ public class ChannelConnections {
             PathMatchingResourcePatternResolver resolver =
                     new PathMatchingResourcePatternResolver();
 
+            // check ssl cert file
             Resource caResource = getCaCert();
-            InputStream caInputStream = caResource.getInputStream();
             Resource keystorecaResource = getSslCert();
             Resource keystorekeyResource = getSslKey();
 
+            // check if ca.crt exist
+            if (Objects.isNull(caResource) || !caResource.exists()) {
+                throw new RuntimeException(
+                        (Objects.nonNull(caResource) ? "ca.crt" : caResource.getFilename())
+                                + " not exist ");
+            }
+
+            // check if sdk.crt exist, if not , check the default value node.crt
+            if (Objects.isNull(keystorecaResource) || !keystorecaResource.exists()) {
+                Resource resource = resolver.getResource(SSL_CERT);
+                if (Objects.nonNull(resource) && resource.exists()) {
+                    keystorecaResource = resource;
+                } else {
+                    throw new RuntimeException(
+                            (Objects.nonNull(keystorecaResource)
+                                            ? "sdk.crt"
+                                            : keystorecaResource.getFilename())
+                                    + " not exist ");
+                }
+            }
+
+            // check if sdk.key exist, if not, check the default value sdk.key
+            if (Objects.isNull(keystorekeyResource) || !keystorekeyResource.exists()) {
+                Resource resource = resolver.getResource(SSL_KEY);
+                if (Objects.nonNull(resource) && resource.exists()) {
+                    keystorekeyResource = resource;
+                } else {
+                    throw new RuntimeException(
+                            (Objects.nonNull(keystorekeyResource)
+                                            ? "sdk.key"
+                                            : keystorekeyResource.getFilename())
+                                    + " not exist ");
+                }
+            }
+
+            logger.info(
+                    " ca certificate: {}, sdk certificate: {}, sdk key: {}",
+                    caResource.getFilename(),
+                    keystorecaResource.getFilename(),
+                    keystorekeyResource.getFilename());
+
             sslCtx =
                     SslContextBuilder.forClient()
-                            .trustManager(caInputStream)
+                            .trustManager(caResource.getInputStream())
                             .keyManager(
                                     keystorecaResource.getInputStream(),
                                     keystorekeyResource.getInputStream())
                             .sslProvider(SslProvider.JDK)
                             .build();
         } catch (Exception e) {
-            logger.error(
-                    " Failed to initialize the SSLContext, error mesage: {}, error: {} ",
-                    e.getMessage(),
-                    e.getCause());
+            logger.error(" Failed to initialize the SSLContext, e: {} ", e.getCause());
             throw new SSLException(" Failed to initialize the SSLContext: " + e.getMessage());
         }
         return sslCtx;
