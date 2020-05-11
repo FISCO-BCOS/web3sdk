@@ -5,6 +5,7 @@ import java.math.BigInteger;
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.channel.test.guomi.Ok;
 import org.fisco.bcos.web3j.crypto.Credentials;
+import org.fisco.bcos.web3j.crypto.gm.GenCredential;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
 import org.fisco.bcos.web3j.tx.gas.StaticGasProvider;
@@ -15,8 +16,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class TestBase {
   public static ApplicationContext context = null;
-  public static Credentials credentials =
-      Credentials.create("d0fee0a4e3c545a9394965042f8f891b6e5482c212a7428ec175d6aed121353a");
+  public static Credentials credentials = GenCredential.create();
   protected static Web3j web3j;
   protected static BigInteger gasPrice = new BigInteger("30000000");
   protected static BigInteger gasLimit = new BigInteger("30000000");
