@@ -34,12 +34,12 @@ public class Web3jApITest extends TestBase {
 
   @Test
   public void getNodeVersion() throws IOException {
-    NodeVersion nodeVersion = web3j.getNodeVersion().send();
-    assertNotNull(nodeVersion.getNodeVersion().getBuildTime());
-    assertNotNull(nodeVersion.getNodeVersion().getBuildType());
-    assertNotNull(nodeVersion.getNodeVersion().getGitBranch());
-    assertNotNull(nodeVersion.getNodeVersion().getGitCommit());
-    assertNotNull(nodeVersion.getNodeVersion().getVersion());
+      NodeVersion nodeVersion = web3j.getNodeVersion().send();
+      assertNotNull(nodeVersion.getNodeVersion().getBuildTime());
+      assertNotNull(nodeVersion.getNodeVersion().getBuildType());
+      assertNotNull(nodeVersion.getNodeVersion().getGitBranch());
+      assertNotNull(nodeVersion.getNodeVersion().getGitCommit());
+      assertNotNull(nodeVersion.getNodeVersion().getVersion());
   }
 
   @Test
@@ -118,11 +118,13 @@ public class Web3jApITest extends TestBase {
     assertNotNull(txGasLimit.getSystemConfigByKey());
   }
 
+  /*
   @Test
   public void getCode() throws Exception {
-    Code code = web3j.getCode(address, DefaultBlockParameterName.LATEST).send();
+    Code code = web3j.getCode(address).send();
     assertNotNull(code.getCode());
   }
+  */
 
   @Test
   public void getTotalTransactionCount() throws Exception {
@@ -156,17 +158,6 @@ public class Web3jApITest extends TestBase {
     assertNotNull(bcosTransaction.getTransaction());
   }
 
-  //  @Test
-  //  public void getTransactionByHashWithProof() throws IOException {
-  //    TransactionWithProof transactionWithProof =
-  // web3j.getTransactionByHashWithProof(txHash).send();
-  //    Transaction transaction = transactionWithProof.getTransactionWithProof().getTransaction();
-  //    assertNotNull(transaction);
-  //    List<MerkleProofUnit> merkleProofUnits =
-  //        transactionWithProof.getTransactionWithProof().getTxProof();
-  //    assertNotNull(merkleProofUnits);
-  //  }
-
   @Test
   public void getTransactionByBlockNumberAndIndex() throws IOException {
     BcosTransaction bcosTransaction =
@@ -192,18 +183,6 @@ public class Web3jApITest extends TestBase {
     TransactionReceipt transactionReceipt = bcosTransactionReceipt.getTransactionReceipt().get();
     assertNotNull(transactionReceipt);
   }
-
-  //  @Test
-  //  public void getTransactionReceiptByHashWithProof() throws IOException {
-  //    TransactionReceiptWithProof transactionReceiptWithProof =
-  //        web3j.getTransactionReceiptByHashWithProof(txHash).send();
-  //    TransactionReceipt transactionReceipt =
-  //        transactionReceiptWithProof.getTransactionReceiptWithProof().getTransactionReceipt();
-  //    assertNotNull(transactionReceipt);
-  //    List<MerkleProofUnit> merkleProofUnits =
-  //        transactionReceiptWithProof.getTransactionReceiptWithProof().getReceiptProof();
-  //    assertNotNull(merkleProofUnits);
-  //  }
 
   @Test
   public void getPendingTransaction() throws IOException {

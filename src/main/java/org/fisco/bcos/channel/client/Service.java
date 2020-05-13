@@ -321,6 +321,11 @@ public class Service {
                     channelConnections.setCaCert(allChannelConnections.getCaCert());
                     channelConnections.setSslCert(allChannelConnections.getSslCert());
                     channelConnections.setSslKey(allChannelConnections.getSslKey());
+                    channelConnections.setGmCaCert(allChannelConnections.getGmCaCert());
+                    channelConnections.setGmEnSslCert(allChannelConnections.getGmEnSslCert());
+                    channelConnections.setGmEnSslKey(allChannelConnections.getGmEnSslKey());
+                    channelConnections.setGmSslCert(allChannelConnections.getGmSslCert());
+                    channelConnections.setGmSslKey(allChannelConnections.getGmSslKey());
 
                     channelConnections.init();
                     channelConnections.setThreadPool(threadPool);
