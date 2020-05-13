@@ -2,6 +2,8 @@
 
 set -e
 
+java -version
+
 # code format check
 bash gradlew verifyGoogleJavaFormat
 # build
@@ -41,11 +43,9 @@ echo " SM NonSM SSL connection test ============>>>> "
 echo " SM NonSM SSL connection test ============>>>> "
 bash build_chain.sh -e bin/fisco-bcos -g -f ipconf -p 30300,20200,8545
 bash nodes/127.0.0.1/start_all.sh
-ls -al nodes/127.0.0.1/sdk
 cp -r nodes/127.0.0.1/sdk/* src/integration-test/resources/
 cp src/test/resources/applicationContext-sample.xml src/integration-test/resources/applicationContext.xml
 sed -i.bak 's/"0"/"1"/g' src/integration-test/resources/applicationContext.xml
-cat src/integration-test/resources/applicationContext.xml
 cp src/test/resources/log4j.properties src/integration-test/resources/
 bash gradlew integrationTest
 
@@ -56,15 +56,14 @@ bash nodes/127.0.0.1/stop_all.sh
 rm -rf nodes
 
 ## SM SSL connection test
-#echo " SM SSL connection test ============>>>> "
-#echo " SM SSL connection test ============>>>> "
-#echo " SM SSL connection test ============>>>> "
-#bash build_chain.sh -e bin/fisco-bcos -g -G -f ipconf -p 30300,20200,8545
-#bash nodes/127.0.0.1/start_all.sh
-#mkdir -p src/integration-test/resources/
-#cp -r nodes/127.0.0.1/sdk/gm/* src/integration-test/resources/
-#cp src/test/resources/applicationContext-sample.xml src/integration-test/resources/applicationContext.xml
-#sed -i.bak 's/"0"/"1"/g' src/integration-test/resources/applicationContext.xml
-#cat src/integration-test/resources/applicationContext.xml
-#cp src/test/resources/log4j.properties src/integration-test/resources/
-#bash gradlew integrationTest
+echo " SM SSL connection test ============>>>> "
+echo " SM SSL connection test ============>>>> "
+echo " SM SSL connection test ============>>>> "
+bash build_chain.sh -e bin/fisco-bcos -g -G -f ipconf -p 30300,20200,8545
+bash nodes/127.0.0.1/start_all.sh
+mkdir -p src/integration-test/resources/
+cp -r nodes/127.0.0.1/sdk/gm/* src/integration-test/resources/
+cp src/test/resources/applicationContext-sample.xml src/integration-test/resources/applicationContext.xml
+sed -i.bak 's/"0"/"1"/g' src/integration-test/resources/applicationContext.xml
+cp src/test/resources/log4j.properties src/integration-test/resources/
+bash gradlew integrationTest
