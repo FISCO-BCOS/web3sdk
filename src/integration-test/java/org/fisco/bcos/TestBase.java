@@ -2,7 +2,6 @@ package org.fisco.bcos;
 
 import java.math.BigInteger;
 
-import org.bouncycastle.asn1.cms.EncryptedContentInfo;
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.channel.test.guomi.Ok;
 import org.fisco.bcos.web3j.crypto.Credentials;
