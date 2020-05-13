@@ -39,15 +39,14 @@ matrix:
     # ubuntu 18
     - language: java
       jdk: openjdk11
-      os: bionic
-      dist: xenial
+      os: linux
+      dist: bionic
       sudo: required
 
-    # - language: java
-    #   jdk: openjdk11
-    #   os: osx
-    #   before_install:
-    #     - brew install gradle && gradle wrapper
+#    # os
+#    - language: java
+#        os: osx
+#        osx_image: xcode11.3
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
