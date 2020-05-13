@@ -3,7 +3,7 @@ branches:
   only:
       - /.*/
 
-matrix:
+jobs:
   fast_finish: true
   include:
 #    - language: python
@@ -29,6 +29,20 @@ matrix:
       dist: xenial
       sudo: required
 
+    # ubuntu 16
+    - language: java
+      jdk: oraclejdk8
+      os: linux
+      dist: xenial
+      sudo: required
+
+    # ubuntu 16
+    - language: java
+      jdk: oraclejdk11
+      os: linux
+      dist: xenial
+      sudo: required
+
     # ubuntu 18
     - language: java
       jdk: openjdk8
@@ -39,15 +53,28 @@ matrix:
     # ubuntu 18
     - language: java
       jdk: openjdk11
-      os: bionic
-      dist: xenial
+      os: linux
+      dist: bionic
       sudo: required
 
-    # - language: java
-    #   jdk: openjdk11
-    #   os: osx
-    #   before_install:
-    #     - brew install gradle && gradle wrapper
+    # ubuntu 18
+    - language: java
+      jdk: oraclejdk8
+      os: linux
+      dist: bionic
+      sudo: required
+
+    # ubuntu 18
+    - language: java
+      jdk: oraclejdk11
+      os: linux
+      dist: bionic
+      sudo: required
+
+#    # os
+#    - language: java
+#        os: osx
+#        osx_image: xcode11.3
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
