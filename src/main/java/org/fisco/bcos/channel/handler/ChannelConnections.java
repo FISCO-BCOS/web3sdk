@@ -410,6 +410,21 @@ public class ChannelConnections {
                 logger.trace(" connect to {}:{} success", tuple3.getValue1(), tuple3.getValue2());
 
                 SslHandler sslhandler = connectFuture.channel().pipeline().get(SslHandler.class);
+
+                if (Objects.isNull(sslhandler)) {
+                    String sslHandshakeFailedMessage =
+                            " ssl handshake failed:/"
+                                    + tuple3.getValue1()
+                                    + ":"
+                                    + tuple3.getValue2();
+                    logger.debug(
+                            " SslHandler is null, host: {}, port: {}",
+                            tuple3.getValue1(),
+                            tuple3.getValue2());
+                    errorMessageList.add(sslHandshakeFailedMessage);
+                    continue;
+                }
+
                 Future<Channel> sshHandshakeFuture =
                         sslhandler.handshakeFuture().awaitUninterruptibly();
                 if (sshHandshakeFuture.isSuccess()) {

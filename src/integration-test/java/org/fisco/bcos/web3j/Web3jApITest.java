@@ -118,11 +118,13 @@ public class Web3jApITest extends TestBase {
     assertNotNull(txGasLimit.getSystemConfigByKey());
   }
 
+  /*
   @Test
   public void getCode() throws Exception {
-    Code code = web3j.getCode(address, DefaultBlockParameterName.LATEST).send();
+    Code code = web3j.getCode(address).send();
     assertNotNull(code.getCode());
   }
+  */
 
   @Test
   public void getTotalTransactionCount() throws Exception {

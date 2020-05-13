@@ -6,7 +6,7 @@ import java.math.BigInteger;
 import java.security.SecureRandom;
 
 import org.fisco.bcos.TestBase;
-import org.fisco.bcos.channel.test.contract.Ok;
+import org.fisco.bcos.contract.Ok;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.crypto.gm.GenCredential;
 import org.fisco.bcos.web3j.precompile.cns.CnsService;
