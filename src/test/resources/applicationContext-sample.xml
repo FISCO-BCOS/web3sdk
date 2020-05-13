@@ -16,6 +16,13 @@
 		<property name="caCert" value="ca.crt" />
 		<property name="sslCert" value="sdk.crt" />
 		<property name="sslKey" value="sdk.key" />
+		<!-- GM Ssl certificate configura dtion -->
+		<property name="gmCaCert" value="gmca.crt" />
+		<property name="gmEnSslCert" value="gmensdk.crt" />
+		<property name="gmEnSslKey" value="gmensdk.key" />
+		<property name="gmSslCert" value="gmsdk.crt" />
+		<property name="gmSslKey" value="gmsdk.key" />
+
 		<property name="allChannelConnections">
 			<list>
 				<bean id="group1"

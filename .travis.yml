@@ -1,49 +1,66 @@
-# safelist
+# safe list
 branches:
   only:
       - /.*/
 
-matrix:
+jobs:
   fast_finish: true
   include:
-    - language: python
-      python: 3.6
-      dist: xenial
-      before_cache:
-      cache:
-      before_install:
-      script: |
-        bash .ci/ci_check_commit.sh
+#    - language: python
+#      python: 3.6
+#      dist: bionic
+#      before_cache:
+#      cache:
+#      before_install:
+#      script: |
+#        bash .ci/ci_check_commit.sh
 
+    # ubuntu 16
     - language: java
       jdk: openjdk8
       os: linux
       dist: xenial
       sudo: required
 
-    - language: java
-      jdk: openjdk9
-      os: linux
-      dist: xenial
-      sudo: required
-
-    - language: java
-      jdk: openjdk10
-      os: linux
-      dist: xenial
-      sudo: required
-
+    # ubuntu 16
     - language: java
       jdk: openjdk11
       os: linux
       dist: xenial
       sudo: required
 
-    # - language: java
-    #   jdk: openjdk11
-    #   os: osx
-    #   before_install:
-    #     - brew install gradle && gradle wrapper
+    # ubuntu 16
+    - language: java
+      jdk: oraclejdk11
+      os: linux
+      dist: xenial
+      sudo: required
+
+    # ubuntu 18
+    - language: java
+      jdk: openjdk8
+      os: linux
+      dist: bionic
+      sudo: required
+
+    # ubuntu 18
+    - language: java
+      jdk: openjdk11
+      os: linux
+      dist: bionic
+      sudo: required
+
+    # ubuntu 18
+    - language: java
+      jdk: oraclejdk11
+      os: linux
+      dist: bionic
+      sudo: required
+
+#    # os
+#    - language: java
+#        os: osx
+#        osx_image: xcode11.3
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
