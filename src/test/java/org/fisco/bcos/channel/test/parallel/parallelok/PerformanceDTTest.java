@@ -84,7 +84,7 @@ public class PerformanceDTTest {
         this.collector = collector;
     }
 
-    public void veryTransferData(ThreadPoolTaskExecutor threadPool) {
+    public void veryTransferData(ThreadPoolTaskExecutor threadPool, BigInteger qps) {
         // System.out.println(" data validation => ");
         List<DagTransferUser> allUser = dagUserMgr.getUserList();
         int total_user = allUser.size();
@@ -94,7 +94,7 @@ public class PerformanceDTTest {
         AtomicInteger verify_failed = new AtomicInteger(0);
 
         allUser = dagUserMgr.getUserList();
-
+        RateLimiter limiter = RateLimiter.create(qps.intValue());
         try {
             final List<DagTransferUser> _allUser = allUser;
 
@@ -105,6 +105,7 @@ public class PerformanceDTTest {
                             @Override
                             public void run() {
                                 try {
+                                    limiter.acquire();
                                     BigInteger result =
                                             parallelok.balanceOf(_allUser.get(_i).getUser()).send();
 
@@ -394,7 +395,7 @@ public class PerformanceDTTest {
                         collector.getTotal());
             }
 
-            veryTransferData(threadPool);
+            veryTransferData(threadPool, qps);
             System.exit(0);
 
         } catch (Exception e) {
@@ -595,7 +596,7 @@ public class PerformanceDTTest {
                         collector.getTotal());
             }
 
-            veryTransferData(threadPool);
+            veryTransferData(threadPool, qps);
 
             System.exit(0);
         } catch (Exception e) {
