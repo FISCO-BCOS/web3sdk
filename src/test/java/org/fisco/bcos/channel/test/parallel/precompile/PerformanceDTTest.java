@@ -419,11 +419,13 @@ public class PerformanceDTTest {
             threadPool.setMaxPoolSize(500);
             threadPool.setQueueCapacity(Math.max(count.intValue(), allUser.size()));
             threadPool.initialize();
+            RateLimiter limiter = RateLimiter.create(qps.intValue());
 
             final DagTransfer _dagTransfer = dagTransfer;
             AtomicInteger geted = new AtomicInteger(0);
             for (int i = 0; i < allUser.size(); ++i) {
                 final Integer _i = i;
+                limiter.acquire();
                 threadPool.execute(
                         new Runnable() {
                             @Override
@@ -578,7 +580,6 @@ public class PerformanceDTTest {
             long startTime = System.currentTimeMillis();
             collector.setStartTimestamp(startTime);
 
-            RateLimiter limiter = RateLimiter.create(qps.intValue());
             for (int i = 0; i < fileList.length; ++i) {
                 BufferedReader reader = null;
 
