@@ -433,6 +433,7 @@ public class PerformanceDTTest {
             threadPool.setMaxPoolSize(500);
             threadPool.setQueueCapacity(Math.max(count.intValue(), allUser.size()) + 1000);
             threadPool.initialize();
+            RateLimiter limiter = RateLimiter.create(qps.intValue());
 
             Lock lock = new ReentrantLock();
 
@@ -440,6 +441,7 @@ public class PerformanceDTTest {
             AtomicInteger geted = new AtomicInteger(0);
             for (int i = 0; i < allUser.size(); ++i) {
                 final Integer _i = i;
+                limiter.acquire();
                 threadPool.execute(
                         new Runnable() {
                             @Override
@@ -542,7 +544,6 @@ public class PerformanceDTTest {
             AtomicInteger sent = new AtomicInteger(0);
             int division = count.intValue() / 10;
 
-            RateLimiter limiter = RateLimiter.create(qps.intValue());
             System.out.println("Sending signed transactions...");
             for (int i = 0; i < count.intValue(); ++i) {
                 limiter.acquire();
