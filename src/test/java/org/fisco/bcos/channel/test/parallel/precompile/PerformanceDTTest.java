@@ -95,7 +95,7 @@ public class PerformanceDTTest {
         this.collector = collector;
     }
 
-    public void veryTransferData(ThreadPoolTaskExecutor threadPool) {
+    public void veryTransferData(ThreadPoolTaskExecutor threadPool, BigInteger qps) {
         List<DagTransferUser> allUser = dagUserMgr.getUserList();
         Integer total_user = allUser.size();
 
@@ -103,7 +103,7 @@ public class PerformanceDTTest {
         AtomicInteger verify_failed = new AtomicInteger(0);
 
         allUser = dagUserMgr.getUserList();
-
+        RateLimiter limiter = RateLimiter.create(qps.intValue());
         try {
             final DagTransfer _dagTransfer = dagTransfer;
             final List<DagTransferUser> _allUser = allUser;
@@ -114,6 +114,7 @@ public class PerformanceDTTest {
                             @Override
                             public void run() {
                                 try {
+                                    limiter.acquire();
                                     Tuple2<BigInteger, BigInteger> result =
                                             _dagTransfer
                                                     .userBalance(_allUser.get(_i).getUser())
@@ -675,7 +676,7 @@ public class PerformanceDTTest {
             logger.info("End to send");
 
             System.out.println(dateFormat.format(new Date()) + " Verifying result...");
-            veryTransferData(threadPool);
+            veryTransferData(threadPool, qps);
 
             System.exit(0);
 
