@@ -55,7 +55,7 @@ List spring = [
 
 List alibaba = [
         'com.alibaba:druid:1.0.29',
-        'com.alibaba:fastjson:1.2.67'
+        // 'com.alibaba:fastjson:1.2.67'
 ]
 
 configurations {
