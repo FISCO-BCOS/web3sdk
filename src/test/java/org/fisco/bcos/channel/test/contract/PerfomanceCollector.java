@@ -29,8 +29,6 @@ public class PerfomanceCollector {
                 }
             }
 
-            received.incrementAndGet();
-
             if ((received.get() + 1) % (total / 10) == 0) {
                 System.out.println(
                         "                                                       |received:"
@@ -62,7 +60,7 @@ public class PerfomanceCollector {
 
             totalCost.addAndGet(cost);
 
-            if (received.intValue() >= total) {
+            if (received.incrementAndGet() >= total) {
                 System.out.println("total");
 
                 // 总耗时
@@ -146,8 +144,6 @@ public class PerfomanceCollector {
                 error.addAndGet(1);
             }
 
-            received.incrementAndGet();
-
             if ((received.get() + 1) % (total / 10) == 0) {
                 System.out.println(
                         "                                                       |received:"
@@ -179,7 +175,7 @@ public class PerfomanceCollector {
 
             totalCost.addAndGet(cost);
 
-            if (received.intValue() >= total) {
+            if (received.incrementAndGet() >= total) {
                 System.out.println("total");
 
                 // 总耗时

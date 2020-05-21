@@ -23,8 +23,6 @@ public class PerformanceRpcCollector {
                 // System.out.println("receipt error");
                 error.addAndGet(1);
             }
-            received.incrementAndGet();
-
             if ((received.get() + 1) % (total / 10) == 0) {
                 System.out.println(
                         "                                                       |received:"
@@ -56,7 +54,7 @@ public class PerformanceRpcCollector {
             }
             totalCost.addAndGet(cost);
 
-            if (received.intValue() >= total) {
+            if (received.incrementAndGet() >= total) {
                 System.out.println("total");
 
                 // trans ns to ms
@@ -65,7 +63,7 @@ public class PerformanceRpcCollector {
                 System.out.println(
                         "===================================================================");
 
-                System.out.println("Total transactions:  " + String.valueOf(total));
+                System.out.println("Total RPC Requests:  " + String.valueOf(total));
                 System.out.println("Total time: " + String.valueOf(totalTime) + "ms");
                 System.out.println(
                         "TPS(include error requests): "

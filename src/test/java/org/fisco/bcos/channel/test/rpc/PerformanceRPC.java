@@ -158,7 +158,7 @@ public class PerformanceRPC {
                                                     + current
                                                     + "/"
                                                     + total
-                                                    + " transactions");
+                                                    + " RPC Requests");
                                 }
                             }
                         });
