@@ -29,8 +29,6 @@ public class PerformanceCollector {
                 }
             }
 
-            received.incrementAndGet();
-
             if ((received.get() + 1) % (total / 10) == 0) {
                 System.out.println(
                         "                                                       |received:"
@@ -62,7 +60,7 @@ public class PerformanceCollector {
 
             totalCost.addAndGet(cost);
 
-            if (received.intValue() >= total) {
+            if (received.incrementAndGet() >= total) {
                 System.out.println("total");
 
                 // 总耗时

@@ -288,7 +288,8 @@ public class PerformanceDTTest {
         }
     }
 
-    public void userTransferRevertTest(BigInteger count, BigInteger qps, BigInteger deci) {
+    public void userTransferRevertTest(
+            BigInteger count, BigInteger qps, BigInteger deci, BigInteger queryAccountQPS) {
 
         try {
 
@@ -395,7 +396,7 @@ public class PerformanceDTTest {
                         collector.getTotal());
             }
 
-            veryTransferData(threadPool, qps);
+            veryTransferData(threadPool, queryAccountQPS);
             System.exit(0);
 
         } catch (Exception e) {
@@ -404,7 +405,8 @@ public class PerformanceDTTest {
         }
     }
 
-    public void userTransferTest(BigInteger count, BigInteger qps, BigInteger deci) {
+    public void userTransferTest(
+            BigInteger count, BigInteger qps, BigInteger deci, BigInteger queryAccountQPS) {
         List<String> signedTransactions = new ArrayList<String>();
         List<PerformanceDTCallback> callbacks = new ArrayList<PerformanceDTCallback>();
 
@@ -434,15 +436,14 @@ public class PerformanceDTTest {
             threadPool.setMaxPoolSize(500);
             threadPool.setQueueCapacity(Math.max(count.intValue(), allUser.size()) + 1000);
             threadPool.initialize();
-            RateLimiter limiter = RateLimiter.create(qps.intValue());
-
             Lock lock = new ReentrantLock();
 
             final ParallelOk _parallelok = parallelok;
+            RateLimiter queryAccountLimiter = RateLimiter.create(queryAccountQPS.intValue());
             AtomicInteger geted = new AtomicInteger(0);
             for (int i = 0; i < allUser.size(); ++i) {
                 final Integer _i = i;
-                limiter.acquire();
+                queryAccountLimiter.acquire();
                 threadPool.execute(
                         new Runnable() {
                             @Override
@@ -544,7 +545,7 @@ public class PerformanceDTTest {
             collector.setStartTimestamp(startTime);
             AtomicInteger sent = new AtomicInteger(0);
             int division = count.intValue() / 10;
-
+            RateLimiter limiter = RateLimiter.create(qps.intValue());
             System.out.println("Sending signed transactions...");
             for (int i = 0; i < count.intValue(); ++i) {
                 limiter.acquire();
@@ -596,7 +597,7 @@ public class PerformanceDTTest {
                         collector.getTotal());
             }
 
-            veryTransferData(threadPool, qps);
+            veryTransferData(threadPool, queryAccountQPS);
 
             System.exit(0);
         } catch (Exception e) {
