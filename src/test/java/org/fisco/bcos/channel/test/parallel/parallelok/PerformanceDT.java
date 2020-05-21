@@ -13,9 +13,9 @@ public class PerformanceDT {
         System.out.println(
                 " \t java -cp conf/:lib/*:apps/* org.fisco.bcos.channel.test.parallel.parallelok.PerformanceDT groupID add count tps file.");
         System.out.println(
-                " \t java -cp conf/:lib/*:apps/* org.fisco.bcos.channel.test.parallel.parallelok.PerformanceDT groupID transfer count tps file strategy.");
+                " \t java -cp conf/:lib/*:apps/* org.fisco.bcos.channel.test.parallel.parallelok.PerformanceDT groupID transfer count tps file strategy queryAccountQPS.");
         System.out.println(
-                " \t java -cp conf/:lib/*:apps/* org.fisco.bcos.channel.test.parallel.parallelok.PerformanceDT groupID transferRevert count tps file strategy.");
+                " \t java -cp conf/:lib/*:apps/* org.fisco.bcos.channel.test.parallel.parallelok.PerformanceDT groupID transferRevert count tps file strategy queryAccountQPS.");
         System.exit(0);
     }
 
@@ -30,10 +30,14 @@ public class PerformanceDT {
         BigInteger tps = new BigInteger(args[3]);
         String file = null;
         BigInteger deci = new BigInteger("0");
+        BigInteger queryAccountQPS = tps;
         if (args.length > 4) {
             file = args[4];
             if (args.length > 5) {
                 deci = new BigInteger(args[5]);
+            }
+            if (args.length > 6) {
+                queryAccountQPS = new BigInteger(args[6]);
             }
         }
 
@@ -43,12 +47,13 @@ public class PerformanceDT {
         }
 
         logger.info(
-                " dag transfer test begin, command is {}, count is {}, tps is {}, file is {}, deci is {}",
+                " dag transfer test begin, command is {}, count is {}, tps is {}, file is {}, deci is {}, queryAccountQPS is {}",
                 command,
                 count,
                 tps,
                 file,
-                deci);
+                deci,
+                queryAccountQPS);
 
         DagUserMgr d = new DagUserMgr();
         d.setFile(file);
@@ -75,12 +80,12 @@ public class PerformanceDT {
             case "transfer":
                 d.setTestType("transfer");
                 d.loadDagTransferUser();
-                PerformanceDTTest.userTransferTest(count, tps, deci);
+                PerformanceDTTest.userTransferTest(count, tps, deci, queryAccountQPS);
                 break;
             case "transferRevert":
                 d.setTestType("transferRevert");
                 d.loadDagTransferUser();
-                PerformanceDTTest.userTransferRevertTest(count, tps, deci);
+                PerformanceDTTest.userTransferRevertTest(count, tps, deci, queryAccountQPS);
             default:
                 Usage();
         }
