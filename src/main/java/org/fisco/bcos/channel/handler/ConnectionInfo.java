@@ -1,8 +1,5 @@
 package org.fisco.bcos.channel.handler;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class ConnectionInfo {
 
     public String getHost() {
@@ -21,20 +18,8 @@ public class ConnectionInfo {
         this.port = port;
     }
 
-    @Deprecated
-    public List<String> getTopics() {
-        return topics;
-    }
-
-    @Deprecated
-    public void setTopics(List<String> topics) {
-        this.topics = topics;
-    }
-
     private String host = "";
     private Integer port = 0;
-
-    @Deprecated private List<String> topics = new ArrayList<String>();
 
     @Override
     public String toString() {

@@ -5,6 +5,7 @@ import org.fisco.bcos.web3j.crypto.ECKeyPair;
 import org.fisco.bcos.web3j.crypto.gm.sm3.SM3Digest;
 import org.fisco.bcos.web3j.utils.Numeric;
 
+@Deprecated
 public class GenGmAccount {
     public static void main(String[] args) throws Exception {
         if (args.length < 1) {
