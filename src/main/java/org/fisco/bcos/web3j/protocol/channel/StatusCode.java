@@ -33,6 +33,7 @@ public class StatusCode {
     public static final String TxPoolIsFull = "0x1c";
     public static final String TransactionRefused = "0x1d";
     public static final String ContractFrozen = "0x1e";
+    public static final String AccountFrozen = "0x1f";
 
     // extension
     public static final String ExceptionCatched = "0x30";
@@ -171,6 +172,8 @@ public class StatusCode {
             case ContractFrozen:
                 message = "contract has been frozen";
                 break;
+            case AccountFrozen:
+                message = "account has been frozen";
             default:
                 message = errorMessage;
                 break;
