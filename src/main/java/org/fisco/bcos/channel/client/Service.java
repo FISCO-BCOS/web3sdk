@@ -1203,7 +1203,7 @@ public class Service {
                 // over bandwidth limit
                 if (message.getResult()
                         == ChannelMessageError.REJECT_AMOP_REQ_FOR_OVER_BANDWIDTHLIMIT.getError()) {
-                    logger.debug(
+                    logger.error(
                             "AMOP request was rejected due to over bandwidth limit, message: {}",
                             message.getSeq());
                     response.setErrorMessage(
