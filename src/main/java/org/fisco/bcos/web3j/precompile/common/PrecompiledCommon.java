@@ -41,6 +41,7 @@ public class PrecompiledCommon {
     public static final int TableNameAndAddressNotExist_RC3 = -51001;
     public static final int TableNameLengthOverflow = -51002;
     public static final int ContractNotExist = -51003;
+    public static final int NotSupportPermissionCommand = -51004;
     public static final int InvalidNodeId = -51100;
     public static final int LastSealer_RC1 = 100;
     public static final int LastSealer = 51101;
@@ -179,13 +180,15 @@ public class PrecompiledCommon {
         } else if (code == InvalidOperatorCannotBeCommitteeMember) {
             msg = "operator cannot be committee member";
         } else if (code == InvalidThreshold) {
-            msg = "operator cannot be committee member";
+            msg = "invalid threshold, threshold should from 0 to 99";
         } else if (code == InvalidRequestPermissionDeny) {
             msg = " invalid request with permission deny";
         } else if (code == InvalidCommitteeMemberNotExist) {
             msg = "committee member not exist";
         } else if (code == InvalidCommitteeMemberAlreadyExist) {
             msg = "committee member already exist";
+        } else if (code == NotSupportPermissionCommand) {
+            msg = "committee permission control by ChainGovernancePrecompiled are recommended";
         }
 
         ObjectMapper mapper = ObjectMapperFactory.getObjectMapper();
