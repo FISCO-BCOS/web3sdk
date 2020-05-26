@@ -120,6 +120,9 @@ public class Channel2ClientBin {
                             + response.getErrorCode()
                             + ", Content:"
                             + response.getContent());
+            if (response.getErrorCode() != 0) {
+                System.out.println("Error message" + response.getErrorMessage());
+            }
         }
     }
 }
