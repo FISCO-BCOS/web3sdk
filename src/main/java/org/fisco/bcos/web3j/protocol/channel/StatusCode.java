@@ -143,7 +143,7 @@ public class StatusCode {
                 message = "transaction pool is full";
                 break;
             case TransactionRefused:
-                message = "transaction refuesd";
+                message = "transaction refused";
                 break;
             case ErrorInRPC:
                 message = "error in RPC";
@@ -174,6 +174,7 @@ public class StatusCode {
                 break;
             case AccountFrozen:
                 message = "account has been frozen";
+                break;
             default:
                 message = errorMessage;
                 break;
