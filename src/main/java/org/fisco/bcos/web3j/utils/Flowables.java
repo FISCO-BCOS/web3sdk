@@ -5,6 +5,7 @@ import io.reactivex.Flowable;
 import java.math.BigInteger;
 
 /** Flowable utility functions. */
+@Deprecated
 public class Flowables {
 
     public static Flowable<BigInteger> range(

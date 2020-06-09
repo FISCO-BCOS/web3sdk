@@ -11,6 +11,7 @@ import org.fisco.bcos.web3j.protocol.websocket.events.LogNotification;
 import org.fisco.bcos.web3j.protocol.websocket.events.NewHeadsNotification;
 
 /** The Observables JSON-RPC client event API. */
+@Deprecated
 public interface Web3jRx {
 
     /**

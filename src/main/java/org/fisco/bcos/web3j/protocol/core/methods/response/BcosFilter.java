@@ -5,6 +5,7 @@ import org.fisco.bcos.web3j.protocol.core.Response;
 import org.fisco.bcos.web3j.utils.Numeric;
 
 /** newBlockFilter */
+@Deprecated
 public class BcosFilter extends Response<String> {
     public BigInteger getFilterId() {
         return Numeric.decodeQuantity(getResult());

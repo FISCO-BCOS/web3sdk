@@ -18,7 +18,7 @@ public abstract class ManagedTransaction {
 
     protected TransactionManager transactionManager;
 
-    protected CnsService cnsService;
+    @Deprecated protected CnsService cnsService;
 
     protected ManagedTransaction(Web3j web3j, TransactionManager transactionManager) {
         this.transactionManager = transactionManager;
@@ -26,10 +26,12 @@ public abstract class ManagedTransaction {
         this.cnsService = new CnsService(web3j, transactionManager.credentials);
     }
 
+    @Deprecated
     public long getSyncThreshold() {
         return cnsService.getSyncThreshold();
     }
 
+    @Deprecated
     public void setSyncThreshold(long syncThreshold) {
         cnsService.setSyncThreshold(syncThreshold);
     }

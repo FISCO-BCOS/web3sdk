@@ -121,6 +121,9 @@ public class Channel2ClientBinNeedVerify {
                             + response.getErrorCode()
                             + ", Content:"
                             + response.getContent());
+            if (response.getErrorCode() != 0) {
+                System.out.println("Error message" + response.getErrorMessage());
+            }
         }
     }
 }

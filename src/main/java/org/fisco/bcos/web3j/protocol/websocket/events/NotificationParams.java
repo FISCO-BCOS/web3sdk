@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  *
  * @param <T> type of data return by a particular subscription
  */
+@Deprecated
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class NotificationParams<T> {
     private T result;

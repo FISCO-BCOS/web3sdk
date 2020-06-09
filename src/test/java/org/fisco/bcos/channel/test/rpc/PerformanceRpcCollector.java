@@ -1,13 +1,13 @@
-package org.fisco.bcos.channel.test.contract;
+package org.fisco.bcos.channel.test.rpc;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.fisco.bcos.web3j.protocol.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PerformanceCollector {
-    static Logger logger = LoggerFactory.getLogger(PerformanceCollector.class);
+public class PerformanceRpcCollector {
+    static Logger logger = LoggerFactory.getLogger(PerformanceRpcCollector.class);
 
     public Integer getTotal() {
         return total;
@@ -17,59 +17,53 @@ public class PerformanceCollector {
         this.total = total;
     }
 
-    public void onMessage(TransactionReceipt receipt, Long cost) {
+    public void onMessage(Response response, Long _cost) {
         try {
-            if (!receipt.isStatusOK()) {
+            if (response.getError() != null && response.getError().getCode() != 0) {
                 // System.out.println("receipt error");
                 error.addAndGet(1);
-            } else {
-                if (receipt.getLogs().isEmpty()) {
-                    // System.out.println("receipt log error");
-                    error.addAndGet(1);
-                }
             }
-
             if ((received.get() + 1) % (total / 10) == 0) {
                 System.out.println(
                         "                                                       |received:"
                                 + String.valueOf((received.get() + 1) * 100 / total)
                                 + "%");
             }
+            // trans cost into ms
+            Long cost = _cost / 1000000;
+            if (cost < 1) {
+                less1.incrementAndGet();
+            } else if (cost < 5) {
+                less5.incrementAndGet();
+            } else if (cost < 10) {
+                less10.incrementAndGet();
 
-            if (cost < 50) {
+            } else if (cost < 20) {
+                less20.incrementAndGet();
+
+            } else if (cost < 50) {
                 less50.incrementAndGet();
+
             } else if (cost < 100) {
                 less100.incrementAndGet();
-                ;
-            } else if (cost < 200) {
-                less200.incrementAndGet();
-                ;
-            } else if (cost < 400) {
-                less400.incrementAndGet();
-                ;
-            } else if (cost < 1000) {
-                less1000.incrementAndGet();
-                ;
-            } else if (cost < 2000) {
-                less2000.incrementAndGet();
-                ;
-            } else {
-                timeout2000.incrementAndGet();
-                ;
-            }
 
+            } else if (cost < 500) {
+                less500.incrementAndGet();
+            } else {
+                timeout500.incrementAndGet();
+            }
             totalCost.addAndGet(cost);
 
             if (received.incrementAndGet() >= total) {
                 System.out.println("total");
 
-                // 总耗时
+                // trans ns to ms
                 Long totalTime = System.currentTimeMillis() - startTimestamp;
 
                 System.out.println(
                         "===================================================================");
 
-                System.out.println("Total transactions:  " + String.valueOf(total));
+                System.out.println("Total RPC Requests:  " + String.valueOf(total));
                 System.out.println("Total time: " + String.valueOf(totalTime) + "ms");
                 System.out.println(
                         "TPS(include error requests): "
@@ -88,46 +82,52 @@ public class PerformanceCollector {
 
                 System.out.println("Time area:");
                 System.out.println(
-                        "0    < time <  50ms   : "
+                        "0    < time <  1ms   : "
+                                + String.valueOf(less1)
+                                + "  : "
+                                + String.valueOf((double) less1.get() / total * 100)
+                                + "%");
+                System.out.println(
+                        "1   < time <  5ms  : "
+                                + String.valueOf(less5)
+                                + "  : "
+                                + String.valueOf((double) less5.get() / total * 100)
+                                + "%");
+                System.out.println(
+                        "5  < time <  10ms  : "
+                                + String.valueOf(less10)
+                                + "  : "
+                                + String.valueOf((double) less10.get() / total * 100)
+                                + "%");
+                System.out.println(
+                        "10  < time <  20ms  : "
+                                + String.valueOf(less20)
+                                + "  : "
+                                + String.valueOf((double) less20.get() / total * 100)
+                                + "%");
+                System.out.println(
+                        "20  < time <  50ms : "
                                 + String.valueOf(less50)
                                 + "  : "
                                 + String.valueOf((double) less50.get() / total * 100)
                                 + "%");
                 System.out.println(
-                        "50   < time <  100ms  : "
+                        "50 < time <  100ms : "
                                 + String.valueOf(less100)
                                 + "  : "
                                 + String.valueOf((double) less100.get() / total * 100)
                                 + "%");
                 System.out.println(
-                        "100  < time <  200ms  : "
-                                + String.valueOf(less200)
+                        "100 < time <  500ms : "
+                                + String.valueOf(less500)
                                 + "  : "
-                                + String.valueOf((double) less200.get() / total * 100)
+                                + String.valueOf((double) less500.get() / total * 100)
                                 + "%");
                 System.out.println(
-                        "200  < time <  400ms  : "
-                                + String.valueOf(less400)
+                        "500 < time           : "
+                                + String.valueOf(timeout500)
                                 + "  : "
-                                + String.valueOf((double) less400.get() / total * 100)
-                                + "%");
-                System.out.println(
-                        "400  < time <  1000ms : "
-                                + String.valueOf(less1000)
-                                + "  : "
-                                + String.valueOf((double) less1000.get() / total * 100)
-                                + "%");
-                System.out.println(
-                        "1000 < time <  2000ms : "
-                                + String.valueOf(less2000)
-                                + "  : "
-                                + String.valueOf((double) less2000.get() / total * 100)
-                                + "%");
-                System.out.println(
-                        "2000 < time           : "
-                                + String.valueOf(timeout2000)
-                                + "  : "
-                                + String.valueOf((double) timeout2000.get() / total * 100)
+                                + String.valueOf((double) timeout500.get() / total * 100)
                                 + "%");
 
                 System.exit(0);
@@ -137,13 +137,14 @@ public class PerformanceCollector {
         }
     }
 
+    private AtomicLong less1 = new AtomicLong(0);
+    private AtomicLong less5 = new AtomicLong(0);
+    private AtomicLong less10 = new AtomicLong(0);
+    private AtomicLong less20 = new AtomicLong(0);
     private AtomicLong less50 = new AtomicLong(0);
     private AtomicLong less100 = new AtomicLong(0);
-    private AtomicLong less200 = new AtomicLong(0);
-    private AtomicLong less400 = new AtomicLong(0);
-    private AtomicLong less1000 = new AtomicLong(0);
-    private AtomicLong less2000 = new AtomicLong(0);
-    private AtomicLong timeout2000 = new AtomicLong(0);
+    private AtomicLong less500 = new AtomicLong(0);
+    private AtomicLong timeout500 = new AtomicLong(0);
     private AtomicLong totalCost = new AtomicLong(0);
 
     private Integer total = 0;

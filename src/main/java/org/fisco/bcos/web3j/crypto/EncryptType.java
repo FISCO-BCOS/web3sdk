@@ -11,7 +11,14 @@ public class EncryptType {
     public static int encryptType = ECDSA_TYPE; // 0:ECDSA 1:SM2
 
     public EncryptType(int encryptType) {
-        EncryptType.encryptType = encryptType;
+        setEncryptType(encryptType);
+    }
+
+    public static int getEncryptType() {
+        return encryptType;
+    }
+
+    private static void setEncryptInterface(int encryptType) {
         SignInterface signInterface;
         HashInterface hashInterface;
         if (encryptType == SM2_TYPE) {
@@ -25,11 +32,8 @@ public class EncryptType {
         Hash.setHashInterface(hashInterface);
     }
 
-    public int getEncryptType() {
-        return encryptType;
-    }
-
-    public void setEncryptType(int encryptType) {
+    public static void setEncryptType(int encryptType) {
         EncryptType.encryptType = encryptType;
+        setEncryptInterface(encryptType);
     }
 }

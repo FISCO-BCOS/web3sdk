@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
  * Web socket client implementation that connects to a specify URI. Allows to provide a listener
  * that will be called when a new message is received by the client.
  */
+@Deprecated
 public class WebSocketClient extends org.java_websocket.client.WebSocketClient {
 
     private static final Logger log = LoggerFactory.getLogger(WebSocketClient.class);

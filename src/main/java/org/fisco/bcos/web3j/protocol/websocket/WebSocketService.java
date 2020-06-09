@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
  *
  * <p>To unsubscribe from a stream of notifications it should send another JSON-RPC request.
  */
+@Deprecated
 public class WebSocketService implements Web3jService {
 
     private static final Logger log = LoggerFactory.getLogger(WebSocketService.class);

@@ -1,5 +1,6 @@
 package org.fisco.bcos.web3j.protocol.websocket.events;
 
+@Deprecated
 public class NewHead {
     private String difficulty;
     private String extraData;

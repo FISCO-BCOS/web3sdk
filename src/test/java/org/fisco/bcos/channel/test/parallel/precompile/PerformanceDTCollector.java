@@ -98,12 +98,10 @@ public class PerformanceDTCollector {
                 error.addAndGet(1);
             }
 
-            int count = received.incrementAndGet();
-
-            if (count % (total / 10) == 0) {
+            if ((received.get() + 1) % (total / 10) == 0) {
                 System.out.println(
                         "                                                       |received:"
-                                + String.valueOf(count * 100 / total)
+                                + String.valueOf((received.get() + 1) * 100 / total)
                                 + "%");
             }
 
@@ -133,7 +131,7 @@ public class PerformanceDTCollector {
 
             totalCost.addAndGet(cost);
 
-            if (isEnd()) {
+            if (received.incrementAndGet() >= total) {
                 System.out.println("total");
 
                 //
@@ -144,7 +142,14 @@ public class PerformanceDTCollector {
 
                 System.out.println("Total transactions:  " + String.valueOf(total));
                 System.out.println("Total time: " + String.valueOf(totalTime) + "ms");
-                System.out.println("TPS: " + String.valueOf(total / ((double) totalTime / 1000)));
+                System.out.println(
+                        "TPS(include error requests): "
+                                + String.valueOf(total / ((double) totalTime / 1000)));
+                System.out.println(
+                        "TPS(exclude error requests): "
+                                + String.valueOf(
+                                        (double) (total - error.get())
+                                                / ((double) totalTime / 1000)));
                 System.out.println(
                         "Avg time cost: " + String.valueOf(totalCost.get() / total) + "ms");
                 System.out.println(
