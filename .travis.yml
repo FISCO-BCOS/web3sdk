@@ -1,19 +1,19 @@
 # safe list
 branches:
   only:
-      - /.*/
+    - /.*/
 
 jobs:
   fast_finish: true
   include:
-#    - language: python
-#      python: 3.6
-#      dist: bionic
-#      before_cache:
-#      cache:
-#      before_install:
-#      script: |
-#        bash .ci/ci_check_commit.sh
+    #    - language: python
+    #      python: 3.6
+    #      dist: bionic
+    #      before_cache:
+    #      cache:
+    #      before_install:
+    #      script: |
+    #        bash .ci/ci_check_commit.sh
 
     # ubuntu 16
     - language: java
@@ -61,7 +61,11 @@ jobs:
 #    - language: java
 #        os: osx
 #        osx_image: xcode11.3
-
+addons:
+  apt:
+    packages:
+      - openssl
+      - libssl-dev
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
