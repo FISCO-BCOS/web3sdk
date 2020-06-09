@@ -2,6 +2,7 @@ package org.fisco.bcos.web3j.protocol.websocket.events;
 
 import java.util.List;
 
+@Deprecated
 public class Log {
     private String address;
     private String blockHash;

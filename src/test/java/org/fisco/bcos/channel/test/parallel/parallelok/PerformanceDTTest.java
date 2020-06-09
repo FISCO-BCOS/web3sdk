@@ -84,7 +84,7 @@ public class PerformanceDTTest {
         this.collector = collector;
     }
 
-    public void veryTransferData(ThreadPoolTaskExecutor threadPool) {
+    public void veryTransferData(ThreadPoolTaskExecutor threadPool, BigInteger qps) {
         // System.out.println(" data validation => ");
         List<DagTransferUser> allUser = dagUserMgr.getUserList();
         int total_user = allUser.size();
@@ -94,7 +94,7 @@ public class PerformanceDTTest {
         AtomicInteger verify_failed = new AtomicInteger(0);
 
         allUser = dagUserMgr.getUserList();
-
+        RateLimiter limiter = RateLimiter.create(qps.intValue());
         try {
             final List<DagTransferUser> _allUser = allUser;
 
@@ -105,6 +105,7 @@ public class PerformanceDTTest {
                             @Override
                             public void run() {
                                 try {
+                                    limiter.acquire();
                                     BigInteger result =
                                             parallelok.balanceOf(_allUser.get(_i).getUser()).send();
 
@@ -287,7 +288,8 @@ public class PerformanceDTTest {
         }
     }
 
-    public void userTransferRevertTest(BigInteger count, BigInteger qps, BigInteger deci) {
+    public void userTransferRevertTest(
+            BigInteger count, BigInteger qps, BigInteger deci, BigInteger queryAccountQPS) {
 
         try {
 
@@ -394,7 +396,7 @@ public class PerformanceDTTest {
                         collector.getTotal());
             }
 
-            veryTransferData(threadPool);
+            veryTransferData(threadPool, queryAccountQPS);
             System.exit(0);
 
         } catch (Exception e) {
@@ -403,7 +405,8 @@ public class PerformanceDTTest {
         }
     }
 
-    public void userTransferTest(BigInteger count, BigInteger qps, BigInteger deci) {
+    public void userTransferTest(
+            BigInteger count, BigInteger qps, BigInteger deci, BigInteger queryAccountQPS) {
         List<String> signedTransactions = new ArrayList<String>();
         List<PerformanceDTCallback> callbacks = new ArrayList<PerformanceDTCallback>();
 
@@ -433,13 +436,14 @@ public class PerformanceDTTest {
             threadPool.setMaxPoolSize(500);
             threadPool.setQueueCapacity(Math.max(count.intValue(), allUser.size()) + 1000);
             threadPool.initialize();
-
             Lock lock = new ReentrantLock();
 
             final ParallelOk _parallelok = parallelok;
+            RateLimiter queryAccountLimiter = RateLimiter.create(queryAccountQPS.intValue());
             AtomicInteger geted = new AtomicInteger(0);
             for (int i = 0; i < allUser.size(); ++i) {
                 final Integer _i = i;
+                queryAccountLimiter.acquire();
                 threadPool.execute(
                         new Runnable() {
                             @Override
@@ -541,7 +545,6 @@ public class PerformanceDTTest {
             collector.setStartTimestamp(startTime);
             AtomicInteger sent = new AtomicInteger(0);
             int division = count.intValue() / 10;
-
             RateLimiter limiter = RateLimiter.create(qps.intValue());
             System.out.println("Sending signed transactions...");
             for (int i = 0; i < count.intValue(); ++i) {
@@ -594,7 +597,7 @@ public class PerformanceDTTest {
                         collector.getTotal());
             }
 
-            veryTransferData(threadPool);
+            veryTransferData(threadPool, queryAccountQPS);
 
             System.exit(0);
         } catch (Exception e) {

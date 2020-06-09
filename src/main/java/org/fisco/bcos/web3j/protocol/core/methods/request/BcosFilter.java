@@ -8,6 +8,7 @@ import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
  * Filter implementation as per <a
  * href="https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_newfilter">docs</a>.
  */
+@Deprecated
 public class BcosFilter extends Filter<BcosFilter> {
     private DefaultBlockParameter fromBlock; // optional, params - defaults to latest for both
     private DefaultBlockParameter toBlock;

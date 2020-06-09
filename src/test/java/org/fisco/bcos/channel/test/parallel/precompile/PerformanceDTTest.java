@@ -95,7 +95,7 @@ public class PerformanceDTTest {
         this.collector = collector;
     }
 
-    public void veryTransferData(ThreadPoolTaskExecutor threadPool) {
+    public void veryTransferData(ThreadPoolTaskExecutor threadPool, BigInteger qps) {
         List<DagTransferUser> allUser = dagUserMgr.getUserList();
         Integer total_user = allUser.size();
 
@@ -103,7 +103,7 @@ public class PerformanceDTTest {
         AtomicInteger verify_failed = new AtomicInteger(0);
 
         allUser = dagUserMgr.getUserList();
-
+        RateLimiter limiter = RateLimiter.create(qps.intValue());
         try {
             final DagTransfer _dagTransfer = dagTransfer;
             final List<DagTransferUser> _allUser = allUser;
@@ -114,6 +114,7 @@ public class PerformanceDTTest {
                             @Override
                             public void run() {
                                 try {
+                                    limiter.acquire();
                                     Tuple2<BigInteger, BigInteger> result =
                                             _dagTransfer
                                                     .userBalance(_allUser.get(_i).getUser())
@@ -388,7 +389,8 @@ public class PerformanceDTTest {
         System.exit(0);
     }
 
-    public void userTransferTest(BigInteger count, BigInteger qps, BigInteger deci) {
+    public void userTransferTest(
+            BigInteger count, BigInteger qps, BigInteger deci, BigInteger queryAccountQPS) {
         System.out.println("Start UserTransfer test...");
         System.out.println("===================================================================");
 
@@ -422,8 +424,10 @@ public class PerformanceDTTest {
 
             final DagTransfer _dagTransfer = dagTransfer;
             AtomicInteger geted = new AtomicInteger(0);
+            RateLimiter queryAccountLimiter = RateLimiter.create(queryAccountQPS.intValue());
             for (int i = 0; i < allUser.size(); ++i) {
                 final Integer _i = i;
+                queryAccountLimiter.acquire();
                 threadPool.execute(
                         new Runnable() {
                             @Override
@@ -578,7 +582,6 @@ public class PerformanceDTTest {
             long startTime = System.currentTimeMillis();
             collector.setStartTimestamp(startTime);
 
-            RateLimiter limiter = RateLimiter.create(qps.intValue());
             for (int i = 0; i < fileList.length; ++i) {
                 BufferedReader reader = null;
 
@@ -614,7 +617,7 @@ public class PerformanceDTTest {
                     }
 
                     latch = new CountDownLatch(signedTransactions.size());
-
+                    RateLimiter limiter = RateLimiter.create(qps.intValue());
                     for (int j = 0; j < signedTransactions.size(); ++j) {
                         limiter.acquire();
 
@@ -674,7 +677,7 @@ public class PerformanceDTTest {
             logger.info("End to send");
 
             System.out.println(dateFormat.format(new Date()) + " Verifying result...");
-            veryTransferData(threadPool);
+            veryTransferData(threadPool, queryAccountQPS);
 
             System.exit(0);
 

@@ -65,7 +65,10 @@ public interface Ethereum {
 
     Request<?, SystemConfig> getSystemConfigByKey(String key);
 
+    @Deprecated
     Request<?, Code> getCode(String address, DefaultBlockParameter defaultBlockParameter);
+
+    Request<?, Code> getCode(String address);
 
     Request<?, TotalTransactionCount> getTotalTransactionCount();
 
@@ -97,9 +100,13 @@ public interface Ethereum {
 
     Request<?, PendingTxSize> getPendingTxSize();
 
+    @Deprecated
     Request<?, Call> call(
             org.fisco.bcos.web3j.protocol.core.methods.request.Transaction transaction,
             DefaultBlockParameter defaultBlockParameter);
+
+    Request<?, Call> call(
+            org.fisco.bcos.web3j.protocol.core.methods.request.Transaction transaction);
 
     Request<?, SendTransaction> sendRawTransaction(String signedTransactionData);
 
@@ -126,14 +133,19 @@ public interface Ethereum {
     Request<?, QueryGroupStatus> queryGroupStatus(int groupId);
 
     // TODO
+    @Deprecated
     Request<?, BcosFilter> newPendingTransactionFilter();
 
+    @Deprecated
     Request<?, BcosFilter> newBlockFilter();
 
+    @Deprecated
     Request<?, BcosLog> getFilterChanges(BigInteger filterId);
 
+    @Deprecated
     Request<?, UninstallFilter> getUninstallFilter(BigInteger filterId);
 
+    @Deprecated
     Request<?, BcosFilter> newFilter(
             org.fisco.bcos.web3j.protocol.core.methods.request.BcosFilter ethFilter);
 }

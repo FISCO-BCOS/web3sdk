@@ -1,5 +1,6 @@
 package org.fisco.bcos.web3j.crypto.gm;
 
+@Deprecated
 public class RetCode {
     public static final int success = 0;
     public static final int openFileFailed = 10000;

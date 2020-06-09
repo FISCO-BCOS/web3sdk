@@ -29,8 +29,6 @@ public class PerfomanceCollector {
                 }
             }
 
-            received.incrementAndGet();
-
             if ((received.get() + 1) % (total / 10) == 0) {
                 System.out.println(
                         "                                                       |received:"
@@ -62,7 +60,7 @@ public class PerfomanceCollector {
 
             totalCost.addAndGet(cost);
 
-            if (received.intValue() >= total) {
+            if (received.incrementAndGet() >= total) {
                 System.out.println("total");
 
                 // 总耗时
@@ -73,7 +71,14 @@ public class PerfomanceCollector {
 
                 System.out.println("Total transactions:  " + String.valueOf(total));
                 System.out.println("Total time: " + String.valueOf(totalTime) + "ms");
-                System.out.println("TPS: " + String.valueOf(total / ((double) totalTime / 1000)));
+                System.out.println(
+                        "TPS(include error requests): "
+                                + String.valueOf(total / ((double) totalTime / 1000)));
+                System.out.println(
+                        "TPS(exclude error requests): "
+                                + String.valueOf(
+                                        (double) (total - error.get())
+                                                / ((double) totalTime / 1000)));
                 System.out.println(
                         "Avg time cost: " + String.valueOf(totalCost.get() / total) + "ms");
                 System.out.println(
@@ -139,8 +144,6 @@ public class PerfomanceCollector {
                 error.addAndGet(1);
             }
 
-            received.incrementAndGet();
-
             if ((received.get() + 1) % (total / 10) == 0) {
                 System.out.println(
                         "                                                       |received:"
@@ -172,7 +175,7 @@ public class PerfomanceCollector {
 
             totalCost.addAndGet(cost);
 
-            if (received.intValue() >= total) {
+            if (received.incrementAndGet() >= total) {
                 System.out.println("total");
 
                 // 总耗时

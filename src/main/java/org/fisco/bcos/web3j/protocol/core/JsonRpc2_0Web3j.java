@@ -46,10 +46,10 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.StopGroup;
 import org.fisco.bcos.web3j.protocol.core.methods.response.SyncStatus;
 import org.fisco.bcos.web3j.protocol.core.methods.response.SystemConfig;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TotalTransactionCount;
+import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceiptWithProof;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionWithProof;
 import org.fisco.bcos.web3j.protocol.core.methods.response.UninstallFilter;
-import org.fisco.bcos.web3j.protocol.rx.JsonRpc2_0Rx;
 import org.fisco.bcos.web3j.protocol.websocket.events.LogNotification;
 import org.fisco.bcos.web3j.protocol.websocket.events.NewHeadsNotification;
 import org.fisco.bcos.web3j.utils.Async;
@@ -60,12 +60,10 @@ import org.slf4j.LoggerFactory;
 
 /** JSON-RPC 2.0 factory implementation. */
 public class JsonRpc2_0Web3j implements Web3j {
-    static Logger logger = LoggerFactory.getLogger(JsonRpc2_0Web3j.class);
-    protected static final long ID = 1;
-    public static final int BLOCK_TIME = 15 * 100;
+    private static final Logger logger = LoggerFactory.getLogger(JsonRpc2_0Web3j.class);
+
     public static final int DEFAULT_BLOCK_TIME = 15 * 1000;
     protected final Web3jService web3jService;
-    private final JsonRpc2_0Rx web3jRx;
     private final long blockTime;
     private final ScheduledExecutorService scheduledExecutorService;
 
@@ -87,6 +85,7 @@ public class JsonRpc2_0Web3j implements Web3j {
         }
     }
 
+    @Deprecated
     public JsonRpc2_0Web3j(Web3jService web3jService) {
         this(web3jService, DEFAULT_BLOCK_TIME, Async.defaultExecutorService(), 1);
     }
@@ -96,13 +95,13 @@ public class JsonRpc2_0Web3j implements Web3j {
         this.groupId = groupId;
     }
 
+    @Deprecated
     public JsonRpc2_0Web3j(
             Web3jService web3jService,
             long pollingInterval,
             ScheduledExecutorService scheduledExecutorService,
             int groupId) {
         this.web3jService = web3jService;
-        this.web3jRx = new JsonRpc2_0Rx(this, scheduledExecutorService);
         this.blockTime = pollingInterval;
         this.scheduledExecutorService = scheduledExecutorService;
         this.groupId = groupId;
@@ -189,8 +188,14 @@ public class JsonRpc2_0Web3j implements Web3j {
                 ConsensusStatus.class);
     }
 
+    @Deprecated
     @Override
     public Request<?, Code> getCode(String address, DefaultBlockParameter defaultBlockParameter) {
+        return new Request<>("getCode", Arrays.asList(groupId, address), web3jService, Code.class);
+    }
+
+    @Override
+    public Request<?, Code> getCode(String address) {
         return new Request<>("getCode", Arrays.asList(groupId, address), web3jService, Code.class);
     }
 
@@ -203,10 +208,17 @@ public class JsonRpc2_0Web3j implements Web3j {
                 TotalTransactionCount.class);
     }
 
+    @Deprecated
     @Override
     public Request<?, Call> call(
             org.fisco.bcos.web3j.protocol.core.methods.request.Transaction transaction,
             DefaultBlockParameter defaultBlockParameter) {
+        return new Request<>("call", Arrays.asList(groupId, transaction), web3jService, Call.class);
+    }
+
+    @Override
+    public Request<?, Call> call(
+            org.fisco.bcos.web3j.protocol.core.methods.request.Transaction transaction) {
         return new Request<>("call", Arrays.asList(groupId, transaction), web3jService, Call.class);
     }
 
@@ -441,6 +453,91 @@ public class JsonRpc2_0Web3j implements Web3j {
     }
 
     @Override
+    public Flowable<Log> logFlowable(
+            org.fisco.bcos.web3j.protocol.core.methods.request.BcosFilter filter) {
+        return null;
+    }
+
+    @Override
+    public Flowable<String> blockHashFlowable() {
+        return null;
+    }
+
+    @Override
+    public Flowable<String> pendingTransactionHashFlowable() {
+        return null;
+    }
+
+    @Override
+    public Flowable<Transaction> transactionFlowable() {
+        return null;
+    }
+
+    @Override
+    public Flowable<Transaction> pendingTransactionFlowable() {
+        return null;
+    }
+
+    @Override
+    public Flowable<BcosBlock> blockFlowable(boolean fullTransactionObjects) {
+        return null;
+    }
+
+    @Override
+    public Flowable<BcosBlock> replayPastBlocksFlowable(
+            DefaultBlockParameter startBlock,
+            DefaultBlockParameter endBlock,
+            boolean fullTransactionObjects) {
+        return null;
+    }
+
+    @Override
+    public Flowable<BcosBlock> replayPastBlocksFlowable(
+            DefaultBlockParameter startBlock,
+            DefaultBlockParameter endBlock,
+            boolean fullTransactionObjects,
+            boolean ascending) {
+        return null;
+    }
+
+    @Override
+    public Flowable<BcosBlock> replayPastBlocksFlowable(
+            DefaultBlockParameter startBlock,
+            boolean fullTransactionObjects,
+            Flowable<BcosBlock> onCompleteFlowable) {
+        return null;
+    }
+
+    @Override
+    public Flowable<BcosBlock> replayPastBlocksFlowable(
+            DefaultBlockParameter startBlock, boolean fullTransactionObjects) {
+        return null;
+    }
+
+    @Override
+    public Flowable<Transaction> replayPastTransactionsFlowable(
+            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
+        return null;
+    }
+
+    @Override
+    public Flowable<Transaction> replayPastTransactionsFlowable(DefaultBlockParameter startBlock) {
+        return null;
+    }
+
+    @Override
+    public Flowable<BcosBlock> replayPastAndFutureBlocksFlowable(
+            DefaultBlockParameter startBlock, boolean fullTransactionObjects) {
+        return null;
+    }
+
+    @Override
+    public Flowable<Transaction> replayPastAndFutureTransactionsFlowable(
+            DefaultBlockParameter startBlock) {
+        return null;
+    }
+
+    @Override
     public Flowable<NewHeadsNotification> newHeadsNotifications() {
         return web3jService.subscribe(
                 new Request<>(
@@ -477,98 +574,6 @@ public class JsonRpc2_0Web3j implements Web3j {
             params.put("topics", topics);
         }
         return params;
-    }
-
-    @Override
-    public Flowable<String> blockHashFlowable() {
-        return web3jRx.blockHashFlowable(blockTime);
-    }
-
-    @Override
-    public Flowable<String> pendingTransactionHashFlowable() {
-        return web3jRx.pendingTransactionHashFlowable(blockTime);
-    }
-
-    @Override
-    public Flowable<Log> logFlowable(
-            org.fisco.bcos.web3j.protocol.core.methods.request.BcosFilter filter) {
-        return web3jRx.logFlowable(filter, blockTime);
-    }
-
-    @Override
-    public Flowable<org.fisco.bcos.web3j.protocol.core.methods.response.Transaction>
-            transactionFlowable() {
-        return web3jRx.transactionFlowable(blockTime);
-    }
-
-    @Override
-    public Flowable<org.fisco.bcos.web3j.protocol.core.methods.response.Transaction>
-            pendingTransactionFlowable() {
-        return web3jRx.pendingTransactionFlowable(blockTime);
-    }
-
-    @Override
-    public Flowable<BcosBlock> blockFlowable(boolean fullTransactionObjects) {
-        return web3jRx.blockFlowable(fullTransactionObjects, blockTime);
-    }
-
-    @Override
-    public Flowable<BcosBlock> replayPastBlocksFlowable(
-            DefaultBlockParameter startBlock,
-            DefaultBlockParameter endBlock,
-            boolean fullTransactionObjects) {
-        return web3jRx.replayBlocksFlowable(startBlock, endBlock, fullTransactionObjects);
-    }
-
-    @Override
-    public Flowable<BcosBlock> replayPastBlocksFlowable(
-            DefaultBlockParameter startBlock,
-            DefaultBlockParameter endBlock,
-            boolean fullTransactionObjects,
-            boolean ascending) {
-        return web3jRx.replayBlocksFlowable(
-                startBlock, endBlock, fullTransactionObjects, ascending);
-    }
-
-    @Override
-    public Flowable<BcosBlock> replayPastBlocksFlowable(
-            DefaultBlockParameter startBlock,
-            boolean fullTransactionObjects,
-            Flowable<BcosBlock> onCompleteFlowable) {
-        return web3jRx.replayPastBlocksFlowable(
-                startBlock, fullTransactionObjects, onCompleteFlowable);
-    }
-
-    @Override
-    public Flowable<BcosBlock> replayPastBlocksFlowable(
-            DefaultBlockParameter startBlock, boolean fullTransactionObjects) {
-        return web3jRx.replayPastBlocksFlowable(startBlock, fullTransactionObjects);
-    }
-
-    @Override
-    public Flowable<org.fisco.bcos.web3j.protocol.core.methods.response.Transaction>
-            replayPastTransactionsFlowable(
-                    DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
-        return web3jRx.replayTransactionsFlowable(startBlock, endBlock);
-    }
-
-    @Override
-    public Flowable<org.fisco.bcos.web3j.protocol.core.methods.response.Transaction>
-            replayPastTransactionsFlowable(DefaultBlockParameter startBlock) {
-        return web3jRx.replayPastTransactionsFlowable(startBlock);
-    }
-
-    @Override
-    public Flowable<BcosBlock> replayPastAndFutureBlocksFlowable(
-            DefaultBlockParameter startBlock, boolean fullTransactionObjects) {
-        return web3jRx.replayPastAndFutureBlocksFlowable(
-                startBlock, fullTransactionObjects, blockTime);
-    }
-
-    @Override
-    public Flowable<org.fisco.bcos.web3j.protocol.core.methods.response.Transaction>
-            replayPastAndFutureTransactionsFlowable(DefaultBlockParameter startBlock) {
-        return web3jRx.replayPastAndFutureTransactionsFlowable(startBlock, blockTime);
     }
 
     public int getGroupId() {
