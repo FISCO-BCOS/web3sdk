@@ -27,29 +27,29 @@ def spring_version="4.3.18.RELEASE"
 List spring =[ 
 	"org.springframework:spring-core:$spring_version", 
 	"org.springframework:spring-beans:$spring_version", 
-	"org.springframework:spring-context:$spring_version", 
-	"org.springframework:spring-tx:$spring_version", 
-	"org.springframework:spring-jdbc:$spring_version", 
+	"org.springframework:spring-context:$spring_version",
+	"org.springframework:spring-tx:$spring_version",
+	"org.springframework:spring-jdbc:$spring_version",
 	"org.springframework:spring-test:$spring_version"
 ]
 
 List alibaba = [
-        'com.alibaba:druid:1.0.29',
-        'com.alibaba:fastjson:1.2.29'
+        'com.alibaba:druid:1.0.29'
 ]
 
 // In this section you declare the dependencies for your production and test code
 dependencies {
-    compile logger,spring,alibaba
+    compile logger,spring
+	compile alibaba
     compile 'org.apache.commons:commons-lang3:3.1'
-    compile "com.fasterxml.jackson.core:jackson-databind:2.9.6"
+    compile "com.fasterxml.jackson.core:jackson-databind:2.10.0"
     compile 'io.netty:netty-all:4.1.15.Final'
     compile 'io.netty:netty-tcnative:2.0.18.Final'
-   	compile 'com.google.guava:guava:19.0'
+   	compile 'com.google.guava:guava:28.1-jre'
 
    	// web3j依赖
    	compile 'org.apache.httpcomponents:httpclient:4.5.5',
-            'org.bouncycastle:bcprov-jdk15on:1.54',
+            'org.bouncycastle:bcprov-jdk15on:1.60',
             'com.lambdaworks:scrypt:1.4.0',
             'com.squareup:javapoet:1.7.0',
             'io.reactivex:rxjava:1.2.4',
