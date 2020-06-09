@@ -1,3 +1,15 @@
+### v2.1.3
+
+(2020-06-09)
+
+* 更新
+1. 删除fastjson库
+
+* 兼容
+
+1. 兼容Channel Message v1协议
+2. 兼容FISCO BCOS 2.1以下的sdk证书名node.crt和node.key
+
 ### v2.1.2
 
 (2019-11-14)
@@ -50,6 +62,7 @@
 
 1. 兼容Channel Message v1协议
 2. 兼容FISCO BCOS 2.1以下的sdk证书名node.crt和node.key
+
 
 ### v2.0.5
 
