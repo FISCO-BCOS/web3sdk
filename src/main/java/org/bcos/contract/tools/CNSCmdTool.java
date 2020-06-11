@@ -9,16 +9,15 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.bcos.contract.source.ContractAbiMgr;
 import org.bcos.contract.source.ContractBase;
 import org.bcos.web3j.crypto.Credentials;
+import org.bcos.web3j.protocol.ObjectMapperFactory;
 import org.bcos.web3j.protocol.Web3j;
+import org.bcos.web3j.protocol.core.methods.response.AbiDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 
 public class CNSCmdTool {
 	
@@ -112,16 +111,16 @@ public class CNSCmdTool {
 	 */
 	public static boolean isContractHasVersion(String abi) throws Exception {
 		try {
-			JSONArray a = JSON.parseArray(abi);
-			for(int i=0;i<a.size();++i) {
-				JSONObject o = a.getJSONObject(i);
-				//if abi has function member getVersion , then maybe the contract has version
-				if(o.containsKey("name") && o.getString("name").equals("getVersion")) {
+			ObjectMapper objectMapper = ObjectMapperFactory.getObjectMapper();
+			AbiDefinition[] abiDefinition = objectMapper.readValue(abi, AbiDefinition[].class);
+
+			for (int i = 0; i < abiDefinition.length; i++) {
+				if (abiDefinition[i].getType().equals("function") && abiDefinition[i].getName().equals("getVersion")) {
 					logger.trace("abi contains getVersion function");
 					return true;
 				}
 			}
-			
+
 			return false;
 		} catch (Exception e) {
 			logger.error("invalid abi format, json parser failed abi = " + abi);
