@@ -38,8 +38,7 @@ List spring =[
 ]
 
 List alibaba = [
-        'com.alibaba:druid:1.0.29',
-        'com.alibaba:fastjson:1.2.29'
+        'com.alibaba:druid:1.0.29'
 ]
 
 // In this section you declare the dependencies for your production and test code
