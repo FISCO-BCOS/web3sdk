@@ -1,0 +1,214 @@
+plugins {
+    id 'java'
+    id 'idea'
+    id 'signing'
+    id 'java-library'
+    id 'maven-publish'
+    id 'org.ajoberstar.grgit' version '4.0.1'
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+[compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
+
+//configurations.all.resolutionStrategy {
+//    // 版本冲突时直接构建失败
+//    // failOnVersionConflict()
+//
+//    // 缓存有效时间
+//    // cacheChangingModulesFor 0,'seconds'
+//}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+
+    maven { url 'https://dl.bintray.com/ethereum/maven/' }
+    maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
+}
+
+List logger = [
+        // 'org.slf4j:slf4j-log4j12:1.7.25'
+        'org.slf4j:slf4j-api:1.7.25'
+]
+
+def spring_version="4.3.18.RELEASE"
+List spring =[
+        "org.springframework:spring-core:$spring_version",
+        "org.springframework:spring-beans:$spring_version",
+        "org.springframework:spring-context:$spring_version",
+        "org.springframework:spring-tx:$spring_version",
+        "org.springframework:spring-jdbc:$spring_version",
+        "org.springframework:spring-test:$spring_version"
+]
+
+List alibaba = [
+        'com.alibaba:druid:1.0.29'
+]
+
+// In this section you declare the dependencies for your production and test code
+dependencies {
+    compile logger,spring,alibaba
+    compile 'org.apache.commons:commons-lang3:3.1'
+    compile "com.fasterxml.jackson.core:jackson-databind:2.9.6"
+    compile 'io.netty:netty-all:4.1.15.Final'
+    compile 'io.netty:netty-tcnative:2.0.18.Final'
+    compile 'com.google.guava:guava:19.0'
+
+    // web3j依赖
+    compile 'org.apache.httpcomponents:httpclient:4.5.5',
+            'org.bouncycastle:bcprov-jdk15on:1.54',
+            'com.lambdaworks:scrypt:1.4.0',
+            'com.squareup:javapoet:1.7.0',
+            'io.reactivex:rxjava:1.2.4',
+            'com.github.jnr:jnr-unixsocket:0.15'
+
+}
+
+archivesBaseName = 'web3sdk'
+group = 'org.fisco-bcos'
+version = '1.2.4-remove-fastjson-SNAPSHOT'
+
+// Additional attribute definition
+
+ext {
+    if (!project.hasProperty("ossrhUsername")) {
+        ossrhUsername="xxx"
+    }
+
+    if (!project.hasProperty("ossrhPassword")) {
+        ossrhPassword="xxx"
+    }
+}
+
+// Test related configuration
+test {
+    testLogging {
+        // showStandardStreams = true
+        events "started","passed","skipped","failed"
+    }
+}
+
+jar {
+    // destinationDir file('dist/apps')
+    // archiveName project.name + '-' + project.version + '.jar'
+    exclude '**/*.xml'
+    exclude '**/*.properties'
+
+    manifest {
+        try {
+            def repo = grgit.open()
+            if (repo != null) {
+                def user = System.getProperty("user.name")
+                def date = new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+                def branch = repo.branch.getCurrent().getName()
+                def commit = repo.head().getAbbreviatedId(40)
+
+                attributes(["Built-By"                : user,
+                            "Implementation-Timestamp": date,
+                            "Git-Branch"              : branch,
+                            "Git-Commit"              : commit
+                ])
+
+                logger.info("  Commit : ")
+                logger.info("  => user: {}", user)
+                logger.info("  => date: {}", date)
+                logger.info("  => branch: {}", branch)
+                logger.info("  => commit: {}", commit)
+            }
+        } catch (Exception e) {
+            // logger.warn(' .git not exist, cannot found commit info')
+        }
+    } from sourceSets.main.output
+
+    doLast {
+        copy {
+            from destinationDir
+            into 'dist/apps'
+        }
+
+        copy {
+            from configurations.runtime
+            into 'dist/lib'
+        }
+
+        copy {
+            from file('src/test/resources/log4j.properties')
+            into 'dist/conf'
+        }
+    }
+}
+
+javadoc {
+    options.addStringOption('Xdoclint:none', '-quiet')
+    options.addStringOption('encoding', 'UTF-8')
+    options.addStringOption('charSet', 'UTF-8')
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allJava
+    archiveClassifier = 'sources'
+}
+
+task javadocJar(type: Jar) {
+    from javadoc
+    archiveClassifier = 'javadoc'
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+
+            artifactId project.name
+            groupId project.group
+            version project.version
+
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+
+            pom {
+                name = 'fisco-bcos'
+                description = 'fisco-bcos web3sdk'
+                url = 'http://www.fisco-bcos.org'
+
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'zhangsan'
+                        name = 'zhangsan'
+                        email = 'zhangsan@example.com'
+                    }
+                }
+                scm {
+                    connection = 'https://github.com/FISCO-BCOS/web3sdk.git'
+                    url = 'https://github.com/FISCO-BCOS/web3sdk.git'
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            def releasesRepoURL = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+            def snapshotsRepoURL = "https://oss.sonatype.org/content/repositories/snapshots"
+            url = !version.endsWith("SNAPSHOT") ? releasesRepoURL : snapshotsRepoURL
+
+            credentials {
+                username ossrhUsername
+                password ossrhPassword
+            }
+        }
+    }
+
+    signing {
+        sign publishing.publications.mavenJava
+    }
+}
+
