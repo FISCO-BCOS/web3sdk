@@ -1,21 +1,12 @@
 package org.bcos.contract.tools;
 
 import java.io.*;
-import java.io.InputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 
-import java.util.Map;
-import java.util.HashMap;
-
-
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.*;
-
-import org.bcos.contract.tools.RetCode;
-import org.bcos.contract.tools.KeyInfoInterface;
+import org.bcos.web3j.protocol.ObjectMapperFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +28,36 @@ public class KeyInfo implements KeyInfoInterface {
     }
 
     KeyInfo() {
+    }
+
+    private static class Account {
+        private String privateKey;
+        private String publicKey;
+        private String account;
+
+        public String getPrivateKey() {
+            return privateKey;
+        }
+
+        public void setPrivateKey(String privateKey) {
+            this.privateKey = privateKey;
+        }
+
+        public String getPublicKey() {
+            return publicKey;
+        }
+
+        public void setPublicKey(String publicKey) {
+            this.publicKey = publicKey;
+        }
+
+        public String getAccount() {
+            return account;
+        }
+
+        public void setAccount(String account) {
+            this.account = account;
+        }
     }
 
     public void setPrivateKey(String privKey) {
@@ -129,18 +150,13 @@ public class KeyInfo implements KeyInfoInterface {
         System.out.println("");
         System.out.println("===key info:" + keyInfoJsonStr);
         try {
-            JSONObject keyInfoJsonObj = JSONObject.parseObject(keyInfoJsonStr);
-            if (keyInfoJsonObj == null) {
-                System.out.println("load json str from key info failed");
-                logger.error("load json str from key info failed");
-                return RetCode.parseJsonFailed;
-            }
-            if (keyInfoJsonObj.containsKey(privJsonKey))
-                privateKey = keyInfoJsonObj.getString(privJsonKey);
-            if (keyInfoJsonObj.containsKey(pubJsonKey))
-                publicKey = keyInfoJsonObj.getString(pubJsonKey);
-            if (keyInfoJsonObj.containsKey(accountJsonKey))
-                account = keyInfoJsonObj.getString(accountJsonKey);
+            Account key =
+                    ObjectMapperFactory.getObjectMapper().readValue(keyInfoJsonStr, Account.class);
+
+            privateKey = key.getPrivateKey();
+            publicKey = key.getPublicKey();
+            account = key.getAccount();
+
             System.out.println("");
             System.out.println("====LOADED KEY INFO ===");
             System.out.println("* private key:" + privateKey);
@@ -178,14 +194,13 @@ public class KeyInfo implements KeyInfoInterface {
      */
     @Override
     public int storeKeyInfo(String keyFile) {
-        try {
-            //Map<String, String> keyMap = new HashMap<String, String>();
-            JSONObject keyMapJson = new JSONObject();
-            keyMapJson.put(privJsonKey, privateKey);
-            keyMapJson.put(pubJsonKey, publicKey);
-            keyMapJson.put(accountJsonKey, account);
+    	try {
+            Account key = new Account();
+            key.setPrivateKey(getPrivateKey());
+            key.setPublicKey(getPublicKey());
+            key.setAccount(getAccount());
 
-            String keyJsonInfo = keyMapJson.toString();
+            String keyJsonInfo = ObjectMapperFactory.getObjectMapper().writeValueAsString(key);
             System.out.println("== SAVED KEY INFO: " + keyJsonInfo);
             return writeFile(keyFile, keyJsonInfo);
         } catch (Exception e) {

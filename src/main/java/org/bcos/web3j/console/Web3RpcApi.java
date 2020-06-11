@@ -2,9 +2,10 @@ package org.bcos.web3j.console;
 
 import java.math.BigInteger;
 import java.util.List;
+
+import org.bcos.web3j.protocol.ObjectMapperFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import com.alibaba.fastjson.JSONObject;
 import org.bcos.channel.client.Service;
 import org.bcos.web3j.protocol.Web3j;
 import org.bcos.web3j.protocol.channel.ChannelEthereumService;
@@ -129,9 +130,10 @@ public class Web3RpcApi {
         		}
 				transactionIndex = new BigInteger(args[2]);
 				transaction=web3j.ethGetTransactionByBlockHashAndIndex(args[1], transactionIndex).send().getResult();
-				
-				String transactionJson1=JSONObject.toJSONString(transaction);
-				System.out.println(transactionJson1);
+
+				String transactionJson = ObjectMapperFactory.getObjectMapper().writeValueAsString(transaction);
+				// String transactionJson=JSONObject.toJSONString(transaction);
+				System.out.println(transactionJson);
 				break;
 				
 			case "eth_getTransactionByBlockNumberAndIndex":
@@ -142,14 +144,16 @@ public class Web3RpcApi {
 				bigBlockHeight = new BigInteger(args[1]);
 				transactionIndex = new BigInteger(args[2]);
 				transaction =web3j.ethGetTransactionByBlockNumberAndIndex(DefaultBlockParameter.valueOf(bigBlockHeight), transactionIndex).send().getResult();
-				String transactionJson=JSONObject.toJSONString(transaction);
-				System.out.println(transactionJson);
+				String transactionJson1 = ObjectMapperFactory.getObjectMapper().writeValueAsString(transaction);
+				// String transactionJson=JSONObject.toJSONString(transaction);
+				System.out.println(transactionJson1);
 				break;
 				
 			case "eth_getTransactionReceipt":	
 				
 				TransactionReceipt receipt = web3j.ethGetTransactionReceipt(args[1]).send().getResult();
-				String receiptJson=JSONObject.toJSONString(receipt);
+				String receiptJson = ObjectMapperFactory.getObjectMapper().writeValueAsString(receipt);
+				// String receiptJson=JSONObject.toJSONString(receipt);
 				System.out.println(receiptJson);
 				break;
 				
