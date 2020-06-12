@@ -5,7 +5,6 @@ plugins {
     id 'java-library'
     id 'maven-publish'
     id 'org.ajoberstar.grgit' version '4.0.1'
-    id 'com.github.sherter.google-java-format' version '0.8'
 }
 
 sourceCompatibility = 1.8
@@ -30,25 +29,12 @@ repositories {
     maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
 }
 
-googleJavaFormat {
-    options style: 'AOSP'
-    source = sourceSets*.allJava
-    include '**/*.java'
-    exclude '**/temp/*.java'
-}
-
-verifyGoogleJavaFormat {
-    source = sourceSets*.allJava
-    include '**/*.java'
-    exclude '**/temp/*.java'
-}
-
 List logger = [
-        // 'org.slf4j:slf4j-log4j12:1.7.25'
-        'org.slf4j:slf4j-api:1.7.25'
+        // 'org.slf4j:slf4j-log4j12:1.7.30'
+        'org.slf4j:slf4j-api:1.7.30'
 ]
 
-def spring_version="4.3.18.RELEASE"
+def spring_version="4.3.27.RELEASE"
 List spring =[
         "org.springframework:spring-core:$spring_version",
         "org.springframework:spring-beans:$spring_version",
@@ -67,10 +53,10 @@ dependencies {
     compile logger,spring
     compile alibaba
     compile 'org.apache.commons:commons-lang3:3.1'
-    compile "com.fasterxml.jackson.core:jackson-databind:2.10.0"
-    compile 'io.netty:netty-all:4.1.15.Final'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.11.0'
+    compile 'io.netty:netty-all:4.1.50.Final'
     compile 'io.netty:netty-tcnative:2.0.18.Final'
-    compile 'com.google.guava:guava:28.1-jre'
+    compile 'com.google.guava:guava:29.0-jre'
 
     // web3j依赖
     compile 'org.apache.httpcomponents:httpclient:4.5.5',
@@ -84,7 +70,7 @@ dependencies {
 
 archivesBaseName = 'web3sdk'
 group = 'org.fisco-bcos'
-version = '1.2.6-SNAPSHOT'
+version = '1.2.6-0612-SNAPSHOT'
 
 // Additional attribute definition
 
