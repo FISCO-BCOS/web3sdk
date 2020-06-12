@@ -50,8 +50,7 @@ List alibaba = [
 
 // In this section you declare the dependencies for your production and test code
 dependencies {
-    compile logger,spring
-    compile alibaba
+    compile logger,spring,alibaba
     compile 'org.apache.commons:commons-lang3:3.1'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.11.0'
     compile 'io.netty:netty-all:4.1.50.Final'
