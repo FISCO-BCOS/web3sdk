@@ -2,8 +2,15 @@
 
 (2020-06-09)
 
-更新
-1. 删除fastjson库
+* 删除
+1. fastjson依赖
+
+* 更新
+1. netty-all升级至4.1.50.Final版本
+2. spring升级至4.3.27.RELEASE版本
+3. slf4j升级至1.7.30版本
+4. jackson-databind升级至2.11.0版本
+4. guava至升级29.0-jre版本
 
 * 兼容
 1. 适配fisco-bcos 2.3.0版本，支持Channel Message v1/V2/V3协议
