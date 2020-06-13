@@ -77,7 +77,7 @@ dependencies {
 
 archivesBaseName = 'web3sdk'
 group = 'org.fisco-bcos'
-version = '1.2.1-remove-fastjson-SNAPSHOT'
+version = '1.2.1.0-0612-SNAPSHOT'
 
 // Additional attribute definition
 
