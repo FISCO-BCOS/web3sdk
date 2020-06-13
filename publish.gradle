@@ -30,11 +30,11 @@ repositories {
 }
 
 List logger = [
-        // 'org.slf4j:slf4j-log4j12:1.7.25'
-        'org.slf4j:slf4j-api:1.7.25'
+        // 'org.slf4j:slf4j-log4j12:1.7.30'
+        'org.slf4j:slf4j-api:1.7.30'
 ]
 
-def spring_version="4.3.18.RELEASE"
+def spring_version="4.3.27.RELEASE"
 List spring =[
         "org.springframework:spring-core:$spring_version",
         "org.springframework:spring-beans:$spring_version",
@@ -52,10 +52,17 @@ List alibaba = [
 dependencies {
     compile logger,spring,alibaba
     compile 'org.apache.commons:commons-lang3:3.1'
-    compile "com.fasterxml.jackson.core:jackson-databind:2.9.6"
-    compile 'io.netty:netty-all:4.1.15.Final'
+    runtime 'org.apache.commons:commons-lang3:3.1'
+
+    compile "com.fasterxml.jackson.core:jackson-databind:2.11.0"
+    runtime "com.fasterxml.jackson.core:jackson-databind:2.11.0"
+    compile 'io.netty:netty-all:4.1.50.Final'
+    runtime 'io.netty:netty-all:4.1.50.Final'
+
     compile 'io.netty:netty-tcnative:2.0.18.Final'
-    compile 'com.google.guava:guava:19.0'
+    runtime 'io.netty:netty-tcnative:2.0.18.Final'
+    compile 'com.google.guava:guava:29.0-jre'
+    runtime 'com.google.guava:guava:29.0-jre'
 
     // web3j依赖
     compile 'org.apache.httpcomponents:httpclient:4.5.5',

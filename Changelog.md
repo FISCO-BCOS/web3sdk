@@ -1,3 +1,13 @@
+### V1.2.4.0 (2020-06-09)  
+* 删除
+1. fastjson依赖
+* 更新
+1. netty-all升级至4.1.50.Final版本
+2. spring升级至4.3.27.RELEASE版本
+3. slf4j升级至1.7.30版本
+4. jackson-databind升级至2.11.0版本
+5. guava至升级29.0-jre版本
+
 ### V1.2.4 (2018-10-17)
 * Updates
 
