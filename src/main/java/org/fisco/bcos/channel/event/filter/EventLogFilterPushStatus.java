@@ -9,7 +9,9 @@ public enum EventLogFilterPushStatus {
     INVALID_RANGE(-41003),
     INVALID_RESPONSE(-41004),
     REQUEST_TIMEOUT(-41005),
-    OTHER_ERROR(-41006),
+    SDK_PERMISSION_DENIED(-41006),
+    // reserve 100 errors
+    OTHER_ERROR(42000),
     ;
 
     private int status;
@@ -67,6 +69,9 @@ public enum EventLogFilterPushStatus {
                 break;
             case INVALID_RESPONSE:
                 desc = "response message not invalid format";
+                break;
+            case SDK_PERMISSION_DENIED:
+                desc = "the SDK is not allowed to access this group.";
                 break;
             default:
                 {
