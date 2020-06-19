@@ -71,7 +71,7 @@ dependencies {
 
     // compile 'io.netty:netty-tcnative:2.0.25.Final'
     // compile 'io.netty:netty-tcnative-boringssl-static:2.0.27.Final'
-    compile 'org.fisco-bcos:netty-sm-ssl-context:1.0.0-SNAPSHOT'
+    compile 'org.fisco-bcos:netty-sm-ssl-context:1.0.0'
     compile 'io.netty:netty-all:4.1.50.Final'
 
     compile 'com.google.guava:guava:29.0-jre'
@@ -99,7 +99,7 @@ dependencies {
 
 archivesBaseName = 'web3sdk'
 group = 'org.fisco-bcos'
-version = '2.3.0-SNAPSHOT'
+version = '2.5.0'
 
 // Additional attribute definition
 
