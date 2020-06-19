@@ -1,3 +1,24 @@
+### v2.5.0
+
+(2020-06-19)
+
+* 删除
+1. fastjson依赖
+
+* 更新
+1. netty-all版本升级至4.1.50.Final
+2. spring版本 升级至4.3.27.RELEASE
+3. slf4j版本升级至1.7.30
+4. jackson-databind版本升级至2.11.0
+5. guava版本至升级29.0-jre版本
+
+* 新增
+1. 支持与节点建立国密ssl连接
+2. 添加角色权限预编译合约 
+
+* 兼容
+1. 适配fisco-bcos 2.5.0版本，支持Channel Message v1/V2/V3协议
+
 ### v2.4.0
 
 (2020-04-30)
