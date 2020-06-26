@@ -36,7 +36,7 @@ public class TypeDecoder {
     static final int MAX_BYTE_LENGTH_FOR_HEX_STRING = Type.MAX_BYTE_LENGTH << 1;
 
     @SuppressWarnings("unchecked")
-    static <T extends Type> T decode(String input, int offset, Class<T> type) {
+    public static <T extends Type> T decode(String input, int offset, Class<T> type) {
         if (NumericType.class.isAssignableFrom(type)) {
             return (T) decodeNumeric(input.substring(offset), (Class<NumericType>) type);
         } else if (Address.class.isAssignableFrom(type)) {
