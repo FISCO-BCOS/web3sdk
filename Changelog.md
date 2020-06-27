@@ -1,5 +1,21 @@
+### v2.1.5
+
+(2020-06-27)
+
+* 删除
+1. druid依赖
+
+* 更新
+1. netty-tcnative升级至2.0.30.Final版本
+2. Java-WebSocket升级至1.5.1版本
+3. commons-collections4升级至4.4版本
+
+* 兼容
+
+1. 兼容Channel Message v1协议
+2. 兼容FISCO BCOS 2.1以下的sdk证书名node.crt和node.key
+
 ### v2.1.4
-(2020-06-09)
 
 * 删除
 1. fastjson依赖

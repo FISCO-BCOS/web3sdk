@@ -13,4 +13,4 @@ mv src/integration-test/resources/applicationContext-sample.xml src/integration-
 ./gradlew verifyGoogleJavaFormat
 ./gradlew build
 ./gradlew test
-./gradlew integrationTest
+./gradlew integrationTest --info
