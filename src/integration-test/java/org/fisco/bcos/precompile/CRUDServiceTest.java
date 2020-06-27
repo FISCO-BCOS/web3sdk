@@ -16,7 +16,7 @@ import org.junit.Test;
 public class CRUDServiceTest extends TestBase {
 
 
-	private CRUDService crudSerivce = new CRUDService(web3j, credentials);
+	private CRUDService crudService = new CRUDService(web3j, credentials);
 
 	@SuppressWarnings("unchecked")
 	@Test
@@ -28,7 +28,7 @@ public class CRUDServiceTest extends TestBase {
   	Table table = new Table(tableName, key, valueFields);
 
   	// create table
-    int resultCreate = crudSerivce.createTable(table);
+    int resultCreate = crudService.createTable(table);
     assertEquals(resultCreate, 0);
   	
     // insert records
@@ -40,7 +40,7 @@ public class CRUDServiceTest extends TestBase {
 	    insertEntry.put("item_id", "1");
     	insertEntry.put("item_name", "apple"+i);
     	table.setKey("fruit");
-    	insertResult += crudSerivce.insert(table, insertEntry);
+    	insertResult += crudService.insert(table, insertEntry);
     }
     assertEquals(insertResult, num);
 		
@@ -49,7 +49,7 @@ public class CRUDServiceTest extends TestBase {
 		condition1.EQ("item_id", "1");
 		condition1.Limit(1);
 		
-		List<Map<String, String>> resultSelect1 = crudSerivce.select(table, condition1);
+		List<Map<String, String>> resultSelect1 = crudService.select(table, condition1);
 		assertEquals(resultSelect1.get(0).get("name"), "fruit");
 		assertEquals(resultSelect1.get(0).get("item_id"), "1");
 		assertEquals(resultSelect1.get(0).get("item_name"), "apple1");
@@ -60,14 +60,14 @@ public class CRUDServiceTest extends TestBase {
 	  	updateEntry.put("item_name", "orange");
 	  	Condition updateCondition = table.getCondition();
 	  	updateCondition.EQ("item_id", "1");
-	  	int updateResult = crudSerivce.update(table, updateEntry, updateCondition);
+	  	int updateResult = crudService.update(table, updateEntry, updateCondition);
 	  	assertEquals(updateResult, num);
 		
 	  // select records
 		Condition condition2 = table.getCondition();
 		condition2.EQ("item_id", "1");
 		condition2.Limit(1);
-		List<Map<String, String>> resultSelect2 = crudSerivce.select(table, condition2);
+		List<Map<String, String>> resultSelect2 = crudService.select(table, condition2);
 		assertEquals(resultSelect2.get(0).get("name"), "fruit");
 		assertEquals(resultSelect2.get(0).get("item_id"), "1");
 		assertEquals(resultSelect2.get(0).get("item_name"), "orange");
@@ -75,7 +75,7 @@ public class CRUDServiceTest extends TestBase {
 	  // remove records
 		Condition removeCondition = table.getCondition();
 		removeCondition.EQ("item_id", "1");
-		int removeResult = crudSerivce.remove(table, removeCondition);
+		int removeResult = crudService.remove(table, removeCondition);
 		assertEquals(removeResult, num);
   }
   

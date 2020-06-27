@@ -19,6 +19,7 @@ public class OkTest extends TestBase {
 
     if (ok != null) {
       TransactionReceipt receipt = ok.trans(new BigInteger("4")).send();
+      assertTrue(receipt.isStatusOK());
       assertTrue(receipt.getBlockNumber().intValue() > 0);
       assertTrue(receipt.getTransactionIndex().intValue() >= 0);
       assertTrue(receipt.getGasUsed().intValue() > 0);
