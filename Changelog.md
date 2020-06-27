@@ -1,3 +1,17 @@
+### v2.5.1
+
+(2020-06-27)
+
+* 删除
+1. druid依赖
+
+* 更新
+1. commons-collections4版本升级至4.4.4
+2. Java-WebSocket版本升级至1.5.1
+
+* 兼容
+1. 适配fisco-bcos 2.5.0版本，支持Channel Message v1/V2/V3协议
+
 ### v2.5.0
 
 (2020-06-19)
