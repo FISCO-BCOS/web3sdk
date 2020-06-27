@@ -1,3 +1,18 @@
+### v2.3.2
+
+(2020-06-27)
+
+* 删除
+1. druid依赖
+
+* 更新
+1. netty-tcnative升级至2.0.30.Final版本
+2. Java-WebSocket升级至1.5.1版本
+3. commons-collections4升级至4.4版本
+
+* 兼容
+1. 适配fisco-bcos 2.3.0版本，支持Channel Message v1/V2/V3协议
+
 ### v2.3.1
 
 (2020-06-09)
