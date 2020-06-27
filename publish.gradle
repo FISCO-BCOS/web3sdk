@@ -44,14 +44,10 @@ List spring =[
         "org.springframework:spring-test:$spring_version"
 ]
 
-List alibaba = [
-        'com.alibaba:druid:1.0.29'
-]
-
 // In this section you declare the dependencies for your production and test code
 dependencies {
-    compile logger,spring,alibaba
-    runtime logger,spring,alibaba
+    compile logger,spring
+    runtime logger,spring
 
     compile 'org.apache.commons:commons-lang3:3.1'
     runtime 'org.apache.commons:commons-lang3:3.1'
@@ -61,14 +57,15 @@ dependencies {
     compile 'io.netty:netty-all:4.1.50.Final'
     runtime 'io.netty:netty-all:4.1.50.Final'
 
-    compile 'io.netty:netty-tcnative:2.0.0.Final'
-    runtime 'io.netty:netty-tcnative:2.0.0.Final'
+    compile 'io.netty:netty-tcnative:2.0.30.Final'
+    runtime 'io.netty:netty-tcnative:2.0.30.Final'
+
     compile 'com.google.guava:guava:29.0-jre'
     runtime 'com.google.guava:guava:29.0-jre'
 
     // web3j依赖
     compile 'org.apache.httpcomponents:httpclient:4.5.5',
-            'org.bouncycastle:bcprov-jdk15on:1.54',
+            'org.bouncycastle:bcprov-jdk15on:1.60',
             'com.lambdaworks:scrypt:1.4.0',
             'com.squareup:javapoet:1.7.0',
             'io.reactivex:rxjava:1.2.4',
@@ -79,7 +76,7 @@ dependencies {
 
 archivesBaseName = 'web3sdk'
 group = 'org.fisco-bcos'
-version = '1.2.2.0-0612-SNAPSHOT'
+version = '1.2.2.1'
 
 // Additional attribute definition
 
