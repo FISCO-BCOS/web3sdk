@@ -37,7 +37,7 @@ public class TestBase {
     ChannelEthereumService channelEthereumService = new ChannelEthereumService();
     channelEthereumService.setChannelService(service);
 
-    System.out.println("EncryptType =>  " + EncryptType.encryptType);
+    System.out.println("EncryptType =>  " + EncryptType.getEncryptType());
 
     web3j = Web3j.build(channelEthereumService, service.getGroupId());
     credentials = GenCredential.create();
