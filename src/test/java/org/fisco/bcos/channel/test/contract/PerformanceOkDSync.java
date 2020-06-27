@@ -1,7 +1,6 @@
 package org.fisco.bcos.channel.test.contract;
 
 import com.google.common.util.concurrent.RateLimiter;
-
 import java.math.BigInteger;
 import java.util.Random;
 import java.util.concurrent.Executors;
@@ -38,13 +37,13 @@ public class PerformanceOkDSync {
 
             ChannelEthereumService channelEthereumService = new ChannelEthereumService();
             channelEthereumService.setChannelService(service);
-            
-            if(args.length > 4) {
-            	Integer threadPoolSize = Integer.parseInt(args[4]);
-            	Async async = new Async(Executors.newFixedThreadPool(threadPoolSize));
+
+            if (args.length > 4) {
+                Integer threadPoolSize = Integer.parseInt(args[4]);
+                Async async = new Async(Executors.newFixedThreadPool(threadPoolSize));
                 System.out.println(" === thread pool size = " + threadPoolSize);
             }
-            
+
             ScheduledExecutorService scheduledExecutorService =
                     Executors.newScheduledThreadPool(500);
             Web3j web3 =
@@ -69,7 +68,7 @@ public class PerformanceOkDSync {
                 case "trans":
                     count = Integer.parseInt(args[1]);
                     qps = Integer.parseInt(args[2]);
-                    
+
                     break;
                 default:
                     System.out.println("Args: <trans> <Total> <QPS> <GroupID> <ThreadPoolSize>");
@@ -104,9 +103,12 @@ public class PerformanceOkDSync {
                                 PerformanceOkCallback callback = new PerformanceOkCallback();
                                 callback.setCollector(collector);
                                 try {
-                                    TransactionReceipt receipt = ok.trans(
-                                            String.valueOf(random.nextLong()),
-                                            new BigInteger("1")).sendAsync().get();
+                                    TransactionReceipt receipt =
+                                            ok.trans(
+                                                            String.valueOf(random.nextLong()),
+                                                            new BigInteger("1"))
+                                                    .sendAsync()
+                                                    .get();
                                     callback.onResponse(receipt);
                                 } catch (Exception e) {
                                     TransactionReceipt receipt = new TransactionReceipt();

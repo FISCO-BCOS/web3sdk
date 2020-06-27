@@ -4,8 +4,6 @@ import java.math.BigInteger;
 import java.security.KeyPair;
 import java.security.SecureRandom;
 import org.bouncycastle.math.ec.ECCurve;
-import org.bouncycastle.math.ec.ECFieldElement;
-import org.bouncycastle.math.ec.ECFieldElement.Fp;
 import org.bouncycastle.math.ec.ECPoint;
 import org.fisco.bcos.web3j.crypto.gm.sm2.crypto.digests.SM3Digest;
 import org.fisco.bcos.web3j.crypto.gm.sm2.crypto.params.ECDomainParameters;
@@ -33,9 +31,12 @@ public class SM2KeyGenerator {
     @SuppressWarnings("deprecation")
     public SM2KeyGenerator() {
         ECCurve curve = new ECCurve.Fp(p, a, b);
+        /*
         ECFieldElement x = new Fp(p, gx);
         ECFieldElement y = new Fp(p, gy);
         ECPoint point = new ECPoint.Fp(curve, x, y);
+        */
+        ECPoint point = curve.createPoint(gx, gy);
         ecdp = new ECDomainParameters(curve, point, n);
     }
 
