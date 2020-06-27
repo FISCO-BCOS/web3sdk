@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.fisco.bcos.channel.client.TransactionSucCallback;
+import org.fisco.bcos.channel.event.filter.EventLogPushWithDecodeCallback;
+import org.fisco.bcos.web3j.abi.EventEncoder;
 import org.fisco.bcos.web3j.abi.FunctionReturnDecoder;
 import org.fisco.bcos.web3j.abi.TypeReference;
 import org.fisco.bcos.web3j.abi.datatypes.Event;
@@ -70,7 +72,7 @@ public class Ok extends Contract {
     }
 
     public static String getBinary() {
-        return (EncryptType.encryptType == 0 ? BINARY : SM_BINARY);
+        return (EncryptType.encryptType == EncryptType.ECDSA_TYPE ? BINARY : SM_BINARY);
     }
 
     public static TransactionDecoder getTransactionDecoder() {
@@ -130,6 +132,16 @@ public class Ok extends Contract {
             responses.add(typedResponse);
         }
         return responses;
+    }
+
+    public void registerTransEventEventLogFilter(String fromBlock, String toBlock, List<String> otherTopcs, EventLogPushWithDecodeCallback callback) {
+        String topic0 = EventEncoder.encode(TRANSEVENT_EVENT);
+        registerEventLogPushFilter(ABI,BINARY,topic0,fromBlock,toBlock,otherTopcs,callback);
+    }
+
+    public void registerTransEventEventLogFilter(EventLogPushWithDecodeCallback callback) {
+        String topic0 = EventEncoder.encode(TRANSEVENT_EVENT);
+        registerEventLogPushFilter(ABI,BINARY,topic0,callback);
     }
 
     @Deprecated
