@@ -42,9 +42,12 @@ public class SM2KeyGenerator {
 	@SuppressWarnings("deprecation")
 	public SM2KeyGenerator() {
 		ECCurve curve = new org.bouncycastle.math.ec.ECCurve.Fp(p, a, b);
+		/*
 		ECFieldElement x = new Fp(p, gx);
 		ECFieldElement y = new Fp(p, gy);
 		ECPoint point = new org.bouncycastle.math.ec.ECPoint.Fp(curve, x, y);
+		*/
+		ECPoint point = curve.createPoint(gx, gy);
 		ecdp = new ECDomainParameters(curve, point, n);
 	}
 
