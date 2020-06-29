@@ -65,6 +65,13 @@ public class ChannelConnections {
     private Resource sslCert;
     private Resource sslKey;
 
+    /** SM SSL default configuration */
+    private static final String GM_CA_CERT = "classpath:gmca.crt";
+    private static final String GM_SSL_CERT = "classpath:gmsdk.crt";
+    private static final String GM_SSL_KEY = "classpath:gmsdk.key";
+    private static final String GM_EN_SSL_CERT = "classpath:gmensdk.crt";
+    private static final String GM_EN_SSL_KEY = "classpath:gmensdk.key";
+
     private Resource gmCaCert;
     private Resource gmSslCert;
     private Resource gmSslKey;
@@ -490,7 +497,29 @@ public class ChannelConnections {
                     getGmSslKey().getInputStream());
         }
 
-        logger.info(" Has no SM Ssl certificate configuration ");
+        PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+        Resource gmCaResource = resolver.getResource(GM_CA_CERT);
+        Resource gmSslResource = resolver.getResource(GM_SSL_CERT);
+        Resource gmSslKeyResource = resolver.getResource(GM_SSL_KEY);
+        Resource gmEnSslResource = resolver.getResource(GM_EN_SSL_CERT);
+        Resource gmEnSslKeyResource = resolver.getResource(GM_EN_SSL_KEY);
+
+        // The client's SM SSL default certificate exists
+        if (gmCaResource.exists()
+                && gmSslResource.exists()
+                && gmSslKeyResource.exists()
+                && gmEnSslKeyResource.exists()
+                && gmEnSslResource.exists()) {
+            logger.info(" build SM ssl context by default certificate configuration ");
+            return SMSslClientContextFactory.build(
+                    gmCaResource.getInputStream(),
+                    gmEnSslResource.getInputStream(),
+                    gmEnSslKeyResource.getInputStream(),
+                    gmSslResource.getInputStream(),
+                    gmSslKeyResource.getInputStream());
+        }
+
+        logger.info(" there is no SM ssl certificate configuration ");
 
         // The client's SM SSL certificate not exists or not configured correctly
         return initSslContext();
