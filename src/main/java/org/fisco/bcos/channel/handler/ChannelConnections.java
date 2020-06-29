@@ -20,6 +20,7 @@ import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.SslHandler;
 import io.netty.handler.ssl.SslProvider;
 import io.netty.handler.timeout.IdleStateHandler;
+import io.netty.util.NetUtil;
 import io.netty.util.concurrent.Future;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -288,18 +289,17 @@ public class ChannelConnections {
         for (String connectionStr : connectionsStr) {
             ConnectionInfo connection = new ConnectionInfo();
 
-            String[] stringArray = connectionStr.split(":");
-
-            if (stringArray.length < 1) {
+            int index = connectionStr.lastIndexOf(':');
+            if (index == -1) {
                 throw new IllegalArgumentException(
-                        " Invalid configuration, the value should in IP:Port format(eg: 127.0.0.1:1111), value: "
+                        " Invalid configuration, the value should in IP:Port format(eg: 127.0.0.1:1111、[::1]:1111), value: "
                                 + connectionStr);
             }
 
-            String IP = stringArray[0];
-            String port = stringArray[1];
+            String IP = connectionStr.substring(0, index);
+            String port = connectionStr.substring(index + 1);
 
-            if (!Host.validIP(IP)) {
+            if (!(NetUtil.isValidIpV4Address(IP) || NetUtil.isValidIpV6Address(IP))) {
                 throw new IllegalArgumentException(
                         " Invalid configuration, invalid IP string format, value: " + IP);
             }
