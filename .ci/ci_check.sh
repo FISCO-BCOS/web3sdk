@@ -29,7 +29,7 @@ mkdir -p src/integration-test/resources/
 cp nodes/127.0.0.1/sdk/* src/integration-test/resources/
 cp src/test/resources/applicationContext-sample.xml src/integration-test/resources/applicationContext.xml
 cp src/test/resources/log4j.properties src/integration-test/resources/
-bash gradlew integrationTest --info
+bash gradlew integrationTest
 
 # clean
 bash nodes/127.0.0.1/stop_all.sh
@@ -47,4 +47,4 @@ cp -r nodes/127.0.0.1/sdk/* src/integration-test/resources/
 cp src/test/resources/applicationContext-sample.xml src/integration-test/resources/applicationContext.xml
 sed -i.bak 's/"0"/"1"/g' src/integration-test/resources/applicationContext.xml
 cp src/test/resources/log4j.properties src/integration-test/resources/
-bash gradlew integrationTest --info
+bash gradlew integrationTest
