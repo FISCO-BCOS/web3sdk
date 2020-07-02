@@ -555,7 +555,8 @@ public class ChannelConnections {
                             .keyManager(
                                     keystorecaResource.getInputStream(),
                                     keystorekeyResource.getInputStream())
-                            .sslProvider(SslProvider.JDK)
+                            // .sslProvider(SslProvider.JDK)
+                            .sslProvider(SslProvider.OPENSSL)
                             .build();
         } catch (Exception e) {
             logger.error(" Failed to initialize the SSLContext, e: {} ", e.getCause());
