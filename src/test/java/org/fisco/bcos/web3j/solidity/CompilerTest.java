@@ -17,7 +17,10 @@
  */
 package org.fisco.bcos.web3j.solidity;
 
-import static org.fisco.bcos.web3j.solidity.compiler.SolidityCompiler.Options.*;
+import static org.fisco.solc.compiler.SolidityCompiler.Options.ABI;
+import static org.fisco.solc.compiler.SolidityCompiler.Options.BIN;
+import static org.fisco.solc.compiler.SolidityCompiler.Options.INTERFACE;
+import static org.fisco.solc.compiler.SolidityCompiler.Options.METADATA;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.StringContains.containsString;
 
@@ -29,8 +32,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import org.apache.commons.io.FileUtils;
 import org.fisco.bcos.web3j.codegen.SolidityFunctionWrapperGenerator;
-import org.fisco.bcos.web3j.solidity.compiler.CompilationResult;
-import org.fisco.bcos.web3j.solidity.compiler.SolidityCompiler;
+import org.fisco.solc.compiler.CompilationResult;
+import org.fisco.solc.compiler.SolidityCompiler;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -39,7 +42,7 @@ public class CompilerTest {
 
     @Test
     public void solc_getVersion_shouldWork() throws IOException {
-        final String version = SolidityCompiler.runGetVersionOutput();
+        final String version = SolidityCompiler.runGetVersionOutput(false);
 
         // ##### May produce 2 lines:
         // solc, the solidity compiler commandline interface
@@ -47,6 +50,18 @@ public class CompilerTest {
         System.out.println(version);
 
         assertThat(version, containsString("Version:"));
+    }
+
+    @Test
+    public void sm_solc_getVersion_shouldWork() throws IOException {
+        final String version = SolidityCompiler.runGetVersionOutput(true);
+
+        // ##### May produce 2 lines:
+        // solc, the solidity compiler commandline interface
+        // Version: 0.4.7+commit.822622cf.mod.Darwin.appleclang
+        System.out.println(version);
+
+        assertThat(version, containsString("Gm version:"));
     }
 
     @Test
@@ -64,8 +79,9 @@ public class CompilerTest {
                         + "}";
 
         SolidityCompiler.Result res =
-                SolidityCompiler.compile(contract.getBytes(), true, ABI, BIN, INTERFACE, METADATA);
-        CompilationResult result = CompilationResult.parse(res.output);
+                SolidityCompiler.compile(
+                        contract.getBytes(), true, true, ABI, BIN, INTERFACE, METADATA);
+        CompilationResult result = CompilationResult.parse(res.getOutput());
         if (result.getContract("a") != null) System.out.println(result.getContract("a").bin);
         else Assert.fail();
     }
@@ -75,8 +91,9 @@ public class CompilerTest {
         String contractSrc =
                 "pragma solidity ^0.4.7;\n" + "contract a {" + "        function() {throw;}" + "}";
 
-        SolidityCompiler.Result res = SolidityCompiler.compile(contractSrc.getBytes(), true, BIN);
-        CompilationResult result = CompilationResult.parse(res.output);
+        SolidityCompiler.Result res =
+                SolidityCompiler.compile(contractSrc.getBytes(), false, true, BIN);
+        CompilationResult result = CompilationResult.parse(res.getOutput());
 
         CompilationResult.ContractMetadata a = result.getContract("a");
     }
@@ -92,8 +109,8 @@ public class CompilerTest {
                 continue;
             }
             SolidityCompiler.Result res =
-                    SolidityCompiler.compile(solFile, true, ABI, BIN, INTERFACE, METADATA);
-            CompilationResult result = CompilationResult.parse(res.output);
+                    SolidityCompiler.compile(solFile, false, true, ABI, BIN, INTERFACE, METADATA);
+            CompilationResult result = CompilationResult.parse(res.getOutput());
             System.out.println("contractname  " + solFile.getName());
             Path source = Paths.get(solFile.getPath());
             String contractname = solFile.getName().split("\\.")[0];
@@ -130,8 +147,9 @@ public class CompilerTest {
         Path source = Paths.get("src", "test", "resources", "contract", "test2.sol");
 
         SolidityCompiler.Result res =
-                SolidityCompiler.compile(source.toFile(), true, ABI, BIN, INTERFACE, METADATA);
-        CompilationResult result = CompilationResult.parse(res.output);
+                SolidityCompiler.compile(
+                        source.toFile(), false, true, ABI, BIN, INTERFACE, METADATA);
+        CompilationResult result = CompilationResult.parse(res.getOutput());
 
         CompilationResult.ContractMetadata a = result.getContract(source, "test2");
     }
@@ -142,11 +160,19 @@ public class CompilerTest {
         Path source = Paths.get("src", "test", "resources", "contract", "test3.sol");
 
         SolidityCompiler.Option allowPathsOption =
-                new AllowPaths(Collections.singletonList(source.getParent().getParent().toFile()));
+                new SolidityCompiler.Options.AllowPaths(
+                        Collections.singletonList(source.getParent().getParent().toFile()));
         SolidityCompiler.Result res =
                 SolidityCompiler.compile(
-                        source.toFile(), true, ABI, BIN, INTERFACE, METADATA, allowPathsOption);
-        CompilationResult result = CompilationResult.parse(res.output);
+                        source.toFile(),
+                        false,
+                        true,
+                        ABI,
+                        BIN,
+                        INTERFACE,
+                        METADATA,
+                        allowPathsOption);
+        CompilationResult result = CompilationResult.parse(res.getOutput());
 
         Assert.assertEquals(2, result.getContractKeys().size());
         Assert.assertEquals(result.getContract("test3"), result.getContract(source, "test3"));
@@ -161,13 +187,20 @@ public class CompilerTest {
         Path source = Paths.get("src", "test", "resources", "contract", "test3.sol");
 
         SolidityCompiler.Option allowPathsOption =
-                new AllowPaths(
+                new SolidityCompiler.Options.AllowPaths(
                         Collections.singletonList(
                                 source.getParent().getParent().toAbsolutePath().toString()));
         SolidityCompiler.Result res =
                 SolidityCompiler.compile(
-                        source.toFile(), true, ABI, BIN, INTERFACE, METADATA, allowPathsOption);
-        CompilationResult result = CompilationResult.parse(res.output);
+                        source.toFile(),
+                        false,
+                        true,
+                        ABI,
+                        BIN,
+                        INTERFACE,
+                        METADATA,
+                        allowPathsOption);
+        CompilationResult result = CompilationResult.parse(res.getOutput());
 
         CompilationResult.ContractMetadata a = result.getContract(source, "test3");
     }
@@ -178,11 +211,19 @@ public class CompilerTest {
         Path source = Paths.get("src", "test", "resources", "contract", "test3.sol");
 
         SolidityCompiler.Option allowPathsOption =
-                new AllowPaths(Collections.singletonList(source.getParent().getParent()));
+                new SolidityCompiler.Options.AllowPaths(
+                        Collections.singletonList(source.getParent().getParent()));
         SolidityCompiler.Result res =
                 SolidityCompiler.compile(
-                        source.toFile(), true, ABI, BIN, INTERFACE, METADATA, allowPathsOption);
-        CompilationResult result = CompilationResult.parse(res.output);
+                        source.toFile(),
+                        false,
+                        true,
+                        ABI,
+                        BIN,
+                        INTERFACE,
+                        METADATA,
+                        allowPathsOption);
+        CompilationResult result = CompilationResult.parse(res.getOutput());
 
         CompilationResult.ContractMetadata a = result.getContract("test3");
     }

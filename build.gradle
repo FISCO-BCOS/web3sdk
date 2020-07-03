@@ -61,10 +61,11 @@ configurations {
 
 // In this section you declare the dependencies for your production and test code
 dependencies {
-    // compile files('lib/solcJ-all-0.4.25-gm.jar')
-    // compile 'org.ethereum:solcJ-all:0.5.2'
 
-    compile 'org.ethereum:solcJ-all:0.4.25'
+    // compile group: 'org.fisco-bcos', name: 'solcJ', version: '0.6.10-SNAPSHOT'
+    // compile group: 'org.fisco-bcos', name: 'solcJ', version: '0.5.2-rc1'
+    compile group: 'org.fisco-bcos', name: 'solcJ', version: '0.4.25-rc1'
+
     compile spring, logger
     compile 'org.apache.commons:commons-lang3:3.1'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.11.0'
@@ -77,7 +78,6 @@ dependencies {
     }
 
     compile 'io.netty:netty-all:4.1.50.Final'
-
     compile 'com.google.guava:guava:29.0-jre'
     compile 'commons-configuration:commons-configuration:1.10'
     compile 'org.apache.httpcomponents:httpclient:4.5.5'
