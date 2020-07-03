@@ -1,15 +1,15 @@
 package org.fisco.bcos.web3j.tx.txdecode;
 
-import static org.fisco.bcos.web3j.solidity.compiler.SolidityCompiler.Options.ABI;
-import static org.fisco.bcos.web3j.solidity.compiler.SolidityCompiler.Options.BIN;
-import static org.fisco.bcos.web3j.solidity.compiler.SolidityCompiler.Options.INTERFACE;
-import static org.fisco.bcos.web3j.solidity.compiler.SolidityCompiler.Options.METADATA;
+import static org.fisco.solc.compiler.SolidityCompiler.Options.ABI;
+import static org.fisco.solc.compiler.SolidityCompiler.Options.BIN;
+import static org.fisco.solc.compiler.SolidityCompiler.Options.INTERFACE;
+import static org.fisco.solc.compiler.SolidityCompiler.Options.METADATA;
 
 import java.io.File;
 import java.io.IOException;
 import org.fisco.bcos.web3j.protocol.exceptions.TransactionException;
-import org.fisco.bcos.web3j.solidity.compiler.CompilationResult;
-import org.fisco.bcos.web3j.solidity.compiler.SolidityCompiler;
+import org.fisco.solc.compiler.CompilationResult;
+import org.fisco.solc.compiler.SolidityCompiler;
 
 public class TransactionDecoderFactory {
 
@@ -64,11 +64,11 @@ public class TransactionDecoderFactory {
                 continue;
             }
             SolidityCompiler.Result res =
-                    SolidityCompiler.compile(solFile, true, ABI, BIN, INTERFACE, METADATA);
-            if ("".equals(res.output)) {
-                throw new CompileSolidityException("Compile error: " + res.errors);
+                    SolidityCompiler.compile(solFile, true, true, ABI, BIN, INTERFACE, METADATA);
+            if ("".equals(res.getOutput())) {
+                throw new CompileSolidityException("Compile error: " + res.getErrors());
             }
-            CompilationResult result = CompilationResult.parse(res.output);
+            CompilationResult result = CompilationResult.parse(res.getOutput());
             String name = solFile.getName().split("\\.")[0];
             CompilationResult.ContractMetadata contractMetadata = result.getContract(name);
             if (contractName.equals(name)) {

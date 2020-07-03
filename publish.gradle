@@ -57,9 +57,12 @@ List spring = [
 ]
 
 dependencies {
-    // compile files('lib/solcJ-all-0.4.25-gm.jar')
-    // compile 'org.ethereum:solcJ-all:0.5.2'
-    compile 'org.ethereum:solcJ-all:0.4.25'
+    // compile 'org.ethereum:solcJ-all:0.4.25'
+
+    // compile group: 'org.fisco-bcos', name: 'solcJ', version: '0.6.10-SNAPSHOT'
+    // compile group: 'org.fisco-bcos', name: 'solcJ', version: '0.5.2-rc1'
+    compile group: 'org.fisco-bcos', name: 'solcJ', version: '0.4.25-rc1'
+
     compile spring, logger
     compile 'org.apache.commons:commons-lang3:3.1'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.11.0'
@@ -96,7 +99,7 @@ dependencies {
 
 archivesBaseName = 'web3sdk'
 group = 'org.fisco-bcos'
-version = '2.5.1'
+version = '2.6.0-SNAPSHOT'
 
 // Additional attribute definition
 

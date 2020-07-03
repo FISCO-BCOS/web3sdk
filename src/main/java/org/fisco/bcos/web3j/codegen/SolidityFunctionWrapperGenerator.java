@@ -31,6 +31,8 @@ public class SolidityFunctionWrapperGenerator extends FunctionWrapperGenerator {
      * -a, --abiFile=<abiFile>    abi file with contract definition.
      * -b, --binFile=<binFile>    bin file with contract compiled code in order to
      * generate deploy methods.
+     * -s, --smBinFile=<binFile>  sm bin file with contract compiled code in order to
+     * generate deploy methods.
      * -o, --outputDir=<destinationFileDir>
      * destination base directory.
      * -p, --package=<packageName>
@@ -41,6 +43,7 @@ public class SolidityFunctionWrapperGenerator extends FunctionWrapperGenerator {
      */
 
     private final File binFile;
+    private final File smBinFile;
     private final File abiFile;
 
     private SolidityFunctionWrapperGenerator(
@@ -49,9 +52,20 @@ public class SolidityFunctionWrapperGenerator extends FunctionWrapperGenerator {
             File destinationDir,
             String basePackageName,
             boolean useJavaNativeTypes) {
+        this(binFile, null, abiFile, destinationDir, basePackageName, useJavaNativeTypes);
+    }
+
+    private SolidityFunctionWrapperGenerator(
+            File binFile,
+            File smBinFile,
+            File abiFile,
+            File destinationDir,
+            String basePackageName,
+            boolean useJavaNativeTypes) {
 
         super(destinationDir, basePackageName, useJavaNativeTypes);
         this.binFile = binFile;
+        this.smBinFile = smBinFile;
         this.abiFile = abiFile;
     }
 
@@ -63,9 +77,15 @@ public class SolidityFunctionWrapperGenerator extends FunctionWrapperGenerator {
 
     private void generate() throws IOException, ClassNotFoundException {
         String binary = Contract.BIN_NOT_PROVIDED;
+        String smBinary = Contract.BIN_NOT_PROVIDED;
         if (binFile != null) {
             byte[] bytes = Files.readBytes(binFile);
             binary = new String(bytes);
+        }
+
+        if (smBinFile != null) {
+            byte[] bytes = Files.readBytes(smBinFile);
+            smBinary = new String(bytes);
         }
 
         byte[] bytes = Files.readBytes(abiFile);
@@ -81,6 +101,7 @@ public class SolidityFunctionWrapperGenerator extends FunctionWrapperGenerator {
                     .generateJavaFiles(
                             contractName,
                             binary,
+                            smBinary,
                             abi,
                             destinationDirLocation.toString(),
                             basePackageName);
@@ -120,6 +141,14 @@ public class SolidityFunctionWrapperGenerator extends FunctionWrapperGenerator {
         private File binFile;
 
         @Option(
+                names = {"-s", "--smBinFile"},
+                description =
+                        "sm bin file with contract compiled code "
+                                + "in order to generate deploy methods.",
+                required = false)
+        private File smBinFile;
+
+        @Option(
                 names = {"-o", "--outputDir"},
                 description = "destination base directory.",
                 required = true)
@@ -151,7 +180,12 @@ public class SolidityFunctionWrapperGenerator extends FunctionWrapperGenerator {
                 // simply check if solidityTypes were requested
                 boolean useJavaTypes = !(solidityTypes);
                 new SolidityFunctionWrapperGenerator(
-                                binFile, abiFile, destinationFileDir, packageName, useJavaTypes)
+                                binFile,
+                                smBinFile,
+                                abiFile,
+                                destinationFileDir,
+                                packageName,
+                                useJavaTypes)
                         .generate();
             } catch (Exception e) {
                 exitError(e);

@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
-import org.fisco.bcos.web3j.protocol.core.methods.response.AbiDefinition;
 import org.fisco.bcos.web3j.utils.Collection;
 import org.fisco.bcos.web3j.utils.Strings;
 
@@ -161,7 +160,7 @@ public class TruffleJsonFunctionWrapperGenerator extends FunctionWrapperGenerato
         public String contractName;
 
         @JsonProperty(value = "abi", required = true)
-        public List<AbiDefinition> abi;
+        public String abi;
 
         @JsonProperty("bytecode")
         @JsonFormat(
@@ -211,7 +210,7 @@ public class TruffleJsonFunctionWrapperGenerator extends FunctionWrapperGenerato
 
         public Contract(
                 String contractName,
-                List<AbiDefinition> abi,
+                String abi,
                 String bytecode,
                 String deployedBytecode,
                 String sourceMap,
@@ -243,7 +242,7 @@ public class TruffleJsonFunctionWrapperGenerator extends FunctionWrapperGenerato
             return contractName;
         }
 
-        public List<AbiDefinition> getAbi() {
+        public String getAbi() {
             return abi;
         }
 

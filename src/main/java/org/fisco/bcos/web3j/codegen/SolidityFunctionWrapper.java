@@ -41,6 +41,7 @@ import org.fisco.bcos.web3j.abi.datatypes.Type;
 import org.fisco.bcos.web3j.abi.datatypes.Utf8String;
 import org.fisco.bcos.web3j.abi.datatypes.generated.AbiTypes;
 import org.fisco.bcos.web3j.crypto.Credentials;
+import org.fisco.bcos.web3j.crypto.EncryptType;
 import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.RemoteCall;
@@ -62,8 +63,14 @@ import org.slf4j.LoggerFactory;
 
 /** Generate Java Classes based on generated Solidity bin and abi files. */
 public class SolidityFunctionWrapper extends Generator {
+
+    private static final Logger logger = LoggerFactory.getLogger(SolidityFunctionWrapper.class);
+
     private static final int maxSolidityBinSize = 0x40000;
+    private static final int maxField = 8 * 1024;
     private static final String BINARY = "BINARY";
+    private static final String SM_BINARY = "SM_BINARY";
+    private static final String BINARY_METHOD = "getBinary()";
     private static final String WEB3J = "web3j";
     private static final String CREDENTIALS = "credentials";
     private static final String CONTRACT_GAS_PROVIDER = "contractGasProvider";
@@ -77,9 +84,9 @@ public class SolidityFunctionWrapper extends Generator {
     private static final String TO_BLOCK = "toBlock";
     private static final String WEI_VALUE = "weiValue";
     private static final String CALLBACK_VALUE = "callback";
-    private static final String OTHER_TOPICS = "otherTopcs";
+    private static final String OTHER_TOPICS = "otherTopics";
     private static final String FUNC_NAME_PREFIX = "FUNC_";
-    private String abiContent;
+
     private static final ClassName LOG = ClassName.get(Log.class);
     private static final Logger LOGGER = LoggerFactory.getLogger(SolidityFunctionWrapper.class);
 
@@ -114,20 +121,38 @@ public class SolidityFunctionWrapper extends Generator {
             String destinationDir,
             String basePackageName)
             throws IOException, ClassNotFoundException {
-        abiContent = abi;
-        generateJavaFiles(
-                contractName,
-                bin,
-                loadContractDefinition(abi),
-                destinationDir,
-                basePackageName,
-                null);
+
+        generateJavaFiles(contractName, bin, null, abi, destinationDir, basePackageName);
+    }
+
+    public void generateJavaFiles(
+            String contractName,
+            String bin,
+            String smBin,
+            String abi,
+            String destinationDir,
+            String basePackageName)
+            throws IOException, ClassNotFoundException {
+
+        generateJavaFiles(contractName, bin, smBin, abi, destinationDir, basePackageName, null);
     }
 
     void generateJavaFiles(
             String contractName,
             String bin,
-            List<AbiDefinition> abi,
+            String abi,
+            String destinationDir,
+            String basePackageName,
+            Map<String, String> addresses)
+            throws IOException, ClassNotFoundException, UnsupportedOperationException {
+        generateJavaFiles(contractName, bin, null, abi, destinationDir, basePackageName, addresses);
+    }
+
+    void generateJavaFiles(
+            String contractName,
+            String bin,
+            String smBin,
+            String abi,
             String destinationDir,
             String basePackageName,
             Map<String, String> addresses)
@@ -140,8 +165,10 @@ public class SolidityFunctionWrapper extends Generator {
                             + Integer.valueOf(bin.length()));
         }
 
-        TypeSpec.Builder classBuilder = createClassBuilder(className, bin, abi);
+        List<AbiDefinition> abiDefinitions = loadContractDefinition(abi);
+        TypeSpec.Builder classBuilder = createClassBuilder(className, bin, smBin, abi);
 
+        classBuilder.addMethod(buildBinaryMethod(smBin));
         classBuilder.addMethod(buildReturnTransactionDecoder());
         classBuilder.addMethod(buildConstructor(Credentials.class, CREDENTIALS, false));
         classBuilder.addMethod(buildConstructor(Credentials.class, CREDENTIALS, true));
@@ -149,8 +176,8 @@ public class SolidityFunctionWrapper extends Generator {
                 buildConstructor(TransactionManager.class, TRANSACTION_MANAGER, false));
         classBuilder.addMethod(
                 buildConstructor(TransactionManager.class, TRANSACTION_MANAGER, true));
-        classBuilder.addFields(buildFuncNameConstants(abi));
-        classBuilder.addMethods(buildFunctionDefinitions(className, classBuilder, abi));
+        classBuilder.addFields(buildFuncNameConstants(abiDefinitions));
+        classBuilder.addMethods(buildFunctionDefinitions(className, classBuilder, abiDefinitions));
         classBuilder.addMethod(buildLoad(className, Credentials.class, CREDENTIALS, false));
         classBuilder.addMethod(
                 buildLoad(className, TransactionManager.class, TRANSACTION_MANAGER, false));
@@ -158,30 +185,37 @@ public class SolidityFunctionWrapper extends Generator {
         classBuilder.addMethod(
                 buildLoad(className, TransactionManager.class, TRANSACTION_MANAGER, true));
         if (!bin.equals(Contract.BIN_NOT_PROVIDED)) {
-            classBuilder.addMethods(buildDeployMethods(className, classBuilder, abi));
+            classBuilder.addMethods(buildDeployMethods(className, classBuilder, abiDefinitions));
         }
 
         write(basePackageName, classBuilder.build(), destinationDir);
     }
 
     private TypeSpec.Builder createClassBuilder(
-            String className, String binary, List<AbiDefinition> abi) {
+            String className, String binary, String smBinary, String abi) {
 
         String javadoc = CODEGEN_WARNING + getWeb3jVersion();
+        TypeSpec.Builder builder =
+                TypeSpec.classBuilder(className)
+                        .addModifiers(Modifier.PUBLIC)
+                        .addJavadoc(javadoc)
+                        .superclass(Contract.class)
+                        .addAnnotation(
+                                AnnotationSpec.builder(SuppressWarnings.class)
+                                        .addMember("value", "$S", "unchecked")
+                                        .build())
+                        // binary fields
+                        .addField(createBinaryArrayDefinition(binary))
+                        .addField(createBinaryDefinition())
+                        // sm binary fields
+                        .addField(createSMBinaryArrayDefinition(smBinary))
+                        .addField(createSMBinaryDefinition())
+                        // abi fields
+                        .addField(createABIArrayDefinition(abi))
+                        .addField(createABIDefinition())
+                        .addField(createTransactionDecoderDefinition());
 
-        return TypeSpec.classBuilder(className)
-                .addModifiers(Modifier.PUBLIC)
-                .addJavadoc(javadoc)
-                .superclass(Contract.class)
-                .addAnnotation(
-                        AnnotationSpec.builder(SuppressWarnings.class)
-                                .addMember("value", "$S", "unchecked")
-                                .build())
-                .addField(createBinaryArrayDefinition(binary))
-                .addField(createBinaryDefinition())
-                .addField(createABIArrayDefinition())
-                .addField(createABIDefinition())
-                .addField(createTransactionDecoderDefinition());
+        return builder;
     }
 
     private String getWeb3jVersion() {
@@ -205,14 +239,11 @@ public class SolidityFunctionWrapper extends Generator {
                 .build();
     }
 
-    private FieldSpec createBinaryArrayDefinition(String binary) {
-        int maxField = 8 * 1024; // 8k for each field
+    public List<String> stringToArrayString(String binary) {
 
-        List<String> format = new ArrayList<String>();
         List<String> binaryArray = new ArrayList<String>();
 
         for (int offset = 0; offset < binary.length(); ) {
-            format.add("$S");
 
             int length = binary.length() - offset;
             if (length > maxField) {
@@ -225,9 +256,29 @@ public class SolidityFunctionWrapper extends Generator {
             offset += item.length();
         }
 
+        return binaryArray;
+    }
+
+    private FieldSpec createBinaryArrayDefinition(String binary) {
+
+        List<String> binaryArray = stringToArrayString(binary);
+        List<String> formatArray =
+                new ArrayList<String>(Collections.nCopies(binaryArray.size(), "$S"));
+
         return FieldSpec.builder(String[].class, "BINARY_ARRAY")
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC)
-                .initializer("{" + String.join(",", format) + "}", binaryArray.toArray())
+                .initializer("{" + String.join(",", formatArray) + "}", binaryArray.toArray())
+                .build();
+    }
+
+    private FieldSpec createSMBinaryArrayDefinition(String binary) {
+        List<String> binaryArray = stringToArrayString(binary);
+        List<String> formatArray =
+                new ArrayList<String>(Collections.nCopies(binaryArray.size(), "$S"));
+
+        return FieldSpec.builder(String[].class, "SM_BINARY_ARRAY")
+                .addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC)
+                .initializer("{" + String.join(",", formatArray) + "}", binaryArray.toArray())
                 .build();
     }
 
@@ -238,29 +289,20 @@ public class SolidityFunctionWrapper extends Generator {
                 .build();
     }
 
-    private FieldSpec createABIArrayDefinition() {
-        int maxField = 8 * 1024; // 8k for each field
+    private FieldSpec createSMBinaryDefinition() {
+        return FieldSpec.builder(String.class, SM_BINARY)
+                .addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC)
+                .initializer("String.join(\"\", SM_BINARY_ARRAY)")
+                .build();
+    }
 
-        List<String> format = new ArrayList<String>();
-        List<String> abiArray = new ArrayList<String>();
-
-        for (int offset = 0; offset < abiContent.length(); ) {
-            format.add("$S");
-
-            int length = abiContent.length() - offset;
-            if (length > maxField) {
-                length = maxField;
-            }
-
-            String item = abiContent.substring(offset, offset + length);
-
-            abiArray.add(item);
-            offset += item.length();
-        }
+    private FieldSpec createABIArrayDefinition(String abi) {
+        List<String> abiArray = stringToArrayString(abi);
+        List<String> formatArray = new ArrayList<>(Collections.nCopies(abiArray.size(), "$S"));
 
         return FieldSpec.builder(String[].class, "ABI_ARRAY")
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC)
-                .initializer("{" + String.join(",", format) + "}", abiArray.toArray())
+                .initializer("{" + String.join(",", formatArray) + "}", abiArray.toArray())
                 .build();
     }
 
@@ -294,10 +336,12 @@ public class SolidityFunctionWrapper extends Generator {
             }
 
             if (functionDefinition.getName().equals(name)) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("name: {}, abi: {}", name, functionDefinition);
+                }
                 count += 1;
             }
         }
-
         return count > 1;
     }
 
@@ -465,6 +509,27 @@ public class SolidityFunctionWrapper extends Generator {
         return toReturn.build();
     }
 
+    private static MethodSpec buildBinaryMethod(String smBin) {
+
+        MethodSpec.Builder toReturn =
+                MethodSpec.methodBuilder("getBinary")
+                        .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+                        .returns(String.class);
+
+        if (smBin.equals(Contract.BIN_NOT_PROVIDED)) {
+            toReturn.addStatement("return $N", BINARY);
+        } else {
+            toReturn.addStatement(
+                    "return ($T.encryptType == $T.ECDSA_TYPE ? $N : $N)",
+                    EncryptType.class,
+                    EncryptType.class,
+                    BINARY,
+                    SM_BINARY);
+        }
+
+        return toReturn.build();
+    }
+
     private static MethodSpec buildConstructor(
             Class authType, String authName, boolean withGasProvider) {
         MethodSpec.Builder toReturn =
@@ -478,7 +543,7 @@ public class SolidityFunctionWrapper extends Generator {
             toReturn.addParameter(ContractGasProvider.class, CONTRACT_GAS_PROVIDER)
                     .addStatement(
                             "super($N, $N, $N, $N, $N)",
-                            BINARY,
+                            BINARY_METHOD,
                             CONTRACT_ADDRESS,
                             WEB3J,
                             authName,
@@ -488,7 +553,7 @@ public class SolidityFunctionWrapper extends Generator {
                     .addParameter(BigInteger.class, GAS_LIMIT)
                     .addStatement(
                             "super($N, $N, $N, $N, $N, $N)",
-                            BINARY,
+                            BINARY_METHOD,
                             CONTRACT_ADDRESS,
                             WEB3J,
                             authName,
@@ -546,7 +611,7 @@ public class SolidityFunctionWrapper extends Generator {
                     authName,
                     GAS_PRICE,
                     GAS_LIMIT,
-                    BINARY,
+                    BINARY_METHOD,
                     INITIAL_VALUE);
             methodBuilder.addAnnotation(Deprecated.class);
         } else if (isPayable && withGasProvider) {
@@ -557,7 +622,7 @@ public class SolidityFunctionWrapper extends Generator {
                     WEB3J,
                     authName,
                     CONTRACT_GAS_PROVIDER,
-                    BINARY,
+                    BINARY_METHOD,
                     INITIAL_VALUE);
         } else if (!isPayable && !withGasProvider) {
             methodBuilder.addStatement(
@@ -567,7 +632,7 @@ public class SolidityFunctionWrapper extends Generator {
                     authName,
                     GAS_PRICE,
                     GAS_LIMIT,
-                    BINARY);
+                    BINARY_METHOD);
             methodBuilder.addAnnotation(Deprecated.class);
         } else {
             methodBuilder.addStatement(
@@ -576,7 +641,7 @@ public class SolidityFunctionWrapper extends Generator {
                     WEB3J,
                     authName,
                     CONTRACT_GAS_PROVIDER,
-                    BINARY);
+                    BINARY_METHOD);
         }
 
         return methodBuilder.build();
@@ -596,7 +661,7 @@ public class SolidityFunctionWrapper extends Generator {
                     authName,
                     GAS_PRICE,
                     GAS_LIMIT,
-                    BINARY,
+                    BINARY_METHOD,
                     INITIAL_VALUE);
             methodBuilder.addAnnotation(Deprecated.class);
         } else if (isPayable && withGasPRovider) {
@@ -606,7 +671,7 @@ public class SolidityFunctionWrapper extends Generator {
                     WEB3J,
                     authName,
                     CONTRACT_GAS_PROVIDER,
-                    BINARY,
+                    BINARY_METHOD,
                     INITIAL_VALUE);
         } else if (!isPayable && !withGasPRovider) {
             methodBuilder.addStatement(
@@ -616,7 +681,7 @@ public class SolidityFunctionWrapper extends Generator {
                     authName,
                     GAS_PRICE,
                     GAS_LIMIT,
-                    BINARY);
+                    BINARY_METHOD);
             methodBuilder.addAnnotation(Deprecated.class);
         } else {
             methodBuilder.addStatement(
@@ -625,7 +690,7 @@ public class SolidityFunctionWrapper extends Generator {
                     WEB3J,
                     authName,
                     CONTRACT_GAS_PROVIDER,
-                    BINARY);
+                    BINARY_METHOD);
         }
 
         return methodBuilder.build();
@@ -1013,20 +1078,19 @@ public class SolidityFunctionWrapper extends Generator {
     }
 
     public static String getInputOutputFunctionName(
-            AbiDefinition functionDefinition, boolean input, boolean isOverLoad) {
+            AbiDefinition functionDefinition, boolean isOverLoad) {
         if (!isOverLoad) {
             return functionDefinition.getName();
         }
 
-        List<NamedType> nameTypes =
-                (input ? functionDefinition.getInputs() : functionDefinition.getOutputs());
+        List<NamedType> nameTypes = functionDefinition.getInputs();
 
         String name = functionDefinition.getName();
         for (int i = 0; i < nameTypes.size(); i++) {
             AbiDefinition.NamedType.Type type =
                     new AbiDefinition.NamedType.Type(nameTypes.get(i).getType());
-            List<Integer> depths = type.getDepthArray();
             name += Strings.capitaliseFirstLetter(type.getBaseName());
+            List<Integer> depths = type.getDepthArray();
             for (int j = 0; j < depths.size(); j++) {
                 name += "Array";
                 if (0 != depths.get(j)) {
@@ -1035,13 +1099,17 @@ public class SolidityFunctionWrapper extends Generator {
             }
         }
 
+        if (logger.isDebugEnabled()) {
+            logger.debug(" name: {}, nameTypes: {}", name, nameTypes);
+        }
+
         return name;
     }
 
     private MethodSpec buildFunctionWithInputDecoder(
             AbiDefinition functionDefinition, boolean isOverLoad) throws ClassNotFoundException {
 
-        String functionName = getInputOutputFunctionName(functionDefinition, true, isOverLoad);
+        String functionName = getInputOutputFunctionName(functionDefinition, isOverLoad);
 
         MethodSpec.Builder methodBuilder =
                 MethodSpec.methodBuilder(
@@ -1084,7 +1152,7 @@ public class SolidityFunctionWrapper extends Generator {
     private MethodSpec buildFunctionWithOutputDecoder(
             AbiDefinition functionDefinition, boolean isOverLoad) throws ClassNotFoundException {
 
-        String functionName = getInputOutputFunctionName(functionDefinition, false, isOverLoad);
+        String functionName = getInputOutputFunctionName(functionDefinition, isOverLoad);
 
         MethodSpec.Builder methodBuilder =
                 MethodSpec.methodBuilder(
