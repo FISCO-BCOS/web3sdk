@@ -17,6 +17,7 @@
  */
 package org.fisco.bcos.web3j.solidity.compiler;
 
+@Deprecated
 public class ContractException extends RuntimeException {
 
     public ContractException(String message) {
