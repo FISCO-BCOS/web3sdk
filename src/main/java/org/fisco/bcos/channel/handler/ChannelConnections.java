@@ -24,6 +24,7 @@ import io.netty.util.NetUtil;
 import io.netty.util.concurrent.Future;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.net.Inet6Address;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
@@ -253,6 +254,11 @@ public class ChannelConnections {
     }
 
     public ChannelHandlerContext getNetworkConnectionByHost(String host, Integer port) {
+        try {
+            host = Inet6Address.getByName(host).getHostAddress();
+        } catch (Exception e) {
+            logger.error("invalid host string format, value: " + host);
+        }
         String endpoint = host + ":" + port;
         return networkConnections.get(endpoint);
     }
@@ -268,12 +274,22 @@ public class ChannelConnections {
      */
     public ChannelHandlerContext setAndGetNetworkConnectionByHost(
             String host, Integer port, ChannelHandlerContext ctx) {
+        try {
+            host = Inet6Address.getByName(host).getHostAddress();
+        } catch (Exception e) {
+            logger.error("invalid host string format, value: " + host);
+        }
         String endpoint = host + ":" + port;
         return networkConnections.put(endpoint, ctx);
     }
 
     public void removeNetworkConnectionByHost(
             String host, Integer port, ChannelHandlerContext ctx) {
+        try {
+            host = Inet6Address.getByName(host).getHostAddress();
+        } catch (Exception e) {
+            logger.error("invalid host string format, value: " + host);
+        }
         String endpoint = host + ":" + port;
         Boolean result = networkConnections.remove(endpoint, ctx);
         if (logger.isDebugEnabled()) {
@@ -308,6 +324,13 @@ public class ChannelConnections {
             String port = connectionStr.substring(index + 1);
 
             if (!(NetUtil.isValidIpV4Address(IP) || NetUtil.isValidIpV6Address(IP))) {
+                throw new IllegalArgumentException(
+                        " Invalid configuration, invalid IP string format, value: " + IP);
+            }
+
+            try {
+                IP = Inet6Address.getByName(IP).getHostAddress();
+            } catch (Exception e) {
                 throw new IllegalArgumentException(
                         " Invalid configuration, invalid IP string format, value: " + IP);
             }
@@ -603,9 +626,9 @@ public class ChannelConnections {
 
         List<Tuple2<String, ChannelHandlerContext>> tuple2List = new ArrayList<>();
 
-        for (ConnectionInfo connectionInfo : connections) {
-            String peer = connectionInfo.getHost() + ":" + connectionInfo.getPort();
-            ChannelHandlerContext ctx = networkConnections.get(peer);
+        for (Map.Entry<String, ChannelHandlerContext> entry : networkConnections.entrySet()) {
+            String peer = entry.getKey();
+            ChannelHandlerContext ctx = entry.getValue();
             if (Objects.nonNull(ctx)
                     && ctx.channel().isActive()
                     && ChannelHandlerContextHelper.isChannelAvailable(ctx)) {
