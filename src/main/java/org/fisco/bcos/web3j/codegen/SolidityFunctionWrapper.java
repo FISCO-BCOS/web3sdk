@@ -13,6 +13,7 @@ import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -1559,6 +1560,15 @@ public class SolidityFunctionWrapper extends Generator {
         List<NamedTypeName> nonIndexedParameters = new ArrayList<>();
 
         for (AbiDefinition.NamedType namedType : inputs) {
+            /** Check that the parameters of the event are all named */
+            if (namedType.getName().isEmpty()) {
+                throw new InvalidParameterException(
+                        " Event parameter has no name, type: "
+                                + namedType.getType()
+                                + " ,event: "
+                                + functionName);
+            }
+
             NamedTypeName parameter =
                     new NamedTypeName(
                             namedType.getName(),
