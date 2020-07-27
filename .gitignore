@@ -32,7 +32,7 @@ gradle.properties
 target
 out
 log
-dist
+dist/
 src/test/resources/ca.crt
 src/test/resources/node.crt
 src/test/resources/node.key
@@ -43,4 +43,5 @@ build.gradle.bak
 .classpath
 .project
 bin/
+
 

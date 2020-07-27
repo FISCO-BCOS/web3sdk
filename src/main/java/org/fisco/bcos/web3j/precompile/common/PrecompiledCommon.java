@@ -188,7 +188,7 @@ public class PrecompiledCommon {
         } else if (code == InvalidCommitteeMemberAlreadyExist) {
             msg = "committee member already exist";
         } else if (code == NotSupportPermissionCommand) {
-            msg = "committee permission control by ChainGovernancePrecompiled are recommended";
+            msg = "committee permission control by ChainGovernance are recommended";
         }
 
         ObjectMapper mapper = ObjectMapperFactory.getObjectMapper();

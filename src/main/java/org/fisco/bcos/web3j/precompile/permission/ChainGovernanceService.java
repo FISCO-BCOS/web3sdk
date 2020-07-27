@@ -1,8 +1,10 @@
 package org.fisco.bcos.web3j.precompile.permission;
 
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Map;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.precompile.common.PrecompiledCommon;
 import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
@@ -72,6 +74,23 @@ public class ChainGovernanceService {
         TransactionReceipt transactionReceipt =
                 chainGovernance.grantCommitteeMember(account).send();
         return PrecompiledCommon.handleTransactionReceipt(transactionReceipt, web3j);
+    }
+
+    public MemberVotes queryVotesOfMember(String member) throws Exception {
+        String votesOfMember = chainGovernance.queryVotesOfMember(member).send();
+        ObjectMapper objectMapper = ObjectMapperFactory.getObjectMapper();
+        return objectMapper.readValue(votesOfMember, MemberVotes.class);
+    }
+
+    public Map<String, List<Vote>> queryVotesOfThreshold() throws Exception {
+        String votesOfMember = chainGovernance.queryVotesOfThreshold().send();
+        ObjectMapper objectMapper = ObjectMapperFactory.getObjectMapper();
+        JavaType listType =
+                objectMapper.getTypeFactory().constructCollectionType(List.class, Vote.class);
+        JavaType stringType = objectMapper.getTypeFactory().constructType(String.class);
+        return objectMapper.readValue(
+                votesOfMember,
+                objectMapper.getTypeFactory().constructMapType(Map.class, stringType, listType));
     }
 
     public List<PermissionInfo> listCommitteeMembers() throws Exception {

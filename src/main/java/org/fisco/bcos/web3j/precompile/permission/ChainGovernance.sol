@@ -26,7 +26,8 @@ contract ChainGovernance {
     function revokeOperator(address user) public returns (int256) {}
 
     function listOperators() public view returns (string) {}
-
+    function queryVotesOfMember(address member) public view returns (string) {}
+    function queryVotesOfThreshold() public view returns (string) {}
     // account life cycle
     function freezeAccount(address account) public returns (int256) {}
 
