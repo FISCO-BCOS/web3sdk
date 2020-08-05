@@ -73,6 +73,9 @@ dependencies {
         exclude module:"log4j"
     }
 
+    // update tcnative version
+    compile 'org.fisco-bcos:tcnative:2.0.30.0-SNAPSHOT'
+
     compile 'org.ethereum:solcJ-all:0.4.25'
     compile 'io.netty:netty-all:4.1.50.Final'
     compile 'com.google.guava:guava:29.0-jre'
