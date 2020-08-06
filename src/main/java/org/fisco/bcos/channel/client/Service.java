@@ -292,10 +292,13 @@ public class Service {
     }
 
     public void initJavaOpt() {
+        logger.trace(" initJavaOpt empty func .");
+        /*
         System.setProperty("jdk.tls.namedGroups", "secp256k1");
         logger.info(
                 "set jdk.tls.namedGroups opt, value : {}",
                 System.getProperty("jdk.tls.namedGroups"));
+        */
     }
 
     public void run() throws Exception {
