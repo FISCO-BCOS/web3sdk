@@ -5,6 +5,7 @@ import java.math.BigInteger;
 import java.util.List;
 import org.fisco.bcos.channel.client.TransactionSucCallback;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlockHeader;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosFilter;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosLog;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosTransaction;
@@ -72,10 +73,19 @@ public interface Ethereum {
 
     Request<?, TotalTransactionCount> getTotalTransactionCount();
 
+    Request<?, BcosBlockHeader> getBlockHeaderByHash(String blockHash, boolean returnSealerList);
+
+    Request<?, BcosBlockHeader> getBlockHeaderByNumber(
+            BigInteger blockNumber, boolean returnSealerList);
+
     Request<?, BcosBlock> getBlockByHash(String blockHash, boolean returnFullTransactionObjects);
 
+    @Deprecated
     Request<?, BcosBlock> getBlockByNumber(
             DefaultBlockParameter defaultBlockParameter, boolean returnFullTransactionObjects);
+
+    Request<?, BcosBlock> getBlockByNumber(
+            BigInteger blockNumber, boolean returnFullTransactionObjects);
 
     Request<?, BlockHash> getBlockHashByNumber(DefaultBlockParameter defaultBlockParameter);
 

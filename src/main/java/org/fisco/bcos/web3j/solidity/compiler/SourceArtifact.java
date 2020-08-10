@@ -27,6 +27,7 @@ import static org.fisco.bcos.web3j.solidity.compiler.ContractException.assembleE
 import java.io.File;
 import java.util.*;
 
+@Deprecated
 public class SourceArtifact {
 
     private String name;
