@@ -11,6 +11,7 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.BcosTransaction;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosTransactionReceipt;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BlockHash;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BlockNumber;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BlockTransactionReceipts;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Call;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Code;
 import org.fisco.bcos.web3j.protocol.core.methods.response.ConsensusStatus;
@@ -87,6 +88,41 @@ public interface Ethereum {
             DefaultBlockParameter defaultBlockParameter, BigInteger transactionIndex);
 
     Request<?, BcosTransactionReceipt> getTransactionReceipt(String transactionHash);
+
+    /**
+     * Get the total transaction receipts of the block by blocknumber
+     *
+     * @param blockNumber
+     * @return
+     */
+    Request<?, BlockTransactionReceipts> getBlockTransactionReceipts(BigInteger blockNumber);
+    /**
+     * Get transaction receipts of the block by blockNumber、transaction receipt index and count
+     *
+     * @param blockNumber
+     * @param offset
+     * @param count
+     * @return
+     */
+    Request<?, BlockTransactionReceipts> getBlockTransactionReceipts(
+            BigInteger blockNumber, BigInteger offset, BigInteger count);
+    /**
+     * Get total transaction receipts of the block by block hash
+     *
+     * @param blockHash
+     * @return
+     */
+    Request<?, BlockTransactionReceipts> getBlockTransactionReceiptsByHash(String blockHash);
+    /**
+     * Get the transaction receipts of the block by blockHash、transaction receipt index and count
+     *
+     * @param blockHash
+     * @param offset
+     * @param count
+     * @return
+     */
+    Request<?, BlockTransactionReceipts> getBlockTransactionReceiptsByHash(
+            String blockHash, BigInteger offset, BigInteger count);
 
     Request<?, TransactionReceiptWithProof> getTransactionReceiptByHashWithProof(
             String transactionHash);

@@ -1,3 +1,14 @@
+### v2.4.3
+
+(2020-08-10)
+
+* 新增
+1. getBlockTransactionReceipts
+2. getBlockTransactionReceiptsByHash 
+
+* 兼容
+1. 适配fisco-bcos 2.4.0版本，支持Channel Message v1/V2/V3协议
+
 ### v2.4.2
 
 (2020-06-27)

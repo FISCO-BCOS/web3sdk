@@ -112,6 +112,7 @@ public class ChannelEthereumService extends org.fisco.bcos.web3j.protocol.Servic
             } catch (ContractCallException e) {
                 throw e;
             } catch (Exception e) {
+                logger.error("e: ", e);
                 throw new MessageDecodingException(response.getContent());
             }
         } else {
