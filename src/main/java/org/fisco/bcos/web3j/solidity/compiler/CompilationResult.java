@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 
+@Deprecated
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CompilationResult {
 

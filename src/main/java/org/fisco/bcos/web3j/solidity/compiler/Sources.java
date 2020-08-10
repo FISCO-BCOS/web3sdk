@@ -23,6 +23,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+@Deprecated
 public class Sources {
 
     private final Map<String, SourceArtifact> artifacts = new HashMap<>();

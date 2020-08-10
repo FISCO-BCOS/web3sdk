@@ -20,9 +20,11 @@ import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.SslHandler;
 import io.netty.handler.ssl.SslProvider;
 import io.netty.handler.timeout.IdleStateHandler;
+import io.netty.util.NetUtil;
 import io.netty.util.concurrent.Future;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.net.Inet6Address;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
@@ -65,6 +67,14 @@ public class ChannelConnections {
     private Resource sslCert;
     private Resource sslKey;
 
+    /** SM SSL default configuration */
+    private static final String GM_CA_CERT = "classpath:gmca.crt";
+
+    private static final String GM_SSL_CERT = "classpath:gmsdk.crt";
+    private static final String GM_SSL_KEY = "classpath:gmsdk.key";
+    private static final String GM_EN_SSL_CERT = "classpath:gmensdk.crt";
+    private static final String GM_EN_SSL_KEY = "classpath:gmensdk.key";
+
     private Resource gmCaCert;
     private Resource gmSslCert;
     private Resource gmSslKey;
@@ -79,6 +89,12 @@ public class ChannelConnections {
     private long reconnectDelay = (long) 20000;
     private long connectTimeout = (long) 10000;
     private long sslHandShakeTimeout = (long) 10000;
+
+    private static final String helpInfo =
+            "The reasons for failure may be: "
+                    + "1. the configured certificate is not the same set of certificates as the node's certificate; "
+                    + "2. the configured certificate is not issued by the same authority as the node's certificate. "
+                    + "Please refer to https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/sdk/java_sdk.html#id24";
 
     public Map<String, ChannelHandlerContext> networkConnections =
             new ConcurrentHashMap<String, ChannelHandlerContext>();
@@ -244,6 +260,11 @@ public class ChannelConnections {
     }
 
     public ChannelHandlerContext getNetworkConnectionByHost(String host, Integer port) {
+        try {
+            host = Inet6Address.getByName(host).getHostAddress();
+        } catch (Exception e) {
+            logger.error("invalid host string format, value: " + host);
+        }
         String endpoint = host + ":" + port;
         return networkConnections.get(endpoint);
     }
@@ -259,12 +280,22 @@ public class ChannelConnections {
      */
     public ChannelHandlerContext setAndGetNetworkConnectionByHost(
             String host, Integer port, ChannelHandlerContext ctx) {
+        try {
+            host = Inet6Address.getByName(host).getHostAddress();
+        } catch (Exception e) {
+            logger.error("invalid host string format, value: " + host);
+        }
         String endpoint = host + ":" + port;
         return networkConnections.put(endpoint, ctx);
     }
 
     public void removeNetworkConnectionByHost(
             String host, Integer port, ChannelHandlerContext ctx) {
+        try {
+            host = Inet6Address.getByName(host).getHostAddress();
+        } catch (Exception e) {
+            logger.error("invalid host string format, value: " + host);
+        }
         String endpoint = host + ":" + port;
         Boolean result = networkConnections.remove(endpoint, ctx);
         if (logger.isDebugEnabled()) {
@@ -288,18 +319,24 @@ public class ChannelConnections {
         for (String connectionStr : connectionsStr) {
             ConnectionInfo connection = new ConnectionInfo();
 
-            String[] stringArray = connectionStr.split(":");
-
-            if (stringArray.length < 1) {
+            int index = connectionStr.lastIndexOf(':');
+            if (index == -1) {
                 throw new IllegalArgumentException(
-                        " Invalid configuration, the value should in IP:Port format(eg: 127.0.0.1:1111), value: "
+                        " Invalid configuration, the value should in IP:Port format(eg: 127.0.0.1:1111、[::1]:1111), value: "
                                 + connectionStr);
             }
 
-            String IP = stringArray[0];
-            String port = stringArray[1];
+            String IP = connectionStr.substring(0, index);
+            String port = connectionStr.substring(index + 1);
 
-            if (!Host.validIP(IP)) {
+            if (!(NetUtil.isValidIpV4Address(IP) || NetUtil.isValidIpV6Address(IP))) {
+                throw new IllegalArgumentException(
+                        " Invalid configuration, invalid IP string format, value: " + IP);
+            }
+
+            try {
+                IP = Inet6Address.getByName(IP).getHostAddress();
+            } catch (Exception e) {
                 throw new IllegalArgumentException(
                         " Invalid configuration, invalid IP string format, value: " + IP);
             }
@@ -422,6 +459,7 @@ public class ChannelConnections {
                             tuple3.getValue1(),
                             tuple3.getValue2());
                     errorMessageList.add(sslHandshakeFailedMessage);
+                    errorMessageList.add(helpInfo);
                     continue;
                 }
 
@@ -440,6 +478,7 @@ public class ChannelConnections {
                                     + tuple3.getValue2();
 
                     errorMessageList.add(sslHandshakeFailedMessage);
+                    errorMessageList.add(helpInfo);
                 }
             }
         }
@@ -490,7 +529,29 @@ public class ChannelConnections {
                     getGmSslKey().getInputStream());
         }
 
-        logger.info(" Has no SM Ssl certificate configuration ");
+        PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+        Resource gmCaResource = resolver.getResource(GM_CA_CERT);
+        Resource gmSslResource = resolver.getResource(GM_SSL_CERT);
+        Resource gmSslKeyResource = resolver.getResource(GM_SSL_KEY);
+        Resource gmEnSslResource = resolver.getResource(GM_EN_SSL_CERT);
+        Resource gmEnSslKeyResource = resolver.getResource(GM_EN_SSL_KEY);
+
+        // The client's SM SSL default certificate exists
+        if (gmCaResource.exists()
+                && gmSslResource.exists()
+                && gmSslKeyResource.exists()
+                && gmEnSslKeyResource.exists()
+                && gmEnSslResource.exists()) {
+            logger.info(" build SM ssl context by default certificate configuration ");
+            return SMSslClientContextFactory.build(
+                    gmCaResource.getInputStream(),
+                    gmEnSslResource.getInputStream(),
+                    gmEnSslKeyResource.getInputStream(),
+                    gmSslResource.getInputStream(),
+                    gmSslKeyResource.getInputStream());
+        }
+
+        logger.info(" there is no SM ssl certificate configuration ");
 
         // The client's SM SSL certificate not exists or not configured correctly
         return initSslContext();
@@ -510,9 +571,14 @@ public class ChannelConnections {
 
             // check if ca.crt exist
             if (Objects.isNull(caResource) || !caResource.exists()) {
-                throw new RuntimeException(
-                        (Objects.nonNull(caResource) ? "ca.crt" : caResource.getFilename())
-                                + " not exist ");
+                Resource resource = resolver.getResource(CA_CERT);
+                if (Objects.nonNull(resource) && resource.exists()) {
+                    caResource = resource;
+                } else {
+                    throw new RuntimeException(
+                            (Objects.nonNull(caResource) ? "ca.crt" : caResource.getFilename())
+                                    + " not exist ");
+                }
             }
 
             // check if sdk.crt exist, if not , check the default value node.crt
@@ -555,7 +621,8 @@ public class ChannelConnections {
                             .keyManager(
                                     keystorecaResource.getInputStream(),
                                     keystorekeyResource.getInputStream())
-                            .sslProvider(SslProvider.JDK)
+                            // .sslProvider(SslProvider.JDK)
+                            .sslProvider(SslProvider.OPENSSL)
                             .build();
         } catch (Exception e) {
             logger.error(" Failed to initialize the SSLContext, e: {} ", e.getCause());
@@ -568,9 +635,9 @@ public class ChannelConnections {
 
         List<Tuple2<String, ChannelHandlerContext>> tuple2List = new ArrayList<>();
 
-        for (ConnectionInfo connectionInfo : connections) {
-            String peer = connectionInfo.getHost() + ":" + connectionInfo.getPort();
-            ChannelHandlerContext ctx = networkConnections.get(peer);
+        for (Map.Entry<String, ChannelHandlerContext> entry : networkConnections.entrySet()) {
+            String peer = entry.getKey();
+            ChannelHandlerContext ctx = entry.getValue();
             if (Objects.nonNull(ctx)
                     && ctx.channel().isActive()
                     && ChannelHandlerContextHelper.isChannelAvailable(ctx)) {
