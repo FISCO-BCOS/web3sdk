@@ -611,25 +611,22 @@ public class SolidityFunctionWrapper extends Generator {
         if (isPayable && !withGasProvider) {
             methodBuilder.addStatement(
                     "return deployRemoteCall("
-                            + "$L.class, $L, $L, $L, $L, $L, encodedConstructor, $L)",
+                            + "$L.class, $L, $L, $L, $L, $L, encodedConstructor)",
                     className,
                     WEB3J,
                     authName,
                     GAS_PRICE,
                     GAS_LIMIT,
-                    BINARY_METHOD,
-                    INITIAL_VALUE);
+                    BINARY_METHOD);
             methodBuilder.addAnnotation(Deprecated.class);
         } else if (isPayable && withGasProvider) {
             methodBuilder.addStatement(
-                    "return deployRemoteCall("
-                            + "$L.class, $L, $L, $L, $L, encodedConstructor, $L)",
+                    "return deployRemoteCall(" + "$L.class, $L, $L, $L, $L, encodedConstructor)",
                     className,
                     WEB3J,
                     authName,
                     CONTRACT_GAS_PROVIDER,
-                    BINARY_METHOD,
-                    INITIAL_VALUE);
+                    BINARY_METHOD);
         } else if (!isPayable && !withGasProvider) {
             methodBuilder.addStatement(
                     "return deployRemoteCall($L.class, $L, $L, $L, $L, $L, encodedConstructor)",
@@ -661,24 +658,22 @@ public class SolidityFunctionWrapper extends Generator {
             boolean withGasPRovider) {
         if (isPayable && !withGasPRovider) {
             methodBuilder.addStatement(
-                    "return deployRemoteCall($L.class, $L, $L, $L, $L, $L, \"\", $L)",
+                    "return deployRemoteCall($L.class, $L, $L, $L, $L, $L, \"\")",
                     className,
                     WEB3J,
                     authName,
                     GAS_PRICE,
                     GAS_LIMIT,
-                    BINARY_METHOD,
-                    INITIAL_VALUE);
+                    BINARY_METHOD);
             methodBuilder.addAnnotation(Deprecated.class);
         } else if (isPayable && withGasPRovider) {
             methodBuilder.addStatement(
-                    "return deployRemoteCall($L.class, $L, $L, $L, $L, \"\", $L)",
+                    "return deployRemoteCall($L.class, $L, $L, $L, $L, \"\")",
                     className,
                     WEB3J,
                     authName,
                     CONTRACT_GAS_PROVIDER,
-                    BINARY_METHOD,
-                    INITIAL_VALUE);
+                    BINARY_METHOD);
         } else if (!isPayable && !withGasPRovider) {
             methodBuilder.addStatement(
                     "return deployRemoteCall($L.class, $L, $L, $L, $L, $L, \"\")",
@@ -716,11 +711,9 @@ public class SolidityFunctionWrapper extends Generator {
                         .addParameter(authType, authName);
         if (isPayable && !withGasProvider) {
             return builder.addParameter(BigInteger.class, GAS_PRICE)
-                    .addParameter(BigInteger.class, GAS_LIMIT)
-                    .addParameter(BigInteger.class, INITIAL_VALUE);
+                    .addParameter(BigInteger.class, GAS_LIMIT);
         } else if (isPayable && withGasProvider) {
-            return builder.addParameter(ContractGasProvider.class, CONTRACT_GAS_PROVIDER)
-                    .addParameter(BigInteger.class, INITIAL_VALUE);
+            return builder.addParameter(ContractGasProvider.class, CONTRACT_GAS_PROVIDER);
         } else if (!isPayable && withGasProvider) {
             return builder.addParameter(ContractGasProvider.class, CONTRACT_GAS_PROVIDER);
         } else {
@@ -1325,10 +1318,6 @@ public class SolidityFunctionWrapper extends Generator {
             // CHECKSTYLE:ON
         }
 
-        if (functionDefinition.isPayable()) {
-            methodBuilder.addParameter(BigInteger.class, WEI_VALUE);
-        }
-
         String functionName = functionDefinition.getName();
 
         methodBuilder.returns(buildRemoteCall(TypeName.get(TransactionReceipt.class)));
@@ -1344,12 +1333,8 @@ public class SolidityFunctionWrapper extends Generator {
                 inputParams,
                 Collections.class,
                 TypeReference.class);
-        if (functionDefinition.isPayable()) {
-            methodBuilder.addStatement(
-                    "return executeRemoteCallTransaction(function, $N)", WEI_VALUE);
-        } else {
-            methodBuilder.addStatement("return executeRemoteCallTransaction(function)");
-        }
+
+        methodBuilder.addStatement("return executeRemoteCallTransaction(function)");
     }
 
     private void buildTransactionFunctionWithCallback(
@@ -1366,9 +1351,6 @@ public class SolidityFunctionWrapper extends Generator {
             // CHECKSTYLE:ON
         }
 
-        if (functionDefinition.isPayable()) {
-            methodBuilder.addParameter(BigInteger.class, WEI_VALUE);
-        }
         // methodBuilder.addParameter(TransactionSucCallback.class, "callback");
 
         String functionName = functionDefinition.getName();
@@ -1401,10 +1383,6 @@ public class SolidityFunctionWrapper extends Generator {
                                     + "Please ensure it contains the view modifier if you want to read the return value",
                             functionDefinition.getName()));
             // CHECKSTYLE:ON
-        }
-
-        if (functionDefinition.isPayable()) {
-            methodBuilder.addParameter(BigInteger.class, WEI_VALUE);
         }
 
         String functionName = functionDefinition.getName();
