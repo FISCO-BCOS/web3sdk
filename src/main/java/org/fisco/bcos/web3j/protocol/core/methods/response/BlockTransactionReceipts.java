@@ -42,10 +42,25 @@ public class BlockTransactionReceipts
         }
     }
 
+    /**
+     * The transaction receipts common fields of the block
+     */
     public static class BlockInfo {
+        /**
+         * Block Hash
+         */
         private String blockHash;
+        /**
+         * BlockNumber
+         */
         private String blockNumber;
+        /**
+         * Transaction Receipt Root
+         */
         private String receiptRoot;
+        /**
+         * The total number of transaction receipts contained in the block
+         */
         private String receiptsCount;
 
         public String getBlockHash() {
