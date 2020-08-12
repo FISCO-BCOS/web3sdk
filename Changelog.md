@@ -1,3 +1,22 @@
+### v2.6.0
+
+(2020-08-12)
+
+* 新增
+1. 适配`IPv6`
+2. 添加`getBlockHeaderByHash` `getBlockHeaderByNumber` RPC接口
+3. 修改`codegen`模块，支持生成国密/非国密环境同时可用的Java合约代码
+4. 更新`tcnative`版本，支持`arch64`架构
+
+* 更新
+1. 修改SDK与节点连接的SSL引擎为OPENSSL
+
+* 修复
+1. 修复`codegen`模块生成Java合约代码，`payable`接口无法调用的bug
+
+* 兼容
+1. 适配fisco-bcos 2.6.0版本，支持Channel Message v1/V2/V3协议
+
 ### v2.5.1
 
 (2020-06-27)
