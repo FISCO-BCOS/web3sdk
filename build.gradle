@@ -69,12 +69,9 @@ dependencies {
     // compile 'io.netty:netty-tcnative:2.0.25.Final'
     // compile 'io.netty:netty-tcnative-boringssl-static:2.0.27.Final'
     // compile 'org.fisco-bcos:netty-sm-ssl-context:1.0.0-SNAPSHOT'
-    compile ('org.fisco-bcos:netty-sm-ssl-context:1.0.0') {
+    compile ('org.fisco-bcos:netty-sm-ssl-context:1.1.0') {
         exclude module:"log4j"
     }
-
-    // update tcnative version
-    compile 'org.fisco-bcos:tcnative:2.0.30.0-SNAPSHOT'
 
     compile 'org.ethereum:solcJ-all:0.4.25'
     compile 'io.netty:netty-all:4.1.50.Final'
