@@ -2,6 +2,7 @@ package org.fisco.bcos.channel.test.rpc;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.zip.DataFormatException;
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
@@ -43,7 +44,7 @@ public class BlockTxReceipts {
     }
 
     public BlockTransactionReceipts getBlockTransactionReceipts(BigInteger blockNumber)
-            throws IOException {
+            throws IOException, DataFormatException {
         BlockTransactionReceipts blockTransactionReceipts =
                 web3j.getBlockTransactionReceipts(blockNumber).send();
         logger.info(
@@ -54,7 +55,8 @@ public class BlockTxReceipts {
     }
 
     public BlockTransactionReceipts getBlockTransactionReceipts(
-            BigInteger blockNumber, BigInteger offset, BigInteger count) throws IOException {
+            BigInteger blockNumber, BigInteger offset, BigInteger count)
+            throws IOException, DataFormatException {
         BlockTransactionReceipts blockTransactionReceipts =
                 web3j.getBlockTransactionReceipts(blockNumber, offset, count).send();
         logger.info(
@@ -67,7 +69,7 @@ public class BlockTxReceipts {
     }
 
     public BlockTransactionReceipts getBlockTransactionReceiptsByHash(String blockHash)
-            throws IOException {
+            throws IOException, DataFormatException {
         BlockTransactionReceipts blockTransactionReceipts =
                 web3j.getBlockTransactionReceiptsByHash(blockHash).send();
         logger.info(
@@ -78,7 +80,8 @@ public class BlockTxReceipts {
     }
 
     public BlockTransactionReceipts getBlockTransactionReceiptsByHash(
-            String blockHash, BigInteger offset, BigInteger count) throws IOException {
+            String blockHash, BigInteger offset, BigInteger count)
+            throws IOException, DataFormatException {
         BlockTransactionReceipts blockTransactionReceipts =
                 web3j.getBlockTransactionReceiptsByHash(blockHash, offset, count).send();
         logger.info(
@@ -148,7 +151,8 @@ public class BlockTxReceipts {
                     }
             }
 
-            System.out.println(" ## Result: " + blockTransactionReceipts.getResult().toString());
+            System.out.println(
+                    " ## Result: " + blockTransactionReceipts.getBlockTransactionReceipts());
 
         } catch (Exception e) {
             System.out.println(" Failed => " + e.getMessage());
