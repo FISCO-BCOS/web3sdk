@@ -292,10 +292,8 @@ public class Service {
     }
 
     public void initJavaOpt() {
-        System.setProperty("jdk.tls.namedGroups", "secp256k1");
-        logger.info(
-                "set jdk.tls.namedGroups opt, value : {}",
-                System.getProperty("jdk.tls.namedGroups"));
+        // System.setProperty("jdk.tls.namedGroups", "secp256k1");
+        logger.info(" empty init java opt .");
     }
 
     public void run() throws Exception {
