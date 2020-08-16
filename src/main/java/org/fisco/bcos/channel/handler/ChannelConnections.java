@@ -594,7 +594,7 @@ public class ChannelConnections {
                             .keyManager(
                                     keystorecaResource.getInputStream(),
                                     keystorekeyResource.getInputStream())
-                            .sslProvider(SslProvider.JDK)
+                            .sslProvider(SslProvider.OPENSSL)
                             .build();
         } catch (Exception e) {
             logger.error(
@@ -619,7 +619,7 @@ public class ChannelConnections {
                                     keystorecaResource.getInputStream(),
                                     keystorekeyResource.getInputStream())
                             .trustManager(caInputStream)
-                            .sslProvider(SslProvider.JDK)
+                            .sslProvider(SslProvider.OPENSSL)
                             .build();
         } catch (Exception e) {
             logger.debug("SSLCONTEXT ***********" + e.getMessage());
