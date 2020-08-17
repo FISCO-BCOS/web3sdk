@@ -7,7 +7,7 @@ java -version
 # code format check
 bash gradlew verifyGoogleJavaFormat
 # build
-bash gradlew build
+bash gradlew build -x integrationTest
 # UT test
 bash gradlew test
 

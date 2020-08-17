@@ -141,9 +141,9 @@ tasks.clean.dependsOn(tasks.cleanBuildArtifacts)
 check.dependsOn integrationTest
 integrationTest.mustRunAfter test
 
-check.dependsOn.remove(test)
-check.dependsOn.remove(integrationTest)
-check.dependsOn.remove(verifyGoogleJavaFormat)
+//check.dependsOn.remove(test)
+//check.dependsOn.remove(integrationTest)
+//check.dependsOn.remove(verifyGoogleJavaFormat)
 
 jar {
     // destinationDir file('dist/apps')
