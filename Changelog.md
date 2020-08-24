@@ -1,3 +1,17 @@
+### v2.6.2
+
+(2020-08-24)
+
+* 新增
+1. 支持JDK 14
+
+* 修复
+1. 修复`Table.sol Entry::getUint`接口返回`int256`的bug
+
+* 兼容
+1. 适配fisco-bcos 2.6.0版本，支持Channel Message v1/V2/V3协议
+
+
 ### v2.6.0
 
 (2020-08-12)

@@ -31,12 +31,14 @@ public class ABIDefinitionFactory {
                     // skip and do nothing
                 }
 
-                if (logger.isInfoEnabled()) {
-                    logger.info(" abiDefinition: {}", abiDefinition);
+                if (logger.isDebugEnabled()) {
+                    logger.debug(" abiDefinition: {}", abiDefinition);
                 }
             }
 
-            logger.info(" contractABIDefinition {} ", contractABIDefinition);
+            if (logger.isDebugEnabled()) {
+                logger.debug(" contractABIDefinition {} ", contractABIDefinition);
+            }
 
             return contractABIDefinition;
 
