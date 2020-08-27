@@ -79,7 +79,8 @@ public class CnsServiceTest extends TestBase {
         "cnsResolver address"
             + cnsService.getAddressByContractNameAndVersion(okDemo.getContractAddress()));
 
-    Ok okLoaded = Ok.load(name, web3j, credentials, gasPrice, gasLimit);
+    String contractAddress = cnsService.getAddressByContractNameAndVersion(name + ":10.0");
+    Ok okLoaded = Ok.load(contractAddress, web3j, credentials, gasPrice, gasLimit);
     System.out.println(okLoaded.isValid());
     BigInteger balance = okLoaded.get().send();
     System.out.println("balance = " + balance);
