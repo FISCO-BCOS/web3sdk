@@ -58,7 +58,7 @@ public abstract class ManagedTransactionTester {
         Request<?, BlockNumber> ethBlockNumberRequest = mock(Request.class);
         when(ethBlockNumberRequest.send()).thenReturn(ethBlockNumber);
         when(web3j.getBlockNumber()).thenReturn((Request) ethBlockNumberRequest);
-        when(web3j.getBlockNumberCache()).thenReturn(new BigInteger("1"));
+        when(web3j.getBlockLimit()).thenReturn(new BigInteger("1"));
     }
 
     @SuppressWarnings("unchecked")
