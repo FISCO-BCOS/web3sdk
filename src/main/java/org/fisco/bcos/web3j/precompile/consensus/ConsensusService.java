@@ -26,25 +26,11 @@ public class ConsensusService {
     }
 
     public String addSealer(String nodeID) throws Exception {
-        if (!isValidNodeID(nodeID)) {
-            return PrecompiledCommon.transferToJson(PrecompiledCommon.P2pNetwork);
-        }
-        List<String> sealerList = web3j.getSealerList().send().getResult();
-        if (sealerList.contains(nodeID)) {
-            return PrecompiledCommon.transferToJson(PrecompiledCommon.SealerList);
-        }
         TransactionReceipt receipt = consensus.addSealer(nodeID).send();
         return PrecompiledCommon.handleTransactionReceipt(receipt, web3j);
     }
 
     public String addObserver(String nodeID) throws Exception {
-        if (!isValidNodeID(nodeID)) {
-            return PrecompiledCommon.transferToJson(PrecompiledCommon.P2pNetwork);
-        }
-        List<String> observerList = web3j.getObserverList().send().getResult();
-        if (observerList.contains(nodeID)) {
-            return PrecompiledCommon.transferToJson(PrecompiledCommon.ObserverList);
-        }
         TransactionReceipt receipt = consensus.addObserver(nodeID).send();
         return PrecompiledCommon.handleTransactionReceipt(receipt, web3j);
     }

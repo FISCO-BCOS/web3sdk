@@ -25,7 +25,12 @@ public class SystemConfigService {
     }
 
     public String setValueByKey(String key, String value) throws Exception {
-        TransactionReceipt receipt = systemConfig.setValueByKey(key, value).send();
+        TransactionReceipt receipt = setValueByKeyAndRetReceipt(key, value);
         return PrecompiledCommon.handleTransactionReceipt(receipt, web3j);
+    }
+
+    public TransactionReceipt setValueByKeyAndRetReceipt(String key, String value)
+            throws Exception {
+        return systemConfig.setValueByKey(key, value).send();
     }
 }
