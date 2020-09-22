@@ -367,8 +367,7 @@ public abstract class Contract extends ManagedTransaction {
         public Semaphore semaphore = new Semaphore(1, true);
     };
 
-    protected TransactionReceipt executeTransaction(Function function)
-            throws IOException, TransactionException {
+    protected TransactionReceipt executeTransaction(Function function) throws IOException {
 
         Callback callback = new Callback();
 
@@ -433,21 +432,13 @@ public abstract class Contract extends ManagedTransaction {
                     " IOException, contractAddress:{}, exception:{} ",
                     getContractAddress(),
                     e.getMessage());
-        } catch (TransactionException e) {
-            logger.error(
-                    " TransactionException, contractAddress:{}, transactionHash: {}, transactionStatus:{}, exception:{} ",
-                    getContractAddress(),
-                    e.getTransactionHash(),
-                    e.getStatus(),
-                    e.getMessage());
         }
 
         // asyncExecuteTransaction(FunctionEncoder.encode(function), function.getName(), callback);
     }
 
     protected void asyncExecuteTransaction(
-            String data, String funName, TransactionSucCallback callback)
-            throws IOException, TransactionException {
+            String data, String funName, TransactionSucCallback callback) throws IOException {
         sendOnly(
                 contractAddress,
                 data,
