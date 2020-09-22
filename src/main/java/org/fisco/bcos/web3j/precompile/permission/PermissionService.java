@@ -141,7 +141,7 @@ public class PermissionService {
         return PrecompiledCommon.handleTransactionReceipt(receipt, web3j);
     }
 
-    private TransactionReceipt grantAndRetReceipt(String tableName, String grantress)
+    public TransactionReceipt grantAndRetReceipt(String tableName, String grantress)
             throws Exception {
         return permission.insert(tableName, grantress).send();
     }
@@ -151,7 +151,7 @@ public class PermissionService {
         return PrecompiledCommon.handleTransactionReceipt(receipt, web3j);
     }
 
-    private TransactionReceipt revokeAndRetReceipt(String tableName, String address)
+    public TransactionReceipt revokeAndRetReceipt(String tableName, String address)
             throws Exception {
         return permission.remove(tableName, address).send();
     }
