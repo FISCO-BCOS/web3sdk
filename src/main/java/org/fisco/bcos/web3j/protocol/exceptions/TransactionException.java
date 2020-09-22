@@ -2,11 +2,13 @@ package org.fisco.bcos.web3j.protocol.exceptions;
 
 import java.math.BigInteger;
 import java.util.Optional;
+import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 
 public class TransactionException extends Exception {
     private Optional<String> transactionHash = Optional.empty();
     private String status;
     private BigInteger gasUsed;
+    private TransactionReceipt receipt;
 
     public String getStatus() {
         return status;
@@ -56,5 +58,13 @@ public class TransactionException extends Exception {
      */
     public Optional<String> getTransactionHash() {
         return transactionHash;
+    }
+
+    public TransactionReceipt getReceipt() {
+        return receipt;
+    }
+
+    public void setReceipt(TransactionReceipt receipt) {
+        this.receipt = receipt;
     }
 }

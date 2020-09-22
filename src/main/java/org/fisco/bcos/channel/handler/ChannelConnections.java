@@ -91,10 +91,10 @@ public class ChannelConnections {
     private long sslHandShakeTimeout = (long) 10000;
 
     private static final String helpInfo =
-            "The reasons for failure may be: "
-                    + "1. the configured certificate is not the same set of certificates as the node's certificate; "
-                    + "2. the configured certificate is not issued by the same authority as the node's certificate. "
-                    + "Please refer to https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/sdk/java_sdk.html#id24";
+            "The reasons for failure may be: \n"
+                    + "\t1. the configured certificate is not the same set of certificates as the node's certificate; \n"
+                    + "\t2. the configured certificate is not issued by the same authority as the node's certificate. \n"
+                    + "\tPlease refer to https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/sdk/java_sdk.html#id24 \n";
 
     public Map<String, ChannelHandlerContext> networkConnections =
             new ConcurrentHashMap<String, ChannelHandlerContext>();
@@ -459,7 +459,6 @@ public class ChannelConnections {
                             tuple3.getValue1(),
                             tuple3.getValue2());
                     errorMessageList.add(sslHandshakeFailedMessage);
-                    errorMessageList.add(helpInfo);
                     continue;
                 }
 
@@ -478,7 +477,6 @@ public class ChannelConnections {
                                     + tuple3.getValue2();
 
                     errorMessageList.add(sslHandshakeFailedMessage);
-                    errorMessageList.add(helpInfo);
                 }
             }
         }
@@ -487,7 +485,7 @@ public class ChannelConnections {
         if (!atLeastOneConnectSuccess) {
             logger.error(" all connections have failed, " + errorMessageList.toString());
             throw new RuntimeException(
-                    " Failed to connect to nodes: " + errorMessageList.toString());
+                    " Failed to connect to nodes: " + errorMessageList.toString() + helpInfo);
         }
 
         running = true;

@@ -54,10 +54,15 @@ public class ChainGovernanceService {
 
     public String updateCommitteeMemberWeight(String account, int weight) throws Exception {
         TransactionReceipt transactionReceipt =
-                chainGovernance
-                        .updateCommitteeMemberWeight(account, BigInteger.valueOf(weight))
-                        .send();
+                updateCommitteeMemberWeightAndRetReceipt(account, weight);
         return PrecompiledCommon.handleTransactionReceipt(transactionReceipt, web3j);
+    }
+
+    public TransactionReceipt updateCommitteeMemberWeightAndRetReceipt(String account, int weight)
+            throws Exception {
+        return chainGovernance
+                .updateCommitteeMemberWeight(account, BigInteger.valueOf(weight))
+                .send();
     }
 
     public BigInteger queryThreshold() throws Exception {

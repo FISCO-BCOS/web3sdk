@@ -417,7 +417,11 @@ public abstract class Contract extends ManagedTransaction {
                     receipt.getMessage(),
                     receipt.getGasUsed());
 
-            throw new TransactionException(message, status, gasUsed, receipt.getTransactionHash());
+            TransactionException transactionException =
+                    new TransactionException(
+                            message, status, gasUsed, receipt.getTransactionHash());
+            transactionException.setReceipt(receipt);
+            throw transactionException;
         }
 
         return receipt;
