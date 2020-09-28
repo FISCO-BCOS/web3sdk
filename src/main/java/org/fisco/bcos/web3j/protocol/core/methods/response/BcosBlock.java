@@ -58,6 +58,7 @@ public class BcosBlock extends Response<BcosBlock.Block> {
         private List<String> uncles;
         private List<String> sealerList;
         private String dbHash;
+        private List<BcosBlockHeader.Signature> signatureList;
 
         public Block() {}
 
@@ -67,6 +68,14 @@ public class BcosBlock extends Response<BcosBlock.Block> {
 
         public void setDbHash(String dbHash) {
             this.dbHash = dbHash;
+        }
+
+        public List<BcosBlockHeader.Signature> getSignatureList() {
+            return signatureList;
+        }
+
+        public void setSignatureList(List<BcosBlockHeader.Signature> signatureList) {
+            this.signatureList = signatureList;
         }
 
         @Override

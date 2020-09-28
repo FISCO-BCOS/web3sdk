@@ -211,6 +211,20 @@ public class MockBlockTest {
                         + "        \"signature\": \"0x97bc872a3beb48d0c373a6a3368ce23086c1c070f29137978f5ac3803b5ef5dc7f9d0d2a377be5995b89a37bc0ccb6cced8a1fcf29b808d7073c2afe819b3be101\"\n"
                         + "      }\n"
                         + "    ],\n"
+                        + " \"signatureList\": [\n"
+                        + "      {\n"
+                        + "        \"index\": \"0x0\",\n"
+                        + "        \"signature\": \"0xe6987f9ff8cbee2e1468d257fd09fbc476f2f42163b70bab9ef593a62dc34e4061b10f75e9be6e22e9d55839cf697bab26d9fcc0f3fa4562604bd87dc815f4f000\"\n"
+                        + "      },\n"
+                        + "      {\n"
+                        + "        \"index\": \"0x2\",\n"
+                        + "        \"signature\": \"0x49c7f10cd0c766c6100631191a5b989b587cffef65debab0d61b08320de2b9d66a64b56c67046837d9430c9d02c44f1839da9a5aba5759deffbd57e0de052f1a00\"\n"
+                        + "      },\n"
+                        + "      {\n"
+                        + "        \"index\": \"0x3\",\n"
+                        + "        \"signature\": \"0x6aaa1fc77260aac4ba37455d02de18fe498323f9473ccf8e44a58a712fb802ce07e028ffaa2e0630d4b2739837c4ebbfd6937264a1050a512f50e340c998ec0500\"\n"
+                        + "      }\n"
+                        + "    ],"
                         + "    \"stateRoot\": \"0x0000000000000000000000000000000000000000000000000000000000000000\",\n"
                         + "    \"timestamp\": \"0x174cf2bdede\",\n"
                         + "    \"transactionsRoot\": \"0xab7114f4e2930d02852e1578c0a845328e8b69fa8413000d8570483d272937a8\"\n"
@@ -221,5 +235,7 @@ public class MockBlockTest {
         Assert.assertEquals(
                 bcosBlock.getBlock().calculateHash(hashInterface),
                 "0xed79502afaf87734f5bc75c2b50d340adc83128afed9dc626a4f5a3cfed837a7");
+        // check signatureList
+        Assert.assertTrue(bcosBlock.getBlock().getSignatureList().size() == 3);
     }
 }
