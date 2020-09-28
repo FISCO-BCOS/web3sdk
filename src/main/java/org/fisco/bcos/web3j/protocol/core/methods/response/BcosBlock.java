@@ -11,11 +11,21 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import org.fisco.bcos.web3j.crypto.Hash;
+import org.fisco.bcos.web3j.crypto.HashInterface;
+import org.fisco.bcos.web3j.crypto.gm.sm2.util.encoders.Hex;
 import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 import org.fisco.bcos.web3j.protocol.core.Response;
+import org.fisco.bcos.web3j.rlp.RlpEncoder;
+import org.fisco.bcos.web3j.rlp.RlpList;
+import org.fisco.bcos.web3j.rlp.RlpString;
+import org.fisco.bcos.web3j.rlp.RlpType;
 import org.fisco.bcos.web3j.utils.Numeric;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BcosBlock extends Response<BcosBlock.Block> {
+    private static Logger logger = LoggerFactory.getLogger(BcosBlock.class);
 
     @Override
     @JsonDeserialize(using = BcosBlock.ResponseDeserialiser.class)
@@ -47,8 +57,17 @@ public class BcosBlock extends Response<BcosBlock.Block> {
         private List<TransactionResult> transactions;
         private List<String> uncles;
         private List<String> sealerList;
+        private String dbHash;
 
         public Block() {}
+
+        public String getDbHash() {
+            return dbHash;
+        }
+
+        public void setDbHash(String dbHash) {
+            this.dbHash = dbHash;
+        }
 
         @Override
         public String toString() {
@@ -306,6 +325,58 @@ public class BcosBlock extends Response<BcosBlock.Block> {
 
         public void setSealerList(List<String> sealerList) {
             this.sealerList = sealerList;
+        }
+
+        private byte[] encodeBlockHeader() {
+            List<RlpType> encodedRlp = new ArrayList<>();
+            encodedRlp.add(RlpString.create(Numeric.hexStringToByteArray(parentHash)));
+            encodedRlp.add(RlpString.create(Numeric.hexStringToByteArray(stateRoot)));
+            encodedRlp.add(RlpString.create(Numeric.hexStringToByteArray(transactionsRoot)));
+            encodedRlp.add(RlpString.create(Numeric.hexStringToByteArray(receiptsRoot)));
+            encodedRlp.add(RlpString.create(Numeric.hexStringToByteArray(dbHash)));
+            encodedRlp.add(RlpString.create(Numeric.hexStringToByteArray(logsBloom)));
+            encodedRlp.add(RlpString.create(Numeric.decodeQuantity(number)));
+            encodedRlp.add(RlpString.create(Numeric.decodeQuantity(gasLimit)));
+            encodedRlp.add(RlpString.create(Numeric.decodeQuantity(gasUsed)));
+            encodedRlp.add(RlpString.create(Numeric.decodeQuantity(timestamp)));
+
+            List<RlpType> extraDataRlp = new ArrayList<>();
+            for (String data : extraData) {
+                extraDataRlp.add(RlpString.create(Numeric.hexStringToByteArray(data)));
+            }
+            encodedRlp.add(new RlpList(extraDataRlp));
+            encodedRlp.add(RlpString.create(Numeric.decodeQuantity(sealer)));
+            List<RlpType> sealerListRlp = new ArrayList<>();
+            for (String sealerString : sealerList) {
+                sealerListRlp.add(RlpString.create(Numeric.hexStringToByteArray(sealerString)));
+            }
+            encodedRlp.add(new RlpList(sealerListRlp));
+            RlpList rlpList = new RlpList(encodedRlp);
+            return RlpEncoder.encode(rlpList);
+        }
+
+        public String calculateHash() throws RuntimeException {
+            return calculateHash(Hash.getHashInterface());
+        }
+
+        // calculate hash for the block or the block header
+        public String calculateHash(HashInterface hashInterface) throws RuntimeException {
+            try {
+                byte[] hash = hashInterface.hash(encodeBlockHeader());
+                return "0x" + Hex.toHexString(hash);
+            } catch (Exception e) {
+                logger.warn(
+                        "calculateHash for the block failed, blockNumber: {}, blockHash: {}, error info: {}",
+                        hash,
+                        number,
+                        e.getMessage());
+                throw new RuntimeException(
+                        "calculateHash for block "
+                                + hash
+                                + " failed, error info: "
+                                + e.getMessage(),
+                        e);
+            }
         }
 
         @Override
