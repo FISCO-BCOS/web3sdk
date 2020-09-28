@@ -1,5 +1,6 @@
 package org.fisco.bcos.web3j.abi.wrapper;
 
+import java.security.InvalidParameterException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -349,6 +350,10 @@ public class ABIObject {
                             }
                         case BYTES:
                             {
+                                if (bytesValue.getValue().length > 32) {
+                                    throw new InvalidParameterException(
+                                            "the length of bytesN must be equal or less than 32");
+                                }
                                 stringBuffer.append(TypeEncoder.encode(bytesValue));
                                 break;
                             }

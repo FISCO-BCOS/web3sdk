@@ -57,6 +57,12 @@ public class Web3jApITest extends TestBase {
   }
 
   @Test
+  public void getBlockNumberLimit() throws IOException {
+    BigInteger blockLimit = web3j.getBlockLimit();
+    assertNotNull(blockLimit);
+  }
+
+  @Test
   public void pbftView() throws Exception {
     PbftView pbftView = web3j.getPbftView().send();
     assertNotNull(pbftView.getPbftView());

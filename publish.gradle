@@ -63,7 +63,7 @@ dependencies {
 
     // compile 'io.netty:netty-tcnative:2.0.25.Final'
     // compile 'io.netty:netty-tcnative-boringssl-static:2.0.27.Final'
-    compile ('org.fisco-bcos:netty-sm-ssl-context:1.0.0') {
+    compile ('org.fisco-bcos:netty-sm-ssl-context:1.1.0') {
         exclude module:"log4j"
     }
 
@@ -94,7 +94,7 @@ dependencies {
 
 archivesBaseName = 'web3sdk'
 group = 'org.fisco-bcos'
-version = '2.6.0-SNAPSHOT'
+version = '2.6.2-SNAPSHOT'
 
 // Additional attribute definition
 

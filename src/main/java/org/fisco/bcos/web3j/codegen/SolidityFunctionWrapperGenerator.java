@@ -19,6 +19,7 @@ import picocli.CommandLine.Option;
 
 /** Java wrapper source code generator for Solidity ABI format. */
 public class SolidityFunctionWrapperGenerator extends FunctionWrapperGenerator {
+
     public static final String COMMAND_SOLIDITY = "solidity";
     public static final String COMMAND_GENERATE = "generate";
     public static final String COMMAND_PREFIX = COMMAND_SOLIDITY + " " + COMMAND_GENERATE;
@@ -94,7 +95,9 @@ public class SolidityFunctionWrapperGenerator extends FunctionWrapperGenerator {
         List<AbiDefinition> functionDefinitions = loadContractDefinition(abiFile);
 
         if (functionDefinitions.isEmpty()) {
-            exitError("Unable to parse input ABI file");
+            System.out.println(
+                    "Unable to parse input ABI file and skip this abi: " + abiFile.getName());
+            return;
         } else {
             String contractName = getFileNameNoExtension(abiFile.getName());
             new SolidityFunctionWrapper(useJavaNativeTypes)

@@ -18,6 +18,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.Security;
 import java.security.cert.CertificateException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
@@ -292,10 +293,17 @@ public class Service {
     }
 
     public void initJavaOpt() {
+
+        logger.info(" #jdk.disabled.namedCurves. ");
+
+        Security.setProperty("jdk.disabled.namedCurves", "");
+
+        /*
         System.setProperty("jdk.tls.namedGroups", "secp256k1");
         logger.info(
                 "set jdk.tls.namedGroups opt, value : {}",
                 System.getProperty("jdk.tls.namedGroups"));
+        */
     }
 
     public void run() throws Exception {
