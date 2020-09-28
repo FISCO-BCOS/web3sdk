@@ -17,12 +17,10 @@ public class PermissionServiceTest extends TestBase {
 
   @Test
   public void userTableManager() throws Exception {
-
-	  TransactionReceipt transactionReceipt = permissionService.grantAndRetReceipt("tt", Common.TX_ORIGIN);
-	  Assert.assertTrue(transactionReceipt.isStatusOK());
-	  int i = PrecompiledCommon.handleTransactionReceiptForCRUD(transactionReceipt);
-	  System.out.println(" ===> " + i);
-	  assertTrue(i == PrecompiledCommon.InvalidTableNotExist);
+		TransactionReceipt transactionReceipt = permissionService.grantAndRetReceipt("tt", Common.TX_ORIGIN);
+		Assert.assertTrue(transactionReceipt.isStatusOK());
+		int i = PrecompiledCommon.handleTransactionReceiptForCRUD(transactionReceipt);
+		assertEquals(i , 1);
   }
   
   @Test
