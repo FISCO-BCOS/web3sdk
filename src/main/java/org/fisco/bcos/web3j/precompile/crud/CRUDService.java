@@ -48,7 +48,7 @@ public class CRUDService {
         return PrecompiledCommon.handleTransactionReceiptForCRUD(receipt);
     }
 
-    public void createTable(Table table, TransactionSucCallback callback) throws Exception {
+    public void createTable(Table table, TransactionSucCallback callback) {
         tableFactory.createTable(
                 table.getTableName(), table.getKey(), table.getValueFields(), callback);
     }

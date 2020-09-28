@@ -134,7 +134,7 @@ public class StatusCode {
                 message = "permission denied";
                 break;
             case CallAddressError:
-                message = "call address error";
+                message = "call contract address not exist";
                 break;
             case GasOverflow:
                 message = "gas over flow";

@@ -13,6 +13,7 @@ public class TotalTransactionCount extends Response<TotalTransactionCount.Transa
     public class TransactionCount {
         private String txSum;
         private String blockNumber;
+        private String failedTxSum;
 
         public TransactionCount() {}
 
@@ -43,6 +44,18 @@ public class TotalTransactionCount extends Response<TotalTransactionCount.Transa
 
         public void setBlockNumber(String blockNumber) {
             this.blockNumber = blockNumber;
+        }
+
+        public BigInteger getFailedTxSum() {
+            return Numeric.decodeQuantity(failedTxSum);
+        }
+
+        public String getFailedTxSumRaw() {
+            return failedTxSum;
+        }
+
+        public void setFailedTxSum(String failedTxSum) {
+            this.failedTxSum = failedTxSum;
         }
     }
 }

@@ -5,7 +5,6 @@ import java.math.BigInteger;
 import java.util.List;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.precompile.common.PrecompiledCommon;
-import org.fisco.bcos.web3j.precompile.crud.CRUDService;
 import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
@@ -31,28 +30,36 @@ public class PermissionService {
     }
 
     public List<PermissionInfo> queryPermission(String address) throws Exception {
-        String permissionyInfo = permission.queryPermission(address).send();
+        String permissionInfo = permission.queryPermission(address).send();
         ObjectMapper objectMapper = ObjectMapperFactory.getObjectMapper();
         return objectMapper.readValue(
-                permissionyInfo,
+                permissionInfo,
                 objectMapper
                         .getTypeFactory()
                         .constructCollectionType(List.class, PermissionInfo.class));
     }
 
     public String grantWrite(String address, String user) throws Exception {
-        TransactionReceipt receipt = permission.grantWrite(address, user).send();
-        return PrecompiledCommon.handleTransactionReceipt(receipt, web3j);
+        TransactionReceipt transactionReceipt = grantWriteAndRetReceipt(address, user);
+        return PrecompiledCommon.handleTransactionReceipt(transactionReceipt, web3j);
+    }
+
+    public TransactionReceipt grantWriteAndRetReceipt(String address, String user)
+            throws Exception {
+        return permission.grantWrite(address, user).send();
     }
 
     public String revokeWrite(String address, String user) throws Exception {
-        TransactionReceipt receipt = permission.revokeWrite(address, user).send();
+        TransactionReceipt receipt = revokeWriteAndRetReceipt(address, user);
         return PrecompiledCommon.handleTransactionReceipt(receipt, web3j);
     }
 
+    public TransactionReceipt revokeWriteAndRetReceipt(String address, String user)
+            throws Exception {
+        return permission.revokeWrite(address, user).send();
+    }
+
     public String grantUserTableManager(String tableName, String grantress) throws Exception {
-        CRUDService crudSerivce = new CRUDService(web3j, credentials);
-        crudSerivce.desc(tableName);
         return grant(tableName, grantress);
     }
 
@@ -64,12 +71,12 @@ public class PermissionService {
         return list(tableName);
     }
 
-    public String grantDeployAndCreateManager(String grantress) throws Exception {
-        return grant(PrecompiledCommon.SYS_TABLE, grantress);
+    public String grantDeployAndCreateManager(String grantees) throws Exception {
+        return grant(PrecompiledCommon.SYS_TABLE, grantees);
     }
 
-    public String revokeDeployAndCreateManager(String grantress) throws Exception {
-        return revoke(PrecompiledCommon.SYS_TABLE, grantress);
+    public String revokeDeployAndCreateManager(String grantees) throws Exception {
+        return revoke(PrecompiledCommon.SYS_TABLE, grantees);
     }
 
     public List<PermissionInfo> listDeployAndCreateManager() throws Exception {
@@ -120,25 +127,40 @@ public class PermissionService {
         return revoke(PrecompiledCommon.SYS_CONFIG, grantress);
     }
 
+    public TransactionReceipt revokeSysConfigManagerAndRetReceipt(String grantress)
+            throws Exception {
+        return revokeAndRetReceipt(PrecompiledCommon.SYS_CONFIG, grantress);
+    }
+
     public List<PermissionInfo> listSysConfigManager() throws Exception {
         return list(PrecompiledCommon.SYS_CONFIG);
     }
 
-    private String grant(String tableName, String grantress) throws Exception {
-        TransactionReceipt receipt = permission.insert(tableName, grantress).send();
+    public String grant(String tableName, String grandness) throws Exception {
+        TransactionReceipt receipt = grantAndRetReceipt(tableName, grandness);
         return PrecompiledCommon.handleTransactionReceipt(receipt, web3j);
     }
 
-    private String revoke(String tableName, String address) throws Exception {
-        TransactionReceipt receipt = permission.remove(tableName, address).send();
+    public TransactionReceipt grantAndRetReceipt(String tableName, String grantress)
+            throws Exception {
+        return permission.insert(tableName, grantress).send();
+    }
+
+    public String revoke(String tableName, String address) throws Exception {
+        TransactionReceipt receipt = revokeAndRetReceipt(tableName, address);
         return PrecompiledCommon.handleTransactionReceipt(receipt, web3j);
+    }
+
+    public TransactionReceipt revokeAndRetReceipt(String tableName, String address)
+            throws Exception {
+        return permission.remove(tableName, address).send();
     }
 
     private List<PermissionInfo> list(String tableName) throws Exception {
-        String permissionyInfo = permission.queryByName(tableName).send();
+        String permissionInfo = permission.queryByName(tableName).send();
         ObjectMapper objectMapper = ObjectMapperFactory.getObjectMapper();
         return objectMapper.readValue(
-                permissionyInfo,
+                permissionInfo,
                 objectMapper
                         .getTypeFactory()
                         .constructCollectionType(List.class, PermissionInfo.class));

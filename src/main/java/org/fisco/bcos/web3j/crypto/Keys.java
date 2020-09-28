@@ -26,6 +26,10 @@ public class Keys {
     public static final int ADDRESS_LENGTH_IN_HEX = ADDRESS_SIZE >> 2;
 
     public static final int PUBLIC_KEY_LENGTH_IN_HEX = PUBLIC_KEY_SIZE << 1;
+    public static final int PUBLIC_KEY_LENGTH_IN_HEX_WITH_COMPRESS_FLAG_1 =
+            (PUBLIC_KEY_LENGTH_IN_HEX + 1);
+    public static final int PUBLIC_KEY_LENGTH_IN_HEX_WITH_COMPRESS_FLAG_2 =
+            (PUBLIC_KEY_LENGTH_IN_HEX + 2);
     public static final int PRIVATE_KEY_LENGTH_IN_HEX = PRIVATE_KEY_SIZE << 1;
 
     static {
@@ -88,8 +92,7 @@ public class Keys {
     }
 
     public static String getAddress(BigInteger publicKey) {
-        return getAddress(
-                Numeric.toHexStringWithPrefixZeroPadded(publicKey, PUBLIC_KEY_LENGTH_IN_HEX));
+        return getAddress(Numeric.toHexStringNoPrefix(publicKey));
     }
 
     public static String getAddress(String publicKey) {
@@ -99,7 +102,27 @@ public class Keys {
             publicKeyNoPrefix =
                     Strings.zeros(PUBLIC_KEY_LENGTH_IN_HEX - publicKeyNoPrefix.length())
                             + publicKeyNoPrefix;
+        } else if (publicKeyNoPrefix.length() == PUBLIC_KEY_LENGTH_IN_HEX) {
+            // do nothing
+        } else if (publicKeyNoPrefix.length() == PUBLIC_KEY_LENGTH_IN_HEX_WITH_COMPRESS_FLAG_2) {
+            // 130 length,should start with 03 or 04
+            if (!(publicKeyNoPrefix.startsWith("03") || publicKeyNoPrefix.startsWith("04"))) {
+                throw new IllegalArgumentException(
+                        " publicKey not start with \"03\" or \"04\", publicKey: " + publicKey);
+            }
+            publicKeyNoPrefix = publicKeyNoPrefix.substring(2);
+        } else if (publicKeyNoPrefix.length() == PUBLIC_KEY_LENGTH_IN_HEX_WITH_COMPRESS_FLAG_1) {
+            // 129 length,should start with 3 or 4
+            if (!(publicKeyNoPrefix.startsWith("3") || publicKeyNoPrefix.startsWith("4"))) {
+                throw new IllegalArgumentException(
+                        " publicKey not start with \"3\" or \"4\", publicKey: " + publicKey);
+            }
+            publicKeyNoPrefix = publicKeyNoPrefix.substring(1);
+        } else {
+            // invalid public key
+            throw new IllegalArgumentException(" invalid publicKey: " + publicKey);
         }
+
         String hash = Hash.sha3(publicKeyNoPrefix);
         return hash.substring(hash.length() - ADDRESS_LENGTH_IN_HEX); // right most 160 bits
     }
