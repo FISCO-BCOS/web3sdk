@@ -1,10 +1,13 @@
 package org.fisco.bcos.precompile;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.fisco.bcos.TestBase;
-import org.fisco.bcos.web3j.precompile.exception.PrecompileMessageException;
+import org.fisco.bcos.web3j.precompile.common.PrecompiledCommon;
 import org.fisco.bcos.web3j.precompile.permission.PermissionService;
+import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.junit.Assert;
 import org.junit.Test;
 
 public class PermissionServiceTest extends TestBase {
@@ -12,11 +15,12 @@ public class PermissionServiceTest extends TestBase {
 
   private PermissionService permissionService = new PermissionService(web3j, credentials);
 
-  @Test(expected= PrecompileMessageException.class) 
+  @Test
   public void userTableManager() throws Exception {
-  	
-	  permissionService.grantUserTableManager("tt", Common.TX_ORIGIN);
-  
+		TransactionReceipt transactionReceipt = permissionService.grantAndRetReceipt("tt", Common.TX_ORIGIN);
+		Assert.assertTrue(transactionReceipt.isStatusOK());
+		int i = PrecompiledCommon.handleTransactionReceiptForCRUD(transactionReceipt);
+		assertEquals(i , 1);
   }
   
   @Test

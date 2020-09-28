@@ -21,7 +21,6 @@ import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 import org.fisco.bcos.web3j.protocol.core.methods.response.AbiDefinition;
 import org.fisco.bcos.web3j.protocol.core.methods.response.AbiDefinition.NamedType;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Log;
-import org.fisco.bcos.web3j.protocol.exceptions.TransactionException;
 import org.fisco.bcos.web3j.tuples.generated.Tuple2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,11 +61,10 @@ public class TransactionDecoder {
      * @param input
      * @return
      * @throws JsonProcessingException
-     * @throws TransactionException
      * @throws BaseException
      */
     public String decodeInputReturnJson(String input)
-            throws JsonProcessingException, TransactionException, BaseException {
+            throws JsonProcessingException, BaseException {
 
         input = addHexPrefixToString(input);
 
@@ -86,10 +84,8 @@ public class TransactionDecoder {
      * @param input
      * @return
      * @throws BaseException
-     * @throws TransactionException
      */
-    public InputAndOutputResult decodeInputReturnObject(String input)
-            throws BaseException, TransactionException {
+    public InputAndOutputResult decodeInputReturnObject(String input) throws BaseException {
 
         String updatedInput = addHexPrefixToString(input);
 
@@ -125,10 +121,9 @@ public class TransactionDecoder {
      * @return
      * @throws JsonProcessingException
      * @throws BaseException
-     * @throws TransactionException
      */
     public String decodeOutputReturnJson(String input, String output)
-            throws JsonProcessingException, BaseException, TransactionException {
+            throws JsonProcessingException, BaseException {
 
         InputAndOutputResult inputAndOutputResult = decodeOutputReturnObject(input, output);
 
@@ -141,11 +136,10 @@ public class TransactionDecoder {
      * @param input
      * @param output
      * @return
-     * @throws TransactionException
      * @throws BaseException
      */
     public InputAndOutputResult decodeOutputReturnObject(String input, String output)
-            throws TransactionException, BaseException {
+            throws BaseException {
 
         String updatedInput = addHexPrefixToString(input);
         String updatedOutput = addHexPrefixToString(output);
@@ -375,16 +369,15 @@ public class TransactionDecoder {
     /**
      * @param input
      * @return
-     * @throws TransactionException
+     * @throws BaseException
      */
-    private AbiDefinition selectAbiDefinition(String input) throws TransactionException {
-        if (input == null || input.length() < 10) {
-            throw new TransactionException("The input is invalid.");
-        }
+    private AbiDefinition selectAbiDefinition(String input) throws BaseException {
         String methodID = input.substring(0, 10);
         AbiDefinition abiDefinition = methodIDMap.get(methodID);
         if (abiDefinition == null) {
-            throw new TransactionException("The method is not included in the contract abi.");
+            throw new BaseException(
+                    201203,
+                    String.format("the method is not found in abi, method id:[%s]", methodID));
         }
         return abiDefinition;
     }

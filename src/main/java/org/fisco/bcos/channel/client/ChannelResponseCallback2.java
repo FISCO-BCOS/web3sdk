@@ -49,7 +49,7 @@ public abstract class ChannelResponseCallback2 {
     }
 
     public final void onTimeout() {
-        logger.error("send message timeout:{}", message.getSeq());
+        // logger.error("send message timeout:{}", message.getSeq());
 
         ChannelResponse response = new ChannelResponse();
         response.setErrorCode(ChannelMessageError.MESSAGE_TIMEOUT.getError());

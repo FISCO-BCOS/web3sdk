@@ -308,6 +308,9 @@ public class ConnectionCallback implements ChannelConnections.Callback {
                                     public void run(Timeout timeout) throws Exception {
                                         // handle timer
                                         _callback.onTimeout();
+                                        logger.error(
+                                                "queryNodeVersion timeout, seq: {}",
+                                                bcosMessage.getSeq());
                                     }
                                 },
                                 queryNodeVersionTimeoutMS,

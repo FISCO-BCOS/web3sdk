@@ -14,7 +14,7 @@ public abstract class BcosResponseCallback {
     public abstract void onResponse(BcosResponse response);
 
     public void onTimeout() {
-        logger.error("Processing bcos message timeout:{}");
+        // logger.error("Processing bcos message timeout:{}");
 
         BcosResponse response = new BcosResponse();
         response.setErrorCode(ChannelMessageError.MESSAGE_TIMEOUT.getError());
