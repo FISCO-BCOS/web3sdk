@@ -54,10 +54,15 @@ public class ChainGovernanceService {
 
     public String updateCommitteeMemberWeight(String account, int weight) throws Exception {
         TransactionReceipt transactionReceipt =
-                chainGovernance
-                        .updateCommitteeMemberWeight(account, BigInteger.valueOf(weight))
-                        .send();
+                updateCommitteeMemberWeightAndRetReceipt(account, weight);
         return PrecompiledCommon.handleTransactionReceipt(transactionReceipt, web3j);
+    }
+
+    public TransactionReceipt updateCommitteeMemberWeightAndRetReceipt(String account, int weight)
+            throws Exception {
+        return chainGovernance
+                .updateCommitteeMemberWeight(account, BigInteger.valueOf(weight))
+                .send();
     }
 
     public BigInteger queryThreshold() throws Exception {
@@ -69,9 +74,12 @@ public class ChainGovernanceService {
     }
 
     public String grantCommitteeMember(String account) throws Exception {
-        TransactionReceipt transactionReceipt =
-                chainGovernance.grantCommitteeMember(account).send();
+        TransactionReceipt transactionReceipt = grantCommitteeMemberAndRetReceipt(account);
         return PrecompiledCommon.handleTransactionReceipt(transactionReceipt, web3j);
+    }
+
+    public TransactionReceipt grantCommitteeMemberAndRetReceipt(String account) throws Exception {
+        return chainGovernance.grantCommitteeMember(account).send();
     }
 
     public List<PermissionInfo> listCommitteeMembers() throws Exception {
@@ -85,35 +93,57 @@ public class ChainGovernanceService {
     }
 
     public String updateThreshold(int threshold) throws Exception {
-        TransactionReceipt transactionReceipt =
-                chainGovernance.updateThreshold(BigInteger.valueOf(threshold)).send();
+        TransactionReceipt transactionReceipt = updateThresholdAndRetReceipt(threshold);
         return PrecompiledCommon.handleTransactionReceipt(transactionReceipt, web3j);
+    }
+
+    public TransactionReceipt updateThresholdAndRetReceipt(int threshold) throws Exception {
+        return chainGovernance.updateThreshold(BigInteger.valueOf(threshold)).send();
     }
 
     public String revokeCommitteeMember(String account) throws Exception {
-        TransactionReceipt transactionReceipt =
-                chainGovernance.revokeCommitteeMember(account).send();
+        TransactionReceipt transactionReceipt = revokeCommitteeMemberAndRetReceipt(account);
         return PrecompiledCommon.handleTransactionReceipt(transactionReceipt, web3j);
+    }
+
+    public TransactionReceipt revokeCommitteeMemberAndRetReceipt(String account) throws Exception {
+        return chainGovernance.revokeCommitteeMember(account).send();
     }
 
     public String grantOperator(String account) throws Exception {
-        TransactionReceipt transactionReceipt = chainGovernance.grantOperator(account).send();
+        TransactionReceipt transactionReceipt = grantOperatorAndRetReceipt(account);
         return PrecompiledCommon.handleTransactionReceipt(transactionReceipt, web3j);
+    }
+
+    public TransactionReceipt grantOperatorAndRetReceipt(String account) throws Exception {
+        return chainGovernance.grantOperator(account).send();
     }
 
     public String revokeOperator(String account) throws Exception {
-        TransactionReceipt transactionReceipt = chainGovernance.revokeOperator(account).send();
+        TransactionReceipt transactionReceipt = revokeOperatorAndRetReceipt(account);
         return PrecompiledCommon.handleTransactionReceipt(transactionReceipt, web3j);
+    }
+
+    public TransactionReceipt revokeOperatorAndRetReceipt(String account) throws Exception {
+        return chainGovernance.revokeOperator(account).send();
     }
 
     public String freezeAccount(String account) throws Exception {
-        TransactionReceipt transactionReceipt = chainGovernance.freezeAccount(account).send();
+        TransactionReceipt transactionReceipt = freezeAccountAndRetReceipt(account);
         return PrecompiledCommon.handleTransactionReceipt(transactionReceipt, web3j);
     }
 
+    public TransactionReceipt freezeAccountAndRetReceipt(String account) throws Exception {
+        return chainGovernance.freezeAccount(account).send();
+    }
+
     public String unfreezeAccount(String account) throws Exception {
-        TransactionReceipt transactionReceipt = chainGovernance.unfreezeAccount(account).send();
+        TransactionReceipt transactionReceipt = unfreezeAccountAndRetReceipt(account);
         return PrecompiledCommon.handleTransactionReceipt(transactionReceipt, web3j);
+    }
+
+    public TransactionReceipt unfreezeAccountAndRetReceipt(String account) throws Exception {
+        return chainGovernance.unfreezeAccount(account).send();
     }
 
     public String getAccountStatus(String account) throws Exception {

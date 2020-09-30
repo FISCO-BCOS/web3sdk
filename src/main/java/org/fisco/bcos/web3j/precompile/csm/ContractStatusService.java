@@ -3,7 +3,6 @@ package org.fisco.bcos.web3j.precompile.csm;
 import java.math.BigInteger;
 import java.util.List;
 import org.fisco.bcos.web3j.crypto.Credentials;
-import org.fisco.bcos.web3j.crypto.WalletUtils;
 import org.fisco.bcos.web3j.precompile.common.PrecompiledCommon;
 import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 import org.fisco.bcos.web3j.protocol.Web3j;
@@ -32,37 +31,33 @@ public class ContractStatusService {
     }
 
     public String freeze(String addr) throws Exception {
-        if (!WalletUtils.isValidAddress(addr)) {
-            return PrecompiledCommon.transferToJson(PrecompiledCommon.InvalidAddress);
-        }
-
-        TransactionReceipt receipt = contractLifeCycle.freeze(addr).send();
+        TransactionReceipt receipt = freezeAndRetReceipt(addr);
         return PrecompiledCommon.handleTransactionReceipt(receipt, web3j);
+    }
+
+    public TransactionReceipt freezeAndRetReceipt(String addr) throws Exception {
+        return contractLifeCycle.freeze(addr).send();
     }
 
     public String unfreeze(String addr) throws Exception {
-        if (!WalletUtils.isValidAddress(addr)) {
-            return PrecompiledCommon.transferToJson(PrecompiledCommon.InvalidAddress);
-        }
-
-        TransactionReceipt receipt = contractLifeCycle.unfreeze(addr).send();
+        TransactionReceipt receipt = unfreezeAndRetReceipt(addr);
         return PrecompiledCommon.handleTransactionReceipt(receipt, web3j);
+    }
+
+    public TransactionReceipt unfreezeAndRetReceipt(String addr) throws Exception {
+        return contractLifeCycle.unfreeze(addr).send();
     }
 
     public String grantManager(String addr, String user) throws Exception {
-        if (!WalletUtils.isValidAddress(addr) || !WalletUtils.isValidAddress(user)) {
-            return PrecompiledCommon.transferToJson(PrecompiledCommon.InvalidAddress);
-        }
-
-        TransactionReceipt receipt = contractLifeCycle.grantManager(addr, user).send();
+        TransactionReceipt receipt = grantManagerAndRetReceipt(addr, user);
         return PrecompiledCommon.handleTransactionReceipt(receipt, web3j);
     }
 
-    public String getStatus(String addr) throws Exception {
-        if (!WalletUtils.isValidAddress(addr)) {
-            return PrecompiledCommon.transferToJson(PrecompiledCommon.InvalidAddress);
-        }
+    public TransactionReceipt grantManagerAndRetReceipt(String addr, String user) throws Exception {
+        return contractLifeCycle.grantManager(addr, user).send();
+    }
 
+    public String getStatus(String addr) throws Exception {
         Tuple2<BigInteger, String> send = contractLifeCycle.getStatus(addr).send();
         if (!(send.getValue1().intValue() == PrecompiledCommon.Success)) {
             return PrecompiledCommon.transferToJson(send.getValue1().intValue());
@@ -71,10 +66,6 @@ public class ContractStatusService {
     }
 
     public String listManager(String addr) throws Exception {
-        if (!WalletUtils.isValidAddress(addr)) {
-            return PrecompiledCommon.transferToJson(PrecompiledCommon.InvalidAddress);
-        }
-
         Tuple2<BigInteger, List<String>> send = contractLifeCycle.listManager(addr).send();
 
         if (!(send.getValue1().intValue() == PrecompiledCommon.Success)) {

@@ -65,7 +65,7 @@ public class RawTransactionManager extends TransactionManager {
 
     @Override
     protected BigInteger getBlockLimit() throws IOException {
-        return web3j.getBlockNumberCache();
+        return web3j.getBlockLimit();
     }
 
     public TxHashVerifier getTxHashVerifier() {

@@ -7,7 +7,6 @@ import static org.fisco.bcos.web3j.solidity.compiler.SolidityCompiler.Options.ME
 
 import java.io.File;
 import java.io.IOException;
-import org.fisco.bcos.web3j.protocol.exceptions.TransactionException;
 import org.fisco.bcos.web3j.solidity.compiler.CompilationResult;
 import org.fisco.bcos.web3j.solidity.compiler.SolidityCompiler;
 
@@ -29,13 +28,12 @@ public class TransactionDecoderFactory {
     /**
      * @param contractName
      * @return TransactionDecoder
-     * @throws TransactionException
      * @throws IOException
      */
     public static TransactionDecoder buildTransactionDecoder(String contractName)
-            throws TransactionException, IOException {
+            throws IOException {
         if (contractName.startsWith(PREFIX_LIB)) {
-            throw new TransactionException("Please don't provide a library solidity file.");
+            throw new IOException("Please don't provide a library solidity file.");
         }
         if (!contractName.endsWith(SOL_POSTFIX)) {
             contractName = contractName + SOL_POSTFIX;

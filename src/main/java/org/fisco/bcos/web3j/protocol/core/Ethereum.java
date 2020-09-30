@@ -106,7 +106,10 @@ public interface Ethereum {
 
     Request<?, PendingTransactions> getPendingTransaction();
 
+    @Deprecated
     BigInteger getBlockNumberCache();
+
+    BigInteger getBlockLimit();
 
     Request<?, PendingTxSize> getPendingTxSize();
 

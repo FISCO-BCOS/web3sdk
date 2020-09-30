@@ -26,31 +26,47 @@ public class ConsensusService {
     }
 
     public String addSealer(String nodeID) throws Exception {
-        if (!isValidNodeID(nodeID)) {
-            return PrecompiledCommon.transferToJson(PrecompiledCommon.P2pNetwork);
-        }
-        List<String> sealerList = web3j.getSealerList().send().getResult();
-        if (sealerList.contains(nodeID)) {
-            return PrecompiledCommon.transferToJson(PrecompiledCommon.SealerList);
-        }
-        TransactionReceipt receipt = consensus.addSealer(nodeID).send();
+        TransactionReceipt receipt = addSealerAndRetReceipt(nodeID);
         return PrecompiledCommon.handleTransactionReceipt(receipt, web3j);
     }
 
+    public TransactionReceipt addSealerAndRetReceipt(String nodeID) throws Exception {
+        return consensus.addSealer(nodeID).send();
+    }
+
     public String addObserver(String nodeID) throws Exception {
-        if (!isValidNodeID(nodeID)) {
-            return PrecompiledCommon.transferToJson(PrecompiledCommon.P2pNetwork);
-        }
-        List<String> observerList = web3j.getObserverList().send().getResult();
-        if (observerList.contains(nodeID)) {
-            return PrecompiledCommon.transferToJson(PrecompiledCommon.ObserverList);
-        }
-        TransactionReceipt receipt = consensus.addObserver(nodeID).send();
+        TransactionReceipt receipt = addObserverAndRetReceipt(nodeID);
         return PrecompiledCommon.handleTransactionReceipt(receipt, web3j);
+    }
+
+    public TransactionReceipt addObserverAndRetReceipt(String nodeID) throws Exception {
+        return consensus.addObserver(nodeID).send();
     }
 
     public String removeNode(String nodeId) throws Exception {
         List<String> groupPeers = web3j.getGroupPeers().send().getResult();
+        if (!groupPeers.contains(nodeId)) {
+            return PrecompiledCommon.transferToJson(PrecompiledCommon.GroupPeers);
+        }
+        TransactionReceipt receipt = null;
+        try {
+            receipt = removeNodeAndRetReceipt(nodeId);
+        } catch (RuntimeException e) {
+            // firstly remove node that sdk connected to the node, return the request that present
+            // susscces
+            // because the exception is throwed by getTransactionReceipt, we need ignore it.
+            if (e.getMessage().contains("Don't send requests to this group")) {
+                return PrecompiledCommon.transferToJson(0);
+            } else {
+                throw e;
+            }
+        }
+        return PrecompiledCommon.handleTransactionReceipt(receipt, web3j);
+    }
+
+    public TransactionReceipt removeNodeAndRetReceipt(String nodeId) throws Exception {
+        return consensus.remove(nodeId).send();
+        /*List<String> groupPeers = web3j.getGroupPeers().send().getResult();
         if (!groupPeers.contains(nodeId)) {
             return PrecompiledCommon.transferToJson(PrecompiledCommon.GroupPeers);
         }
@@ -68,6 +84,7 @@ public class ConsensusService {
             }
         }
         return PrecompiledCommon.handleTransactionReceipt(receipt, web3j);
+        */
     }
 
     private boolean isValidNodeID(String _nodeID) throws IOException, JsonProcessingException {

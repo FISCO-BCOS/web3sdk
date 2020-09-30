@@ -99,12 +99,14 @@ public class CnsService {
 
     public String registerCns(String name, String version, String address, String abi)
             throws Exception {
-        CNS cns = lookupResolver();
-        if (version.length() > MAX_VERSION_LENGTH) {
-            return PrecompiledCommon.transferToJson(PrecompiledCommon.VersionExceeds);
-        }
-        TransactionReceipt receipt = cns.insert(name, version, address, abi).send();
+        TransactionReceipt receipt = registerCnsAndRetReceipt(name, version, address, abi);
         return PrecompiledCommon.handleTransactionReceipt(receipt, web3j);
+    }
+
+    public TransactionReceipt registerCnsAndRetReceipt(
+            String name, String version, String address, String abi) throws Exception {
+        CNS cns = lookupResolver();
+        return cns.insert(name, version, address, abi).send();
     }
 
     public List<CnsInfo> queryCnsByName(String name) throws Exception {

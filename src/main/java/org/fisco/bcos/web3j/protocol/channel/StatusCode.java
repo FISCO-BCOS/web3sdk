@@ -49,7 +49,7 @@ public class StatusCode {
     public static final String OverGroupMemoryLimit = "0x2716";
 
     public static String getStatusMessage(String status) {
-        return getStatusMessage(status, " Error code: " + status);
+        return getStatusMessage(status, status);
     }
 
     public static String getStatusMessage(String status, String errorMessage) {
@@ -134,7 +134,7 @@ public class StatusCode {
                 message = "permission denied";
                 break;
             case CallAddressError:
-                message = "call address error";
+                message = "call contract address not exist";
                 break;
             case GasOverflow:
                 message = "gas over flow";
