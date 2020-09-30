@@ -7,11 +7,11 @@ java -version
 # code format check
 bash gradlew verifyGoogleJavaFormat
 # build
-bash gradlew build
+bash gradlew build -x integrationTest
 # UT test
 bash gradlew test
 
-curl -LO https://github.com/FISCO-BCOS/FISCO-BCOS/releases/download/v2.5.0/build_chain.sh && chmod u+x build_chain.sh
+curl -LO https://github.com/FISCO-BCOS/FISCO-BCOS/releases/download/v2.6.0/build_chain.sh && chmod u+x build_chain.sh
 echo "127.0.0.1:4 agency1 1,2,3" > ipconf
 
 # bash build_chain.sh -h

@@ -27,7 +27,9 @@ public class ABIObjectFactory {
                 abiObject.getStructFields().add(buildTypeObject(namedType));
             }
 
-            logger.info(" name: {}", name);
+            if (logger.isTraceEnabled()) {
+                logger.trace(" name: {}", name);
+            }
 
             return abiObject;
 

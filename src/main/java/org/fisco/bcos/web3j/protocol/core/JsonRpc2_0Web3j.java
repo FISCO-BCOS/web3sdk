@@ -133,6 +133,19 @@ public class JsonRpc2_0Web3j implements Web3j {
     }
 
     @Override
+    public BigInteger getBlockLimit() {
+        if (getLocalBlockNumber().intValue() == 1) {
+            try {
+                BlockNumber blockNumber = getBlockNumber().sendAsync().get();
+                setBlockNumber(blockNumber.getBlockNumber());
+            } catch (Exception e) {
+                logger.error("Exception: " + e);
+            }
+        }
+        return getLocalBlockNumber().add(new BigInteger(BlockLimit.blockLimit.toString()));
+    }
+
+    @Override
     public Request<?, GroupList> getGroupList() {
         return new Request<>("getGroupList", Arrays.asList(), web3jService, GroupList.class);
     }

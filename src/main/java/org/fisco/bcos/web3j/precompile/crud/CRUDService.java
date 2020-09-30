@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
+import org.fisco.bcos.channel.client.TransactionSucCallback;
 import org.fisco.bcos.fisco.EnumNodeVersion;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.precompile.common.PrecompiledCommon;
@@ -47,6 +48,11 @@ public class CRUDService {
         return PrecompiledCommon.handleTransactionReceiptForCRUD(receipt);
     }
 
+    public void createTable(Table table, TransactionSucCallback callback) {
+        tableFactory.createTable(
+                table.getTableName(), table.getKey(), table.getValueFields(), callback);
+    }
+
     public int insert(Table table, Entry entry) throws Exception {
 
         if (table.getKey().length() > PrecompiledCommon.TABLE_KEY_MAX_LENGTH) {
@@ -62,6 +68,21 @@ public class CRUDService {
                 crud.insert(table.getTableName(), table.getKey(), entryJsonStr, table.getOptional())
                         .send();
         return PrecompiledCommon.handleTransactionReceiptForCRUD(receipt);
+    }
+
+    public void insert(Table table, Entry entry, TransactionSucCallback callback) throws Exception {
+
+        if (table.getKey().length() > PrecompiledCommon.TABLE_KEY_MAX_LENGTH) {
+            throw new PrecompileMessageException(
+                    "The value of the table key exceeds the maximum limit("
+                            + PrecompiledCommon.TABLE_KEY_MAX_LENGTH
+                            + ").");
+        }
+        String entryJsonStr =
+                ObjectMapperFactory.getObjectMapper().writeValueAsString(entry.getFields());
+
+        crud.insert(
+                table.getTableName(), table.getKey(), entryJsonStr, table.getOptional(), callback);
     }
 
     public int update(Table table, Entry entry, Condition condition) throws Exception {
@@ -87,6 +108,30 @@ public class CRUDService {
         return PrecompiledCommon.handleTransactionReceiptForCRUD(receipt);
     }
 
+    public void update(
+            Table table, Entry entry, Condition condition, TransactionSucCallback callback)
+            throws Exception {
+
+        if (table.getKey().length() > PrecompiledCommon.TABLE_KEY_MAX_LENGTH) {
+            throw new PrecompileMessageException(
+                    "The value of the table key exceeds the maximum limit("
+                            + PrecompiledCommon.TABLE_KEY_MAX_LENGTH
+                            + ").");
+        }
+        String entryJsonStr =
+                ObjectMapperFactory.getObjectMapper().writeValueAsString(entry.getFields());
+        String conditionStr =
+                ObjectMapperFactory.getObjectMapper().writeValueAsString(condition.getConditions());
+
+        crud.update(
+                table.getTableName(),
+                table.getKey(),
+                entryJsonStr,
+                conditionStr,
+                table.getOptional(),
+                callback);
+    }
+
     public int remove(Table table, Condition condition) throws Exception {
 
         if (table.getKey().length() > PrecompiledCommon.TABLE_KEY_MAX_LENGTH) {
@@ -101,6 +146,22 @@ public class CRUDService {
                 crud.remove(table.getTableName(), table.getKey(), conditionStr, table.getOptional())
                         .send();
         return PrecompiledCommon.handleTransactionReceiptForCRUD(receipt);
+    }
+
+    public void remove(Table table, Condition condition, TransactionSucCallback callback)
+            throws Exception {
+
+        if (table.getKey().length() > PrecompiledCommon.TABLE_KEY_MAX_LENGTH) {
+            throw new PrecompileMessageException(
+                    "The value of the table key exceeds the maximum limit("
+                            + PrecompiledCommon.TABLE_KEY_MAX_LENGTH
+                            + ").");
+        }
+        String conditionStr =
+                ObjectMapperFactory.getObjectMapper().writeValueAsString(condition.getConditions());
+
+        crud.remove(
+                table.getTableName(), table.getKey(), conditionStr, table.getOptional(), callback);
     }
 
     @SuppressWarnings("unchecked")

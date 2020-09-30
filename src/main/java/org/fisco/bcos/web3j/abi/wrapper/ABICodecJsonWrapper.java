@@ -37,6 +37,12 @@ public class ABICodecJsonWrapper {
         throw new InvalidParameterException(errorMessage);
     }
 
+    private void errorReport(String path, String desc) throws InvalidParameterException {
+        String errorMessage = "Arguments invalid: " + path + ", message: " + desc;
+        logger.error(errorMessage);
+        throw new InvalidParameterException(errorMessage);
+    }
+
     private ABIObject encodeNode(String path, ABIObject template, JsonNode node) {
         ABIObject abiObject = template.newObject();
 
@@ -110,9 +116,8 @@ public class ABICodecJsonWrapper {
                                     abiObject.setAddressValue(new Address(node.asText()));
                                 } catch (Exception e) {
                                     errorReport(
-                                            "Invalid address value",
-                                            template.getValueType().toString(),
-                                            node.asText());
+                                            path,
+                                            "Invalid address, address value: " + node.asText());
                                 }
                                 break;
                             }
@@ -224,9 +229,8 @@ public class ABICodecJsonWrapper {
 
                             if (structNode == null) {
                                 errorReport(
-                                        path + "miss field value, field name: " + field.getName(),
-                                        template.getValueType().toString(),
-                                        node.getNodeType().toString());
+                                        path,
+                                        " Missing struct field, field name: " + field.getName());
                             }
 
                             abiObject
@@ -321,7 +325,7 @@ public class ABICodecJsonWrapper {
                             }
                         } catch (Exception e) {
                             logger.error(" e: ", e);
-                            errorReport("ROOT", argObject.getValueType().toString(), value);
+                            errorReport("ROOT", e.getMessage());
                         }
 
                         break;

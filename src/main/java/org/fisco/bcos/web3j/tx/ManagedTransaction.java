@@ -50,7 +50,7 @@ public abstract class ManagedTransaction {
             BigInteger gasPrice,
             BigInteger gasLimit,
             TransactionSucCallback callback)
-            throws IOException, TransactionException {
+            throws IOException {
         transactionManager.sendTransaction(gasPrice, gasLimit, to, data, value, null, callback);
     }
 

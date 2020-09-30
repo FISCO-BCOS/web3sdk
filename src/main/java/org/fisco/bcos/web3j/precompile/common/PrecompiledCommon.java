@@ -146,7 +146,7 @@ public class PrecompiledCommon {
         } else if (code == VersionExceeds) {
             msg = "version string length exceeds the maximum limit";
         } else if (code == TableNameLengthOverflow) {
-            msg = "tablename string length exceeds the maximum limit";
+            msg = "table name string length exceeds the maximum limit";
         } else if (code == InvalidAddress) {
             msg = "invalid address format";
         } else if (code == InvalidContractFrozen) {

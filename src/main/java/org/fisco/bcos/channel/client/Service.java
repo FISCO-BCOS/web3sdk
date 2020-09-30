@@ -18,6 +18,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.Security;
 import java.security.cert.CertificateException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
@@ -292,7 +293,11 @@ public class Service {
     }
 
     public void initJavaOpt() {
-        logger.trace(" initJavaOpt empty func .");
+
+        logger.info(" #jdk.disabled.namedCurves. ");
+
+        Security.setProperty("jdk.disabled.namedCurves", "");
+
         /*
         System.setProperty("jdk.tls.namedGroups", "secp256k1");
         logger.info(
@@ -485,9 +490,12 @@ public class Service {
                             new TimerTask() {
                                 @Override
                                 public void run(Timeout timeout) throws Exception {
-                                    // 处理超时逻辑
+                                    logger.error(
+                                            "transaction callback timeout, seq: {}, timeout: {}",
+                                            request.getMessageID(),
+                                            request.getTimeout());
+
                                     callbackInner.onTimeout();
-                                    // timeout时清除map的数据,所以尽管后面有回包数据，也会找不到seq->callback的关系
                                     seq2TransactionCallback.remove(request.getMessageID());
                                 }
                             },
@@ -588,6 +596,10 @@ public class Service {
 
                                     @Override
                                     public void run(Timeout timeout) throws Exception {
+                                        logger.error(
+                                                "process bcos message timeout, seq: {}, timeout: {}",
+                                                bcosMessage.getSeq(),
+                                                request.getTimeout());
                                         // handle timer
                                         _callback.onTimeout();
                                     }
@@ -702,6 +714,10 @@ public class Service {
                                         public void run(Timeout timeout) throws Exception {
                                             // process timeout logic
                                             _callback.onTimeout();
+                                            logger.error(
+                                                    "process channel message timeout, seq: {}, timeout: {}",
+                                                    channelMessage.getSeq(),
+                                                    request.getTimeout());
                                         }
                                     },
                                     request.getTimeout(),

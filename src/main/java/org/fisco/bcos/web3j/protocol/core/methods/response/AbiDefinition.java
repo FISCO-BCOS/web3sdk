@@ -2,6 +2,7 @@ package org.fisco.bcos.web3j.protocol.core.methods.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -17,6 +18,8 @@ public class AbiDefinition {
     private boolean payable;
 
     private String stateMutability;
+
+    public static List<String> CONSTANT_KEY = Arrays.asList("view");
 
     public AbiDefinition() {}
 
@@ -48,7 +51,7 @@ public class AbiDefinition {
     }
 
     public boolean isConstant() {
-        return constant;
+        return constant || CONSTANT_KEY.contains(this.getStateMutability());
     }
 
     public void setConstant(boolean constant) {

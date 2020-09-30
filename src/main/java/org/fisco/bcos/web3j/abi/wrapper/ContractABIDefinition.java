@@ -65,19 +65,23 @@ public class ContractABIDefinition {
         String methodId = abiDefinition.getMethodId();
         methodIDToFunctions.put(methodId, abiDefinition);
 
-        logger.info(
-                " name: {}, methodId: {}, methodSignature: {}, abi: {}",
-                name,
-                methodId,
-                abiDefinition.getMethodSignatureAsString(),
-                abiDefinition);
+        if (logger.isDebugEnabled()) {
+            logger.debug(
+                    " name: {}, methodId: {}, methodSignature: {}, abi: {}",
+                    name,
+                    methodId,
+                    abiDefinition.getMethodSignatureAsString(),
+                    abiDefinition);
+        }
     }
 
     public void addEvent(String name, ABIDefinition abiDefinition) {
         events.putIfAbsent(name, new ArrayList<>());
         List<ABIDefinition> abiDefinitions = events.get(name);
         abiDefinitions.add(abiDefinition);
-        logger.info(" name: {}, abi: {}", name, abiDefinition);
+        if (logger.isDebugEnabled()) {
+            logger.debug(" name: {}, abi: {}", name, abiDefinition);
+        }
     }
 
     public ABIDefinition getABIDefinitionByMethodId(String methodId) {
