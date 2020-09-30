@@ -49,7 +49,7 @@ public class StatusCode {
     public static final String OverGroupMemoryLimit = "0x2716";
 
     public static String getStatusMessage(String status) {
-        return getStatusMessage(status, " Error code: " + status);
+        return getStatusMessage(status, status);
     }
 
     public static String getStatusMessage(String status, String errorMessage) {
