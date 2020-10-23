@@ -23,6 +23,7 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.BcosTransaction;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosTransactionReceipt;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BlockHash;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BlockNumber;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BlockTransactionReceipts;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Call;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Code;
 import org.fisco.bcos.web3j.protocol.core.methods.response.ConsensusStatus;
@@ -355,6 +356,39 @@ public class JsonRpc2_0Web3j implements Web3j {
                 Arrays.asList(groupId, transactionHash),
                 web3jService,
                 TransactionReceiptWithProof.class);
+    }
+
+    @Override
+    public Request<?, BlockTransactionReceipts> getBlockTransactionReceipts(
+            BigInteger blockNumber) {
+        return getBlockTransactionReceipts(blockNumber, BigInteger.ZERO, BigInteger.valueOf(-1));
+    }
+
+    @Override
+    public Request<?, BlockTransactionReceipts> getBlockTransactionReceipts(
+            BigInteger blockNumber, BigInteger offset, BigInteger count) {
+        return new Request<>(
+                "getBlockTransactionReceipts",
+                Arrays.asList(groupId, Numeric.encodeQuantity(blockNumber), offset, count),
+                web3jService,
+                BlockTransactionReceipts.class);
+    }
+
+    @Override
+    public Request<?, BlockTransactionReceipts> getBlockTransactionReceiptsByHash(
+            String blockHash) {
+        return getBlockTransactionReceiptsByHash(
+                blockHash, BigInteger.ZERO, BigInteger.valueOf(-1));
+    }
+
+    @Override
+    public Request<?, BlockTransactionReceipts> getBlockTransactionReceiptsByHash(
+            String blockHash, BigInteger offset, BigInteger count) {
+        return new Request<>(
+                "getBlockTransactionReceiptsByHash",
+                Arrays.asList(groupId, blockHash, offset, count),
+                web3jService,
+                BlockTransactionReceipts.class);
     }
 
     @Override
