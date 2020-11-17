@@ -1,11 +1,15 @@
 package org.fisco.bcos.web3j.protocol.core.methods.response;
 
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -44,7 +48,10 @@ public class BcosBlock extends Response<BcosBlock.Block> {
         private String gasLimit;
         private String gasUsed;
         private String timestamp;
+
+        @JsonSerialize(using = ResultTransactionSerialiser.class)
         private List<TransactionResult> transactions;
+
         private List<String> uncles;
         private List<String> sealerList;
 
@@ -528,6 +535,27 @@ public class BcosBlock extends Response<BcosBlock.Block> {
         @Override
         public Transaction get() {
             return this;
+        }
+    }
+
+    public static class ResultTransactionSerialiser
+            extends JsonSerializer<List<TransactionResult>> {
+
+        @Override
+        public void serialize(
+                List<TransactionResult> value, JsonGenerator gen, SerializerProvider serializers)
+                throws IOException {
+            gen.writeStartArray();
+            for (TransactionResult result : value) {
+                if (result instanceof TransactionHash) {
+                    TransactionHash transactionHash = (TransactionHash) result;
+                    gen.writeObject(transactionHash.get());
+                } else if (result instanceof TransactionObject) {
+                    TransactionObject transactionObject = (TransactionObject) result;
+                    gen.writeObject(transactionObject.get());
+                }
+            }
+            gen.writeEndArray();
         }
     }
 
