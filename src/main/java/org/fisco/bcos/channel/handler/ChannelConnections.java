@@ -89,6 +89,7 @@ public class ChannelConnections {
     private long reconnectDelay = (long) 20000;
     private long connectTimeout = (long) 10000;
     private long sslHandShakeTimeout = (long) 10000;
+    private boolean enableOpenSSL = true;
 
     private static final String helpInfo =
             "The reasons for failure may be: \n"
@@ -103,6 +104,14 @@ public class ChannelConnections {
     ServerBootstrap serverBootstrap = new ServerBootstrap();
 
     private ScheduledExecutorService scheduledExecutorService = new ScheduledThreadPoolExecutor(1);
+
+    public boolean isEnableOpenSSL() {
+        return enableOpenSSL;
+    }
+
+    public void setEnableOpenSSL(boolean enableOpenSSL) {
+        this.enableOpenSSL = enableOpenSSL;
+    }
 
     public Resource getCaCert() {
         return caCert;
@@ -387,7 +396,8 @@ public class ChannelConnections {
                     @Override
                     public void initChannel(SocketChannel ch) throws Exception {
                         /*
-                         * Each connection is fetched from the socketChannel, using the new handler connection information
+                         * Each connection is fetched from the socketChannel, using the new
+                         * handler connection information
                          */
                         ChannelHandler handler = new ChannelHandler();
                         handler.setConnections(selfService);
@@ -559,6 +569,11 @@ public class ChannelConnections {
         SslContext sslCtx;
         try {
 
+            if (!isEnableOpenSSL()) {
+                System.setProperty("jdk.tls.namedGroups", "secp256k1");
+                logger.info("set jdk.tls.namedGroups option");
+            }
+
             PathMatchingResourcePatternResolver resolver =
                     new PathMatchingResourcePatternResolver();
 
@@ -608,10 +623,11 @@ public class ChannelConnections {
             }
 
             logger.info(
-                    " ca certificate: {}, sdk certificate: {}, sdk key: {}",
+                    " ca certificate: {}, sdk certificate: {}, sdk key: {}, enableOpenSsl: {}",
                     caResource.getFilename(),
                     keystorecaResource.getFilename(),
-                    keystorekeyResource.getFilename());
+                    keystorekeyResource.getFilename(),
+                    isEnableOpenSSL());
 
             sslCtx =
                     SslContextBuilder.forClient()
@@ -619,8 +635,7 @@ public class ChannelConnections {
                             .keyManager(
                                     keystorecaResource.getInputStream(),
                                     keystorekeyResource.getInputStream())
-                            // .sslProvider(SslProvider.JDK)
-                            .sslProvider(SslProvider.OPENSSL)
+                            .sslProvider(isEnableOpenSSL() ? SslProvider.OPENSSL : SslProvider.JDK)
                             .build();
         } catch (Exception e) {
             logger.error(" Failed to initialize the SSLContext, e: {} ", e.getCause());
