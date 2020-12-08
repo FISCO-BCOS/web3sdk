@@ -41,14 +41,14 @@ public class GenCredential {
         }
     }
 
-    private static ECKeyPair createGuomiKeyPair(String privKey) {
+    public static ECKeyPair createGuomiKeyPair(String privKey) {
         SM2KeyGenerator generator = new SM2KeyGenerator();
         final KeyPair keyPairData = generator.generateKeyPair(privKey);
         if (keyPairData != null) return genEcPairFromKeyPair(keyPairData);
         return null;
     }
 
-    private static ECKeyPair createECDSAKeyPair(String privKey) {
+    public static ECKeyPair createECDSAKeyPair(String privKey) {
         try {
             BigInteger bigPrivKey = new BigInteger(privKey, 16);
             ECKeyPair keyPair = ECKeyPair.create(bigPrivKey);

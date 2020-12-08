@@ -3,6 +3,7 @@ package org.fisco.bcos.web3j.crypto;
 import static org.fisco.bcos.web3j.utils.Assertions.verifyPrecondition;
 
 import java.math.BigInteger;
+import java.security.KeyPair;
 import java.security.SignatureException;
 import java.util.Arrays;
 import org.bouncycastle.asn1.x9.X9ECParameters;
@@ -13,6 +14,9 @@ import org.bouncycastle.math.ec.ECAlgorithms;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.math.ec.FixedPointCombMultiplier;
 import org.bouncycastle.math.ec.custom.sec.SecP256K1Curve;
+import org.fisco.bcos.web3j.crypto.gm.sm2.crypto.asymmetric.SM2KeyGenerator;
+import org.fisco.bcos.web3j.crypto.gm.sm2.crypto.asymmetric.SM2PublicKey;
+import org.fisco.bcos.web3j.crypto.gm.sm2.util.encoders.Hex;
 
 /**
  * Transaction signing logic.
@@ -260,6 +264,25 @@ public class Sign {
 
         byte[] encoded = point.getEncoded(false);
         return new BigInteger(1, Arrays.copyOfRange(encoded, 1, encoded.length)); // remove prefix
+    }
+
+    /**
+     * Returns sm public key from the given private key.
+     *
+     * @param biPrivateKey the private key to derive the public key from
+     * @return BigInteger encoded public key
+     */
+    public static BigInteger smPublicKeyFromPrivate(BigInteger biPrivateKey) {
+        String privateKey = biPrivateKey.toString(16);
+
+        SM2KeyGenerator generator = new SM2KeyGenerator();
+        final KeyPair keyPairData = generator.generateKeyPair(privateKey);
+
+        SM2PublicKey pk = (SM2PublicKey) keyPairData.getPublic();
+        final byte[] publicKey = pk.getEncoded();
+
+        BigInteger biPublicKey = new BigInteger(Hex.toHexString(publicKey), 16);
+        return biPublicKey;
     }
 
     /**
