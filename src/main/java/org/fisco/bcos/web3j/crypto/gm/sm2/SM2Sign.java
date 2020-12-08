@@ -14,6 +14,7 @@ import org.fisco.bcos.web3j.crypto.ECKeyPair;
 import org.fisco.bcos.web3j.crypto.Sign;
 import org.fisco.bcos.web3j.crypto.SignInterface;
 import org.fisco.bcos.web3j.crypto.gm.sm2.crypto.asymmetric.SM2Algorithm;
+import org.fisco.bcos.web3j.crypto.gm.sm2.util.BigIntegers;
 import org.fisco.bcos.web3j.crypto.gm.sm2.util.encoders.Hex;
 import org.fisco.bcos.web3j.crypto.gm.sm3.SM3Digest;
 import org.fisco.bcos.web3j.utils.Numeric;
@@ -90,7 +91,7 @@ public class SM2Sign implements SignInterface {
         try {
             byte[] signByte = SM2Algorithm.sign(messageHash, ecKeyPair.getPrivateKey());
             logger.debug("signData:{}", signByte);
-            // System.out.println("signData:" + Hex.toHexString(signByte));
+
             ASN1Sequence as = (ASN1Sequence) ASN1Primitive.fromByteArray(signByte);
             rs =
                     new BigInteger[] {
@@ -116,5 +117,24 @@ public class SM2Sign implements SignInterface {
             // System.out.println("SM2 SignPublic:" + Hex.toHexString(pub));
         }
         return new Sign.SignatureData(v, r, s, pub);
+    }
+
+    /**
+     * @param hash SM3 hash
+     * @param signatureData
+     * @return
+     * @throws IOException
+     */
+    public static boolean verify(byte[] hash, Sign.SignatureData signatureData) {
+
+        byte[] pub = signatureData.getPub();
+
+        String hexPbkX = org.bouncycastle.util.encoders.Hex.toHexString(pub, 0, 32);
+        String hexPbkY = org.bouncycastle.util.encoders.Hex.toHexString(pub, 32, 32);
+
+        BigInteger biR = BigIntegers.fromUnsignedByteArray(signatureData.getR());
+        BigInteger biS = BigIntegers.fromUnsignedByteArray(signatureData.getS());
+
+        return SM2Algorithm.verify(hash, biR, biS, hexPbkX, hexPbkY);
     }
 }
