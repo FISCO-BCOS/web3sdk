@@ -485,6 +485,10 @@ public class SM2Algorithm {
         sm3.update(bytes, 0, bytes.length);
     }
 
+    public static BigInteger getDecoded(byte[] bytes) {
+        return BigIntegers.fromUnsignedByteArray(bytes);
+    }
+
     public static byte[] getEncoded(BigInteger value) {
         byte[] bytes = BigIntegers.asUnsignedByteArray(value);
         if (bytes.length > mFieldSizeInBytes) {
@@ -535,6 +539,23 @@ public class SM2Algorithm {
                     ((ASN1Integer) as.getObjectAt(0)).getValue(),
                     ((ASN1Integer) as.getObjectAt(1)).getValue()
                 };
+
+        byte[] r = getEncoded(rs[0]);
+        byte[] s = getEncoded(rs[1]);
+
+        byte[] rsBytes = new byte[r.length + s.length];
+        System.arraycopy(r, 0, rsBytes, 0, r.length);
+        System.arraycopy(s, 0, rsBytes, r.length, s.length);
+
+        return verify(data, rsBytes, biX, biY);
+    }
+
+    public static boolean verify(
+            byte[] data, BigInteger biR, BigInteger biS, String hexPbkX, String hexPbkY) {
+        BigInteger biX = new BigInteger(hexPbkX, 16);
+        BigInteger biY = new BigInteger(hexPbkY, 16);
+
+        BigInteger[] rs = new BigInteger[] {biR, biS};
 
         byte[] r = getEncoded(rs[0]);
         byte[] s = getEncoded(rs[1]);

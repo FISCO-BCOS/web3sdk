@@ -65,8 +65,8 @@ public class ContractABIDefinition {
         String methodId = abiDefinition.getMethodId();
         methodIDToFunctions.put(methodId, abiDefinition);
 
-        if (logger.isDebugEnabled()) {
-            logger.debug(
+        if (logger.isTraceEnabled()) {
+            logger.trace(
                     " name: {}, methodId: {}, methodSignature: {}, abi: {}",
                     name,
                     methodId,
