@@ -140,14 +140,17 @@ public class Web3jApITest extends TestBase {
 
   @Test
   public void getBlockByHash() throws Exception {
-    BcosBlock bcosBlock = web3j.getBlockByHash(blockHash, true).send();
+    BlockHash currentBlockHash =
+            web3j.getBlockHashByNumber(DefaultBlockParameter.valueOf(blockNumber)).send();
+    BcosBlock bcosBlock = web3j.getBlockByHash(currentBlockHash.getBlockHashByNumber(), true).send();
     assertNotNull(bcosBlock.getBlock());
   }
 
   @Test
   public void getBlockByNumber() throws Exception {
+    BlockNumber currentBlockNumber = web3j.getBlockNumber().send();
     BcosBlock bcosBlock =
-        web3j.getBlockByNumber(DefaultBlockParameter.valueOf(blockNumber), true).send();
+        web3j.getBlockByNumber(DefaultBlockParameter.valueOf(currentBlockNumber.getBlockNumber()), true).send();
     assertNotNull(bcosBlock.getBlock());
   }
 
