@@ -369,7 +369,12 @@ public class JsonRpc2_0Web3j implements Web3j {
             BigInteger blockNumber, BigInteger offset, BigInteger count) {
         return new Request<>(
                 "getBatchReceiptsByBlockNumberAndRange",
-                Arrays.asList(groupId, Numeric.encodeQuantity(blockNumber), offset, count),
+                Arrays.asList(
+                        groupId,
+                        Numeric.encodeQuantity(blockNumber),
+                        offset.toString(10),
+                        count.toString(10),
+                        true),
                 web3jService,
                 BlockTransactionReceipts.class);
     }
@@ -386,7 +391,7 @@ public class JsonRpc2_0Web3j implements Web3j {
             String blockHash, BigInteger offset, BigInteger count) {
         return new Request<>(
                 "getBatchReceiptsByBlockHashAndRange",
-                Arrays.asList(groupId, blockHash, offset, count),
+                Arrays.asList(groupId, blockHash, offset.toString(10), count.toString(10), true),
                 web3jService,
                 BlockTransactionReceipts.class);
     }
