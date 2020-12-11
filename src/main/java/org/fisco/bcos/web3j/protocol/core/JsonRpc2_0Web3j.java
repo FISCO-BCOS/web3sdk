@@ -368,7 +368,7 @@ public class JsonRpc2_0Web3j implements Web3j {
     public Request<?, BlockTransactionReceipts> getBlockTransactionReceipts(
             BigInteger blockNumber, BigInteger offset, BigInteger count) {
         return new Request<>(
-                "getBlockTransactionReceipts",
+                "getBatchReceiptsByBlockNumberAndRange",
                 Arrays.asList(groupId, Numeric.encodeQuantity(blockNumber), offset, count),
                 web3jService,
                 BlockTransactionReceipts.class);
@@ -385,7 +385,7 @@ public class JsonRpc2_0Web3j implements Web3j {
     public Request<?, BlockTransactionReceipts> getBlockTransactionReceiptsByHash(
             String blockHash, BigInteger offset, BigInteger count) {
         return new Request<>(
-                "getBlockTransactionReceiptsByHash",
+                "getBatchReceiptsByBlockHashAndRange",
                 Arrays.asList(groupId, blockHash, offset, count),
                 web3jService,
                 BlockTransactionReceipts.class);
