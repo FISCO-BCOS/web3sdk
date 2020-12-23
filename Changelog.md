@@ -1,6 +1,6 @@
-### v2.7.0
+### v2.6.3
 
-(2020-10-22)
+(2020-12-23)
 
 * 新增
 1. getBlockTransactionReceipts
@@ -11,6 +11,7 @@
 
 * 修复
 1. `netty-all 4.1.52+`版本无法使用的问题
+2. 修复`jdk15`无法使用的问题
 
 * 兼容
 1. 适配fisco-bcos 2.4.0版本，支持Channel Message v1/V2/V3协议
