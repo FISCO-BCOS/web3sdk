@@ -92,26 +92,36 @@ public class ChannelEthereumService extends org.fisco.bcos.web3j.protocol.Servic
                     }
 
                     if (StatusCode.RevertInstruction.equals(callResult.getStatus())) {
-                        throw new ContractCallException(
-                                "The execution of the contract rolled back"
-                                        + (revertMessage.getValue1()
-                                                ? ", " + revertMessage.getValue2()
-                                                : "")
-                                        + ".");
+                        ContractCallException contractCallException =
+                                new ContractCallException(
+                                        "The execution of the contract rolled back"
+                                                + (revertMessage.getValue1()
+                                                        ? ", " + revertMessage.getValue2()
+                                                        : "")
+                                                + ".");
+                        contractCallException.setCallOutput(callResult);
+                        throw contractCallException;
                     }
                     if (StatusCode.CallAddressError.equals(callResult.getStatus())) {
-                        throw new ContractCallException("The contract address is incorrect.");
+                        ContractCallException contractCallException =
+                                new ContractCallException("The contract address is incorrect.");
+                        contractCallException.setCallOutput(callResult);
+                        throw contractCallException;
                     }
 
                     if (!StatusCode.Success.equals(callResult.getStatus())) {
-                        throw new ContractCallException(
-                                StatusCode.getStatusMessage(callResult.getStatus()));
+                        ContractCallException contractCallException =
+                                new ContractCallException(
+                                        StatusCode.getStatusMessage(callResult.getStatus()));
+                        contractCallException.setCallOutput(callResult);
+                        throw contractCallException;
                     }
                 }
                 return t;
             } catch (ContractCallException e) {
                 throw e;
             } catch (Exception e) {
+                logger.error("e: ", e);
                 throw new MessageDecodingException(response.getContent());
             }
         } else {
