@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.Objects;
 import org.fisco.bcos.web3j.protocol.core.Response;
+import org.fisco.bcos.web3j.utils.Numeric;
 
 public class BcosBlockHeader extends Response<BcosBlockHeader.BlockHeader> {
 
@@ -51,7 +52,7 @@ public class BcosBlockHeader extends Response<BcosBlockHeader.BlockHeader> {
         private String gasUsed;
         private String hash;
         private String logsBloom;
-        private BigInteger number;
+        private String number;
         private String parentHash;
         private String transactionsRoot;
         private String sealer;
@@ -112,10 +113,14 @@ public class BcosBlockHeader extends Response<BcosBlockHeader.BlockHeader> {
         }
 
         public BigInteger getNumber() {
+            return Numeric.decodeQuantity(number);
+        }
+
+        public String getNumberRaw() {
             return number;
         }
 
-        public void setNumber(BigInteger number) {
+        public void setNumber(String number) {
             this.number = number;
         }
 

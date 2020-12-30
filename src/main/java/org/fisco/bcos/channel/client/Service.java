@@ -297,6 +297,7 @@ public class Service {
         logger.info(" #jdk.disabled.namedCurves. ");
 
         Security.setProperty("jdk.disabled.namedCurves", "");
+        System.setProperty("jdk.sunec.disableNative", "false");
 
         /*
         System.setProperty("jdk.tls.namedGroups", "secp256k1");

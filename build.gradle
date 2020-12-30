@@ -12,10 +12,10 @@ targetCompatibility = 1.8
 [compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
 
 repositories {
+    mavenCentral()
     maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
     maven { url 'https://dl.bintray.com/ethereum/maven/' }
     maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
-    mavenCentral()
 }
 
 //configurations.all.resolutionStrategy {
@@ -69,12 +69,12 @@ dependencies {
     // compile 'io.netty:netty-tcnative:2.0.25.Final'
     // compile 'io.netty:netty-tcnative-boringssl-static:2.0.27.Final'
     // compile 'org.fisco-bcos:netty-sm-ssl-context:1.0.0-SNAPSHOT'
-    compile ('org.fisco-bcos:netty-sm-ssl-context:1.1.0') {
+    compile ('org.fisco-bcos:netty-sm-ssl-context:1.2.0') {
         exclude module:"log4j"
     }
 
     compile 'org.ethereum:solcJ-all:0.4.25'
-    compile 'io.netty:netty-all:4.1.50.Final'
+    compile 'io.netty:netty-all:4.1.53.Final'
     compile 'com.google.guava:guava:29.0-jre'
     compile 'commons-configuration:commons-configuration:1.10'
     compile 'org.apache.httpcomponents:httpclient:4.5.5'
