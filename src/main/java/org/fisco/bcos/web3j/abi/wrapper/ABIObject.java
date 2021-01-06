@@ -1,6 +1,5 @@
 package org.fisco.bcos.web3j.abi.wrapper;
 
-import java.security.InvalidParameterException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -53,6 +52,7 @@ public class ABIObject {
 
     private NumericType numericValue;
     private Bytes bytesValue;
+    private int bytesLength;
     private Address addressValue;
     private Bool boolValue;
     private DynamicBytes dynamicBytesValue;
@@ -89,6 +89,11 @@ public class ABIObject {
     public ABIObject(ValueType valueType) {
         this.type = ObjectType.VALUE;
         this.valueType = valueType;
+    }
+
+    public ABIObject(ValueType bytesValueType, int bytesLength) {
+        this(bytesValueType);
+        this.bytesLength = bytesLength;
     }
 
     public ABIObject(ListType listType) {
@@ -132,6 +137,11 @@ public class ABIObject {
         this.bytesValue = bytesValue;
     }
 
+    public ABIObject(Bytes bytesValue, int bytesLength) {
+        this(bytesValue);
+        this.bytesLength = bytesLength;
+    }
+
     public ABIObject newObjectWithoutValue() {
         ABIObject abiObject = new ABIObject(this.type);
         // value
@@ -166,6 +176,7 @@ public class ABIObject {
     public ABIObject newObject() {
 
         ABIObject abiObject = new ABIObject(this.type);
+        abiObject.setBytesLength(this.bytesLength);
 
         // value
         abiObject.setValueType(this.getValueType());
@@ -239,7 +250,7 @@ public class ABIObject {
     /**
      * Checks to see if the current type is dynamic
      *
-     * @return
+     * @return true/false
      */
     public boolean isDynamic() {
         switch (type) {
@@ -285,7 +296,7 @@ public class ABIObject {
     /**
      * dynamic offset of this object
      *
-     * @return
+     * @return the offset of the ABIObject
      */
     public int offset() {
         if (isDynamic()) { // dynamic
@@ -321,7 +332,7 @@ public class ABIObject {
     /**
      * encode this object
      *
-     * @return
+     * @return the encoded object
      */
     public String encode() {
 
@@ -350,10 +361,6 @@ public class ABIObject {
                             }
                         case BYTES:
                             {
-                                if (bytesValue.getValue().length > 32) {
-                                    throw new InvalidParameterException(
-                                            "the length of bytesN must be equal or less than 32");
-                                }
                                 stringBuffer.append(TypeEncoder.encode(bytesValue));
                                 break;
                             }
@@ -440,7 +447,8 @@ public class ABIObject {
     /**
      * decode this object
      *
-     * @return
+     * @param input the string to be decoded into ABIObject
+     * @return the decoded ABIObject
      */
     public ABIObject decode(String input) {
         return decode(input, 0);
@@ -449,7 +457,7 @@ public class ABIObject {
     /**
      * decode this object
      *
-     * @return
+     * @return the decoded ABIObject
      */
     private ABIObject decode(String input, int offset) {
 
@@ -625,7 +633,11 @@ public class ABIObject {
 
     public void setNumericValue(NumericType numericValue) {
         this.type = ObjectType.VALUE;
-        this.valueType = ValueType.UINT;
+        if (numericValue.getTypeAsString().startsWith("int") || numericValue instanceof Int256) {
+            this.valueType = ValueType.INT;
+        } else {
+            this.valueType = ValueType.UINT;
+        }
         this.numericValue = numericValue;
     }
 
@@ -711,6 +723,14 @@ public class ABIObject {
         this.listLength = listLength;
     }
 
+    public int getBytesLength() {
+        return bytesLength;
+    }
+
+    public void setBytesLength(int bytesLength) {
+        this.bytesLength = bytesLength;
+    }
+
     @Override
     public String toString() {
 
@@ -742,7 +762,8 @@ public class ABIObject {
                             Objects.isNull(dynamicBytesValue)
                                     ? "null"
                                     : dynamicBytesValue.getValue();
-                case STRING:
+                    // case STRING:
+                default:
                     str += ", stringValue=";
                     str += Objects.isNull(stringValue) ? "null" : stringValue.getValue();
             }

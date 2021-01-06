@@ -78,6 +78,19 @@ public class PrecompiledCommon {
     public static final int InvalidCommitteeMemberNotExist = -52001;
     public static final int InvalidCommitteeMemberAlreadyExist = -52000;
 
+    // GasChargerManagePrecompiled -53099 ~ -53000
+    public static final int CODE_GCM_QUERY_PERMISSION_DENIED = -53009;
+    public static final int CODE_GCM_UNDEFINED_FUNCTION = -53008;
+    public static final int CODE_GCM_CHARGER_NOT_EXISTS = -53007;
+    public static final int CODE_GCM_CHARGER_ALREADY_EXISTS = -53006;
+    public static final int CODE_GCM_REVOKE_PERMISSION_DENIED = -53005;
+    public static final int CODE_GCM_GRANT_PERMISSION_DENIED = -53004;
+    public static final int CODE_GCM_NOT_ENOUGH_REMAIN_GAS = -53003;
+
+    public static final int CODE_GCM_CHARGED_GAS_OVERFLOW = -53002;
+    public static final int CODE_GCM_INVALID_ZERO_GAS_VALUE = -53001;
+    public static final int CODE_GCM_PERMISSION_DENIED = -53000;
+
     public static final int TABLE_KEY_MAX_LENGTH = 255;
 
     public static String BCOS_VERSION = "";
@@ -189,8 +202,30 @@ public class PrecompiledCommon {
             msg = "committee member already exist";
         } else if (code == NotSupportPermissionCommand) {
             msg = "committee permission control by ChainGovernancePrecompiled are recommended";
+        } else if (code == CODE_GCM_QUERY_PERMISSION_DENIED) {
+            msg =
+                    "The account has no permission to query gas, only the charger or the account-self has the permission";
+        } else if (code == CODE_GCM_UNDEFINED_FUNCTION) {
+            msg = "Undefined function call to GasChargeManagePrecompiled";
+        } else if (code == CODE_GCM_CHARGER_NOT_EXISTS) {
+            msg = "The revoked account does not exists in the charger list";
+        } else if (code == CODE_GCM_CHARGER_ALREADY_EXISTS) {
+            msg = "The granted account is already the charger";
+        } else if (code == CODE_GCM_REVOKE_PERMISSION_DENIED) {
+            msg =
+                    "Have no permission to revoke the charger, only the committees can revoke chargers";
+        } else if (code == CODE_GCM_GRANT_PERMISSION_DENIED) {
+            msg = "Have no permission to grant the charger, only the committees can grant chargers";
+        } else if (code == CODE_GCM_NOT_ENOUGH_REMAIN_GAS) {
+            msg = "Deduct gas failed for the remain gas is less than the deducted gas";
+        } else if (code == CODE_GCM_CHARGED_GAS_OVERFLOW) {
+            msg = "Charge gas failed for integer overflow";
+        } else if (code == CODE_GCM_INVALID_ZERO_GAS_VALUE) {
+            msg = "The charged/deducted gas must be positive value";
+        } else if (code == CODE_GCM_PERMISSION_DENIED) {
+            msg =
+                    "The account has no permission to charge/deduct gas, only chargers has the permission";
         }
-
         ObjectMapper mapper = ObjectMapperFactory.getObjectMapper();
         return mapper.writeValueAsString(new PrecompiledResponse(code, msg));
     }
