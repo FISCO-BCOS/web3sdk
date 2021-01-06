@@ -9,6 +9,7 @@ public class TransactionException extends Exception {
     private String status;
     private BigInteger gasUsed;
     private TransactionReceipt receipt;
+    private int errorCode;
 
     public String getStatus() {
         return status;
@@ -32,6 +33,11 @@ public class TransactionException extends Exception {
 
     public TransactionException(String message) {
         super(message);
+    }
+
+    public TransactionException(String message, int errorCode) {
+        super(message);
+        this.errorCode = errorCode;
     }
 
     public TransactionException(String message, String transactionHash) {
@@ -66,5 +72,13 @@ public class TransactionException extends Exception {
 
     public void setReceipt(TransactionReceipt receipt) {
         this.receipt = receipt;
+    }
+
+    public int getErrorCode() {
+        return errorCode;
+    }
+
+    public void setErrorCode(int errorCode) {
+        this.errorCode = errorCode;
     }
 }
