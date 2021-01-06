@@ -3,6 +3,13 @@ package org.fisco.bcos.web3j.protocol.core.methods.response;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.math.BigInteger;
 import java.util.List;
+import org.apache.commons.lang3.tuple.Pair;
+import org.fisco.bcos.web3j.abi.ABICodec;
+import org.fisco.bcos.web3j.abi.ABICodecException;
+import org.fisco.bcos.web3j.abi.wrapper.ABIObject;
+import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
+import org.fisco.bcos.web3j.protocol.channel.StatusCode;
+import org.fisco.bcos.web3j.tx.txdecode.TransactionResponse;
 import org.fisco.bcos.web3j.utils.Numeric;
 
 /** TransactionReceipt object used by {@link BcosTransactionReceipt}. */
@@ -225,6 +232,34 @@ public class TransactionReceipt {
 
     public void setReceiptProof(List<MerkleProofUnit> receiptProof) {
         this.receiptProof = receiptProof;
+    }
+
+    public TransactionResponse parseReceipt(String abi, String functionName)
+            throws ABICodecException {
+        TransactionResponse response = new TransactionResponse();
+        response.setTransactionReceipt(this);
+        response.setContractAddress(getContractAddress());
+        // transaction execute exception
+        if (!isStatusOK()) {
+            response.setReceiptMessages(StatusCode.getStatusMessage(getStatus(), getMessage()));
+        }
+        if (getOutput() == null || getOutput().isEmpty()) {
+            return response;
+        }
+        // decode the output
+        ABICodec abiCodec = new ABICodec();
+        Pair<List<Object>, List<ABIObject>> outputObject =
+                abiCodec.decodeMethodAndGetOutputObject(abi, functionName, getOutput());
+        try {
+            response.setValues(
+                    ObjectMapperFactory.getObjectMapper()
+                            .writeValueAsString(outputObject.getLeft()));
+            response.setReturnObject(outputObject.getLeft());
+            response.setReturnABIObject(outputObject.getRight());
+            return response;
+        } catch (Exception e) {
+            throw new ABICodecException("Failed to serialize object to json string");
+        }
     }
 
     @Override
