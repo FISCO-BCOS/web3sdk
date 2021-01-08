@@ -27,7 +27,6 @@ public class TransactionResponse {
     private TransactionReceipt transactionReceipt;
     private String contractAddress;
     private String values;
-    private String events;
     private String receiptMessages;
     private List<Object> returnObject;
     private List<ABIObject> returnABIObject;
@@ -65,16 +64,6 @@ public class TransactionResponse {
     /** @param values the values to set */
     public void setValues(String values) {
         this.values = values;
-    }
-
-    /** @return the events */
-    public String getEvents() {
-        return events;
-    }
-
-    /** @param events the events to set */
-    public void setEvents(String events) {
-        this.events = events;
     }
 
     /** @return the receiptMessages */
@@ -129,9 +118,6 @@ public class TransactionResponse {
                 + '\''
                 + ", values='"
                 + values
-                + '\''
-                + ", events='"
-                + events
                 + '\''
                 + ", receiptMessages='"
                 + receiptMessages
