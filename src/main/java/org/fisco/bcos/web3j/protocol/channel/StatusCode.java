@@ -34,7 +34,7 @@ public class StatusCode {
     public static final String TransactionRefused = "0x1d";
     public static final String ContractFrozen = "0x1e";
     public static final String AccountFrozen = "0x1f";
-
+    public static final String NotEnoughRemainGas = "0x20";
     // extension
     public static final String ExceptionCatched = "0x30";
     public static final String ErrorInRPC = "0x31";
@@ -174,6 +174,9 @@ public class StatusCode {
                 break;
             case AccountFrozen:
                 message = "account has been frozen";
+                break;
+            case NotEnoughRemainGas:
+                message = "The remain gas of the account is less than the required gas";
                 break;
             default:
                 message = errorMessage;
