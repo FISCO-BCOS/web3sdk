@@ -47,8 +47,7 @@ public class GasChargeManageService {
         return transactionResponse;
     }
 
-    public TransactionResponse TransactionResponse(String userAccount, BigInteger gasValue)
-            throws Exception {
+    public TransactionResponse charge(String userAccount, BigInteger gasValue) throws Exception {
         return decodeReceipt(
                 gasChargeManagePrecompiled.charge(userAccount, gasValue).send(),
                 gasChargeManagePrecompiled.FUNC_CHARGE,
