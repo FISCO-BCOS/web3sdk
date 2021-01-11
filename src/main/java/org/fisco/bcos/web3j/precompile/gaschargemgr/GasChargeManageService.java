@@ -28,10 +28,15 @@ public class GasChargeManageService {
                         GasChargeManagePrecompileAddress, web3j, credentials, contractGasProvider);
     }
 
-    public TransactionResponse decodeReceipt(
-            TransactionReceipt receipt, String functionName, String errorMessage) throws Exception {
-        TransactionResponse transactionResponse =
-                receipt.parseReceipt(gasChargeManagePrecompiled.ABI, functionName);
+    private TransactionResponse decodeReceipt(TransactionReceipt receipt, String functionName)
+            throws Exception {
+        return GasChargeManageService.decodeReceipt(
+                receipt, gasChargeManagePrecompiled.ABI, functionName);
+    }
+
+    public static TransactionResponse decodeReceipt(
+            TransactionReceipt receipt, String abi, String functionName) throws Exception {
+        TransactionResponse transactionResponse = receipt.parseReceipt(abi, functionName);
         if (transactionResponse.getReturnABIObject() == null
                 || transactionResponse.getReturnObject().isEmpty()) {
             return transactionResponse;
@@ -50,15 +55,13 @@ public class GasChargeManageService {
     public TransactionResponse charge(String userAccount, BigInteger gasValue) throws Exception {
         return decodeReceipt(
                 gasChargeManagePrecompiled.charge(userAccount, gasValue).send(),
-                gasChargeManagePrecompiled.FUNC_CHARGE,
-                "GasChargeManageService: failed to call charge");
+                gasChargeManagePrecompiled.FUNC_CHARGE);
     }
 
     public TransactionResponse deduct(String userAccount, BigInteger gasValue) throws Exception {
         return decodeReceipt(
                 gasChargeManagePrecompiled.deduct(userAccount, gasValue).send(),
-                gasChargeManagePrecompiled.FUNC_DEDUCT,
-                "GasChargeManageService: failed to call deduct");
+                gasChargeManagePrecompiled.FUNC_DEDUCT);
     }
 
     public BigInteger queryRemainGas(String userAccount) throws Exception {
