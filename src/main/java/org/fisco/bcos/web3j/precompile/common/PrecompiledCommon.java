@@ -79,7 +79,6 @@ public class PrecompiledCommon {
     public static final int InvalidCommitteeMemberAlreadyExist = -52000;
 
     // GasChargerManagePrecompiled -53099 ~ -53000
-    public static final int CODE_GCM_QUERY_PERMISSION_DENIED = -53009;
     public static final int CODE_GCM_UNDEFINED_FUNCTION = -53008;
     public static final int CODE_GCM_CHARGER_NOT_EXISTS = -53007;
     public static final int CODE_GCM_CHARGER_ALREADY_EXISTS = -53006;
@@ -202,9 +201,6 @@ public class PrecompiledCommon {
             msg = "committee member already exist";
         } else if (code == NotSupportPermissionCommand) {
             msg = "committee permission control by ChainGovernancePrecompiled are recommended";
-        } else if (code == CODE_GCM_QUERY_PERMISSION_DENIED) {
-            msg =
-                    "The account has no permission to query gas, only the charger or the account-self has the permission";
         } else if (code == CODE_GCM_UNDEFINED_FUNCTION) {
             msg = "Undefined function call to GasChargeManagePrecompiled";
         } else if (code == CODE_GCM_CHARGER_NOT_EXISTS) {
