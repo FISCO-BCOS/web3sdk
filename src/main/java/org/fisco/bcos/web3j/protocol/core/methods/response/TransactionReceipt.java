@@ -19,6 +19,7 @@ public class TransactionReceipt {
     private String blockHash;
     private String blockNumber;
     private String gasUsed;
+    private String remainGas;
     private String contractAddress;
     private String root;
     // status is only present on Byzantium transactions onwards
@@ -234,6 +235,14 @@ public class TransactionReceipt {
         this.receiptProof = receiptProof;
     }
 
+    public String getRemainGas() {
+        return remainGas;
+    }
+
+    public void setRemainGas(String remainGas) {
+        this.remainGas = remainGas;
+    }
+
     public TransactionResponse parseReceipt(String abi, String functionName)
             throws ABICodecException {
         TransactionResponse response = new TransactionResponse();
@@ -368,6 +377,9 @@ public class TransactionReceipt {
                 + ", gasUsed='"
                 + gasUsed
                 + '\''
+                + ", remainGas='"
+                + remainGas
+                + '\''
                 + ", contractAddress='"
                 + contractAddress
                 + '\''
@@ -397,9 +409,9 @@ public class TransactionReceipt {
                 + ", logsBloom='"
                 + logsBloom
                 + '\''
-                + ", transAndProof="
+                + ", txProof="
                 + txProof
-                + ", receiptAndProof="
+                + ", receiptProof="
                 + receiptProof
                 + '}';
     }
