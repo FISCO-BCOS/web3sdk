@@ -70,6 +70,41 @@ public class TransactionReceipt {
         this.logsBloom = logsBloom;
     }
 
+    public TransactionReceipt(
+            String transactionHash,
+            String transactionIndex,
+            String blockHash,
+            String blockNumber,
+            String gasUsed,
+            String remainGas,
+            String contractAddress,
+            String root,
+            String status,
+            String message,
+            String from,
+            String to,
+            String input,
+            String output,
+            List<Log> logs,
+            String logsBloom) {
+        this.transactionHash = transactionHash;
+        this.transactionIndex = transactionIndex;
+        this.blockHash = blockHash;
+        this.blockNumber = blockNumber;
+        this.gasUsed = gasUsed;
+        this.remainGas = remainGas;
+        this.contractAddress = contractAddress;
+        this.root = root;
+        this.status = status;
+        this.message = message;
+        this.from = from;
+        this.to = to;
+        this.input = input;
+        this.output = output;
+        this.logs = logs;
+        this.logsBloom = logsBloom;
+    }
+
     public String getTransactionHash() {
         return transactionHash;
     }
@@ -250,9 +285,13 @@ public class TransactionReceipt {
         response.setContractAddress(getContractAddress());
         // transaction execute exception
         if (!isStatusOK()) {
-            response.setReceiptMessages(StatusCode.getStatusMessage(getStatus(), getMessage()));
+            String receiptMessage = StatusCode.getStatusMessage(getStatus(), getMessage());
+            response.setReceiptMessages(receiptMessage);
+            response.setReturnMessage(receiptMessage);
+            response.setReturnCode(Numeric.decodeQuantity(getStatus()).intValue());
+            return response;
         }
-        if (getOutput() == null || getOutput().isEmpty()) {
+        if (getOutput() == null || getOutput().isEmpty() || getOutput().equals("0x")) {
             return response;
         }
         // decode the output
