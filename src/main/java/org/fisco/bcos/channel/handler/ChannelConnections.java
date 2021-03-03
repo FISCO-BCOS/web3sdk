@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
@@ -573,14 +572,18 @@ public class ChannelConnections {
             if (!isEnableOpenSSL()) {
 
                 String property = System.getProperty("jdk.tls.namedGroups", "");
-                if (property == null  || "".equals(property)) {
+                if (property == null || "".equals(property)) {
                     System.setProperty("jdk.tls.namedGroups", "secp256k1");
                     logger.info("jdk.tls.namedGroups has not been set, property: {}", property);
                 } else if (!property.contains("secp256k1")) {
                     System.setProperty("jdk.tls.namedGroups", property + ",secp256k1");
-                    logger.info("jdk.tls.namedGroups not including secp256k1 has been set, property: {}", property);
+                    logger.info(
+                            "jdk.tls.namedGroups not including secp256k1 has been set, property: {}",
+                            property);
                 } else {
-                    logger.info("jdk.tls.namedGroups including secp256k1 has been set, property: {}", property);
+                    logger.info(
+                            "jdk.tls.namedGroups including secp256k1 has been set, property: {}",
+                            property);
                 }
             }
 
