@@ -570,8 +570,21 @@ public class ChannelConnections {
         try {
 
             if (!isEnableOpenSSL()) {
-                System.setProperty("jdk.tls.namedGroups", "secp256k1");
-                logger.info("set jdk.tls.namedGroups option");
+
+                String property = System.getProperty("jdk.tls.namedGroups", "");
+                if (property == null || "".equals(property)) {
+                    System.setProperty("jdk.tls.namedGroups", "secp256k1");
+                    logger.info("jdk.tls.namedGroups has not been set, property: {}", property);
+                } else if (!property.contains("secp256k1")) {
+                    System.setProperty("jdk.tls.namedGroups", property + ",secp256k1");
+                    logger.info(
+                            "jdk.tls.namedGroups not including secp256k1 has been set, property: {}",
+                            property);
+                } else {
+                    logger.info(
+                            "jdk.tls.namedGroups including secp256k1 has been set, property: {}",
+                            property);
+                }
             }
 
             PathMatchingResourcePatternResolver resolver =

@@ -128,7 +128,6 @@ public class ConnectionCallback implements ChannelConnections.Callback {
         ByteBuf byteBuf = ctx.alloc().buffer();
         bcosMessage.writeHeader(byteBuf);
         bcosMessage.writeExtra(byteBuf);
-        ctx.writeAndFlush(byteBuf);
 
         channelService
                 .getSeq2Callback()
@@ -190,6 +189,7 @@ public class ConnectionCallback implements ChannelConnections.Callback {
                                 }
                             }
                         });
+        ctx.writeAndFlush(byteBuf);
     }
 
     private void queryNodeVersion(ChannelHandlerContext ctx) throws JsonProcessingException {
@@ -215,7 +215,6 @@ public class ConnectionCallback implements ChannelConnections.Callback {
         ByteBuf byteBuf = ctx.alloc().buffer();
         bcosMessage.writeHeader(byteBuf);
         bcosMessage.writeExtra(byteBuf);
-        ctx.writeAndFlush(byteBuf);
 
         BcosResponseCallback callback =
                 new BcosResponseCallback() {
@@ -317,6 +316,7 @@ public class ConnectionCallback implements ChannelConnections.Callback {
                                 TimeUnit.MILLISECONDS));
 
         channelService.getSeq2Callback().put(seq, callback);
+        ctx.writeAndFlush(byteBuf);
     }
 
     public void sendUpdateTopicMessage(ChannelHandlerContext ctx) throws JsonProcessingException {
@@ -367,7 +367,6 @@ public class ConnectionCallback implements ChannelConnections.Callback {
         ByteBuf byteBuf = ctx.alloc().buffer();
         bcosMessage.writeHeader(byteBuf);
         bcosMessage.writeExtra(byteBuf);
-        ctx.writeAndFlush(byteBuf);
 
         String content = new String(bcosMessage.getData());
         logger.info(" query block number host: {}, seq: {}, content: {}", host, seq, content);
@@ -409,6 +408,8 @@ public class ConnectionCallback implements ChannelConnections.Callback {
                                 }
                             }
                         });
+
+        ctx.writeAndFlush(byteBuf);
     }
 
     @Override

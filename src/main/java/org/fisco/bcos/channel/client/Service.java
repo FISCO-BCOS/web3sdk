@@ -1162,7 +1162,7 @@ public class Service {
 
             seq2Callback.remove(message.getSeq());
         } else {
-            logger.debug("no callback push message");
+            logger.debug("no callback push message, seq: {}", message.getSeq());
         }
     }
 
