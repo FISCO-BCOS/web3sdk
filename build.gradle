@@ -199,3 +199,10 @@ test {
         events "passed","skipped","failed"
     }
 }
+
+allprojects {
+    tasks.withType(Test).configureEach {
+        forkEvery = 100
+    }
+
+}
