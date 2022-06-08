@@ -38,6 +38,12 @@ public class ReceiptEncoder {
 
         result.add(RlpString.create(Numeric.hexStringToByteArray(transactionReceipt.getOutput())));
 
+        // gas used
+        if (transactionReceipt.getRemainGasRaw() != null) {
+            // BigInteger
+            result.add(RlpString.create(Numeric.toBigInt(transactionReceipt.getRemainGasRaw())));
+        }
+
         // List
         List<Log> logs = transactionReceipt.getLogs();
         List<RlpType> logList = new ArrayList<>();

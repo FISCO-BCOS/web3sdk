@@ -67,6 +67,13 @@ public class MerkleProofUtility {
             transactionReceipt.setGasUsed("0x" + transactionReceipt.getGasUsed().toString(16));
         }
 
+        if (transactionReceipt.getRemainGasRaw() != null) {
+            if (!transactionReceipt.getRemainGasRaw().startsWith("0x")) {
+                transactionReceipt.setRemainGas(
+                        "0x" + transactionReceipt.getRemainGas().toString(16));
+            }
+        }
+
         String receiptRlp = ReceiptEncoder.encode(transactionReceipt);
         String rlpHash = Hash.sha3(receiptRlp);
         String input = Numeric.toHexString(byteIndex) + rlpHash.substring(2);
@@ -129,6 +136,13 @@ public class MerkleProofUtility {
 
         if (!transactionReceipt.getGasUsedRaw().startsWith("0x")) {
             transactionReceipt.setGasUsed("0x" + transactionReceipt.getGasUsed().toString(16));
+        }
+
+        if (transactionReceipt.getRemainGasRaw() != null) {
+            if (!transactionReceipt.getRemainGasRaw().startsWith("0x")) {
+                transactionReceipt.setRemainGas(
+                        "0x" + transactionReceipt.getRemainGas().toString(16));
+            }
         }
 
         // transaction index
