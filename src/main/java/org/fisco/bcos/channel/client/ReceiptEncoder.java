@@ -2,6 +2,7 @@ package org.fisco.bcos.channel.client;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.fisco.bcos.fisco.EnumNodeVersion;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Log;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.rlp.RlpEncoder;
@@ -12,14 +13,16 @@ import org.fisco.bcos.web3j.utils.Numeric;
 
 // encode transaction receipt by Rlp into hex string
 public class ReceiptEncoder {
-    public static String encode(TransactionReceipt transactionReceipt) {
-        List<RlpType> values = asRlpValues(transactionReceipt);
+    public static String encode(
+            TransactionReceipt transactionReceipt, EnumNodeVersion.Version version) {
+        List<RlpType> values = asRlpValues(transactionReceipt, version);
         RlpList rlpList = new RlpList(values);
         byte[] rlpBytes = RlpEncoder.encode(rlpList);
         return Numeric.toHexString(rlpBytes);
     }
 
-    private static List<RlpType> asRlpValues(TransactionReceipt transactionReceipt) {
+    private static List<RlpType> asRlpValues(
+            TransactionReceipt transactionReceipt, EnumNodeVersion.Version version) {
         List<RlpType> result = new ArrayList<>();
         // bytes
         result.add(RlpString.create(Numeric.hexStringToByteArray(transactionReceipt.getRoot())));
@@ -37,6 +40,11 @@ public class ReceiptEncoder {
         result.add(RlpString.create(Numeric.toBigInt(transactionReceipt.getStatus())));
 
         result.add(RlpString.create(Numeric.hexStringToByteArray(transactionReceipt.getOutput())));
+
+        // gas used
+        if (version != null && version.getMinor() >= 9) {
+            result.add(RlpString.create(Numeric.toBigInt(transactionReceipt.getRemainGasRaw())));
+        }
 
         // List
         List<Log> logs = transactionReceipt.getLogs();
