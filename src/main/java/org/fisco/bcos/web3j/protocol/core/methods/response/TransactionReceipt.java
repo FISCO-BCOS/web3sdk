@@ -12,6 +12,7 @@ public class TransactionReceipt {
     private String blockHash;
     private String blockNumber;
     private String gasUsed;
+    private String remainGas;
     private String contractAddress;
     private String root;
     // status is only present on Byzantium transactions onwards
@@ -34,6 +35,7 @@ public class TransactionReceipt {
             String transactionIndex,
             String blockHash,
             String blockNumber,
+            String remainGas,
             String gasUsed,
             String contractAddress,
             String root,
@@ -49,6 +51,7 @@ public class TransactionReceipt {
         this.transactionIndex = transactionIndex;
         this.blockHash = blockHash;
         this.blockNumber = blockNumber;
+        this.remainGas = remainGas;
         this.gasUsed = gasUsed;
         this.contractAddress = contractAddress;
         this.root = root;
@@ -118,6 +121,19 @@ public class TransactionReceipt {
 
     public void setBlockNumber(String blockNumber) {
         this.blockNumber = blockNumber;
+    }
+
+    @JsonIgnore
+    public String getRemainGasRaw() {
+        return remainGas;
+    }
+
+    public BigInteger getRemainGas() {
+        return Numeric.decodeQuantity(remainGas);
+    }
+
+    public void setRemainGas(String remainGas) {
+        this.remainGas = remainGas;
     }
 
     public BigInteger getGasUsed() {
@@ -261,6 +277,11 @@ public class TransactionReceipt {
         if (gasUsed != null ? !gasUsed.equals(that.gasUsed) : that.gasUsed != null) {
             return false;
         }
+
+        if (remainGas != null ? !remainGas.equals(that.remainGas) : that.remainGas != null) {
+            return false;
+        }
+
         if (getContractAddress() != null
                 ? !getContractAddress().equals(that.getContractAddress())
                 : that.getContractAddress() != null) {
@@ -303,6 +324,7 @@ public class TransactionReceipt {
         result = 31 * result + (getBlockHash() != null ? getBlockHash().hashCode() : 0);
         result = 31 * result + (blockNumber != null ? blockNumber.hashCode() : 0);
         result = 31 * result + (gasUsed != null ? gasUsed.hashCode() : 0);
+        result = 31 * result + (remainGas != null ? remainGas.hashCode() : 0);
         result = 31 * result + (getContractAddress() != null ? getContractAddress().hashCode() : 0);
         result = 31 * result + (getRoot() != null ? getRoot().hashCode() : 0);
         result = 31 * result + (getStatus() != null ? getStatus().hashCode() : 0);
@@ -332,6 +354,9 @@ public class TransactionReceipt {
                 + '\''
                 + ", gasUsed='"
                 + gasUsed
+                + '\''
+                + ", remainGas='"
+                + remainGas
                 + '\''
                 + ", contractAddress='"
                 + contractAddress

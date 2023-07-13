@@ -4,6 +4,8 @@ import java.math.BigInteger;
 import java.util.List;
 import org.fisco.bcos.channel.client.Merkle;
 import org.fisco.bcos.channel.client.ReceiptEncoder;
+import org.fisco.bcos.channel.protocol.ChannelPrococolExceiption;
+import org.fisco.bcos.fisco.EnumNodeVersion;
 import org.fisco.bcos.web3j.crypto.Hash;
 import org.fisco.bcos.web3j.protocol.core.methods.response.MerkleProofUnit;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
@@ -55,7 +57,15 @@ public class MerkleProofUtility {
      * @return
      */
     public static boolean verifyTransactionReceipt(
-            String receiptRoot, TransactionReceiptWithProof.ReceiptAndProof receiptAndProof) {
+            String receiptRoot,
+            TransactionReceiptWithProof.ReceiptAndProof receiptAndProof,
+            String supportedVersion) {
+
+        EnumNodeVersion.Version classVersion = null;
+        try {
+            classVersion = EnumNodeVersion.getClassVersion(supportedVersion);
+        } catch (ChannelPrococolExceiption e) {
+        }
 
         TransactionReceipt transactionReceipt = receiptAndProof.getTransactionReceipt();
 
@@ -67,7 +77,14 @@ public class MerkleProofUtility {
             transactionReceipt.setGasUsed("0x" + transactionReceipt.getGasUsed().toString(16));
         }
 
-        String receiptRlp = ReceiptEncoder.encode(transactionReceipt);
+        if (classVersion != null && classVersion.getMinor() >= 9) {
+            if (!transactionReceipt.getRemainGasRaw().startsWith("0x")) {
+                transactionReceipt.setRemainGas(
+                        "0x" + transactionReceipt.getRemainGas().toString(16));
+            }
+        }
+
+        String receiptRlp = ReceiptEncoder.encode(transactionReceipt, classVersion);
         String rlpHash = Hash.sha3(receiptRlp);
         String input = Numeric.toHexString(byteIndex) + rlpHash.substring(2);
 
@@ -125,17 +142,31 @@ public class MerkleProofUtility {
     public static boolean verifyTransactionReceipt(
             String receiptRoot,
             TransactionReceipt transactionReceipt,
-            List<MerkleProofUnit> receiptProof) {
+            List<MerkleProofUnit> receiptProof,
+            String supportedVersion) {
 
         if (!transactionReceipt.getGasUsedRaw().startsWith("0x")) {
             transactionReceipt.setGasUsed("0x" + transactionReceipt.getGasUsed().toString(16));
+        }
+
+        EnumNodeVersion.Version classVersion = null;
+        try {
+            classVersion = EnumNodeVersion.getClassVersion(supportedVersion);
+        } catch (ChannelPrococolExceiption e) {
+        }
+
+        if (classVersion != null && classVersion.getMinor() >= 9) {
+            if (!transactionReceipt.getRemainGasRaw().startsWith("0x")) {
+                transactionReceipt.setRemainGas(
+                        "0x" + transactionReceipt.getRemainGas().toString(16));
+            }
         }
 
         // transaction index
         byte[] byteIndex =
                 RlpEncoder.encode(RlpString.create(transactionReceipt.getTransactionIndex()));
 
-        String receiptRlp = ReceiptEncoder.encode(transactionReceipt);
+        String receiptRlp = ReceiptEncoder.encode(transactionReceipt, classVersion);
         String rlpHash = Hash.sha3(receiptRlp);
         String input = Numeric.toHexString(byteIndex) + rlpHash.substring(2);
 

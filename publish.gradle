@@ -59,12 +59,12 @@ dependencies {
 
     // compile 'io.netty:netty-tcnative:2.0.25.Final'
     // compile 'io.netty:netty-tcnative-boringssl-static:2.0.27.Final'
-    compile ('org.fisco-bcos:netty-sm-ssl-context:1.2.0') {
+    compile ('org.fisco-bcos:netty-sm-ssl-context:1.5.2') { 
         exclude module:"log4j"
     }
 
     // compile 'org.ethereum:solcJ-all:0.4.25'
-    compile 'io.netty:netty-all:4.1.53.Final'
+//    compile 'io.netty:netty-all:4.1.53.Final'
     compile 'com.google.guava:guava:29.0-jre'
     compile 'commons-configuration:commons-configuration:1.10'
     compile 'org.apache.httpcomponents:httpclient:4.5.5'
@@ -90,7 +90,7 @@ dependencies {
 
 archivesBaseName = 'web3sdk'
 group = 'org.fisco-bcos'
-version = '2.6.4'
+version = '2.6.6'
 
 // Additional attribute definition
 
