@@ -90,7 +90,7 @@ dependencies {
 
 archivesBaseName = 'web3sdk'
 group = 'org.fisco-bcos'
-version = '2.6.6-SNAPSHOT'
+version = '2.6.6'
 
 // Additional attribute definition
 
