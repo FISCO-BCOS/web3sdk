@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import org.fisco.bcos.web3j.abi.datatypes.Event;
 import org.fisco.bcos.web3j.abi.datatypes.Type;
 import org.fisco.bcos.web3j.crypto.Hash;
+import org.fisco.bcos.web3j.crypto.SmHash;
 import org.fisco.bcos.web3j.utils.Numeric;
 
 /**
@@ -35,9 +36,16 @@ public class EventEncoder {
         return result.toString();
     }
 
-    public static String buildEventSignature(String methodSignature) {
+    public static String buildEventSignature(String methodSignature, Boolean isSm) {
         byte[] input = methodSignature.getBytes();
-        byte[] hash = Hash.sha3(input);
-        return Numeric.toHexString(hash);
+        if (Boolean.TRUE.equals(isSm)) {
+            // 国密
+            byte[] hash = SmHash.sha3(input);
+            return Numeric.toHexString(hash);
+        } else {
+            // keccak256
+            byte[] hash = Hash.sha3(input);
+            return Numeric.toHexString(hash);
+        }
     }
 }
