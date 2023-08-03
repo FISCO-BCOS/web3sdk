@@ -31,20 +31,22 @@ public class TransactionDecoder {
 
     private String abi = "";
     private String bin = "";
+    private Boolean isSm = false;
     private Map<String, AbiDefinition> methodIDMap;
 
     public TransactionDecoder(String abi) {
-        this(abi, "");
+        this(abi, "", false);
     }
 
-    public TransactionDecoder(String abi, String bin) {
+    public TransactionDecoder(String abi, String bin, Boolean isSm) {
         this.abi = abi;
         this.bin = bin;
+        this.isSm = isSm;
         methodIDMap = new HashMap<String, AbiDefinition>();
         List<AbiDefinition> funcAbiDefinitionList = ContractAbiUtil.getFuncAbiDefinition(abi);
         for (AbiDefinition abiDefinition : funcAbiDefinitionList) {
             String methodSign = decodeMethodSign(abiDefinition);
-            String methodID = FunctionEncoder.buildMethodId(methodSign);
+            String methodID = FunctionEncoder.buildMethodId(methodSign, isSm);
             methodIDMap.put(methodID, abiDefinition);
         }
     }
