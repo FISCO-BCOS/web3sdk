@@ -193,7 +193,7 @@ publishing {
             pom {
                 name = 'fisco-bcos'
                 description = 'fisco-bcos web3sdk'
-                url = 'http://www.fisco-bcos.org'
+                url = 'https://github.com/FISCO-BCOS/web3sdk'
 
                 licenses {
                     license {
