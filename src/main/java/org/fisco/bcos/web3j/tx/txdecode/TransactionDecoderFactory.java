@@ -19,10 +19,11 @@ public class TransactionDecoderFactory {
     /**
      * @param abi
      * @param bin
+     * @param isSm 是否国密；true：国密；false：非国密，ECDSA
      * @return TransactionDecoder
      */
-    public static TransactionDecoder buildTransactionDecoder(String abi, String bin) {
-        return new TransactionDecoder(abi, bin);
+    public static TransactionDecoder buildTransactionDecoder(String abi, String bin, Boolean isSm) {
+        return new TransactionDecoder(abi, bin, isSm);
     }
 
     /**
